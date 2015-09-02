@@ -13,15 +13,15 @@ readNumber( r *bufio.Reader ) float64 {
 		c, _, err := r.ReadRune()
 		if err != nil { break }
 		switch c {
-  		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'x', 'e', '-', '+':
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'x', 'e', '-', '+':
   			v += string( c )
-      default:
-  			r.UnreadRune()
-      	f, err := strconv.ParseFloat(v, 64)
-      	if err != nil {
-        	panic(fmt.Sprintf( "ParseFloat Error: %v", v ))
-      	}
-      	return f
+		default:
+			r.UnreadRune()
+			f, err := strconv.ParseFloat( v, 64 )
+			if err != nil {
+				panic(fmt.Sprintf( "ParseFloat Error: %v", v ))
+			}
+			return f
 		}
 	}
 	return 0.0
@@ -191,7 +191,7 @@ func
 sentences( r *bufio.Reader, terminator rune ) []*Sentence {
 	v := []*Sentence{}
 	for skipWhite( r, terminator ) {
-		v = append( v,  Read( r ) )
+		v = append( v, Read( r ) )
 	}
 	return v
 }
