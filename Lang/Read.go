@@ -2,23 +2,29 @@ package main
 
 import	"bufio"
 import	"fmt"
+import	"strconv"
 
 ////////////////////////////////////////////////////////////////	Read
 
 func
-readInt( r *bufio.Reader ) int {
-	v := 0
+readNumber( r *bufio.Reader ) float64 {
+	v := ""
 	for {
 		c, _, err := r.ReadRune()
 		if err != nil { break }
-		if '0' <= c && c <= '9' { 
-			v = v * 10 + int( c ) - int( '0' )
-		} else {
-			r.UnreadRune()
-			break 
+		switch c {
+  		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'x', 'e', '-', '+':
+  			v += string( c )
+      default:
+  			r.UnreadRune()
+      	f, err := strconv.ParseFloat(v, 64)
+      	if err != nil {
+        	panic(fmt.Sprintf( "ParseFloat Error: %v", v ))
+      	}
+      	return f
 		}
 	}
-	return v
+	return 0.0
 }
 
 func
@@ -109,14 +115,14 @@ object( r *bufio.Reader, terminator rune ) Object {
 		w, _, err := r.ReadRune()
 		if err == nil {
 			r.UnreadRune()
-			if '0' <= w && w <= '9' { return &Number{ readInt( r ) } }
+			if '0' <= w && w <= '9' { return &Number{ readNumber( r ) } }
 		}
 		return &Operator{ c, 60, add }
 	case '-':
 		w, _, err := r.ReadRune()
 		if err == nil {
 			r.UnreadRune()
-			if '0' <= w && w <= '9' { return &Number{ - readInt( r ) } }
+			if '0' <= w && w <= '9' { return &Number{ - readNumber( r ) } }
 		}
 		return &Operator{ c, 60, sub }
 	case '.':	return &Operator{ c, 20, apply }
@@ -154,7 +160,7 @@ object( r *bufio.Reader, terminator rune ) Object {
 		return &Operator{ ">", 80, gt }
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 		r.UnreadRune()
-		return &Number{ readInt( r ) }
+		return &Number{ readNumber( r ) }
 	case '"':	return ReadString( r )
 	case '[':	return &Slice		{ objects( r, ']' ) }
 	case '(':	return &Sentence	{ objects( r, ')' ) }
@@ -184,7 +190,7 @@ objects( r *bufio.Reader, terminator rune ) []Object {
 func
 sentences( r *bufio.Reader, terminator rune ) []*Sentence {
 	v := []*Sentence{}
-	for skipWhite( r, terminator ) { 
+	for skipWhite( r, terminator ) {
 		v = append( v,  Read( r ) )
 	}
 	return v
