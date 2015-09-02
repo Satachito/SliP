@@ -49,20 +49,20 @@ String		struct {
 type
 Primitive	struct {
 	tag		interface{}	//	DEBUGGING PURPOSE ONLY
-	u		func() Object	
+	u		func() Object
 }
 
 type
 Builtin		struct {
 	tag		interface{}	//	DEBUGGING PURPOSE ONLY
-	u		func( Object ) Object	
+	u		func( Object ) Object
 }
 
 type
 Operator	struct {
 	tag		interface{}	//	DEBUGGING PURPOSE ONLY
 	bond	int
-	u		func( Object, Object ) Object	
+	u		func( Object, Object ) Object
 }
 
 type
@@ -148,12 +148,12 @@ get( l Object, r int ) Object {
 	}
 }
 
-func 
+func
 apply( l Object, r Object ) Object {
 //	fmt.Printf( "-----------apply %v to %v\n", l, r )
 	switch t := r.(type) {
 	case *Number:
-		return get( l, t.u.(int) )
+		return get( l, int( t.u.(float64) ) )
 	case *Name:
 		return l.(*Map).u[ t.u ]
 	case *Builtin:
@@ -163,9 +163,9 @@ apply( l Object, r Object ) Object {
 		defer Pop()
 		return t.Eval()
 	case *Slice:
-		return t.u[ l.(*Number).u.(int) ].Eval()
+		return t.u[ int( l.(*Number).u.(float64) ) ].Eval()
 	case *Map:
-		return t.u[ l.(*Name).u.(int) ].Eval()
+		return t.u[ int( l.(*Name).u.(float64) ) ].Eval()
 	default:
 		panic( fmt.Sprintf( "%v applied to %v", t, l ) )
 	}
@@ -206,81 +206,81 @@ concat( l Object, r Object ) Object {
 
 func
 xor( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) ^ r.(*Number).u.(int) }
+	return &Number{ float64( int( l.(*Number).u.(float64) ) ^ int( r.(*Number).u.(float64) ) ) }
 }
 
 func
 and( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) & r.(*Number).u.(int) }
+	return &Number{ float64( int( l.(*Number).u.(float64) ) & int( r.(*Number).u.(float64) ) ) }
 }
 
 func
 or( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) | r.(*Number).u.(int) }
+	return &Number{ float64( int( l.(*Number).u.(float64) ) | int( r.(*Number).u.(float64) ) ) }
 }
 
 func
 add( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) + r.(*Number).u.(int) }
+	return &Number{ l.(*Number).u.(float64) + r.(*Number).u.(float64) }
 }
 
 func
 sub( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) - r.(*Number).u.(int) }
+	return &Number{ l.(*Number).u.(float64) - r.(*Number).u.(float64) }
 }
 
 func
 mul( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) * r.(*Number).u.(int) }
+	return &Number{ l.(*Number).u.(float64) * r.(*Number).u.(float64) }
 }
 
 func
 div( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) / r.(*Number).u.(int) }
+	return &Number{ l.(*Number).u.(float64) / r.(*Number).u.(float64) }
 }
 
 func
 remainder( l Object, r Object ) Object {
-	return &Number{ l.(*Number).u.(int) % r.(*Number).u.(int) }
+	return &Number{ float64( int( l.(*Number).u.(float64) ) % int( r.(*Number).u.(float64) ) ) }
 }
 
 func
 gt( l Object, r Object ) Object {
-	if l.(*Number).u.(int) > r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) > r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 ge( l Object, r Object ) Object {
-	if l.(*Number).u.(int) >= r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) >= r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 lt( l Object, r Object ) Object {
-	if l.(*Number).u.(int) < r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) < r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 le( l Object, r Object ) Object {
-	if l.(*Number).u.(int) <= r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) <= r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 eq( l Object, r Object ) Object {
-	if l.(*Number).u.(int) == r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) == r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 neq( l Object, r Object ) Object {
-	if l.(*Number).u.(int) != r.(*Number).u.(int) { return &Number{ 1 } } else { return &Number{ 0 } }
+	if l.(*Number).u.(float64) != r.(*Number).u.(float64) { return &Number{ 1.0 } } else { return &Number{ 0.0 } }
 }
 
 func
 size( p Object ) Object {
 	switch t := p.(type) {
-	case *Slice:		return &Number{ len( t.u ) }
-	case *Block:		return &Number{ len( t.u ) }
-	case *Sentence:		return &Number{ len( t.u ) }
-	case *Map:			return &Number{ len( t.u ) }
+	case *Slice:		return &Number{ float64( len( t.u ) ) }
+	case *Block:		return &Number{ float64( len( t.u ) ) }
+	case *Sentence:		return &Number{ float64( len( t.u ) ) }
+	case *Map:			return &Number{ float64( len( t.u ) ) }
 	default:			panic( "Syntax Error" )
 	}
 }
@@ -289,7 +289,7 @@ func
 car( p Object ) Object {
 	return get( p, 0 )
 }
-	
+
 func
 cdr( p Object ) Object {
 	switch t := p.(type) {
@@ -313,7 +313,7 @@ last( p Object ) Object {
 func
 not( p Object ) Object {
 	switch t := p.(type) {
-	case *Number:	return &Number{ ^t.u.(int) }
+	case *Number:	return &Number{ float64( ^int( t.u.(float64) ) ) }
 	default:		panic( "Syntax Error" )
 	}
 }
@@ -321,10 +321,10 @@ not( p Object ) Object {
 func
 _if( p Object ) Object {
 	switch t := p.(type) {
-	case *Slice:	if len( t.u ) == 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Block:	if len( t.u ) == 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Sentence:	if len( t.u ) == 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Number:	if t.u == 0			{ return t } else { return &Number{ 1 } }
+	case *Slice:	if len( t.u ) == 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Block:	if len( t.u ) == 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Sentence:	if len( t.u ) == 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Number:	if t.u.(float64) == 0.0			{ return t } else { return &Number{ 1.0 } }
 	default:		panic( fmt.Sprintf( "if applied to %T:%v", p, p ) )
 	}
 }
@@ -332,10 +332,10 @@ _if( p Object ) Object {
 func
 fi( p Object ) Object {
 	switch t := p.(type) {
-	case *Slice:	if len( t.u ) != 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Block:	if len( t.u ) != 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Sentence:	if len( t.u ) != 0	{ return &Number{ 0 } } else { return &Number{ 1 } }
-	case *Number:	if t.u != 0			{ return t } else { return &Number{ 1 } }
+	case *Slice:	if len( t.u ) != 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Block:	if len( t.u ) != 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Sentence:	if len( t.u ) != 0	{ return &Number{ 0.0 } } else { return &Number{ 1.0 } }
+	case *Number:	if t.u.(float64) != 0.0			{ return t } else { return &Number{ 1.0 } }
 	default:		panic( fmt.Sprintf( "fi applied to %T:%v", p, p ) )
 	}
 }
@@ -397,7 +397,7 @@ main() {
 	defer func() {
 		r := recover();
 		switch t := r.(type) {
-		case error:	
+		case error:
 			if t != io.EOF { log.Printf( "ERROR: %T:%v\n", t, t ) }
 		default:
 			log.Printf( "OTHER: %v\n", t )
