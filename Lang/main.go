@@ -348,46 +348,41 @@ binaryFunc( a Object, f func( Object, Object ) Object ) Object {
 	return f( w[ 0 ], w[ 1 ] )
 }
 
-var	If			= &Builtin{ "?", _if }
-var	Fi			= &Builtin{ "¿", fi }
-var	Size		= &Builtin{ "#", size }
-var	Last		= &Builtin{ "$", last }
-var	Not			= &Builtin{ "~", not }
 
 func
 init() {
-	sAssocList.u.u[ "print"		] = &Builtin{ "print", Print }
-	sAssocList.u.u[ "println"	] = &Builtin{ "println", Println }
-	sAssocList.u.u[ "car"		] = &Builtin{ "car", car }
-	sAssocList.u.u[ "cdr"		] = &Builtin{ "cdr", cdr }
-	sAssocList.u.u[ "fi"		] = Fi
-	sAssocList.u.u[ "if"		] = If
-	sAssocList.u.u[ "size"		] = Size
-	sAssocList.u.u[ "last"		] = Last
-	sAssocList.u.u[ "not"		] = Not
+	sAssocList.u.u[ "print"		] = &Builtin{ "print"		, Print		}
+	sAssocList.u.u[ "println"	] = &Builtin{ "println"		, Println	}
+	sAssocList.u.u[ "car"		] = &Builtin{ "car"			, car		}
+	sAssocList.u.u[ "cdr"		] = &Builtin{ "cdr"			, cdr		}
+	sAssocList.u.u[ "if"		] = &Builtin{ "if"			, _if		}
+	sAssocList.u.u[ "fi"		] = &Builtin{ "fi"			, fi		}
+	sAssocList.u.u[ "size"		] = &Builtin{ "size"		, size		}
+	sAssocList.u.u[ "last"		] = &Builtin{ "last"		, last		}
+	sAssocList.u.u[ "not"		] = &Builtin{ "not"			, not		}
 
-	sAssocList.u.u[ "apply"		] = &Builtin{ ".", func( p Object ) Object { return binaryFunc( p, apply ) } }
-	sAssocList.u.u[ "def"		] = &Builtin{ "=", func( p Object ) Object { return binaryFunc( p, def ) } }
-	sAssocList.u.u[ "cons"		] = &Builtin{ "cons", func( p Object ) Object { return binaryFunc( p, cons ) } }
-	sAssocList.u.u[ "concat"	] = &Builtin{ ",", func( p Object ) Object { return binaryFunc( p, concat ) } }
-	sAssocList.u.u[ "add"		] = &Builtin{ "+", func( p Object ) Object { return binaryFunc( p, add ) } }
-	sAssocList.u.u[ "sub"		] = &Builtin{ "-", func( p Object ) Object { return binaryFunc( p, sub ) } }
-	sAssocList.u.u[ "mul"		] = &Builtin{ "*", func( p Object ) Object { return binaryFunc( p, mul ) } }
-	sAssocList.u.u[ "div"		] = &Builtin{ "/", func( p Object ) Object { return binaryFunc( p, div ) } }
-	sAssocList.u.u[ "remainder"	] = &Builtin{ "%", func( p Object ) Object { return binaryFunc( p, remainder ) } }
+	sAssocList.u.u[ "apply"		] = &Builtin{ "apply"		, func( p Object ) Object { return binaryFunc( p, apply ) } }
+	sAssocList.u.u[ "def"		] = &Builtin{ "def"			, func( p Object ) Object { return binaryFunc( p, def ) } }
+	sAssocList.u.u[ "cons"		] = &Builtin{ "cons"		, func( p Object ) Object { return binaryFunc( p, cons ) } }
+	sAssocList.u.u[ "concat"	] = &Builtin{ "concat"		, func( p Object ) Object { return binaryFunc( p, concat ) } }
+	sAssocList.u.u[ "add"		] = &Builtin{ "add"			, func( p Object ) Object { return binaryFunc( p, add ) } }
+	sAssocList.u.u[ "sub"		] = &Builtin{ "sub"			, func( p Object ) Object { return binaryFunc( p, sub ) } }
+	sAssocList.u.u[ "mul"		] = &Builtin{ "mul"			, func( p Object ) Object { return binaryFunc( p, mul ) } }
+	sAssocList.u.u[ "div"		] = &Builtin{ "div"			, func( p Object ) Object { return binaryFunc( p, div ) } }
+	sAssocList.u.u[ "remainder"	] = &Builtin{ "remainder"	, func( p Object ) Object { return binaryFunc( p, remainder ) } }
 
-	sAssocList.u.u[ "gt"		] = &Builtin{ ">" , func( p Object ) Object { return binaryFunc( p, gt ) } }
-	sAssocList.u.u[ "ge"		] = &Builtin{ ">=", func( p Object ) Object { return binaryFunc( p, ge ) } }
-	sAssocList.u.u[ "lt"		] = &Builtin{ "<" , func( p Object ) Object { return binaryFunc( p, lt ) } }
-	sAssocList.u.u[ "le"		] = &Builtin{ "<=", func( p Object ) Object { return binaryFunc( p, le ) } }
-	sAssocList.u.u[ "eq"		] = &Builtin{ "==", func( p Object ) Object { return binaryFunc( p, eq ) } }
+	sAssocList.u.u[ "gt"		] = &Builtin{ "gt"			, func( p Object ) Object { return binaryFunc( p, gt ) } }
+	sAssocList.u.u[ "ge"		] = &Builtin{ "ge"			, func( p Object ) Object { return binaryFunc( p, ge ) } }
+	sAssocList.u.u[ "lt"		] = &Builtin{ "lt"			, func( p Object ) Object { return binaryFunc( p, lt ) } }
+	sAssocList.u.u[ "le"		] = &Builtin{ "le"			, func( p Object ) Object { return binaryFunc( p, le ) } }
+	sAssocList.u.u[ "eq"		] = &Builtin{ "eq"			, func( p Object ) Object { return binaryFunc( p, eq ) } }
 }
 
 func
 body( r *bufio.Reader ) {
 	for {
-		Println( Read( r ).Eval() )
-//		Println( Println( Read( r ) ).Eval() )
+//		Println( Read( r ).Eval() )
+		Println( Println( Read( r ) ).Eval() )
 	}
 }
 
