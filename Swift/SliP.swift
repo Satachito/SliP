@@ -16,15 +16,6 @@ Object				:	NSObject {
 	Eval() throws -> Object { return self }
 }
 
-class
-Cell<T>	{
-	var
-	car				:	T
-	let
-	cdr				:	Cell?
-	init(	_ pCar	:	T, _ pCdr: Cell? = nil ) { car = pCar; cdr = pCdr }
-}
-
 var
 sStack				:	Cell< Object >?
 func
@@ -35,8 +26,8 @@ Push( p: Object ) {
 
 func
 Pop() {
-//print( "Pop:", sStack!.car )
-	sStack = sStack!.cdr
+//print( "Pop:", sStack!.u )
+	sStack = sStack!.next
 }
 
 
@@ -54,8 +45,8 @@ Name				:	Object {
 	Eval()	throws	->	Object {
 		var	wAL = sDicts as Cell< [ String: Object ] >?
 		while let w = wAL {
-			if let v = w.car[ u ] { return v }
-			wAL = w.cdr
+			if let v = w.u[ u ] { return v }
+			wAL = w.next
 		}
 		throw Error.RuntimeError( "UndefinedName \(u)" )
 	}
@@ -148,7 +139,7 @@ Combiner			:	Object {
 	override var
 	description		:	String { return "`\(u)" }
 	override func
-	Eval() throws	->	Object { return EvalAssoc( u, sDicts.car ) }
+	Eval() throws	->	Object { return EvalAssoc( u, sDicts.u ) }
 }
 
 class
@@ -163,7 +154,7 @@ EvalAssoc			:	Object {
 	override func
 	Eval() throws	->	Object {
 		sDicts = Cell< [ String: Object ] >( map, sDicts )
-		defer{ sDicts = sDicts.cdr! }
+		defer{ sDicts = sDicts.next! }
 		return try u.Eval()
 	}
 }
@@ -270,7 +261,7 @@ List				:	Object {
 			return List( v, .Literal )
 		case .Block:
 			sDicts = Cell< [ String: Object ] >( [ String: Object ](), sDicts )
-			defer{ sDicts = sDicts.cdr! }
+			defer{ sDicts = sDicts.next! }
 			var	v = [ Object ]( count:u.count, repeatedValue:Object() )
 			for ( i, w ) in u.enumerate() { v[ i ] = try w.Eval() }
 			return List( v, .Literal )
@@ -367,19 +358,19 @@ Nil	=	List( [], .Literal )
 
 let
 StackTop = Primitive(
-	{	if let v = sStack { return v.car }
+	{	if let v = sStack { return v.u }
 		throw Error.RuntimeError( "StackUnderflow" )
 	}
 )
 
 let
-CurrentContext = Primitive( { return Map( sDicts.car ) } )
+CurrentContext = Primitive( { return Map( sDicts.u ) } )
 
 let
 Exception = Primitive( { throw Error.UserException } )
 
 let
-Cdr = Builtin(
+next = Builtin(
 	{	p in
 		if let w = p as? List where w.u.count > 0 { return List( Array( w.u.dropFirst() ), w.type ) }
 		throw Error.RuntimeError( "\(p):*" )
@@ -593,7 +584,7 @@ let
 Define = Operator(
 	{	l, r in
 		if let w = l as? Name {
-			sDicts.car[ w.u ] = r
+			sDicts.u[ w.u ] = r
 			return l
 		}
 		throw Error.RuntimeError( "\(l) = \(r)" )
@@ -646,7 +637,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 		case "!"				:	return Exception
 		case "@"				:	return StackTop
 		case "·"				:	return CurrentContext
-		case "*"				:	return Cdr
+		case "*"				:	return next
 		case "#"				:	return Count
 		case "$"				:	return Last
 		case "¦"				:	return Print
@@ -726,14 +717,14 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 
 func
 SetupBuiltin() {
-	sDicts.car[ "eval" ] = Builtin(
+	sDicts.u[ "eval" ] = Builtin(
 		{	p in
 			let v = try p.Eval()
 print( "Eval:", p, "->", v )
 			return v
 		}
 	)
-	sDicts.car[ "for" ] = Builtin(
+	sDicts.u[ "for" ] = Builtin(
 		{	p in
 			if let wArgs = p as? List where wArgs.u.count >= 2 {
 				if let wList = wArgs.u[ 0 ] as? List {
@@ -752,7 +743,7 @@ print( "Eval:", p, "->", v )
 			}
 		}
 	)
-	sDicts.car[ "TwoElements" ] = Builtin(
+	sDicts.u[ "TwoElements" ] = Builtin(
 		{	p in
 			if let w = p as? List {
 				switch w.u.count {
