@@ -7,11 +7,27 @@ import	"strconv"
 ////////////////////////////////////////////////////////////////	Read
 
 func
-readNumber( r *bufio.Reader ) float64 {
-	v := ""
+readTrailer( r *bufio.Reader ) []bool {
+	v := []bool{}
 	for {
 		c, _, err := r.ReadRune()
-		if err != nil { break }
+		if err != nil { panic( err ) }
+		switch c {
+		case 'a':	v = append( v, true )
+		case 'd':	v = append( v, false )
+		default:
+			r.UnreadRune()
+			return v
+		}
+	}
+}
+
+func
+readNumber( r *bufio.Reader ) float64 {
+	v := []rune{}
+	for {
+		c, _, err := r.ReadRune()
+		if err != nil { panic( err ) }
 		switch c {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'x', 'e', '-', '+':
   			v += string( c )
@@ -24,7 +40,6 @@ readNumber( r *bufio.Reader ) float64 {
 			return f
 		}
 	}
-	return 0.0
 }
 
 func
@@ -41,15 +56,14 @@ ReadName( r *bufio.Reader ) *Name {
 	v := []rune{}
 	for {
 		c, _, err := r.ReadRune()
-		if err != nil { break }
+		if err != nil { panic( err ) }
 		if nameRuneP( c ) {
 			v = append( v, c )
 		} else {
 			r.UnreadRune()
-			break
+			return &Name{ string( v ) }
 		}
 	}
-	return &Name{ string( v ) }
 }
 
 func
@@ -58,13 +72,13 @@ ReadString( r *bufio.Reader ) *String {
 	escaped := false
 	for {
 		c, _, err := r.ReadRune()
-		if err != nil { break }
+		if err != nil { panic( err ) }
 		if escaped {
 			escaped = false
 			v = append( v, c )
 		} else {
 			if c == '"' {
-				break
+				return &String{ string( v ) }
 			} else if c == '\\' {
 				escaped = true
 			} else {
@@ -72,7 +86,6 @@ ReadString( r *bufio.Reader ) *String {
 			}
 		}
 	}
-	return &String{ string( v ) }
 }
 
 func
@@ -82,10 +95,11 @@ skipWhite( r *bufio.Reader, terminator rune ) bool {
 		if err != nil { panic( err ) }
 		if c == terminator { return false }
 		switch c { case ';', '}', ']', ')': panic( fmt.Sprintf( "Unexpected closing: '%c'", c ) ) }
-		if c > ' ' { break }
+		if c > ' ' {
+			r.UnreadRune()
+			return true
+		}
 	}
-	r.UnreadRune()
-	return true
 }
 
 func
@@ -93,10 +107,17 @@ object( r *bufio.Reader, terminator rune ) Object {
 	if !skipWhite( r, terminator ) { return nil }
 	c, _, _ := r.ReadRune()
 	switch c {
-	case '!':	return &Primitive{ c, func() Object { return sStack.u } }
-	case '@':	return &Primitive{ c, func() Object { return car( sStack.u ) } }
-	case ':':	return &Primitive{ c, func() Object { return cdr( sStack.u ) } }
-	case '¡':	return &Primitive{ c, func() Object { return &Map{ sAssocList.u.u } } }
+	case '@':
+		trailer := readTrailer( r )
+		return &Primitive{
+			c,
+			func() Object {
+				v := sStack.u
+				for _, w := range trailer { if w { v = car( v ) } else { v = cdr( v ) } }
+				return v
+			},
+		}
+	case '!':	return &Primitive{ c, func() Object { return &Map{ sAssocList.u.u } } }
 	case '\'':
 		w := object( r, terminator )
 		if w == nil { panic( "Nothing to Quote." ) }
@@ -113,49 +134,44 @@ object( r *bufio.Reader, terminator rune ) Object {
 	case '%':	return &Operator{ c, 50, remainder }
 	case '+':
 		w, _, err := r.ReadRune()
-		if err == nil {
-			r.UnreadRune()
-			if '0' <= w && w <= '9' { return &Number{ readNumber( r ) } }
-		}
+		if err != nil { panic( err ) }
+		r.UnreadRune()
+		if '0' <= w && w <= '9' { return &Number{ readNumber( r ) } }
 		return &Operator{ c, 60, add }
 	case '-':
 		w, _, err := r.ReadRune()
-		if err == nil {
-			r.UnreadRune()
-			if '0' <= w && w <= '9' { return &Number{ - readNumber( r ) } }
-		}
+		if err != nil { panic( err ) }
+		r.UnreadRune()
+		if '0' <= w && w <= '9' { return &Number{ - readNumber( r ) } }
 		return &Operator{ c, 60, sub }
-	case '.':	return &Operator{ c, 20, apply }
+	case ':':	return &Operator{ c, 20, apply }
 	case ',':	return &Operator{ c, 155, concat }
 	case '=':
 		w, _, err := r.ReadRune()
-		if err == nil {
-			switch w {
-			case '=':	return &Operator{ "==", 90, eq }
-			case '>':	return &Operator{ "=>", 90, ge }
-			case '<':	return &Operator{ "<=", 90, le }
-			default:	r.UnreadRune()
-			}
+		if err != nil { panic( err ) }
+		switch w {
+		case '=':	return &Operator{ "==", 90, eq }
+		case '>':	return &Operator{ "=>", 90, ge }
+		case '<':	return &Operator{ "<=", 90, le }
+		default:	r.UnreadRune()
 		}
 		return &Operator{ c, 160, def }
 	case '<':
 		w, _, err := r.ReadRune()
-		if err == nil {
-			switch w {
-			case '>':	return &Operator{ "<>", 90, neq }
-			case '=':	return &Operator{ "<=", 80, le }
-			default:	r.UnreadRune()
-			}
+		if err != nil { panic( err ) }
+		switch w {
+		case '>':	return &Operator{ "<>", 90, neq }
+		case '=':	return &Operator{ "<=", 80, le }
+		default:	r.UnreadRune()
 		}
 		return &Operator{ "<", 80, lt }
 	case '>':
 		w, _, err := r.ReadRune()
-		if err == nil {
-			switch w {
-			case '<':	return &Operator{ "><", 90, neq }
-			case '=':	return &Operator{ ">=", 80, ge }
-			default:	r.UnreadRune()
-			}
+		if err != nil { panic( err ) }
+		switch w {
+		case '<':	return &Operator{ "><", 90, neq }
+		case '=':	return &Operator{ ">=", 80, ge }
+		default:	r.UnreadRune()
 		}
 		return &Operator{ ">", 80, gt }
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
@@ -165,11 +181,11 @@ object( r *bufio.Reader, terminator rune ) Object {
 	case '[':	return &Slice		{ objects( r, ']' ) }
 	case '(':	return &Sentence	{ objects( r, ')' ) }
 	case '{':	return &Block		{ sentences( r, '}' ) }
-	case '?':	return If
-	case '¿':	return Fi
-	case '#':	return Size
-	case '$':	return Last
-	case '~':	return Not
+	case '?':	return &Builtin		{ c, _if	}
+	case '¿':	return &Builtin		{ c, fi		}
+	case '#':	return &Builtin		{ c, size	}
+	case '$':	return &Builtin		{ c, last	}
+	case '~':	return &Builtin		{ c, not	}
 	default:
 		r.UnreadRune()
 		return ReadName( r )

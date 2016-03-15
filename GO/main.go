@@ -350,11 +350,6 @@ binaryFunc( a Object, f func( Object, Object ) Object ) Object {
 	return f( w[ 0 ], w[ 1 ] )
 }
 
-var	If			= &Builtin{ "?", _if }
-var	Fi			= &Builtin{ "¿", fi }
-var	Size		= &Builtin{ "#", size }
-var	Last		= &Builtin{ "$", last }
-var	Not			= &Builtin{ "~", not }
 
 func
 init() {
@@ -385,7 +380,6 @@ init() {
 	sAssocList.u.u[ "le"		] = &Builtin{ "<=", func( p Object ) Object { return binaryFunc( p, le ) } }
 	sAssocList.u.u[ "eq"		] = &Builtin{ "==", func( p Object ) Object { return binaryFunc( p, eq ) } }
 }
-
 
 func
 main() {
