@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "22ACA866D096FD69474D7CBA84412B29FBB06CA3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "927E1E71FC5955E2AE5C75CD75144D036FFCDE11" : 0,
+    "22ACA866D096FD69474D7CBA84412B29FBB06CA3" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5BECC438-4259-4568-8C1F-FF0FA26CCC54",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "927E1E71FC5955E2AE5C75CD75144D036FFCDE11" : "JMP\/",
+    "22ACA866D096FD69474D7CBA84412B29FBB06CA3" : "SliP\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "SliP",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Swift\/SliP.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Satachito\/SliP.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "22ACA866D096FD69474D7CBA84412B29FBB06CA3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Satachito\/JMP.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "927E1E71FC5955E2AE5C75CD75144D036FFCDE11"
+    }
+  ]
+}

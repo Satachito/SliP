@@ -1,0 +1,305 @@
+0;
+100;
+-0;
+-100;
+
+"";
+"ABC";
+"AB\"CD";
+
+[ aName ];
+'( aName );
+'{ aName };
+]
+}
+)
+
+1 + 2 × 3;
+( 1 + 2 ) × 3;
+1 + 2 ÷ 3;
+
+3:'(@);
+
+3:(@);
+
+3:'(@==[]);
+
+'{}:'(@==[]);
+
+3 == 3;
+
+3 == 2;
+
+"A" == "A";
+
+"A" == "B";
+
+[ a b c ]:#;
+
+'count = '( @ ? [ ( @:*:count + 1 ) 0 ] );
+[ a b c ] : count;
+
+'factorial = '(
+	@ == 0 ?
+	[	1
+		( @ × ( @ - 1 ):factorial )
+	]
+);
+4 : factorial;
+
+'sigma = '(	//	別の書き方。0 + 0 の分だけ遅いが参考まで。
+	@ + ( @ == 0 ? [ 0 ( ( @ - 1 ):sigma ) ] )
+);
+4 : sigma;
+
+'dropLast = '(
+	@:# == 0 ?
+	[	!
+		( @:# == 1 ? [ [] ( @:0, @:*:dropLast ) ] )
+	]
+);
+[ a b c ]:dropLast;
+
+'reverse = '(
+	@ ? [ ( @:$ , @:dropLast:reverse ) @ ]
+);
+[ a b c ]:reverse;
+
+'fib = '(
+	@ < 2 ? [
+		@
+		( ( @ - 1 ):fib + ( @ - 2 ):fib )
+	]
+);
+10:fib;
+
+'prod = '(
+	@ ? [
+		( @:0 × @:*:prod )
+		1
+	]
+);
+[ 2 3 4 ]:prod;
+
+'max = '(
+	@:0 > @:1 ? [ ( @:0 ) ( @:1 ) ]
+);
+[ 1 2 ]:max;
+[ 3 2 ]:max;
+
+'maxelem = '(
+	@:# == 1 ? [
+		( @ : 0 )
+		( { ( @ : 0 ) ( @:*:maxelem ) }:max )
+	]
+);
+[ 1 2 ]:maxelem;
+[ 1 5 3 ]:maxelem;
+
+'maxelem2 = '(
+	@:# == 1 ? [
+		( @ : 0 )
+		( { ( @ : 0 ) ( @:*:maxelem2 ) }:'( @:0 > @:1 ? [ ( @:0 ) ( @:1 ) ] ) )
+	]
+);
+[ 1 5 3 ]:maxelem2;
+
+'gcd1 = '(
+	@:1 == 0 ? [
+		( @:0 )
+		( { ( @:1 ) ( @:0 % @:1 ) }:gcd1 )
+	]
+);
+[ 1071 1029 ]:gcd1;
+
+'gcd2 = '( {
+	( 'n = @:1 )
+	( n == 0 ? [
+		( @:0 )
+		( { n ( @:0 % n ) }:gcd2 )
+	] )
+}:$ );
+[ 1071 1029 ]:gcd2;
+
+'dat = {
+	( 'a = 1 )
+	( 'b = 1 )
+	·
+}:$;
+dat:'a;
+dat:'c;
+
+0.5e+5 :'(@);
+5e-10 :'(@);
+3.14159 + 4;
+
+'append = '(
+	@:0 ? [
+		( @:0:0, { ( @:0:* ) ( @:1 ) }:append )
+		( @:1 )
+	]
+);
+[ [ 1 2 ] [ 3 4 ] ]:append;
+
+
+'appendB = '(
+	{	( 'l = @:0 )
+		( 'r = @:1 )
+		(	l ? [
+				( l:0, { ( l:* ) r }:appendB )
+				r
+			]
+		)
+	}:$
+);
+[ [ 1 2 ] [ 3 4 ] ]:appendB;
+
+'reverse2 = '(
+	@ ? [
+		( { ( @:*:reverse2 ) ( @:0, [] ) }:append )
+		@
+	]
+);
+[]:reverse2;
+[ a ]:reverse2;
+[ a b ]:reverse2;
+[ a b c ]:reverse2;
+[ a b c d ]:reverse2;
+
+'hanoi = '{
+	( 'n	= @:0 )
+	( 'from	= @:1 )
+	( 'to	= @:2 )
+	( 'via	= @:3 )
+	( n == 1 ? [
+		( { "From:" from " To:" to }:¦ )
+		{	( { ( n - 1 ) from via to }:hanoi )
+			( { "From:" from " To:" to }:¦ )
+			( { ( n - 1 ) via to from }:hanoi )
+		}
+	] )
+};
+[ 3 a b c ]:hanoi;
+
+'hanoi2 = '(
+	@:0 == 1 ? [
+		{ (@:1) (@:2) }
+		{	( { ( @:0 - 1 ) (@:1) (@:3) (@:2) }:hanoi2 )
+			{ (@:1) (@:2) }
+			( { ( @:0 - 1 ) (@:3) (@:2) (@:1) }:hanoi2 )
+		}
+	]
+);
+[ 3 a b c ]:hanoi2;
+
+'forX = '(
+	@:0 ¿ '(
+		@:0:0:(@:1)
+	,	{ ( @:0:* ) (@:1) }:forX
+	)
+);
+[ [ a b c ] ( @:¦ ) ]:forX;
+
+'remove = '(
+	@:0 ?
+	[	(	@:0:0 == @:1 ?
+			[	( @:0:* )
+				( @:0:0, { ( @:0:* ) ( @:1 ) }:remove )
+			]
+		)
+		( @:0 )
+	]
+);
+[ [ a b c ] b ]:remove;
+
+'komachi = '( {
+	( @:# <> 3 ¿ '(!) )
+	( 'candidate = @:0 )
+	( 'currentValue = @:1 )
+	( 'callback = @:2 )
+	(	candidate ?
+		[	(	{	candidate
+					'(	{	(	{	candidate
+									@
+								}:remove
+							)
+							( currentValue × 10 + @ )
+							callback
+						}:komachi
+					)
+				}:for
+			)
+			( currentValue:callback )
+		]
+	)
+	[]
+}:$ );
+
+[ [ 1 2 3 ] 0 ¦ ]:komachi;
+[ [ 1 2 3 4 5 6 7 8 9 ] 0 ( ( @ % 10000 × 2 == ( @ / 10000 ) ) ¿ '(@:¦) ) ]:komachi;
+
+
+'TwoOrMore = '( @:# < 2 ? [ 0 ( @:# == 2 ? [ 1 2 ] ) ] );
+
+
+
+'Add = '( @:¦:0 + @:1 );
+[ 1 2 ]:Add;
+'reduce = '(
+	[	!
+		( { (@:0:0) (@:0:1) }:(@:1) )
+		( { (@:0:0) ( { (@:0:*) (@:1) }:reduce ) }:(@:1) )
+	]:(@:0:TwoElements):eval
+);
+[ [ 1 ]( @:Add ) ]:reduce;
+[ [ 1 2 ]( @:Add ) ]:reduce;
+[ [ 1 2 3 ]( @:Add ) ]:reduce;
+
+
+'member = '(
+	@:1:# == 0 ? [
+		[]
+		(	@:0 == @:1:0 ?
+			[	( @:0 )
+				( { (@:0) (@:1:*) }:member )
+			]
+		)
+	]
+);
+[ a [ a b c ] ]:member;
+[ b [ a b c ] ]:member;
+[ c [ a b c ] ]:member;
+[ d [ a b c ] ]:member;
+[ d [] ]:member;
+
+'Graph = {
+	( 'a = [ b c ] )
+	( 'b = [ a c d ] )
+	( 'c = [ a b e ] )
+	( 'd = [ b e f ] )
+	( 'e = [ c d g ] )
+	( 'f = [ d ] )
+	( 'g = [ e ] )
+	·
+}:$;
+Graph;
+
+'search = '{
+	( 'goal = @:0 )	//	[ g ]
+	( 'path = @:1 )	//	[ a ]
+	(	dolist
+		(	node
+			(	get
+				( car path )
+				'adjacent
+			)
+		)
+		(	goal == node ?
+			[	( print ( reverse ( cons node path ) ) )
+			( unless
+				( member node path )
+				( search goal ( cons node path ) )
+			)
+		)
+	)
+}

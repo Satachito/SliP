@@ -4,6 +4,8 @@ import	"fmt"
 
 import	"bufio"
 import	"os"
+import	"io"
+import	"log"
 
 type
 Object		interface {
@@ -356,8 +358,9 @@ var	Not			= &Builtin{ "~", not }
 
 func
 init() {
-	sAssocList.u.u[ "print"		] = &Builtin{ "print", Print }
-	sAssocList.u.u[ "println"	] = &Builtin{ "println", Println }
+	sAssocList.u.u[ "print"     ] = &Builtin{ "print", func( p Object ) Object { fmt.Printf( "%v", p ); return p } } 
+	sAssocList.u.u[ "println"   ] = &Builtin{ "println", func( p Object ) Object { fmt.Printf( "%v\n", p ); return p } } 
+
 	sAssocList.u.u[ "car"		] = &Builtin{ "car", car }
 	sAssocList.u.u[ "cdr"		] = &Builtin{ "cdr", cdr }
 	sAssocList.u.u[ "fi"		] = Fi
@@ -383,27 +386,18 @@ init() {
 	sAssocList.u.u[ "eq"		] = &Builtin{ "==", func( p Object ) Object { return binaryFunc( p, eq ) } }
 }
 
-func
-body( r *bufio.Reader ) {
-	for {
-		Println( Read( r ).Eval() )
-//		Println( Println( Read( r ) ).Eval() )
-	}
-}
 
 func
 main() {
-/*
 	defer func() {
 		r := recover();
 		switch t := r.(type) {
 		case error:
 			if t != io.EOF { log.Printf( "ERROR: %T:%v\n", t, t ) }
 		default:
-			log.Printf( "OTHER: %v\n", t )
+			log.Printf( "%v\n", t )
 		}
 	}()
-*/
-	body( bufio.NewReader( os.Stdin ) )
+	for { fmt.Printf( "%v\n", Read( bufio.NewReader( os.Stdin ) ).Eval() ) }
 }
 
