@@ -3,25 +3,12 @@
 import Foundation
 
 enum
-Error	:	ErrorType {
-	case	StackUnderflow
-	case	NumberFormat
-	case	SyntaxError
-	case	UnexpectedClosing
-	case	UndefinedName
-	case	NoOperatorInSentence
-	case	NoObjectToQuote
-	case	NoObjectToCombine
-	case	UserException
-	case	ListOperationToNonList
-	case	MapOperationToNonMap
-	case	IndexOutOfRange
-	case	CannotApply
-	case	NotNumeric
-	case	AssignToNonName
-	case	IfElseToNonLiteral
-	case	EOD
+Error				:	ErrorType {
+	case				ReadError( String )
+	case				RuntimeError( String )
+	case				UserException
 }
+
 
 class
 Object				:	NSObject {
@@ -70,8 +57,7 @@ Name				:	Object {
 			if let v = w.car[ u ] { return v }
 			wAL = w.cdr
 		}
-print( "UndefinedName:\(u)" )
-		throw Error.UndefinedName
+		throw Error.RuntimeError( "UndefinedName \(u)" )
 	}
 }
 
@@ -206,21 +192,22 @@ List				:	Object {
 //	func
 //	_EvalSentence( p: [ Object ] ) throws -> Object {
 		switch p.count {
-		case 0, 2	:	throw Error.SyntaxError
-		case 1		:	return try p[ 0 ].Eval()
-		default		:	break
+		case  0:	return Nil
+		case  1:	return try p[ 0 ].Eval()
+		case  2:	throw Error.RuntimeError( "No operator in \(List( p, .Sentence ))" )
+		default:	break
 		}
 		var wTarget :	Operator?
 		var wIndex  =	0
-		for ( i, w ) in p.enumerate() {
-			if let t = w as? Operator {
+		for i in 1 ..< p.count - 1 {
+			if let w = p[ i ] as? Operator {
 				if let wCurrent = wTarget {
-					if t.bond >= wCurrent.bond {
-						wTarget = t
+					if w.bond >= wCurrent.bond {
+						wTarget = w
 						wIndex = i
 					}
 				} else {
-					wTarget = t
+					wTarget = w
 					wIndex = i
 				}
 			}
@@ -228,8 +215,7 @@ List				:	Object {
 		if let w = wTarget {
 			return try w.u( EvalSentence( Array( p[ 0 ..< wIndex ] ) ), EvalSentence( Array( p[ wIndex+1 ..< p.count ] ) ) )
 		} else {
-print( p )
-			throw Error.NoOperatorInSentence
+			throw Error.RuntimeError( "No operator in \(List( p, .Sentence ))" )
 		}
 	}
 	enum
@@ -279,7 +265,7 @@ print( p )
 			}
 			dispatch_group_wait( wG, DISPATCH_TIME_FOREVER )
 			for w in u {
-				if w == sObject { throw Error.SyntaxError }	//	UC
+				if w == sObject { throw Error.RuntimeError( "Parallel" ) }	//	UC
 			}
 			return List( v, .Literal )
 		case .Block:
@@ -325,11 +311,11 @@ ReadNumber( p: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
 			wFloatF = true
 		default:
 			p.Unread( c )
-			if wFloatF	{ if let w = Float64( v ) { return Float( neg ? -w : w ) } else { throw Error.NumberFormat } }
-			else		{ if let w = Int( v ) { return Integer( neg ? -w : w ) } else { throw Error.NumberFormat } }
+			if wFloatF	{ if let w = Float64( v ) { return Float( neg ? -w : w ) } else { throw Error.ReadError( "NumberFormat\(v)" ) } }
+			else		{ if let w = Int( v ) { return Integer( neg ? -w : w ) } else { throw Error.ReadError( "NumberFormat\(v)" ) } }
 		}
 	}
-	throw Error.EOD
+	throw Error.ReadError( "EOD" )
 }
 
 func
@@ -344,7 +330,7 @@ ReadName( p: Reader< UnicodeScalar > ) throws -> Object {
 			return Name( v )
 		}
 	}
-	throw Error.EOD
+	throw Error.ReadError( "EOD" )
 }
 
 func
@@ -363,7 +349,7 @@ ReadStr( p: Reader< UnicodeScalar > ) throws -> Str {
 			}
 		}
 	}
-	throw Error.EOD
+	throw Error.ReadError( "EOD" )
 }
 
 func
@@ -382,7 +368,7 @@ Nil	=	List( [], .Literal )
 let
 StackTop = Primitive(
 	{	if let v = sStack { return v.car }
-		throw Error.StackUnderflow
+		throw Error.RuntimeError( "StackUnderflow" )
 	}
 )
 
@@ -396,7 +382,7 @@ let
 Cdr = Builtin(
 	{	p in
 		if let w = p as? List where w.u.count > 0 { return List( Array( w.u.dropFirst() ), w.type ) }
-		throw Error.ListOperationToNonList
+		throw Error.RuntimeError( "\(p):*" )
 	}
 )
 
@@ -404,7 +390,7 @@ let
 Count = Builtin(
 	{	p in
 		if let w = p as? List { return Integer( w.u.count ) }
-		throw Error.ListOperationToNonList
+		throw Error.RuntimeError( "\(p):#" )
 	}
 )
 
@@ -412,7 +398,7 @@ let
 Last = Builtin(
 	{	p in
 		if let w = p as? List where w.u.count > 0 { return w.u.last! }
-		throw Error.ListOperationToNonList
+		throw Error.RuntimeError( "\(p):$" )
 	}
 )
 
@@ -437,7 +423,7 @@ IfElse = Operator(
 		if let w = r as? List where w.type == .Literal && w.u.count == 2 {
 			return try NilSliP( l ) ? w.u[ 1 ].Eval() : w.u[ 0 ].Eval()
 		}
-		throw Error.IfElseToNonLiteral
+		throw Error.RuntimeError( "\(l) ? \(r)" )
 	}
 ,	9
 )
@@ -450,7 +436,7 @@ Cons = Operator(
 			wU.insert( l, atIndex: 0 )
 			return List( wU, w.type )
 		}
-		throw Error.ListOperationToNonList
+		throw Error.RuntimeError( "\(l) , \(r)" )
 	}
 ,	7
 )
@@ -462,15 +448,15 @@ Apply = Operator(
 		case let w as Integer:
 			let	wR = w.u
 			if let wL = l as? List {
-				if wL.u.count > wR { return wL.u[ wR ] } else { throw Error.IndexOutOfRange }
+				if wL.u.count > wR { return wL.u[ wR ] } else { throw Error.RuntimeError( "Index operation \(w) to \(l)" ) }
 			}
-			throw Error.ListOperationToNonList
+			throw Error.RuntimeError( "Index operation \(w) to \(l)" )
 		case let w as Name:
 			let	wR = w.u
 			if let wL = l as? Map {
 				return wL.u[ w.u ] ?? Nil
 			}
-			throw Error.MapOperationToNonMap
+			throw Error.RuntimeError( "Map operation \(w) to \(l)" )
 		case let w as Builtin:
 			return try w.u( l )
 		case let w as List:
@@ -482,7 +468,7 @@ Apply = Operator(
 			defer{ Pop() }
 			return try w.Eval()
 		default:
-			throw Error.CannotApply
+			throw Error.RuntimeError( "\(l) : \(r)" )
 		}
 	}
 ,	0
@@ -520,7 +506,7 @@ Mul = Operator(
 	{	l, r in
 		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u * wR.u ) }
 		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() * wR.Value() ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) × \(r)" )
 	}
 ,	5
 )
@@ -529,7 +515,7 @@ let
 Div = Operator(
 	{	l, r in
 		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() / wR.Value() ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) ÷ \(r)" )
 	}
 ,	5
 )
@@ -538,7 +524,7 @@ let
 IDiv = Operator(
 	{	l, r in
 		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u / wR.u ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) / \(r)" )
 	}
 ,	5
 )
@@ -547,7 +533,7 @@ let
 Remainder = Operator(
 	{	l, r in
 		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u % wR.u ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) % \(r)" )
 	}
 ,	5
 )
@@ -559,7 +545,7 @@ Add = Operator(
 		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() + wR.Value() ) }
 		if let wL = l as? Str, let wR = r as? Str { return Str( wL.u + wR.u ) }
 		if let wL = l as? List, let wR = r as? List where wL.type == wR.type { return List( wL.u + wR.u, wL.type ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) + \(r)" )
 	}
 ,	6
 )
@@ -569,7 +555,7 @@ Minus = Operator(
 	{	l, r in
 		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u - wR.u ) }
 		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() - wR.Value() ) }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) - \(r)" )
 	}
 ,	6
 )
@@ -589,7 +575,7 @@ let
 GE = Operator(
 	{	l, r in
 		if let wL = l as? Number, let wR = r as? Number { return wL.Value() >= wR.Value() ? T : Nil }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) >= \(r)" )
 	}
 ,	8
 )
@@ -598,7 +584,7 @@ let
 LE = Operator(
 	{	l, r in
 		if let wL = l as? Number, let wR = r as? Number { return wL.Value() <= wR.Value() ? T : Nil }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) <= \(r)" )
 	}
 ,	8
 )
@@ -610,7 +596,7 @@ Define = Operator(
 			sDicts.car[ w.u ] = r
 			return l
 		}
-		throw Error.AssignToNonName
+		throw Error.RuntimeError( "\(l) = \(r)" )
 	}
 ,	10
 )
@@ -629,7 +615,7 @@ let
 LT = Operator(
 	{	l, r in
 		if let wL = l as? Number, let wR = r as? Number { return wL.Value() < wR.Value() ? T : Nil }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) < \(r)" )
 	}
 ,	8
 )
@@ -638,7 +624,7 @@ let
 GT = Operator(
 	{	l, r in
 		if let wL = l as? Number, let wR = r as? Number { return wL.Value() > wR.Value() ? T : Nil }
-		throw Error.NotNumeric
+		throw Error.RuntimeError( "\(l) > \(r)" )
 	}
 ,	8
 )
@@ -649,14 +635,14 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 	if let c = pReader.Read() {
 		switch c {
 		case terminator			:	return nil
-		case "}", "]", ")"		:	throw Error.UnexpectedClosing
+		case "}", "]", ")"		:	throw Error.ReadError( "Unexpected \(c)" )
 		case "["				:	return List( try ReadObjects( pReader, "]" as UnicodeScalar ), .Literal )
 		case "«"				:	return List( try ReadObjects( pReader, "»" as UnicodeScalar ), .Parallel )
 		case "("				:	return List( try ReadObjects( pReader, ")" as UnicodeScalar ), .Sentence )
 		case "{"				:	return List( try ReadObjects( pReader, "}" as UnicodeScalar ), .Block )
 		case "\""				:	return try ReadStr( pReader )
-		case "'"				:	if let w = try Read( pReader ) { return Quote( w ) }; throw Error.NoObjectToQuote
-		case "`"				:	if let w = try Read( pReader ) { return Combiner( w ) }; throw Error.NoObjectToCombine
+		case "'"				:	if let w = try Read( pReader ) { return Quote( w ) }; throw Error.ReadError( "No object to quote" )
+		case "`"				:	if let w = try Read( pReader ) { return Combiner( w ) }; throw Error.ReadError( "No object to combine" )
 		case "!"				:	return Exception
 		case "@"				:	return StackTop
 		case "·"				:	return CurrentContext
@@ -684,7 +670,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 				default			:	return Add
 				}
 			}
-			throw Error.EOD
+			throw Error.ReadError( "EOD" )
 		case "-"				:
 			if let w = pReader.Read() {
 				pReader.Unread( w )
@@ -694,7 +680,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 				default			:	return Minus
 				}
 			}
-			throw Error.EOD
+			throw Error.ReadError( "EOD" )
 		case "="			:
 			if let w = pReader.Read() {
 				switch w {
@@ -705,7 +691,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 									return Define
 				}
 			}
-			throw Error.EOD
+			throw Error.ReadError( "EOD" )
 		case "<"				:
 			if let w = pReader.Read() {
 				switch w {
@@ -715,7 +701,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 									return LT
 				}
 			}
-			throw Error.EOD
+			throw Error.ReadError( "EOD" )
 		case ">"				:
 			if let w = pReader.Read() {
 				switch w {
@@ -725,13 +711,13 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 									return GT
 				}
 			}
-			throw Error.EOD
+			throw Error.ReadError( "EOD" )
 		case ( "0"..."9" )		:	pReader.Unread( c )
 									return try ReadNumber( pReader )
 		case ( "a"..."z" ), ( "A"..."Z" ), "_":
 									pReader.Unread( c )
 									return try ReadName( pReader )
-		default					:	throw Error.SyntaxError
+		default					:	throw Error.ReadError( "Invalid character \(c)" )
 		}
 	}
 	return nil
@@ -759,16 +745,15 @@ print( "Eval:", p, "->", v )
 					}
 					return List( v, wList.type )
 				} else {
-					throw Error.ListOperationToNonList
+					throw Error.RuntimeError( "\(p):for" )
 				}
 			} else {
-				throw Error.ListOperationToNonList
+				throw Error.RuntimeError( "\(p):for" )
 			}
 		}
 	)
 	sDicts.car[ "TwoElements" ] = Builtin(
 		{	p in
-print( "TwoElements:", p )
 			if let w = p as? List {
 				switch w.u.count {
 				case 0, 1	:	return Integer( 0 )
@@ -776,7 +761,7 @@ print( "TwoElements:", p )
 				default		:	return Integer( 2 )
 				}
 			} else {
-				throw Error.ListOperationToNonList
+				throw Error.RuntimeError( "\(p):TwoElements" )
 			}
 		}
 	)

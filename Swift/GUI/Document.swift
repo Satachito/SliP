@@ -51,6 +51,7 @@ Document	:	NSDocument {
 
 	func
 	Do() {
+		SetupBuiltin()
 		let	wPP	=	PreProcessor( u )
 		while true {
 			do {
