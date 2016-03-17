@@ -57,6 +57,10 @@ Number				:	Object {
 	func
 	Value()			->	Float64 { assert( false ); return 0 }
 }
+func ==( l: Number, r: Number ) -> Bool {
+	return l.Value() == r.Value()
+}
+
 
 class
 Integer				:	Number {
@@ -551,14 +555,23 @@ Minus = Operator(
 ,	6
 )
 
+func
+Equal( l: Object, _ r: Object ) -> Object {
+	if let wL = l as? Number, let wR = r as? Number { return wL.Value() == wR.Value() ? T : Nil }
+	if let wL = l as? Str, let wR = r as? Str { return wL.u == wR.u ? T : Nil }
+	if let wL = l as? Name, let wR = r as? Name { return wL.u == wR.u ? T : Nil }
+	if let wL = l as? List, let wR = r as? List {
+		if wL.type != wR.type { return Nil }
+		if wL.u.count != wR.u.count { return Nil }
+		for i in 0 ..< wL.u.count { if Equal( wL.u[ i ], wR.u[ i ] ) == Nil { return Nil } }
+		return T
+	}
+	return l == r ? T : Nil
+}
+
 let
 Eq = Operator(
-	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() == wR.Value() ? T : Nil }
-		if let wL = l as? Str, let wR = r as? Str { return wL.u == wR.u ? T : Nil }
-		if let wL = l as? Name, let wR = r as? Name { return wL.u == wR.u ? T : Nil }
-		return l == r ? T : Nil
-	}
+	{ l, r in Equal( l, r ) }
 ,	8
 )
 
@@ -620,6 +633,25 @@ GT = Operator(
 ,	8
 )
 
+let
+Contains = Operator(
+	{	l, r in
+		if let wR = r as? List {
+			return wR.u.contains( l ) ? T : Nil
+		}
+		throw Error.RuntimeError( "\(l) ∈ \(r)" )
+	}
+,	8
+)
+let
+ContainsR = Operator(
+	{	l, r in
+		if let wL = l as? List { return wL.u.contains( r ) ? T : Nil }
+		throw Error.RuntimeError( "\(l) ∋ \(r)" )
+	}
+,	8
+)
+
 func
 Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
 	SkipWhite( pReader )
@@ -641,6 +673,8 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 		case "#"				:	return Count
 		case "$"				:	return Last
 		case "¦"				:	return Print
+		case "∈"				:	return Contains
+		case "∋"				:	return ContainsR
 		case "?"				:	return IfElse
 		case "¿"				:	return If
 		case ","				:	return Cons

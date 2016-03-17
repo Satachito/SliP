@@ -239,22 +239,15 @@ dat:'c;
 [ [ 1 2 3 4 5 6 7 8 9 ] 0 ( ( @ % 10000 × 2 == ( @ / 10000 ) ) ¿ '(@:¦) ) ]:komachi;
 
 
-'TwoOrMore = '( @:# < 2 ? [ 0 ( @:# == 2 ? [ 1 2 ] ) ] );
-
-
-
-'Add = '( @:¦:0 + @:1 );
-[ 1 2 ]:Add;
 'reduce = '(
-	[	!
-		( { (@:0:0) (@:0:1) }:(@:1) )
-		( { (@:0:0) ( { (@:0:*) (@:1) }:reduce ) }:(@:1) )
-	]:(@:0:TwoElements):eval
+	@:0:# == 1 ? [
+		(@:0:0)
+		( { (@:0:0) ( { (@:0:*) (@:1) }:reduceX ) }:(@:1) )
+	]
 );
-[ [ 1 ]( @:Add ) ]:reduce;
-[ [ 1 2 ]( @:Add ) ]:reduce;
-[ [ 1 2 3 ]( @:Add ) ]:reduce;
-
+[ [ 1 ]( @:0 + @:1 ) ]:reduce;
+[ [ 1 2 ]( @:0 + @:1 ) ]:reduce;
+[ [ 1 2 3 ]( @:0 + @:1 ) ]:reduce;
 
 'member = '(
 	@:1:# == 0 ? [
@@ -284,22 +277,25 @@ dat:'c;
 }:$;
 Graph;
 
-'search = '{
-	( 'goal = @:0 )	//	[ g ]
-	( 'path = @:1 )	//	[ a ]
-	(	dolist
-		(	node
-			(	get
-				( car path )
-				'adjacent
-			)
+'searchSub = '(
+	@:0:# ? [
+		(	{ ( @:0:0 ) (@:2) }:member ? [
+				( { @:0:*) (@:1) (@:2) }:searchSub )
+				( ( { Graph:(@:0:0) (@:1) (@:2) }:searchSub ) + ( { @:0:*) (@:1) (@:2) }:searchSub ) )
+			]
 		)
-		(	goal == node ?
-			[	( print ( reverse ( cons node path ) ) )
-			( unless
-				( member node path )
-				( search goal ( cons node path ) )
-			)
-		)
+		[]
+	]
+);
+
+'search = '(
+	{ (@:1) (@:0:0) }:member
+	(	'p		= @:0 )	//	[ b c ]
+	(	'to		= @:1 )	//	g
+	(	'path	= @:2 )	//	[ a ]
+	(	{ to p }:member ?
+		[	( ( to, path ), [] )
+
+
 	)
 }
