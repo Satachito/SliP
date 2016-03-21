@@ -55,7 +55,7 @@ Name				:	Object {
 class
 Number				:	Object {
 	func
-	Value()			->	Float64 { assert( false ); return 0 }
+	Value()			->	Float64 { fatalError() }
 }
 func ==( l: Number, r: Number ) -> Bool {
 	return l.Value() == r.Value()
