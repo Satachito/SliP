@@ -9,31 +9,31 @@ Error				:	ErrorType {
 	case				UserException
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Object				:	NSObject {
 	func
 	Eval() throws -> Object { return self }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var
 sStack				:	Cell< Object >?
 func
 Push( p: Object ) {
-//print( "Push:", p )
 	sStack = Cell( p, sStack )
 }
 
 func
 Pop() {
-//print( "Pop:", sStack!.u )
 	sStack = sStack!.next
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var
 sDicts				=	Cell< [ String: Object ] >( [ String: Object ]() )
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Name				:	Object {
 	let
@@ -52,18 +52,15 @@ Name				:	Object {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-Number				:	Object {
+NumberL				:	Object {
 	func
 	Value()			->	Float64 { fatalError() }
 }
-func ==( l: Number, r: Number ) -> Bool {
-	return l.Value() == r.Value()
-}
-
 
 class
-Integer				:	Number {
+IntNumber			:	NumberL {
 	let
 	u				:	Int
 	init(	_ p		:	Int ) { u = p }
@@ -72,20 +69,23 @@ Integer				:	Number {
 	override func
 	Value()			->	Float64 { return Float64( u ) }
 }
-
 class
-Float				:	Number {
+RealNumber			:	NumberL {
 	let
 	u				:	Float64
 	init(	_ p		:	Float64 ) { u = p }
 	override var
 	description		:	String { return "\(u)" }
 	override func
-	Value()			->	Float64 { return u }
+	Value()			->	Float64 { return u
+	
+	
+	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-Str					:	Object {
+StringL				:	Object {
 	let
 	u				:	String
 	init(	_ p		:	String ) { u = p }
@@ -93,6 +93,7 @@ Str					:	Object {
 	description	:	String { return "\"\(u)\"" }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Primitive			:	Object {
 	var
@@ -104,6 +105,7 @@ Primitive			:	Object {
 	Eval() throws	->	Object { return try u() }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Builtin				:	Object {
 	var
@@ -113,6 +115,7 @@ Builtin				:	Object {
 	description		:	String { return "B" }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Operator			:	Object {
 	var
@@ -124,6 +127,7 @@ Operator			:	Object {
 	description		:	String { return ":\(bond)" }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Quote				:	Object {
 	let
@@ -135,6 +139,7 @@ Quote				:	Object {
 	Eval() throws	->	Object { return u }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Combiner			:	Object {
 	let
@@ -146,25 +151,27 @@ Combiner			:	Object {
 	Eval() throws	->	Object { return EvalAssoc( u, sDicts.u ) }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 EvalAssoc			:	Object {
 	let
 	u				:	Object
 	let
-	map				:	[ String: Object ]
-	init(	_ p		:	Object, _ pMap: [ String: Object ] ) { u = p; map = pMap }
+	Dict				:	[ String: Object ]
+	init(	_ p		:	Object, _ pDict: [ String: Object ] ) { u = p; Dict = pDict }
 	override var
-	description		:	String { return "<\(map):\(u)>" }
+	description		:	String { return "<\(Dict):\(u)>" }
 	override func
 	Eval() throws	->	Object {
-		sDicts = Cell< [ String: Object ] >( map, sDicts )
+		sDicts = Cell< [ String: Object ] >( Dict, sDicts )
 		defer{ sDicts = sDicts.next! }
 		return try u.Eval()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-Map					:	Object {
+Dict					:	Object {
 	let
 	u				:	[ String: Object ]
 	init(	_ p		:	[ String: Object ] ) { u = p }
@@ -172,6 +179,7 @@ Map					:	Object {
 	description		:	String { return "'\(u)" }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var
 sObject = Object()
 
@@ -249,6 +257,7 @@ List				:	Object {
 			var	v = [ Object ]( count: u.count, repeatedValue: sObject )
 			let	wG = dispatch_group_create()
 			let	wQ = dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 )
+			
 			for ( i, w ) in u.enumerate() {
 				dispatch_group_async( wG, wQ ) {
 					do {
@@ -275,87 +284,15 @@ List				:	Object {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 func
-NilSliP( p: Object )->	Bool {
+IsNil( p: Object )	->	Bool {
 	if let w = p as? List { return w.u.count == 0 }
 	return false
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-func
-SkipWhite( p: Reader< UnicodeScalar > ) {
-	while let w = p.Read() {
-		if w.value >= 0x10000 || !NSCharacterSet.whitespaceAndNewlineCharacterSet().characterIsMember( UInt16( w.value ) ) {
-			p.Unread( w )
-			break
-		}
-	}
-}
-
-
-func
-ReadNumber( p: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
- 	var	v = ""
-	var	wFloatF = false
-	while let c = p.Read() {
-		switch c {
-		case	( "0"..."9" ), "x", "X", "+", "-":
-			v += String( c )
-		case	".", "e", "E":
-			v += String( c )
-			wFloatF = true
-		default:
-			p.Unread( c )
-			if wFloatF	{ if let w = Float64( v ) { return Float( neg ? -w : w ) } else { throw Error.ReadError( "NumberFormat\(v)" ) } }
-			else		{ if let w = Int( v ) { return Integer( neg ? -w : w ) } else { throw Error.ReadError( "NumberFormat\(v)" ) } }
-		}
-	}
-	throw Error.ReadError( "EOD" )
-}
-
-func
-ReadName( p: Reader< UnicodeScalar > ) throws -> Object {
-	var	v = ""
-	while let c = p.Read() {
-		switch c {
-		case ( "0" ... "9" ), ( "a" ... "z" ), ( "A" ... "Z" ), "_":
-			v += String( c )
-		default:
-			p.Unread( c )
-			return Name( v )
-		}
-	}
-	throw Error.ReadError( "EOD" )
-}
-
-func
-ReadStr( p: Reader< UnicodeScalar > ) throws -> Str {
-	var	v = ""
-	var	wEscaped = false
-	while let c = p.Read() {
-		if wEscaped {
-			wEscaped = false
-			v.append( Character( c ) )
-		} else {
-			switch c {
-			case "\""	:	return Str( v )
-			case "\\"	:	wEscaped = true
-			default		:	v += String( c )
-			}
-		}
-	}
-	throw Error.ReadError( "EOD" )
-}
-
-func
-ReadObjects( p: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
-	var	v = [ Object ]()
-	while let w = try Read( p, terminator ) { v.append( w ) }
-	return v
-}
 
 let
-T	=	Str( "T" )
+T	=	StringL( "T" )
 
 let
 Nil	=	List( [], .Literal )
@@ -368,13 +305,13 @@ StackTop = Primitive(
 )
 
 let
-CurrentContext = Primitive( { return Map( sDicts.u ) } )
+CurrentContext = Primitive( { return Dict( sDicts.u ) } )
 
 let
 Exception = Primitive( { throw Error.UserException } )
 
 let
-next = Builtin(
+Cdr = Builtin(
 	{	p in
 		if let w = p as? List where w.u.count > 0 { return List( Array( w.u.dropFirst() ), w.type ) }
 		throw Error.RuntimeError( "\(p):*" )
@@ -384,7 +321,7 @@ next = Builtin(
 let
 Count = Builtin(
 	{	p in
-		if let w = p as? List { return Integer( w.u.count ) }
+		if let w = p as? List { return IntNumber( w.u.count ) }
 		throw Error.RuntimeError( "\(p):#" )
 	}
 )
@@ -407,7 +344,7 @@ Print = Builtin(
 let
 If = Operator(
 	{	l, r in
-		return try NilSliP( l ) ? Nil : r.Eval()
+		return try IsNil( l ) ? Nil : r.Eval()
 	}
 ,	9
 )
@@ -416,7 +353,7 @@ let
 IfElse = Operator(
 	{	l, r in
 		if let w = r as? List where w.type == .Literal && w.u.count == 2 {
-			return try NilSliP( l ) ? w.u[ 1 ].Eval() : w.u[ 0 ].Eval()
+			return try IsNil( l ) ? w.u[ 1 ].Eval() : w.u[ 0 ].Eval()
 		}
 		throw Error.RuntimeError( "\(l) ? \(r)" )
 	}
@@ -440,18 +377,17 @@ let
 Apply = Operator(
 	{	l, r in
 		switch r {
-		case let w as Integer:
-			let	wR = w.u
+		case let w as IntNumber:
 			if let wL = l as? List {
-				if wL.u.count > wR { return wL.u[ wR ] } else { throw Error.RuntimeError( "Index operation \(w) to \(l)" ) }
+				if w.u < wL.u.count { return wL.u[ w.u ] } else { throw Error.RuntimeError( "Index operation \(w) to \(l)" ) }
 			}
 			throw Error.RuntimeError( "Index operation \(w) to \(l)" )
 		case let w as Name:
 			let	wR = w.u
-			if let wL = l as? Map {
+			if let wL = l as? Dict {
 				return wL.u[ w.u ] ?? Nil
 			}
-			throw Error.RuntimeError( "Map operation \(w) to \(l)" )
+			throw Error.RuntimeError( "Dict operation \(w) to \(l)" )
 		case let w as Builtin:
 			return try w.u( l )
 		case let w as List:
@@ -472,8 +408,8 @@ Apply = Operator(
 let
 And = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u & wR.u ) }
-		return NilSliP( l ) && NilSliP( r ) ? T : Nil
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u & wR.u ) }
+		return IsNil( l ) && IsNil( r ) ? T : Nil
 	}
 ,	4
 )
@@ -481,8 +417,8 @@ And = Operator(
 let
 Xor = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u ^ wR.u ) }
-		return NilSliP( l ) != NilSliP( r ) ? T : Nil
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u ^ wR.u ) }
+		return IsNil( l ) != IsNil( r ) ? T : Nil
 	}
 ,	4
 )
@@ -490,8 +426,8 @@ Xor = Operator(
 let
 Or = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u | wR.u ) }
-		return NilSliP( l ) || NilSliP( r ) ? T : Nil
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u | wR.u ) }
+		return IsNil( l ) || IsNil( r ) ? T : Nil
 	}
 ,	4
 )
@@ -499,8 +435,8 @@ Or = Operator(
 let
 Mul = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u * wR.u ) }
-		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() * wR.Value() ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u * wR.u ) }
+		if let wL = l as? NumberL,	let wR = r as? NumberL { return RealNumber( wL.Value() * wR.Value() ) }
 		throw Error.RuntimeError( "\(l) × \(r)" )
 	}
 ,	5
@@ -509,7 +445,16 @@ Mul = Operator(
 let
 Div = Operator(
 	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() / wR.Value() ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber {
+			if wR.u != 0 {
+				return wL.u % wR.u == 0 ? IntNumber( wL.u + wR.u ) : RealNumber( wL.Value() / wR.Value() )
+			}
+		} else if let wL = l as? NumberL, let wR = r as? NumberL {
+			let wRv = wR.Value()
+			if wRv != 0 {
+				return RealNumber( wL.Value() / wRv )
+			}
+		}
 		throw Error.RuntimeError( "\(l) ÷ \(r)" )
 	}
 ,	5
@@ -518,7 +463,7 @@ Div = Operator(
 let
 IDiv = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u / wR.u ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u / wR.u ) }
 		throw Error.RuntimeError( "\(l) / \(r)" )
 	}
 ,	5
@@ -527,7 +472,7 @@ IDiv = Operator(
 let
 Remainder = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u % wR.u ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u % wR.u ) }
 		throw Error.RuntimeError( "\(l) % \(r)" )
 	}
 ,	5
@@ -536,9 +481,9 @@ Remainder = Operator(
 let
 Add = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u + wR.u ) }
-		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() + wR.Value() ) }
-		if let wL = l as? Str, let wR = r as? Str { return Str( wL.u + wR.u ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u + wR.u ) }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() + wR.Value() ) }
+		if let wL = l as? StringL, let wR = r as? StringL { return StringL( wL.u + wR.u ) }
 		if let wL = l as? List, let wR = r as? List where wL.type == wR.type { return List( wL.u + wR.u, wL.type ) }
 		throw Error.RuntimeError( "\(l) + \(r)" )
 	}
@@ -548,37 +493,38 @@ Add = Operator(
 let
 Minus = Operator(
 	{	l, r in
-		if let wL = l as? Integer, let wR = r as? Integer { return Integer( wL.u - wR.u ) }
-		if let wL = l as? Number, let wR = r as? Number { return Float( wL.Value() - wR.Value() ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u - wR.u ) }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() - wR.Value() ) }
 		throw Error.RuntimeError( "\(l) - \(r)" )
 	}
 ,	6
 )
 
 func
-Equal( l: Object, _ r: Object ) -> Object {
-	if let wL = l as? Number, let wR = r as? Number { return wL.Value() == wR.Value() ? T : Nil }
-	if let wL = l as? Str, let wR = r as? Str { return wL.u == wR.u ? T : Nil }
-	if let wL = l as? Name, let wR = r as? Name { return wL.u == wR.u ? T : Nil }
+Equal( l: Object, _ r: Object ) -> Bool {
+	if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() == wR.Value() }
+	if let wL = l as? StringL, let wR = r as? StringL { return wL.u == wR.u }
+	if let wL = l as? Name, let wR = r as? Name { return wL.u == wR.u }
 	if let wL = l as? List, let wR = r as? List {
-		if wL.type != wR.type { return Nil }
-		if wL.u.count != wR.u.count { return Nil }
-		for i in 0 ..< wL.u.count { if Equal( wL.u[ i ], wR.u[ i ] ) == Nil { return Nil } }
-		return T
+		if wL.type != wR.type { return false }
+		if wL.u.count != wR.u.count { return false }
+		for i in 0 ..< wL.u.count { if Equal( wL.u[ i ], wR.u[ i ] ) == Nil { return false } }
+		return true
 	}
-	return l == r ? T : Nil
+	return l == r
 }
 
 let
 Eq = Operator(
-	{ l, r in Equal( l, r ) }
+	{ l, r in Equal( l, r ) ? T : Nil }
 ,	8
 )
 
 let
 GE = Operator(
 	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() >= wR.Value() ? T : Nil }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u >= wR.u ? T : Nil }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() >= wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) >= \(r)" )
 	}
 ,	8
@@ -587,8 +533,35 @@ GE = Operator(
 let
 LE = Operator(
 	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() <= wR.Value() ? T : Nil }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u <= wR.u ? T : Nil }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() <= wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) <= \(r)" )
+	}
+,	8
+)
+
+let
+Neq = Operator(
+	{ l, r in Equal( l, r ) ? Nil : T }
+,	8
+)
+
+let
+LT = Operator(
+	{	l, r in
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u < wR.u ? T : Nil }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() < wR.Value() ? T : Nil }
+		throw Error.RuntimeError( "\(l) < \(r)" )
+	}
+,	8
+)
+
+let
+GT = Operator(
+	{	l, r in
+		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u > wR.u ? T : Nil }
+		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() > wR.Value() ? T : Nil }
+		throw Error.RuntimeError( "\(l) > \(r)" )
 	}
 ,	8
 )
@@ -606,34 +579,6 @@ Define = Operator(
 )
 
 let
-Neq = Operator(
-	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() != wR.Value() ? T : Nil }
-		if let wL = l as? Str, let wR = r as? Str { return wL.u != wR.u ? T : Nil }
-		return l != r ? T : Nil
-	}
-,	8
-)
-
-let
-LT = Operator(
-	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() < wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) < \(r)" )
-	}
-,	8
-)
-
-let
-GT = Operator(
-	{	l, r in
-		if let wL = l as? Number, let wR = r as? Number { return wL.Value() > wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) > \(r)" )
-	}
-,	8
-)
-
-let
 Contains = Operator(
 	{	l, r in
 		if let wR = r as? List {
@@ -643,6 +588,7 @@ Contains = Operator(
 	}
 ,	8
 )
+
 let
 ContainsR = Operator(
 	{	l, r in
@@ -651,6 +597,80 @@ ContainsR = Operator(
 	}
 ,	8
 )
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+func
+SkipWhite( p: Reader< UnicodeScalar > ) {
+	while let w = p.Read() {
+		if w.value >= 0x10000 || !NSCharacterSet.whitespaceAndNewlineCharacterSet().characterIsMember( UInt16( w.value ) ) {
+			p.Unread( w )
+			break
+		}
+	}
+}
+
+
+func
+ReadNumber( p: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
+ 	var	v = ""
+	var	wRealF = false
+	while let c = p.Read() {
+		switch c {
+		case	( "0"..."9" ), "x", "X", "+", "-":
+			v += String( c )
+		case	".", "e", "E":
+			v += String( c )
+			wRealF = true
+		default:
+			p.Unread( c )
+			if wRealF	{ if let w = Float64( v ) { return RealNumber( neg ? -w : w ) } }
+			else		{ if let w = Int( v ) { return IntNumber( neg ? -w : w ) } }
+			throw Error.ReadError( "NumberFormat\(v)" )
+		}
+	}
+	throw Error.ReadError( "EOD" )
+}
+
+func
+ReadName( p: Reader< UnicodeScalar > ) throws -> Object {
+	var	v = ""
+	while let c = p.Read() {
+		switch c {
+		case ( "0" ... "9" ), ( "a" ... "z" ), ( "A" ... "Z" ), "_":
+			v += String( c )
+		default:
+			p.Unread( c )
+			return Name( v )
+		}
+	}
+	throw Error.ReadError( "EOD" )
+}
+
+func
+ReadStr( p: Reader< UnicodeScalar > ) throws -> StringL {
+	var	v = ""
+	var	wEscaped = false
+	while let c = p.Read() {
+		if wEscaped {
+			wEscaped = false
+			v.append( Character( c ) )
+		} else {
+			switch c {
+			case "\""	:	return StringL( v )
+			case "\\"	:	wEscaped = true
+			default		:	v += String( c )
+			}
+		}
+	}
+	throw Error.ReadError( "EOD" )
+}
+
+func
+ReadObjects( p: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
+	var	v = [ Object ]()
+	while let w = try Read( p, terminator ) { v.append( w ) }
+	return v
+}
 
 func
 Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
@@ -669,7 +689,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 		case "!"				:	return Exception
 		case "@"				:	return StackTop
 		case "·"				:	return CurrentContext
-		case "*"				:	return next
+		case "*"				:	return Cdr
 		case "#"				:	return Count
 		case "$"				:	return Last
 		case "¦"				:	return Print
@@ -748,7 +768,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 	return nil
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 func
 SetupBuiltin() {
 	sDicts.u[ "eval" ] = Builtin(
@@ -781,14 +801,13 @@ print( "Eval:", p, "->", v )
 		{	p in
 			if let w = p as? List {
 				switch w.u.count {
-				case 0, 1	:	return Integer( 0 )
-				case 2		:	return Integer( 1 )
-				default		:	return Integer( 2 )
+				case 0, 1	:	return IntNumber( 0 )
+				case 2		:	return IntNumber( 1 )
+				default		:	return IntNumber( 2 )
 				}
 			} else {
 				throw Error.RuntimeError( "\(p):TwoElements" )
 			}
 		}
 	)
-	
 }
