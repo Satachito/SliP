@@ -11,27 +11,69 @@ Error				:	ErrorType {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
+Context {
+	var
+	stack				:	Cell< Object >?
+
+	func
+	Push( p: Object ) {
+		stack = Cell( p, stack )
+	}
+	func
+	Pop() {
+		stack = stack!.next
+	}
+
+	var
+	dicts				=	Cell< [ String: Object ] >( [ String: Object ]() )
+
+	init() {
+		dicts.u[ "for" ] = Builtin(
+			{	c, p in
+				if let wArgs = p as? List where wArgs.u.count >= 2 {
+					if let wList = wArgs.u[ 0 ] as? List {
+						var	v = [ Object ]()
+						for w in wList.u {
+							c.Push( w )
+							defer{ c.Pop() }
+							v.append( try wArgs.u[ 1 ].Eval( c ) )
+						}
+						return List( v, wList.type )
+					} else {
+						throw Error.RuntimeError( "\(p):for" )
+					}
+				} else {
+					throw Error.RuntimeError( "\(p):for" )
+				}
+			}
+		)
+		dicts.u[ "TwoElements" ] = Builtin(
+			{	c, p in
+				if let w = p as? List {
+					switch w.u.count {
+					case 0, 1	:	return IntNumber( 0 )
+					case 2		:	return IntNumber( 1 )
+					default		:	return IntNumber( 2 )
+					}
+				} else {
+					throw Error.RuntimeError( "\(p):TwoElements" )
+				}
+			}
+		)
+	}
+	
+	func
+	Print( p: Object ) {
+		fatalError()
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class
 Object				:	NSObject {
 	func
-	Eval() throws -> Object { return self }
+	Eval( p: Context ) throws -> Object { return self }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var
-sStack				:	Cell< Object >?
-func
-Push( p: Object ) {
-	sStack = Cell( p, sStack )
-}
-
-func
-Pop() {
-	sStack = sStack!.next
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var
-sDicts				=	Cell< [ String: Object ] >( [ String: Object ]() )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
@@ -42,8 +84,8 @@ Name				:	Object {
 	override var
 	description 	:	String { return u }
 	override func
-	Eval()	throws	->	Object {
-		var	wAL = sDicts as Cell< [ String: Object ] >?
+	Eval( p: Context )	throws	->	Object {
+		var	wAL = p.dicts as Cell< [ String: Object ] >?
 		while let w = wAL {
 			if let v = w.u[ u ] { return v }
 			wAL = w.next
@@ -97,20 +139,20 @@ StringL				:	Object {
 class
 Primitive			:	Object {
 	var
-	u				:	() throws -> Object
-	init(	_ p		:	() throws -> Object ) { u = p }
+	u				:	Context throws -> Object
+	init(	_ p		:	Context throws -> Object ) { u = p }
 	override var
 	description		:	String { return "P" }
 	override func
-	Eval() throws	->	Object { return try u() }
+	Eval( p: Context ) throws	->	Object { return try u( p ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Builtin				:	Object {
 	var
-	u				:	Object throws -> Object
-	init(	_ p		:	Object throws -> Object ) { u = p }
+	u				:	( Context, Object ) throws -> Object
+	init(	_ p		:	( Context, Object ) throws -> Object ) { u = p }
 	override var
 	description		:	String { return "B" }
 }
@@ -121,8 +163,8 @@ Operator			:	Object {
 	var
 	bond			:	Int
 	var
-	u				:	( Object, Object ) throws -> Object
-	init(	_ p		:	( Object, Object ) throws -> Object, _ pBond: Int ) { u = p; bond = pBond }
+	u				:	( Context, Object, Object ) throws -> Object
+	init(	_ p		:	( Context, Object, Object ) throws -> Object, _ pBond: Int ) { u = p; bond = pBond }
 	override var
 	description		:	String { return ":\(bond)" }
 }
@@ -136,7 +178,7 @@ Quote				:	Object {
 	override var
 	description		:	String { return "'\(u)" }
 	override func
-	Eval() throws	->	Object { return u }
+	Eval( p: Context ) throws	->	Object { return u }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +190,7 @@ Combiner			:	Object {
 	override var
 	description		:	String { return "`\(u)" }
 	override func
-	Eval() throws	->	Object { return EvalAssoc( u, sDicts.u ) }
+	Eval( p: Context ) throws	->	Object { return EvalAssoc( u, p.dicts.u ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,26 +199,26 @@ EvalAssoc			:	Object {
 	let
 	u				:	Object
 	let
-	Dict				:	[ String: Object ]
-	init(	_ p		:	Object, _ pDict: [ String: Object ] ) { u = p; Dict = pDict }
+	dict			:	[ String: Object ]
+	init(	_ p		:	Object, _ pDict: [ String: Object ] ) { u = p; dict = pDict }
 	override var
-	description		:	String { return "<\(Dict):\(u)>" }
+	description		:	String { return "<\(dict):\(u)>" }
 	override func
-	Eval() throws	->	Object {
-		sDicts = Cell< [ String: Object ] >( Dict, sDicts )
-		defer{ sDicts = sDicts.next! }
-		return try u.Eval()
+	Eval( p: Context ) throws	->	Object {
+		p.dicts = Cell< [ String: Object ] >( dict, p.dicts )
+		defer{ p.dicts = p.dicts.next! }
+		return try u.Eval( p )
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-Dict					:	Object {
+Dict				:	Object {
 	let
 	u				:	[ String: Object ]
 	init(	_ p		:	[ String: Object ] ) { u = p }
 	override var
-	description		:	String { return "'\(u)" }
+	description		:	String { return "<\(u)>" }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +228,7 @@ sObject = Object()
 class
 List				:	Object {
 	func
-	EvalSentence( p: [ Object ] ) throws -> Object {
+	EvalSentence( c: Context, _ p: [ Object ] ) throws -> Object {
 //		print( ">", p )
 //		let	v = try _EvalSentence( p )
 //		print( "<", v )
@@ -196,7 +238,7 @@ List				:	Object {
 //	_EvalSentence( p: [ Object ] ) throws -> Object {
 		switch p.count {
 		case  0:	return Nil
-		case  1:	return try p[ 0 ].Eval()
+		case  1:	return try p[ 0 ].Eval( c )
 		case  2:	throw Error.RuntimeError( "No operator in \(List( p, .Sentence ))" )
 		default:	break
 		}
@@ -216,7 +258,7 @@ List				:	Object {
 			}
 		}
 		if let w = wTarget {
-			return try w.u( EvalSentence( Array( p[ 0 ..< wIndex ] ) ), EvalSentence( Array( p[ wIndex+1 ..< p.count ] ) ) )
+			return try w.u( c, EvalSentence( c, Array( p[ 0 ..< wIndex ] ) ), EvalSentence( c, Array( p[ wIndex+1 ..< p.count ] ) ) )
 		} else {
 			throw Error.RuntimeError( "No operator in \(List( p, .Sentence ))" )
 		}
@@ -249,7 +291,7 @@ List				:	Object {
 		}
 	}
 	override	func
-	Eval() throws	->	Object {
+	Eval( p: Context ) throws	->	Object {
 		switch type {
 		case .Literal:
 			return self
@@ -261,7 +303,7 @@ List				:	Object {
 			for ( i, w ) in u.enumerate() {
 				dispatch_group_async( wG, wQ ) {
 					do {
-						v[ i ] = try w.Eval()
+						v[ i ] = try w.Eval( p )
 					} catch let e {
 						print( e )
 					}
@@ -273,13 +315,13 @@ List				:	Object {
 			}
 			return List( v, .Literal )
 		case .Block:
-			sDicts = Cell< [ String: Object ] >( [ String: Object ](), sDicts )
-			defer{ sDicts = sDicts.next! }
+			p.dicts = Cell< [ String: Object ] >( [ String: Object ](), p.dicts )
+			defer{ p.dicts = p.dicts.next! }
 			var	v = [ Object ]( count:u.count, repeatedValue:Object() )
-			for ( i, w ) in u.enumerate() { v[ i ] = try w.Eval() }
+			for ( i, w ) in u.enumerate() { v[ i ] = try w.Eval( p ) }
 			return List( v, .Literal )
 		case .Sentence:
-			return try EvalSentence( u )
+			return try EvalSentence( p, u )
 		}
 	}
 }
@@ -299,20 +341,21 @@ Nil	=	List( [], .Literal )
 
 let
 StackTop = Primitive(
-	{	if let v = sStack { return v.u }
+	{	c in
+		if let v = c.stack { return v.u }
 		throw Error.RuntimeError( "StackUnderflow" )
 	}
 )
 
 let
-CurrentContext = Primitive( { return Dict( sDicts.u ) } )
+CurrentDict = Primitive( { c in return Dict( c.dicts.u ) } )
 
 let
-Exception = Primitive( { throw Error.UserException } )
+Exception = Primitive( { c in throw Error.UserException } )
 
 let
 Cdr = Builtin(
-	{	p in
+	{	c, p in
 		if let w = p as? List where w.u.count > 0 { return List( Array( w.u.dropFirst() ), w.type ) }
 		throw Error.RuntimeError( "\(p):*" )
 	}
@@ -320,7 +363,7 @@ Cdr = Builtin(
 
 let
 Count = Builtin(
-	{	p in
+	{	c, p in
 		if let w = p as? List { return IntNumber( w.u.count ) }
 		throw Error.RuntimeError( "\(p):#" )
 	}
@@ -328,7 +371,7 @@ Count = Builtin(
 
 let
 Last = Builtin(
-	{	p in
+	{	c, p in
 		if let w = p as? List where w.u.count > 0 { return w.u.last! }
 		throw Error.RuntimeError( "\(p):$" )
 	}
@@ -336,24 +379,25 @@ Last = Builtin(
 
 let
 Print = Builtin(
-	{	p in print( p )
+	{	c, p in
+		c.Print( p )
 		return p
 	}
 )
 
 let
 If = Operator(
-	{	l, r in
-		return try IsNil( l ) ? Nil : r.Eval()
+	{	c, l, r in
+		return try IsNil( l ) ? Nil : r.Eval( c )
 	}
 ,	9
 )
 
 let
 IfElse = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let w = r as? List where w.type == .Literal && w.u.count == 2 {
-			return try IsNil( l ) ? w.u[ 1 ].Eval() : w.u[ 0 ].Eval()
+			return try IsNil( l ) ? w.u[ 1 ].Eval( c ) : w.u[ 0 ].Eval( c )
 		}
 		throw Error.RuntimeError( "\(l) ? \(r)" )
 	}
@@ -362,7 +406,7 @@ IfElse = Operator(
 
 let
 Cons = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let w = r as? List {
 			var	wU = w.u
 			wU.insert( l, atIndex: 0 )
@@ -375,7 +419,7 @@ Cons = Operator(
 
 let
 Apply = Operator(
-	{	l, r in
+	{	c, l, r in
 		switch r {
 		case let w as IntNumber:
 			if let wL = l as? List {
@@ -389,15 +433,15 @@ Apply = Operator(
 			}
 			throw Error.RuntimeError( "Dict operation \(w) to \(l)" )
 		case let w as Builtin:
-			return try w.u( l )
+			return try w.u( c, l )
 		case let w as List:
-			Push( l )
-			defer{ Pop() }
-			return try w.Eval()
+			c.Push( l )
+			defer{ c.Pop() }
+			return try w.Eval( c )
 		case let w as EvalAssoc:
-			Push( l )
-			defer{ Pop() }
-			return try w.Eval()
+			c.Push( l )
+			defer{ c.Pop() }
+			return try w.Eval( c )
 		default:
 			throw Error.RuntimeError( "\(l) : \(r)" )
 		}
@@ -407,7 +451,7 @@ Apply = Operator(
 
 let
 And = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u & wR.u ) }
 		return IsNil( l ) && IsNil( r ) ? T : Nil
 	}
@@ -416,7 +460,7 @@ And = Operator(
 
 let
 Xor = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u ^ wR.u ) }
 		return IsNil( l ) != IsNil( r ) ? T : Nil
 	}
@@ -425,7 +469,7 @@ Xor = Operator(
 
 let
 Or = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u | wR.u ) }
 		return IsNil( l ) || IsNil( r ) ? T : Nil
 	}
@@ -434,7 +478,7 @@ Or = Operator(
 
 let
 Mul = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u * wR.u ) }
 		if let wL = l as? NumberL,	let wR = r as? NumberL { return RealNumber( wL.Value() * wR.Value() ) }
 		throw Error.RuntimeError( "\(l) × \(r)" )
@@ -444,7 +488,7 @@ Mul = Operator(
 
 let
 Div = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber {
 			if wR.u != 0 {
 				return wL.u % wR.u == 0 ? IntNumber( wL.u + wR.u ) : RealNumber( wL.Value() / wR.Value() )
@@ -462,7 +506,7 @@ Div = Operator(
 
 let
 IDiv = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u / wR.u ) }
 		throw Error.RuntimeError( "\(l) / \(r)" )
 	}
@@ -471,7 +515,7 @@ IDiv = Operator(
 
 let
 Remainder = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u % wR.u ) }
 		throw Error.RuntimeError( "\(l) % \(r)" )
 	}
@@ -480,7 +524,7 @@ Remainder = Operator(
 
 let
 Add = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u + wR.u ) }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() + wR.Value() ) }
 		if let wL = l as? StringL, let wR = r as? StringL { return StringL( wL.u + wR.u ) }
@@ -492,7 +536,7 @@ Add = Operator(
 
 let
 Minus = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.u - wR.u ) }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() - wR.Value() ) }
 		throw Error.RuntimeError( "\(l) - \(r)" )
@@ -516,13 +560,13 @@ Equal( l: Object, _ r: Object ) -> Bool {
 
 let
 Eq = Operator(
-	{ l, r in Equal( l, r ) ? T : Nil }
+	{ c, l, r in Equal( l, r ) ? T : Nil }
 ,	8
 )
 
 let
 GE = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u >= wR.u ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() >= wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) >= \(r)" )
@@ -532,7 +576,7 @@ GE = Operator(
 
 let
 LE = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u <= wR.u ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() <= wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) <= \(r)" )
@@ -542,13 +586,13 @@ LE = Operator(
 
 let
 Neq = Operator(
-	{ l, r in Equal( l, r ) ? Nil : T }
+	{ c, l, r in Equal( l, r ) ? Nil : T }
 ,	8
 )
 
 let
 LT = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u < wR.u ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() < wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) < \(r)" )
@@ -558,7 +602,7 @@ LT = Operator(
 
 let
 GT = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.u > wR.u ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() > wR.Value() ? T : Nil }
 		throw Error.RuntimeError( "\(l) > \(r)" )
@@ -568,9 +612,9 @@ GT = Operator(
 
 let
 Define = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let w = l as? Name {
-			sDicts.u[ w.u ] = r
+			c.dicts.u[ w.u ] = r
 			return l
 		}
 		throw Error.RuntimeError( "\(l) = \(r)" )
@@ -580,7 +624,7 @@ Define = Operator(
 
 let
 Contains = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wR = r as? List {
 			return wR.u.contains( l ) ? T : Nil
 		}
@@ -591,7 +635,7 @@ Contains = Operator(
 
 let
 ContainsR = Operator(
-	{	l, r in
+	{	c, l, r in
 		if let wL = l as? List { return wL.u.contains( r ) ? T : Nil }
 		throw Error.RuntimeError( "\(l) ∋ \(r)" )
 	}
@@ -653,7 +697,13 @@ ReadStr( p: Reader< UnicodeScalar > ) throws -> StringL {
 	while let c = p.Read() {
 		if wEscaped {
 			wEscaped = false
-			v.append( Character( c ) )
+			switch c {
+			case "0"	:	v.append( Character( "\0" ) )
+			case "t"	:	v.append( Character( "\t" ) )
+			case "n"	:	v.append( Character( "\n" ) )
+			case "r"	:	v.append( Character( "\r" ) )
+			default		:	v.append( Character( c ) )
+			}
 		} else {
 			switch c {
 			case "\""	:	return StringL( v )
@@ -688,7 +738,7 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 		case "`"				:	if let w = try Read( pReader ) { return Combiner( w ) }; throw Error.ReadError( "No object to combine" )
 		case "!"				:	return Exception
 		case "@"				:	return StackTop
-		case "·"				:	return CurrentContext
+		case "·"				:	return CurrentDict
 		case "*"				:	return Cdr
 		case "#"				:	return Count
 		case "$"				:	return Last
@@ -762,52 +812,10 @@ Read( pReader: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeSca
 		case ( "a"..."z" ), ( "A"..."Z" ), "_":
 									pReader.Unread( c )
 									return try ReadName( pReader )
-		default					:	throw Error.ReadError( "Invalid character \(c)" )
+		default					:	throw Error.ReadError( "Invalid character \(c):\(c.value)" )
 		}
 	}
 	return nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-func
-SetupBuiltin() {
-	sDicts.u[ "eval" ] = Builtin(
-		{	p in
-			let v = try p.Eval()
-print( "Eval:", p, "->", v )
-			return v
-		}
-	)
-	sDicts.u[ "for" ] = Builtin(
-		{	p in
-			if let wArgs = p as? List where wArgs.u.count >= 2 {
-				if let wList = wArgs.u[ 0 ] as? List {
-					var	v = [ Object ]()
-					for w in wList.u {
-						Push( w )
-						defer{ Pop() }
-						v.append( try wArgs.u[ 1 ].Eval() )
-					}
-					return List( v, wList.type )
-				} else {
-					throw Error.RuntimeError( "\(p):for" )
-				}
-			} else {
-				throw Error.RuntimeError( "\(p):for" )
-			}
-		}
-	)
-	sDicts.u[ "TwoElements" ] = Builtin(
-		{	p in
-			if let w = p as? List {
-				switch w.u.count {
-				case 0, 1	:	return IntNumber( 0 )
-				case 2		:	return IntNumber( 1 )
-				default		:	return IntNumber( 2 )
-				}
-			} else {
-				throw Error.RuntimeError( "\(p):TwoElements" )
-			}
-		}
-	)
-}

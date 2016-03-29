@@ -1,200 +1,108 @@
-//	P	@	StackTop
+//	SliP ver 0.2(Swift) 2016 written by Satoru Ogura, Tokyo.
+//	This is sample script for SliP, please push 'CALCULATE' button.
 
-//	B	*	cdr( p )
+//	Four arithmetic operations
+//	Please insert spaces between operator and number.
 
-//	O	:	apply( l, r )
-//	O	,	cons( l, r )
-//	O	?	if( l, r )
+1 + 2;
+1 + 2 × 3;
+( 1 + 2 ) × 3;
+5 - 3;
+5 ÷ 3;
+5 / 3;
+5 % 3;
 
-3:'(@);
 
-3:(@);
+//	Bitwise operations
 
-3:'(@=='[]);
+2 | 3;
+2 & 3;
+2 ^ 3;
 
-'{}:'(@=='[]);
+
+//	Memory
+
+'a = 1 + 2;
+'b = 3 + 4;
+a + b;
+
+
+//	Logical
+//	"T" for true, Nil i.e. '[ ]' for false.
 
 3 == 3;
+3 == 4;
 
-3 == 2;
 
-"A" == "A";
+//	String
 
-"A" == "B";
+"ABC" + "DEF";
 
-'[ a b c ]:#;
 
-'count = '( @ ? '[ ( @:*:count + 1 ) 0 ] );
-'[ a b c ] : count;
+//	If
+
+3 == 3 ? [ "TRUE" "FALSE" ];
+3 == 4 ? [ "TRUE" "FALSE" ];
+
+
+//	Function
+
+'add1 = '( @ + 1 );
+3 : add1;
+//	@ is function argument. '3 : add1' means apply 3 to function 'add1'.
 
 'factorial = '(
-	@ == 0 ?
-	'[	1
-		( @ × ( @ - 1 ):factorial )
-	]
+	@ × ( @ == 1 ? [ 1 ( ( @ - 1 ):factorial ) ] )
 );
-3 : factorial;
+4 : factorial;
 
 'sigma = '(
-	@ == 0 ?
-	'[	0
-		( @ + ( @ - 1 ):sigma )
-	]
+	@ + ( @ == 0 ? [ 0 ( ( @ - 1 ):sigma ) ] )
 );
-3 : sigma;
+4 : sigma;
 
-'dropLast = '(
-	@:# == 0 ?
-	'[	!
-		( @:# == 1 ? '[ '[] ( @:0, @:*:dropLast ) ] )
-	]
-);
-'[ a b c ]:dropLast;
-
-'reverse = '(
-	@ ? '[ ( @:$ , @:dropLast:reverse ) @ ]
-);
-'[ a b c ]:reverse;
-
-'fib = '(
-	@ < 2 ? '[
+'fibonacci = '(
+	@ < 2 ? [
 		@
-		( ( @ - 1 ):fib + ( @ - 2 ):fib )
+		( ( @ - 1 ):fibonacci + ( @ - 2 ):fibonacci )
 	]
 );
-10:fib;
-
-'prod = '(
-	@ ? '[
-		( @:0 × @:*:prod )
-		1
-	]
-);
-[ 2 3 4 ]:prod;
+10:fibonacci;
 
 
-'max = '(
-	@:0 > @:1 ? '[ ( @:0 ) ( @:1 ) ]
-);
+//	List
 
-'maxelem = '(
-	@:# == 1 ? '[
-		( @ : 0 )
-		( [ ( @ : 0 ) ( @:*:maxelem ) ]:max )
-	]
-);
-'[ 1 2 ]:maxelem;
-'[ 1 5 3 ]:maxelem;
+[ "A" "B" "C" ] + [ "D" "E" "F" ];
+[ "A" "B" "C" ]:0;
+[ "A" "B" "C" ]:1;
+[ "A" "B" "C" ]:$;
+[ "A" "B" "C" ]:#;
+[ "A" "B" "C" ]:*;
 
-'maxelem2 = '(
-	@:# == 1 ? '[
-		( @ : 0 )
-		( [ ( @ : 0 ) ( @:*:maxelem2 ) ]:'( @:0 > @:1 ? '[ ( @:0 ) ( @:1 ) ] ) )
-	]
-);
-'[ 1 5 3 ]:maxelem2;
 
-'gcd1 = '(
-	@:1 == 0 ? '[
-		( @:0 )
-		( [ ( @:1 ) ( @:0 % @:1 ) ]:gcd1 )
-	]
-);
-'[ 1071 1029 ]:gcd1;
-
-'gcd2 = '{
-	( 'n = @:1 )
-	( n == 0 ? '[
-		( @:0 )
-		( [ n ( @:0 % n ) ]:gcd2:$ )
-	] )
+//	Procedure
+{	( 'a = 1 + 2 )
+	( 'b = 3 + 4 )
+	( a + b )
 };
-[ 1071 1029 ]:gcd2:$;
 
-'dat = {
-	( 'a = 1 )
-	( 'b = 1 )
-	·
-}:$;
-dat:'a;
-dat:'c;
+//	Function 2
 
-'append = '(
-	@:0 ? '[
-		( @:0:0, [ ( @:0:* ) ( @:1 ) ]:append )
-		( @:1 )
+'gcd = '(
+	@:1 == 0 ? [
+		( @:0 )
+		( { ( @:1 ) ( @:0 % @:1 ) }:gcd )
 	]
 );
-'[ [ 1 2 ] [ 3 4 ] ]:append;
+[ 1071 1029 ]:gcd;
 
-
-'appendB = '(
-	{	( 'l = @:0 )
-		( 'r = @:1 )
-		(	l ? '[
-				( l:0, [ ( l:* ) r ]:appendB )
-				r
-			]
-		)
-	}:$
-);
-'[ [ 1 2 ] [ 3 4 ] ]:appendB;
-
-'reverse2 = '(
-	@ ? '[
-		( [ ( @:*:reverse2 ) ( @:0, '[] ) ]:append )
-		@
+'reduce = '(
+	@:0:# == 1 ? [
+		(@:0:0)
+		( { (@:0:0) ( { (@:0:*) (@:1) }:reduce ) }:(@:1) )
 	]
 );
-'[]:reverse2;
-'[ 1 ]:reverse2;
-'[ 1 2 ]:reverse2;
-'[ 1 2 3 ]:reverse2;
-'[ 1 2 3 4 ]:reverse2;
-
-//	out-> 3
-//	err-> StackUnderflow
-//	out-> [ ]
-//	out-> [ ]
-//	out-> "T"
-//	out-> [ ]
-//	out-> "T"
-//	out-> [ ]
-//	out-> 3
-//	out->
-//	out-> 3
-//	out->
-//	out-> 6
-//	out->
-//	out-> [ a b ]
-//	out->
-//	out-> [ c b a ]
-//	out->
-//	out-> 55
-//	out->
-//	out-> 24
+[ [ 1 2 3 4 ]( @:0 + @:1 ) ]:reduce;
+[ [ 1 2 3 4 ]( @:0 × @:1 ) ]:reduce;
 
 
-
-//[ 3 2 ]:'( ( @.0 < @.1 ).'[ 0 1 ] );
-//[ 3 2 ]:'( ( @.0 > @.1 ):'[ 0 1 ] );
-
-
-
-
-
-'cmax = '(
-	{	'a = !;
-		`( ( a > ! ).'[ ! a ] );
-	}.$
-);
-
-3 .(4 .cmax);
-5 .(4 .cmax);
-
-3.5 .'(!);
-3.5 .(4.5 .cmax);
-
-0.5e+5 :'(@);
-5e-10 :'(@);
-3.14159 + 4;

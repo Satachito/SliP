@@ -7,9 +7,9 @@
 		<key>CUI.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>1</integer>
 		</dict>
-		<key>GUI.xcscheme</key>
+		<key>SliP.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
@@ -17,6 +17,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>5E25C15A1CA6908D0076407D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>5E673DDC1C87C4EA00478AFD</key>
 		<dict>
 			<key>primary</key>
@@ -33,6 +38,11 @@
 			<true/>
 		</dict>
 		<key>5E9212611C9293F600291735</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5E9C15C81CA8FA22002F2F66</key>
 		<dict>
 			<key>primary</key>
 			<true/>
