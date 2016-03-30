@@ -4,6 +4,8 @@
 
 Written by Satoru Ogura, Tokyo 2016.
 
+Visit [project home](https://github.com/Satachito/SliP) for your feedback, thank you.
+
 ---
 
 ## As a calculator:
