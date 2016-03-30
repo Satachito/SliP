@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
     </dependencies>
     <scenes>
@@ -10,11 +11,11 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="GUI" id="1Xt-HY-uBw">
+                            <menuItem title="SliP" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="GUI" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="SliP" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About GUI" id="5kV-Vb-QxS">
+                                        <menuItem title="About SliP" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
@@ -28,7 +29,7 @@
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide GUI" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide SliP" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -46,7 +47,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit GUI" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit SliP" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -627,7 +628,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                                     <items>
-                                        <menuItem title="GUI Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                                        <menuItem title="SliP Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                             <connections>
                                                 <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
                                             </connections>
@@ -644,7 +645,7 @@
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SliP" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-10" y="-512"/>
+            <point key="canvasLocation" x="75" y="0.0"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -653,11 +654,8 @@
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="1280" height="800"/>
+                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <connections>
-                            <outlet property="delegate" destination="jGA-0Y-lOj" id="ghR-bD-Jyw"/>
-                        </connections>
                     </window>
                     <connections>
                         <segue destination="5gI-5U-AMq" kind="relationship" relationship="window.shadowedContentViewController" id="nsd-lR-9xd"/>
@@ -665,28 +663,28 @@
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="337" y="4"/>
+            <point key="canvasLocation" x="75" y="250"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="SliP" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="ERx-hH-rdd">
+                    <view key="view" wantsLayer="YES" id="Jn8-Jb-niX">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" vertical="YES" id="1EQ-V4-jb2">
+                            <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" vertical="YES" id="G7Z-eJ-cMI">
                                 <rect key="frame" x="65" y="20" width="939" height="687"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="Hmp-Et-ths">
+                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="wIN-MV-GEW">
                                         <rect key="frame" x="0.0" y="0.0" width="468" height="687"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <clipView key="contentView" id="A42-6n-5RH">
+                                        <clipView key="contentView" id="2or-Zo-XdB">
                                             <rect key="frame" x="1" y="1" width="466" height="685"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <textView importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="GBH-mb-pXb">
+                                                <textView importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="UnI-Z9-zF2">
                                                     <rect key="frame" x="0.0" y="0.0" width="482" height="685"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -701,33 +699,33 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.u" id="Xft-n6-C5F"/>
+                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.u" id="c59-IY-1Un"/>
                                                     </connections>
                                                 </textView>
                                             </subviews>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="rxv-Sd-2xe">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="95s-7v-hnn">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="XmY-W2-MGF">
+                                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="LiE-wh-sci">
                                             <rect key="frame" x="451" y="1" width="16" height="685"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
-                                    <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" id="xv2-AY-JKM">
+                                    <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" id="uod-0R-4BS">
                                         <rect key="frame" x="478" y="0.0" width="461" height="687"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="3PB-1f-R9L">
+                                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="keE-9J-PeC">
                                                 <rect key="frame" x="0.0" y="0.0" width="461" height="340"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <clipView key="contentView" id="vmB-62-QaS">
+                                                <clipView key="contentView" id="zz0-mK-S12">
                                                     <rect key="frame" x="1" y="1" width="459" height="338"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="T3I-Ji-mbw">
+                                                        <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="8So-sm-6SV">
                                                             <rect key="frame" x="0.0" y="0.0" width="476" height="338"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -737,29 +735,29 @@
                                                             <size key="minSize" width="459" height="338"/>
                                                             <size key="maxSize" width="525" height="10000000"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.result" id="lt9-aR-FH7"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.result" id="aiJ-sa-E6F"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </clipView>
-                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="oWH-zO-X5t">
+                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="NCS-nH-de1">
                                                     <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
-                                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="49x-wz-d3B">
+                                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="zqw-SE-FNd">
                                                     <rect key="frame" x="444" y="1" width="16" height="338"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
-                                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="jXK-1A-1IM">
+                                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="CJ1-G5-SqC">
                                                 <rect key="frame" x="0.0" y="350" width="461" height="337"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <clipView key="contentView" id="mJ3-K5-5XH">
+                                                <clipView key="contentView" id="XH3-wT-12c">
                                                     <rect key="frame" x="1" y="1" width="459" height="335"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="6oW-f3-AgJ">
+                                                        <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="tut-Xu-6BC">
                                                             <rect key="frame" x="0.0" y="0.0" width="475" height="335"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -769,17 +767,17 @@
                                                             <size key="minSize" width="459" height="335"/>
                                                             <size key="maxSize" width="524" height="10000000"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.output" id="1pj-Gv-KtR"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.output" id="OpW-WJ-2bA"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </clipView>
-                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="DDV-aC-pmu">
+                                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="0jx-7u-MUo">
                                                     <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
-                                                <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="Mhp-SY-RXS">
+                                                <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="98Z-D9-OZc">
                                                     <rect key="frame" x="444" y="1" width="16" height="335"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
@@ -796,136 +794,156 @@
                                     <real value="250"/>
                                 </holdingPriorities>
                             </splitView>
-                            <button verticalHuggingPriority="750" id="2cX-1G-gCh">
+                            <button verticalHuggingPriority="750" id="6Ib-2P-0Gz">
                                 <rect key="frame" x="14" y="679" width="49" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="×" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sdK-Vr-gub">
+                                <buttonCell key="cell" type="push" title="×" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cwe-iA-eXD">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="vio-vs-m5J"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="GFv-F8-oS2"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="kOF-Ae-YFx">
+                            <button verticalHuggingPriority="750" id="LS7-Hj-ZPt">
                                 <rect key="frame" x="14" y="647" width="49" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="÷" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hz1-FM-g1y">
+                                <buttonCell key="cell" type="push" title="÷" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nDr-8E-1uU">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="acX-ZC-bph"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="9xb-At-a8x"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="PbP-qc-EBr">
+                            <button verticalHuggingPriority="750" id="ON9-FY-bYR">
                                 <rect key="frame" x="17" y="614" width="44" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="¡" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CgJ-pG-fWm">
+                                <buttonCell key="cell" type="push" title="¡" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="t0q-MD-1Tf">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="497-2w-JuN"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="GLt-G8-vUh"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="8mk-MX-SDc">
+                            <button verticalHuggingPriority="750" id="fip-pE-mlb">
                                 <rect key="frame" x="15" y="581" width="47" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="¿" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GNC-Qw-Sks">
+                                <buttonCell key="cell" type="push" title="¿" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="udw-Ir-yEr">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="QFt-LN-G0E"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="IqT-cS-IiS"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="XnA-60-1A2">
+                            <button verticalHuggingPriority="750" id="Z8b-kF-D8c">
                                 <rect key="frame" x="17" y="548" width="44" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="·" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LcI-d4-6eT">
+                                <buttonCell key="cell" type="push" title="·" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sCl-Zf-7UA">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="y2D-Qa-yxA"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="A0x-cV-s1g"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="mVx-SI-q1F">
+                            <button verticalHuggingPriority="750" id="bJd-Bf-2m4">
                                 <rect key="frame" x="14" y="515" width="49" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="¦" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="86Q-2c-g7x">
+                                <buttonCell key="cell" type="push" title="¦" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fHd-DR-XtT">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="X62-M8-mSV"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="iRN-z3-lao"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="Z7Y-4B-sH6">
+                            <button verticalHuggingPriority="750" id="cxm-XK-RBW">
                                 <rect key="frame" x="14" y="482" width="49" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="«" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MsN-0Y-fXP">
+                                <buttonCell key="cell" type="push" title="«" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f8z-h4-xJj">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="Skv-LQ-3NJ"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="qvb-wW-ZnS"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="EC3-65-YQe">
+                            <button verticalHuggingPriority="750" id="K7e-MN-Nbz">
                                 <rect key="frame" x="14" y="449" width="49" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="»" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Yk4-xM-1t2">
+                                <buttonCell key="cell" type="push" title="»" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SHJ-FH-Fdq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="WMj-RK-v0w"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="VRv-Td-JAA"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="paE-1r-8iK">
+                            <button verticalHuggingPriority="750" id="yxU-vo-JR7">
                                 <rect key="frame" x="16" y="416" width="45" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="∈" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8WR-Hw-1Bc">
+                                <buttonCell key="cell" type="push" title="∈" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aY0-zf-WDq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="kwh-x9-7bv"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="Yka-qK-x9E"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="EPb-Ge-9YY">
+                            <button verticalHuggingPriority="750" id="nFv-a3-nLL">
                                 <rect key="frame" x="15" y="383" width="47" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="∋" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ilZ-Xs-pw6">
+                                <buttonCell key="cell" type="push" title="∋" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3OQ-vX-FvL">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="aKv-9s-0fa"/>
+                                    <action selector="DoInsert:" target="5gI-5U-AMq" id="9dz-ql-2T4"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" id="T2h-Wt-juR">
+                            <button verticalHuggingPriority="750" id="1oF-XS-tTJ">
                                 <rect key="frame" x="477" y="720" width="115" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="CALCULATE" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="z7e-2A-iQU">
+                                <buttonCell key="cell" type="push" title="CALCULATE" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bOr-af-JRq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="Do:" target="5gI-5U-AMq" id="ROT-fS-Qgl"/>
+                                    <action selector="Do:" target="5gI-5U-AMq" id="xEx-Mm-YM5"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" id="NN9-j5-n9q">
+                                <rect key="frame" x="59" y="720" width="119" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Load Sample" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CmP-xM-QKb">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="DoLoadSample:" target="5gI-5U-AMq" id="6Od-ff-amG"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sOW-ll-Fdv">
+                                <rect key="frame" x="-2" y="0.0" width="1028" height="17"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="SliP ver 1.0. Written by Satoru Ogura, Tokyo. 2016." id="krf-zS-tut">
+                                    <font key="font" size="11" name="Arial-ItalicMT"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="sourceItemView" destination="GBH-mb-pXb" id="kn9-fp-Eza"/>
+                        <outlet property="sourceItemView" destination="UnI-Z9-zF2" id="2rL-2u-KMG"/>
                     </connections>
                 </viewController>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="320" y="889"/>
+            <point key="canvasLocation" x="-56" y="561"/>
         </scene>
     </scenes>
 </document>

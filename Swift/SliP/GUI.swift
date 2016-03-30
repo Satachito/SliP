@@ -16,6 +16,16 @@ ViewController: NSViewController {
 	Do( _: AnyObject ) {
 		if let w = view.window?.windowController?.document as? Document { w.Do() }
 	}
+
+	@IBAction func
+	DoLoadSample( _: AnyObject ) {
+		if	let wURL = ResourceURL( "Sample", "slip" )
+		,	let	wData = Data( wURL )
+		,	let	wString = UTF8String( wData )
+		,	let w = view.window?.windowController?.document as? Document {
+			w.u = wString
+		}
+	}
 	
 	@IBAction func
 	DoInsert( p: NSButton ) {
@@ -46,24 +56,10 @@ PreProcessor: Reader< UnicodeScalar > {
 class
 Document	:	NSDocument {
 
-	dynamic	var	u = "//  SliP ver 1.0 2016 written by Satoru Ogura, Tokyo."
+	dynamic	var	u = ""
 	dynamic	var	result = ""
 	dynamic	var	output = ""
 
-	override
-	init() {
-		super.init()
-	}
-	
-	init( type: String ) throws {
-		super.init()
-		if	let wURL = ResourceURL( "Sample", "slip" )
-		,	let	wData = Data( wURL )
-		,	let	wString = UTF8String( wData ) {
-			u = wString
-		}
-	}
-	
 	override class func
 	autosavesInPlace() -> Bool {
 		return true
@@ -94,18 +90,21 @@ Document	:	NSDocument {
 	}
 
 	class
-	GUIContext		:	Context {
-		let		u	:	Document
-		init( _ p	:	Document ) { u = p }
-		override func
-		Print( p: Object ) {
-			Main{ self.u.output = self.u.output + "\(p)" }
+	GUIPrinter		:	Printer {
+		var		u	:	Document
+		init( _ p	:	Document ) {
+			u = p
+		}
+		func
+		Print( p: String ) {
+			Main{ self.u.output = self.u.output + p }
 		}
 	}
 	func
 	Do() {
 		NSApplication.sharedApplication().keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
-		let	wContext = GUIContext( self )
+		let	wContext = Context()
+		let	wPrinter = GUIPrinter( self )
 		let	wReader	= PreProcessor( u )
 		result = ""
 		output = ""
@@ -114,7 +113,7 @@ Document	:	NSDocument {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
 					if wObjects.count == 0 { break }
-					let w = try List( wObjects, .Sentence ).Eval( wContext )
+					let w = try List( wObjects, .Sentence ).Eval( wContext, wPrinter )
 					Main{ self.result = self.result + "\(w)\n" }
 				} catch let e {
 					Main{ self.result = self.result + "\(e)\n" }
