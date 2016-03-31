@@ -40,7 +40,7 @@ SliP reads list of SliP object(s) until ';' treat it as Sentence and print its e
 
 * If the sentence has four or more objects in it.
 
-	Find weakest operator in the sentnce and treat left side objects and right side objects as Sentence, evaluate those and passed evaluated values to the operator.
+	The interpreter finds weakest operator in the sentnce and treat left side objects and right side objects as Sentence, evaluate those and passed evaluated values to the operator.
 	
 	- ex.) 1 + 2 * 3 + 4; -> 11
 
@@ -54,11 +54,11 @@ SliP treats four types of list.
 
 * [ "A" "B" "C" ]
 
-	- Literal list, i.e. when eavluatd return itself.
+	- Literal list, i.e. when eavluatd, the values is itself.
 
 * { "A" "B" "C" }
 
-	- List of objects which are evaluated sequencially. When evaluated the interpreter push the new dictionary in association list for local variables.
+	- List of objects which are evaluated sequencially. When evaluated the interpreter pushes the new dictionary in association list for local variables and pops it at the end of evaluation.
 
 * « "A" "B" "C" »
 
@@ -121,7 +121,7 @@ SliP treats four types of list.
 ### Name.
 Name must begin with alphabet or _ ( underscore ) and followed by sequence of alphabet, _ and number digit.
 
-When evaluated, find association list by the name and return associated value.
+When evaluated, the interpreter searches the name in association list and return associated value.
 
 Ex.)
 

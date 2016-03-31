@@ -7,9 +7,14 @@
 		<key>CUI.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<key>SliP.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>iOS.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
@@ -23,6 +28,11 @@
 			<true/>
 		</dict>
 		<key>5E280C5F1CAB7451007E70C2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5E3DAC741CAC84E300867721</key>
 		<dict>
 			<key>primary</key>
 			<true/>

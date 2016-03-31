@@ -56,17 +56,17 @@ Context {
 	}
 }
 
-protocol
-Printer {
-	func
-	Print( a: String )
-}
+//protocol
+//String -> () {
+//	func
+//	Print( a: String )
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Object				:	NSObject {
 	func
-	Eval( c: Context, _ p: Printer ) throws -> Object { return self }
+	Eval( c: Context, _ p: String -> () ) throws -> Object { return self }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ Name				:	Object {
 	override var
 	description 	:	String { return m }
 	override func
-	Eval( c: Context, _ p: Printer )	throws	->	Object {
+	Eval( c: Context, _ p: String -> () )	throws	->	Object {
 		var	wAL = c.dicts as Cell< [ String: Object ] >?
 		while let w = wAL {
 			if let v = w.m[ m ] { return v }
@@ -135,15 +135,15 @@ Primitive			:	Object {
 	override var
 	description		:	String { return "P" }
 	override func
-	Eval( c: Context, _ p: Printer ) throws	->	Object { return try m( c ) }
+	Eval( c: Context, _ p: String -> () ) throws	->	Object { return try m( c ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Builtin				:	Object {
 	var
-	m				:	( Context, Printer, Object ) throws -> Object
-	init(	_ a		:	( Context, Printer, Object ) throws -> Object ) { m = a }
+	m				:	( Context, String -> (), Object ) throws -> Object
+	init(	_ a		:	( Context, String -> (), Object ) throws -> Object ) { m = a }
 	override var
 	description		:	String { return "B" }
 }
@@ -154,8 +154,8 @@ Operator			:	Object {
 	var
 	bond			:	Int
 	var
-	m				:	( Context, Printer, Object, Object ) throws -> Object
-	init(	_ a		:	( Context, Printer, Object, Object ) throws -> Object, _ pBond: Int ) { m = a; bond = pBond }
+	m				:	( Context, String -> (), Object, Object ) throws -> Object
+	init(	_ a		:	( Context, String -> (), Object, Object ) throws -> Object, _ pBond: Int ) { m = a; bond = pBond }
 	override var
 	description		:	String { return ":\(bond)" }
 }
@@ -169,7 +169,7 @@ Quote				:	Object {
 	override var
 	description		:	String { return "'\(m)" }
 	override func
-	Eval( c: Context, _ p: Printer ) throws	->	Object { return m }
+	Eval( c: Context, _ p: String -> () ) throws	->	Object { return m }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ Combiner			:	Object {
 	override var
 	description		:	String { return "`\(m)" }
 	override func
-	Eval( c: Context, _ p: Printer ) throws	->	Object { return EvalAssoc( m, c.dicts.m ) }
+	Eval( c: Context, _ p: String -> () ) throws	->	Object { return EvalAssoc( m, c.dicts.m ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +195,7 @@ EvalAssoc			:	Object {
 	override var
 	description		:	String { return "<\(dict):\(m)>" }
 	override func
-	Eval( c: Context, _ p: Printer ) throws	->	Object {
+	Eval( c: Context, _ p: String -> () ) throws	->	Object {
 		c.dicts = Cell< [ String: Object ] >( dict, c.dicts )
 		defer{ c.dicts = c.dicts.next! }
 		return try m.Eval( c, p )
@@ -219,7 +219,7 @@ sObject = Object()
 class
 List				:	Object {
 	func
-	EvalSentence( c: Context, _ p: Printer, _ o: [ Object ] ) throws -> Object {
+	EvalSentence( c: Context, _ p: String -> (), _ o: [ Object ] ) throws -> Object {
 		switch o.count {
 		case  1:	return try o[ 0 ].Eval( c, p )
 		case  0, 2:	throw Error.RuntimeError( "No operator in \(List( o, .Sentence ))" )
@@ -274,7 +274,7 @@ List				:	Object {
 		}
 	}
 	override	func
-	Eval( c: Context, _ p: Printer ) throws	->	Object {
+	Eval( c: Context, _ p: String -> () ) throws	->	Object {
 		switch type {
 		case .Literal:
 			return self
@@ -364,10 +364,10 @@ let
 Print = Builtin(
 	{	c, p, o in
 		switch o {
-		case let w as IntNumber	:	p.Print( "\(o)" )
-		case let w as RealNumber:	p.Print( "\(o)" )
-		case let w as StringL	:	p.Print( w.m )
-		case let w as Name		:	p.Print( w.m )
+		case let w as IntNumber	:	p( "\(o)" )
+		case let w as RealNumber:	p( "\(o)" )
+		case let w as StringL	:	p( w.m )
+		case let w as Name		:	p( w.m )
 		default:					break
 		}
 		return o
@@ -827,3 +827,24 @@ Read( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class
+GUIPreProcessor: Reader< UnicodeScalar > {
+	var
+	m	= String.UnicodeScalarView()
+	init(	_ p	:	String ) {
+		var wLines = p.componentsSeparatedByCharactersInSet( NSCharacterSet.newlineCharacterSet() )
+		for ( i, w ) in wLines.enumerate() {
+			wLines[ i ] = w.componentsSeparatedByString( "//" )[ 0 ]
+		}
+		m = ( wLines as NSArray ).componentsJoinedByString( "\n" ).unicodeScalars
+	}
+	override func
+	_Read() -> UnicodeScalar? {
+		if m.count == 0 { return nil }
+		let v = m.first
+		m = m.dropFirst()
+		return v
+	}
+}
+

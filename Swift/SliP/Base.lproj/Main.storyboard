@@ -642,7 +642,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SliP" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="OSXAD" customModule="SliP" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
@@ -665,10 +665,10 @@
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>
-        <!--View Controller-->
+        <!--OSXVC-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="SliP" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5gI-5U-AMq" customClass="OSXVC" customModule="SliP" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="Jn8-Jb-niX">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -699,7 +699,7 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.u" id="c59-IY-1Un"/>
+                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.m" id="GHT-Bl-Yeq"/>
                                                     </connections>
                                                 </textView>
                                             </subviews>

@@ -7,27 +7,33 @@ print( "SliP ver 0.2(Swift) 2016 written by Satoru Ogura, Tokyo.×÷¡¿·¬«»
 class
 PreProcessor: Reader< UnicodeScalar > {
 	var
-	u	= String.UnicodeScalarView()
+	m	= String.UnicodeScalarView()
 	override func
 	_Read() -> UnicodeScalar? {
-		while u.count == 0 {
+		while m.count == 0 {
 			if let w = readLine( stripNewline: false ) {
-				u = w.componentsSeparatedByString( "//" )[ 0 ].unicodeScalars
+				m = w.componentsSeparatedByString( "//" )[ 0 ].unicodeScalars
 			} else {
 				return nil
 			}
 		}
-		let v = u.first
-		u = u.dropFirst()
+		let v = m.first
+		m = m.dropFirst()
 		return v
 	}
 }
 
 var	sReader		=	PreProcessor()
 var	sContext	=	Context()
+var	sFileHandle	=	NSFileHandle.fileHandleWithStandardOutput()
 while true {
 	do {
-		print( try List( try ReadObjects( sReader, ";" as UnicodeScalar ), .Sentence ).Eval( sContext ) )
+		print(
+			try List( try ReadObjects( sReader, ";" as UnicodeScalar ), .Sentence ).Eval(
+				sContext
+			,	{ a in sFileHandle.writeData( UTF8Data( a )! ) }
+			)
+		)
 	} catch let e {
 		print( e )
 	}

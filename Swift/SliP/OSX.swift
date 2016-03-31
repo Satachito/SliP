@@ -3,15 +3,11 @@
 import Cocoa
 
 @NSApplicationMain class
-AppDelegate: NSObject, NSApplicationDelegate {
+OSXAD	:	NSObject, NSApplicationDelegate {
 }
 
 class
-WindowController: NSWindowController, NSWindowDelegate {
-}
-
-class
-ViewController: NSViewController {
+OSXVC	:	NSViewController {
 	@IBAction func
 	Do( _: AnyObject ) {
 		if let w = view.window?.windowController?.document as? Document { w.Do() }
@@ -23,40 +19,20 @@ ViewController: NSViewController {
 		,	let	wData = Data( wURL )
 		,	let	wString = UTF8String( wData )
 		,	let w = view.window?.windowController?.document as? Document {
-			w.u = wString
+			w.m = wString
 		}
 	}
 	
 	@IBAction func
-	DoInsert( p: NSButton ) {
-		if let w = sourceItemView as? NSTextView { w.insertText( p.title , replacementRange: w.selectedRange() ) }
-	}
-}
-
-class
-PreProcessor: Reader< UnicodeScalar > {
-	var
-	u	= String.UnicodeScalarView()
-	init(	_ p	:	String ) {
-		var wLines = p.componentsSeparatedByCharactersInSet( NSCharacterSet.newlineCharacterSet() )
-		for ( i, w ) in wLines.enumerate() {
-			wLines[ i ] = w.componentsSeparatedByString( "//" )[ 0 ]
-		}
-		u = ( wLines as NSArray ).componentsJoinedByString( "\n" ).unicodeScalars
-	}
-	override func
-	_Read() -> UnicodeScalar? {
-		if u.count == 0 { return nil }
-		let v = u.first
-		u = u.dropFirst()
-		return v
+	DoInsert( a: NSButton ) {
+		if let w = sourceItemView as? NSTextView { w.insertText( a.title , replacementRange: w.selectedRange() ) }
 	}
 }
 
 class
 Document	:	NSDocument {
 
-	dynamic	var	u = ""
+	dynamic	var	m = ""
 	dynamic	var	result = ""
 	dynamic	var	output = ""
 
@@ -77,35 +53,23 @@ Document	:	NSDocument {
 	override func
 	dataOfType( typeName: String ) throws -> NSData {
 		NSApplication.sharedApplication().keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
-		if let v = UTF8Data( u ) { return v } else {
+		if let v = UTF8Data( m ) { return v } else {
 			throw NSError( domain: "ApplicationErrorDomain", code: 1, userInfo: nil )
 		}
 	}
 
 	override func
 	readFromData( data: NSData, ofType typeName: String ) throws {
-		if let w = UTF8String( data ) { u = w } else {
+		if let w = UTF8String( data ) { m = w } else {
 			throw NSError( domain: "ApplicationErrorDomain", code: 2, userInfo: nil )
 		}
 	}
 
-	class
-	GUIPrinter		:	Printer {
-		var		u	:	Document
-		init( _ p	:	Document ) {
-			u = p
-		}
-		func
-		Print( p: String ) {
-			Main{ self.u.output = self.u.output + p }
-		}
-	}
 	func
 	Do() {
 		NSApplication.sharedApplication().keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
 		let	wContext = Context()
-		let	wPrinter = GUIPrinter( self )
-		let	wReader	= PreProcessor( u )
+		let	wReader	= GUIPreProcessor( m )
 		result = ""
 		output = ""
 		Sub {
@@ -113,7 +77,10 @@ Document	:	NSDocument {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
 					if wObjects.count == 0 { break }
-					let w = try List( wObjects, .Sentence ).Eval( wContext, wPrinter )
+					let w = try List( wObjects, .Sentence ).Eval(
+						wContext
+					,	{ a in Main{ self.output = self.output + a } }
+					)
 					Main{ self.result = self.result + "\(w)\n" }
 				} catch let e {
 					Main{ self.result = self.result + "\(e)\n" }
