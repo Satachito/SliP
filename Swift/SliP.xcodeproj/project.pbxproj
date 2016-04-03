@@ -7,15 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DAC791CAC84E300867721 /* iOS.swift */; };
+		5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7B1CAC84E300867721 /* Main.storyboard */; };
+		5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7E1CAC84E300867721 /* Assets.xcassets */; };
+		5E3DAC821CAC84E300867721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC801CAC84E300867721 /* LaunchScreen.storyboard */; };
+		5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
+		5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
+		5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
+		5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
 		5E9212651C9293F600291735 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212641C9293F600291735 /* main.swift */; };
 		5E92126B1C92989600291735 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 		5E92126D1C929AB300291735 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
-		5E9C15D21CA8FA22002F2F66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E9C15D11CA8FA22002F2F66 /* Assets.xcassets */; };
-		5E9C15D51CA8FA22002F2F66 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E9C15D31CA8FA22002F2F66 /* Main.storyboard */; };
-		5EFD5E1C1CA8FA6A00007413 /* GUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFD5E1B1CA8FA6A00007413 /* GUI.swift */; };
-		5EFD5E1D1CA8FA7B00007413 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
-		5EFD5E1E1CA8FA7E00007413 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
-		5EFD5E1F1CA8FA9300007413 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
+		5EF00C191CAB752500F17138 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EF00C181CAB752500F17138 /* Assets.xcassets */; };
+		5EF00C1C1CAB752500F17138 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EF00C1A1CAB752500F17138 /* Main.storyboard */; };
+		5EF00C221CAB753C00F17138 /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF00C211CAB753C00F17138 /* OSX.swift */; };
+		5EF00C231CAB754C00F17138 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
+		5EF00C241CAB754C00F17138 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,20 +40,34 @@
 /* Begin PBXFileReference section */
 		5E1E2C111C87C5E100928E65 /* main.go */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.go; path = Sample/main.go; sourceTree = "<group>"; };
 		5E1E2C141C894E7200928E65 /* Test.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Test.slip; sourceTree = "<group>"; };
+		5E3DAC751CAC84E300867721 /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E3DAC791CAC84E300867721 /* iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS.swift; sourceTree = "<group>"; };
+		5E3DAC7C1CAC84E300867721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5E3DAC7E1CAC84E300867721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5E3DAC811CAC84E300867721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5E3DAC831CAC84E300867721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5E3DAC871CAC961300867721 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/iAd.framework; sourceTree = DEVELOPER_DIR; };
 		5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMP.swift; path = ../../JMP/Swift/JMP.swift; sourceTree = "<group>"; };
 		5E3DF2B91C8D49F4007A6F94 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
+		5E7100C51CAB799000E1C341 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
 		5E9212621C9293F600291735 /* CUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E9212641C9293F600291735 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5E9212691C92987400291735 /* SliP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = SOURCE_ROOT; };
-		5E9C15C91CA8FA22002F2F66 /* SliP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SliP.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E9C15D11CA8FA22002F2F66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5E9C15D41CA8FA22002F2F66 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5E9C15D61CA8FA22002F2F66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5EFD5E1B1CA8FA6A00007413 /* GUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GUI.swift; sourceTree = "<group>"; };
-		5EFD5E201CA9034100007413 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
+		5EF00C101CAB752500F17138 /* SliP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SliP.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EF00C181CAB752500F17138 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5EF00C1B1CAB752500F17138 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5EF00C1D1CAB752500F17138 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5EF00C211CAB753C00F17138 /* OSX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSX.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5E3DAC721CAC84E300867721 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E92125F1C9293F600291735 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -54,7 +75,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5E9C15C61CA8FA22002F2F66 /* Frameworks */ = {
+		5EF00C0D1CAB752500F17138 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -64,16 +85,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5E3DAC761CAC84E300867721 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				5E3DAC791CAC84E300867721 /* iOS.swift */,
+				5E3DAC7B1CAC84E300867721 /* Main.storyboard */,
+				5E3DAC7E1CAC84E300867721 /* Assets.xcassets */,
+				5E3DAC801CAC84E300867721 /* LaunchScreen.storyboard */,
+				5E3DAC831CAC84E300867721 /* Info.plist */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
 		5E673DD41C87C4EA00478AFD = {
 			isa = PBXGroup;
 			children = (
+				5E3DAC871CAC961300867721 /* iAd.framework */,
 				5E1E2C111C87C5E100928E65 /* main.go */,
 				5E1E2C141C894E7200928E65 /* Test.slip */,
 				5E3DF2B91C8D49F4007A6F94 /* Sample.slip */,
 				5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */,
 				5E9212691C92987400291735 /* SliP.swift */,
 				5E9212631C9293F600291735 /* CUI */,
-				5E9C15CA1CA8FA22002F2F66 /* SliP */,
+				5EF00C111CAB752500F17138 /* SliP */,
+				5E3DAC761CAC84E300867721 /* iOS */,
 				5E673DDE1C87C4EA00478AFD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,7 +117,8 @@
 			isa = PBXGroup;
 			children = (
 				5E9212621C9293F600291735 /* CUI */,
-				5E9C15C91CA8FA22002F2F66 /* SliP.app */,
+				5EF00C101CAB752500F17138 /* SliP.app */,
+				5E3DAC751CAC84E300867721 /* iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,14 +131,14 @@
 			path = CUI;
 			sourceTree = "<group>";
 		};
-		5E9C15CA1CA8FA22002F2F66 /* SliP */ = {
+		5EF00C111CAB752500F17138 /* SliP */ = {
 			isa = PBXGroup;
 			children = (
-				5EFD5E201CA9034100007413 /* SliP.entitlements */,
-				5EFD5E1B1CA8FA6A00007413 /* GUI.swift */,
-				5E9C15D11CA8FA22002F2F66 /* Assets.xcassets */,
-				5E9C15D31CA8FA22002F2F66 /* Main.storyboard */,
-				5E9C15D61CA8FA22002F2F66 /* Info.plist */,
+				5E7100C51CAB799000E1C341 /* SliP.entitlements */,
+				5EF00C211CAB753C00F17138 /* OSX.swift */,
+				5EF00C181CAB752500F17138 /* Assets.xcassets */,
+				5EF00C1A1CAB752500F17138 /* Main.storyboard */,
+				5EF00C1D1CAB752500F17138 /* Info.plist */,
 			);
 			path = SliP;
 			sourceTree = "<group>";
@@ -110,6 +146,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5E3DAC741CAC84E300867721 /* iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E3DAC861CAC84E300867721 /* Build configuration list for PBXNativeTarget "iOS" */;
+			buildPhases = (
+				5E3DAC711CAC84E300867721 /* Sources */,
+				5E3DAC721CAC84E300867721 /* Frameworks */,
+				5E3DAC731CAC84E300867721 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iOS;
+			productName = iOS;
+			productReference = 5E3DAC751CAC84E300867721 /* iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		5E9212611C9293F600291735 /* CUI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E9212661C9293F600291735 /* Build configuration list for PBXNativeTarget "CUI" */;
@@ -127,13 +180,13 @@
 			productReference = 5E9212621C9293F600291735 /* CUI */;
 			productType = "com.apple.product-type.tool";
 		};
-		5E9C15C81CA8FA22002F2F66 /* SliP */ = {
+		5EF00C0F1CAB752500F17138 /* SliP */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5E9C15D71CA8FA22002F2F66 /* Build configuration list for PBXNativeTarget "SliP" */;
+			buildConfigurationList = 5EF00C1E1CAB752500F17138 /* Build configuration list for PBXNativeTarget "SliP" */;
 			buildPhases = (
-				5E9C15C51CA8FA22002F2F66 /* Sources */,
-				5E9C15C61CA8FA22002F2F66 /* Frameworks */,
-				5E9C15C71CA8FA22002F2F66 /* Resources */,
+				5EF00C0C1CAB752500F17138 /* Sources */,
+				5EF00C0D1CAB752500F17138 /* Frameworks */,
+				5EF00C0E1CAB752500F17138 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -141,7 +194,7 @@
 			);
 			name = SliP;
 			productName = SliP;
-			productReference = 5E9C15C91CA8FA22002F2F66 /* SliP.app */;
+			productReference = 5EF00C101CAB752500F17138 /* SliP.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -154,10 +207,13 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Satoru Ogura";
 				TargetAttributes = {
+					5E3DAC741CAC84E300867721 = {
+						CreatedOnToolsVersion = 7.3;
+					};
 					5E9212611C9293F600291735 = {
 						CreatedOnToolsVersion = 7.3;
 					};
-					5E9C15C81CA8FA22002F2F66 = {
+					5EF00C0F1CAB752500F17138 = {
 						CreatedOnToolsVersion = 7.3;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -181,25 +237,47 @@
 			projectRoot = "";
 			targets = (
 				5E9212611C9293F600291735 /* CUI */,
-				5E9C15C81CA8FA22002F2F66 /* SliP */,
+				5EF00C0F1CAB752500F17138 /* SliP */,
+				5E3DAC741CAC84E300867721 /* iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		5E9C15C71CA8FA22002F2F66 /* Resources */ = {
+		5E3DAC731CAC84E300867721 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E9C15D21CA8FA22002F2F66 /* Assets.xcassets in Resources */,
-				5E9C15D51CA8FA22002F2F66 /* Main.storyboard in Resources */,
-				5EFD5E1F1CA8FA9300007413 /* Sample.slip in Resources */,
+				5E3DAC821CAC84E300867721 /* LaunchScreen.storyboard in Resources */,
+				5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */,
+				5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */,
+				5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EF00C0E1CAB752500F17138 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EF00C191CAB752500F17138 /* Assets.xcassets in Resources */,
+				5EF00C1C1CAB752500F17138 /* Main.storyboard in Resources */,
+				5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5E3DAC711CAC84E300867721 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */,
+				5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */,
+				5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E92125E1C9293F600291735 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -210,23 +288,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5E9C15C51CA8FA22002F2F66 /* Sources */ = {
+		5EF00C0C1CAB752500F17138 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EFD5E1C1CA8FA6A00007413 /* GUI.swift in Sources */,
-				5EFD5E1D1CA8FA7B00007413 /* SliP.swift in Sources */,
-				5EFD5E1E1CA8FA7E00007413 /* JMP.swift in Sources */,
+				5EF00C221CAB753C00F17138 /* OSX.swift in Sources */,
+				5EF00C241CAB754C00F17138 /* SliP.swift in Sources */,
+				5EF00C231CAB754C00F17138 /* JMP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		5E9C15D31CA8FA22002F2F66 /* Main.storyboard */ = {
+		5E3DAC7B1CAC84E300867721 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				5E9C15D41CA8FA22002F2F66 /* Base */,
+				5E3DAC7C1CAC84E300867721 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5E3DAC801CAC84E300867721 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5E3DAC811CAC84E300867721 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		5EF00C1A1CAB752500F17138 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5EF00C1B1CAB752500F17138 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -234,6 +328,39 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5E3DAC841CAC84E300867721 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.moo.paraiso.iOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5E3DAC851CAC84E300867721 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.moo.paraiso.iOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5E673DE21C87C4EA00478AFD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -330,7 +457,7 @@
 			};
 			name = Release;
 		};
-		5E9C15D81CA8FA22002F2F66 /* Debug */ = {
+		5EF00C1F1CAB752500F17138 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -340,13 +467,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SliP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		5E9C15D91CA8FA22002F2F66 /* Release */ = {
+		5EF00C201CAB752500F17138 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -356,7 +483,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SliP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -365,6 +492,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5E3DAC861CAC84E300867721 /* Build configuration list for PBXNativeTarget "iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E3DAC841CAC84E300867721 /* Debug */,
+				5E3DAC851CAC84E300867721 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5E673DD81C87C4EA00478AFD /* Build configuration list for PBXProject "SliP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -383,11 +519,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5E9C15D71CA8FA22002F2F66 /* Build configuration list for PBXNativeTarget "SliP" */ = {
+		5EF00C1E1CAB752500F17138 /* Build configuration list for PBXNativeTarget "SliP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5E9C15D81CA8FA22002F2F66 /* Debug */,
-				5E9C15D91CA8FA22002F2F66 /* Release */,
+				5EF00C1F1CAB752500F17138 /* Debug */,
+				5EF00C201CAB752500F17138 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
