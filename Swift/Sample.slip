@@ -13,6 +13,14 @@
 5 % 3;
 
 
+//	Builtin functions and constants
+
+0 : cos;
+( M_PI ÷ 3 ) : cos;
+		//	Show all
+· : ¦;
+
+
 //	Bitwise operations
 
 2 | 3;
