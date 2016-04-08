@@ -1,7 +1,7 @@
 //	SliP ver 1.0(Swift) 2016 written by Satoru Ogura, Tokyo.
 //	This is sample script for SliP, please push 'CALCULATE' button.
 
-//	Four arithmetic operations
+"-------------------------------- Four arithmetic operations";
 //	Please insert spaces between operator and number.
 
 1 + 2;
@@ -13,7 +13,7 @@
 5 % 3;
 
 
-//	Builtin functions and constants
+"-------------------------------- Builtin functions and constants";
 
 0 : cos;
 ( M_PI ÷ 3 ) : cos;
@@ -21,39 +21,66 @@
 · : ¦;
 
 
-//	Bitwise operations
+"-------------------------------- Bitwise operations";
 
 2 | 3;
 2 & 3;
 2 ^ 3;
 
 
-//	Memory
+
+"-------------------------------- Memory";
 
 'a = 1 + 2;
 'b = 3 + 4;
 a + b;
 
+"-------------------------------- Big Integer";
 
-//	Logical
+'d2 = 3000000000;
+d2;
+'d3 = 10000000000000000000;
+d3;
+
+"----------------";
+
+d2 + d3;
+d2 - d3;
+d2 × d3;
+d2 ÷ d3;
+d2 / d3;
+d2 % d3;
+
+"----------------";
+
+d3 + d2;
+d3 - d2;
+d3 × d2;
+d3 ÷ d2;
+d3 / d2;
+d3 % d2;
+
+
+
+"-------------------------------- Logical";
 //	"T" for true, Nil i.e. '[ ]' for false.
 
 3 == 3;
 3 == 4;
 
 
-//	String
+"-------------------------------- String";
 
 "ABC" + "DEF";
 
 
-//	If else
+"-------------------------------- If else";
 
 3 == 3 ? [ "TRUE" "FALSE" ];
 3 == 4 ? [ "TRUE" "FALSE" ];
 
 
-//	Function
+"-------------------------------- Function";
 
 'add1 = '( @ + 1 );
 3 : add1;
@@ -79,7 +106,7 @@ a + b;
 10:fibonacci;
 
 
-//	List
+"-------------------------------- List";
 
 [ "A" "B" "C" ] + [ "D" "E" "F" ];
 [ "A" "B" "C" ]:0;	//	Lisp's CAR
@@ -90,13 +117,13 @@ a + b;
 
 "A", [ "B" "C" ];	//	Lisp's CONS
 
-//	Procedure
+"-------------------------------- Procedure";
 {	( 'a = 1 + 2 )
 	( 'b = 3 + 4 )
 	( a + b )
 };
 
-//	Function 2
+"-------------------------------- Function 2";
 
 'gcd = '(
 	@:1 == 0 ? [
@@ -115,13 +142,14 @@ a + b;
 [ [ 1 2 3 4 ]( @:0 + @:1 ) ]:reduce;
 [ [ 1 2 3 4 ]( @:0 × @:1 ) ]:reduce;
 
-//	Print
+
+"-------------------------------- Print";
 
 "This string goes to lower right text view.\n" : ¦;
 "This string also goes to lower right text view.\n" : ¦;
 
 
-//	Parallel evaluation
+"-------------------------------- Parallel evaluation";
 
 «
 	( { ( 'a = 3 ) a }:$ )
@@ -130,7 +158,7 @@ a + b;
 »;
 
 
-//	Members
+"-------------------------------- Members";
 
 "A" ∈ [ "A" "B" "C" ];
 "D" ∈ [ "A" "B" "C" ];
@@ -138,7 +166,7 @@ a + b;
 [ "A" "B" "C" ] ∋ "D";
 
 
-//	Comprehensive
+"-------------------------------- Comprehensive";
 
 'hanoi = '{
 	( 'n	= @:0 )

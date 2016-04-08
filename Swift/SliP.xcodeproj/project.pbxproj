@@ -14,6 +14,11 @@
 		5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
 		5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 		5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
+		5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
+		5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
+		5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
+		5E525BC51CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
+		5E525BC61CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
 		5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
 		5E9212651C9293F600291735 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212641C9293F600291735 /* main.swift */; };
 		5E92126B1C92989600291735 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
@@ -49,6 +54,8 @@
 		5E3DAC871CAC961300867721 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/iAd.framework; sourceTree = DEVELOPER_DIR; };
 		5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMP.swift; path = ../../JMP/Swift/JMP.swift; sourceTree = "<group>"; };
 		5E3DF2B91C8D49F4007A6F94 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
+		5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMPBigInteger.swift; path = ../../JMP/Swift/JMPBigInteger.swift; sourceTree = "<group>"; };
+		5E525BC41CB7E52700CEC182 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BigInteger.slip; sourceTree = "<group>"; };
 		5E7100C51CAB799000E1C341 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
 		5E9212621C9293F600291735 /* CUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E9212641C9293F600291735 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -103,8 +110,10 @@
 				5E3DAC871CAC961300867721 /* iAd.framework */,
 				5E1E2C111C87C5E100928E65 /* main.go */,
 				5E1E2C141C894E7200928E65 /* Test.slip */,
+				5E525BC41CB7E52700CEC182 /* BigInteger.slip */,
 				5E3DF2B91C8D49F4007A6F94 /* Sample.slip */,
 				5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */,
+				5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */,
 				5E9212691C92987400291735 /* SliP.swift */,
 				5E9212631C9293F600291735 /* CUI */,
 				5EF00C111CAB752500F17138 /* SliP */,
@@ -252,6 +261,7 @@
 				5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */,
 				5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */,
 				5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */,
+				5E525BC61CB7E52700CEC182 /* BigInteger.slip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +270,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EF00C191CAB752500F17138 /* Assets.xcassets in Resources */,
+				5E525BC51CB7E52700CEC182 /* BigInteger.slip in Resources */,
 				5EF00C1C1CAB752500F17138 /* Main.storyboard in Resources */,
 				5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */,
 			);
@@ -273,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */,
+				5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */,
 				5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */,
 			);
@@ -283,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E9212651C9293F600291735 /* main.swift in Sources */,
+				5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5E92126B1C92989600291735 /* SliP.swift in Sources */,
 				5E92126D1C929AB300291735 /* JMP.swift in Sources */,
 			);
@@ -293,6 +306,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EF00C221CAB753C00F17138 /* OSX.swift in Sources */,
+				5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5EF00C241CAB754C00F17138 /* SliP.swift in Sources */,
 				5EF00C231CAB754C00F17138 /* JMP.swift in Sources */,
 			);

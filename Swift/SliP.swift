@@ -45,12 +45,32 @@ Context {
 							v.append( try wArgs.m[ 1 ].Eval( c, p ) )
 						}
 						return List( v, wList.type )
-					} else {
-						throw Error.RuntimeError( "\(a):for" )
 					}
-				} else {
-					throw Error.RuntimeError( "\(a):for" )
 				}
+				throw Error.RuntimeError( "\(a):for" )
+			}
+		)
+		dicts.m[ "int" ] = Builtin(
+			{	c, p, a in
+				switch a {
+				case let w as StringL:
+					return IntNumber( MakeBigInteger( w.m ) )
+				case let w as List:
+					if let wString = w.m[ 0 ] as? StringL {
+						let	wRadix = ( w.m[ 1 ] as? IntNumber ) ?? IntNumber( int: 10 )
+						let	wMinus = w.m.count < 3 ? false : IsNil( w.m[ 2 ] )
+						return IntNumber(
+							MakeBigInteger(
+								wString.m
+							,	radix: wRadix.m.RemainderE()
+							,	minus: wMinus
+							)
+						)
+					}
+				default:
+					break
+				}
+				throw Error.RuntimeError( "\(a):int" )
 			}
 		)
 		dicts.m[ "M_E" ] = RealNumber( M_E )
@@ -160,7 +180,7 @@ MathFuncFI( f: ( Float64, Int ) -> Float64, _ name: String ) -> Builtin {
 	return Builtin(
 		{	c, p, a in
 			if let w = a as? List, let w0 = w.m[ 0 ] as? NumberL, let w1 = w.m[ 1 ] as? IntNumber {
-				return RealNumber( f( w0.Value(), w1.m ) )
+				return RealNumber( f( w0.Value(), w1.m.RemainderE() ) )
 			} else {
 				throw Error.RuntimeError( "\(a):\(name)" )
 			}
@@ -172,7 +192,7 @@ MathFuncIF( f: ( Int, Float64 ) -> Float64, _ name: String ) -> Builtin {
 	return Builtin(
 		{	c, p, a in
 			if let w = a as? List, let w0 = w.m[ 0 ] as? IntNumber, let w1 = w.m[ 1 ] as? NumberL {
-				return RealNumber( f( w0.m, w1.Value() ) )
+				return RealNumber( f( w0.m.RemainderE(), w1.Value() ) )
 			} else {
 				throw Error.RuntimeError( "\(a):\(name)" )
 			}
@@ -196,7 +216,7 @@ IMathFunc( f: Float64 -> Int, _ name: String ) -> Builtin {
 	return Builtin(
 		{	c, p, a in
 			if let w = a as? NumberL {
-				return IntNumber( f( w.Value() ) )
+				return IntNumber( int: f( w.Value() ) )
 			} else {
 				throw Error.RuntimeError( "\(a):\(name)" )
 			}
@@ -246,12 +266,13 @@ NumberL				:	Object {
 class
 IntNumber			:	NumberL {
 	let
-	m				:	Int
-	init(	_ a		:	Int ) { m = a }
+	m				:	BigInteger
+	init(	_ a		:	BigInteger ) { m = a }
+	init(	int		:	Int ) { m = MakeBigInteger( int ) }
 	override var
 	description		:	String { return "\(m)" }
 	override func
-	Value()			->	Float64 { return Float64( m ) }
+	Value()			->	Float64 { return m.Float() }
 }
 class
 RealNumber			:	NumberL {
@@ -495,7 +516,7 @@ Cdr = Builtin(
 let
 Count = Builtin(
 	{	c, p, a in
-		if let w = a as? List { return IntNumber( w.m.count ) }
+		if let w = a as? List { return IntNumber( int: w.m.count ) }
 		throw Error.RuntimeError( "\(a):#" )
 	}
 )
@@ -560,7 +581,12 @@ Apply = Operator(
 		switch r {
 		case let w as IntNumber:
 			if let wL = l as? List {
-				if w.m < wL.m.count { return wL.m[ w.m ] } else { throw Error.RuntimeError( "Index operation \(w) to \(l)" ) }
+				let	wIndex = w.m.RemainderE()
+				if wIndex < wL.m.count {
+					return wL.m[ wIndex ]
+				} else {
+					throw Error.RuntimeError( "Index operation \(w) to \(l)" )
+				}
 			}
 			throw Error.RuntimeError( "Index operation \(w) to \(l)" )
 		case let w as Name:
@@ -627,8 +653,11 @@ let
 Div = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber {
-			if wR.m != 0 {
-				return wL.m % wR.m == 0 ? IntNumber( wL.m + wR.m ) : RealNumber( wL.Value() / wR.Value() )
+			if !IsZero( wR.m ) {
+				do {
+					return try IsZero( wL.m % wR.m ) ? IntNumber( wL.m / wR.m ) : RealNumber( wL.Value() / wR.Value() )
+				} catch {
+				}
 			}
 		} else if let wL = l as? NumberL, let wR = r as? NumberL {
 			let wRv = wR.Value()
@@ -644,7 +673,12 @@ Div = Operator(
 let
 IDiv = Operator(
 	{	c, p, l, r in
-		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m / wR.m ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber {
+			do {
+				return try IntNumber( wL.m / wR.m )
+			} catch {
+			}
+		}
 		throw Error.RuntimeError( "\(l) / \(r)" )
 	}
 ,	5
@@ -653,7 +687,12 @@ IDiv = Operator(
 let
 Remainder = Operator(
 	{	c, p, l, r in
-		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m % wR.m ) }
+		if let wL = l as? IntNumber, let wR = r as? IntNumber {
+			do {
+				return try IntNumber( wL.m % wR.m )
+			} catch {
+			}
+		}
 		throw Error.RuntimeError( "\(l) % \(r)" )
 	}
 ,	5
@@ -824,7 +863,7 @@ ReadNumber( r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
 		default:
 			r.Unread( u )
 			if wRealF	{ if let w = Float64( v ) { return RealNumber( neg ? -w : w ) } }
-			else		{ if let w = Int( v ) { return IntNumber( neg ? -w : w ) } }
+			else		{ return IntNumber( MakeBigInteger( v, minus: neg ) ) }
 			throw Error.ReadError( "NumberFormat\(v)" )
 		}
 	}
