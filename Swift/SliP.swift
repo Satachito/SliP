@@ -224,12 +224,6 @@ IMathFunc( f: Float64 -> Int, _ name: String ) -> Builtin {
 	)
 }
 
-//protocol
-//String -> () {
-//	func
-//	Print( a: String )
-//}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Object				:	NSObject {
@@ -382,11 +376,12 @@ Dict				:	Object {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var
-sObject = Object()
 
 class
 List				:	Object {
+	static	let
+	object = Object()
+
 	func
 	EvalSentence( c: Context, _ p: String -> (), _ o: [ Object ] ) throws -> Object {
 		switch o.count {
@@ -448,7 +443,7 @@ List				:	Object {
 		case .Literal:
 			return self
 		case .Parallel:
-			var	v = [ Object ]( count: m.count, repeatedValue: sObject )
+			var	v = [ Object ]( count: m.count, repeatedValue: List.object )
 			let	wG = dispatch_group_create()
 			let	wQ = dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 )
 			
@@ -463,7 +458,7 @@ List				:	Object {
 			}
 			dispatch_group_wait( wG, DISPATCH_TIME_FOREVER )
 			for w in m {
-				if w == sObject { throw Error.RuntimeError( "Parallel" ) }	//	UC
+				if w == List.object { throw Error.RuntimeError( "Parallel" ) }	//	UC
 			}
 			return List( v, .Literal )
 		case .Block:
