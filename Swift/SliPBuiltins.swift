@@ -1,11 +1,5 @@
+//	Written by Satoru Ogura, Tokyo.
 //
-//  SliPBuiltins.swift
-//  SliP
-//
-//  Created by Satoru Ogura on 2016/04/21.
-//  Copyright © 2016年 Satoru Ogura. All rights reserved.
-//
-
 import Foundation
 
 func
