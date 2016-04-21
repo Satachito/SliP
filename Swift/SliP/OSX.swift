@@ -76,7 +76,7 @@ Document	:	NSDocument {
 			while true {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
-					if wObjects.count == 0 { break }
+					if wObjects.count == 0 { continue }
 					let w = try List( wObjects, .Sentence ).Eval(
 						wContext
 					,	{ a in Main{ self.output = self.output + a } }

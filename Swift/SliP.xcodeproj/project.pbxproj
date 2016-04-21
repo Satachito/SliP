@@ -14,6 +14,9 @@
 		5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
 		5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 		5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
+		5E42C6721CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
+		5E42C6731CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
+		5E42C6741CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
 		5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
 		5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
 		5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
@@ -54,6 +57,7 @@
 		5E3DAC871CAC961300867721 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/iAd.framework; sourceTree = DEVELOPER_DIR; };
 		5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMP.swift; path = ../../JMP/Swift/JMP.swift; sourceTree = "<group>"; };
 		5E3DF2B91C8D49F4007A6F94 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
+		5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
 		5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMPBigInteger.swift; path = ../../JMP/Swift/JMPBigInteger.swift; sourceTree = "<group>"; };
 		5E525BC41CB7E52700CEC182 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BigInteger.slip; sourceTree = "<group>"; };
 		5E7100C51CAB799000E1C341 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
@@ -115,6 +119,7 @@
 				5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */,
 				5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */,
 				5E9212691C92987400291735 /* SliP.swift */,
+				5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */,
 				5E9212631C9293F600291735 /* CUI */,
 				5EF00C111CAB752500F17138 /* SliP */,
 				5E3DAC761CAC84E300867721 /* iOS */,
@@ -283,6 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E42C6741CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
 				5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */,
 				5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */,
@@ -294,6 +300,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E42C6721CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
 				5E9212651C9293F600291735 /* main.swift in Sources */,
 				5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5E92126B1C92989600291735 /* SliP.swift in Sources */,
@@ -305,6 +312,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E42C6731CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
 				5EF00C221CAB753C00F17138 /* OSX.swift in Sources */,
 				5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5EF00C241CAB754C00F17138 /* SliP.swift in Sources */,
