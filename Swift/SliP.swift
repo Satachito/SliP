@@ -3,7 +3,7 @@
 import Foundation
 
 enum
-Error				:	ErrorType {
+SliPError			:	ErrorType {
 	case				ReadError( String )
 	case				RuntimeError( String )
 	case				UserException
@@ -59,7 +59,7 @@ Name				:	Object {
 			if let v = w.m[ m ] { return v }
 			wAL = w.next
 		}
-		throw Error.RuntimeError( "UndefinedName \(m)" )
+		throw SliPError.RuntimeError( "UndefinedName \(m)" )
 	}
 }
 
@@ -199,7 +199,7 @@ List				:	Object {
 	EvalSentence( c: Context, _ p: String -> (), _ o: [ Object ] ) throws -> Object {
 		switch o.count {
 		case  1:	return try o[ 0 ].Eval( c, p )
-		case  0, 2:	throw Error.RuntimeError( "No operator in \(List( o, .Sentence ))" )
+		case  0, 2:	throw SliPError.RuntimeError( "No operator in \(List( o, .Sentence ))" )
 		default:	break
 		}
 		var wTarget :	Operator?
@@ -220,7 +220,7 @@ List				:	Object {
 		if let w = wTarget {
 			return try w.m( c, p, EvalSentence( c, p, Array( o[ 0 ..< wIndex ] ) ), EvalSentence( c, p, Array( o[ wIndex+1 ..< o.count ] ) ) )
 		} else {
-			throw Error.RuntimeError( "No operator in \(List( o, .Sentence ))" )
+			throw SliPError.RuntimeError( "No operator in \(List( o, .Sentence ))" )
 		}
 	}
 	enum
@@ -271,7 +271,7 @@ List				:	Object {
 			}
 			dispatch_group_wait( wG, DISPATCH_TIME_FOREVER )
 			for w in m {
-				if w == List.object { throw Error.RuntimeError( "Parallel" ) }	//	UC
+				if w == List.object { throw SliPError.RuntimeError( "Parallel" ) }	//	UC
 			}
 			return List( v, .Literal )
 		case .Block:
@@ -303,7 +303,7 @@ let
 StackTop = Primitive(
 	{	c in
 		if let v = c.stack { return v.m }
-		throw Error.RuntimeError( "StackUnderflow" )
+		throw SliPError.RuntimeError( "StackUnderflow" )
 	}
 )
 
@@ -311,13 +311,13 @@ let
 CurrentDict = Primitive( { c in return Dict( c.dicts.m ) } )
 
 let
-Exception = Primitive( { c in throw Error.UserException } )
+Exception = Primitive( { c in throw SliPError.UserException } )
 
 let
 Cdr = Builtin(
 	{	c, p, a in
 		if let w = a as? List where w.m.count > 0 { return List( Array( w.m.dropFirst() ), w.type ) }
-		throw Error.RuntimeError( "\(a):*" )
+		throw SliPError.RuntimeError( "\(a):*" )
 	}
 )
 
@@ -325,7 +325,7 @@ let
 Count = Builtin(
 	{	c, p, a in
 		if let w = a as? List { return IntNumber( int: w.m.count ) }
-		throw Error.RuntimeError( "\(a):#" )
+		throw SliPError.RuntimeError( "\(a):#" )
 	}
 )
 
@@ -333,7 +333,7 @@ let
 Last = Builtin(
 	{	c, p, a in
 		if let w = a as? List where w.m.count > 0 { return w.m.last! }
-		throw Error.RuntimeError( "\(a):$" )
+		throw SliPError.RuntimeError( "\(a):$" )
 	}
 )
 
@@ -365,7 +365,7 @@ IfElse = Operator(
 		if let w = r as? List where w.type == .Literal && w.m.count == 2 {
 			return try IsNil( l ) ? w.m[ 1 ].Eval( c, p ) : w.m[ 0 ].Eval( c, p )
 		}
-		throw Error.RuntimeError( "\(l) ? \(r)" )
+		throw SliPError.RuntimeError( "\(l) ? \(r)" )
 	}
 ,	9
 )
@@ -378,7 +378,7 @@ Cons = Operator(
 			wM.insert( l, atIndex: 0 )
 			return List( wM, w.type )
 		}
-		throw Error.RuntimeError( "\(l) , \(r)" )
+		throw SliPError.RuntimeError( "\(l) , \(r)" )
 	}
 ,	7
 )
@@ -393,16 +393,16 @@ Apply = Operator(
 				if wIndex < wL.m.count {
 					return wL.m[ wIndex ]
 				} else {
-					throw Error.RuntimeError( "Index operation \(w) to \(l)" )
+					throw SliPError.RuntimeError( "Index operation \(w) to \(l)" )
 				}
 			}
-			throw Error.RuntimeError( "Index operation \(w) to \(l)" )
+			throw SliPError.RuntimeError( "Index operation \(w) to \(l)" )
 		case let w as Name:
 			let	wR = w.m
 			if let wL = l as? Dict {
 				return wL.m[ w.m ] ?? Nil
 			}
-			throw Error.RuntimeError( "Dict operation \(w) to \(l)" )
+			throw SliPError.RuntimeError( "Dict operation \(w) to \(l)" )
 		case let w as Builtin:
 			return try w.m( c, p, l )
 		case let w as List:
@@ -414,7 +414,7 @@ Apply = Operator(
 			defer{ c.Pop() }
 			return try w.Eval( c, p )
 		default:
-			throw Error.RuntimeError( "\(l) : \(r)" )
+			throw SliPError.RuntimeError( "\(l) : \(r)" )
 		}
 	}
 ,	0
@@ -452,7 +452,7 @@ Mul = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m * wR.m ) }
 		if let wL = l as? NumberL,	let wR = r as? NumberL { return RealNumber( wL.Value() * wR.Value() ) }
-		throw Error.RuntimeError( "\(l) × \(r)" )
+		throw SliPError.RuntimeError( "\(l) × \(r)" )
 	}
 ,	5
 )
@@ -473,7 +473,7 @@ Div = Operator(
 				return RealNumber( wL.Value() / wRv )
 			}
 		}
-		throw Error.RuntimeError( "\(l) ÷ \(r)" )
+		throw SliPError.RuntimeError( "\(l) ÷ \(r)" )
 	}
 ,	5
 )
@@ -487,7 +487,7 @@ IDiv = Operator(
 			} catch {
 			}
 		}
-		throw Error.RuntimeError( "\(l) / \(r)" )
+		throw SliPError.RuntimeError( "\(l) / \(r)" )
 	}
 ,	5
 )
@@ -501,7 +501,7 @@ Remainder = Operator(
 			} catch {
 			}
 		}
-		throw Error.RuntimeError( "\(l) % \(r)" )
+		throw SliPError.RuntimeError( "\(l) % \(r)" )
 	}
 ,	5
 )
@@ -513,7 +513,7 @@ Add = Operator(
 		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() + wR.Value() ) }
 		if let wL = l as? StringL, let wR = r as? StringL { return StringL( wL.m + wR.m ) }
 		if let wL = l as? List, let wR = r as? List where wL.type == wR.type { return List( wL.m + wR.m, wL.type ) }
-		throw Error.RuntimeError( "\(l) + \(r)" )
+		throw SliPError.RuntimeError( "\(l) + \(r)" )
 	}
 ,	6
 )
@@ -523,26 +523,10 @@ Minus = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m - wR.m ) }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() - wR.Value() ) }
-		throw Error.RuntimeError( "\(l) - \(r)" )
+		throw SliPError.RuntimeError( "\(l) - \(r)" )
 	}
 ,	6
 )
-
-func
-Equal( l: Object, _ r: Object ) -> Bool {
-	if let wL = l as? NumberL, let wR = r as? NumberL {
-		return wL.Value() == wR.Value()
-	}
-	if let wL = l as? StringL, let wR = r as? StringL { return wL.m == wR.m }
-	if let wL = l as? Name, let wR = r as? Name { return wL.m == wR.m }
-	if let wL = l as? List, let wR = r as? List {
-		if wL.type != wR.type { return false }
-		if wL.m.count != wR.m.count { return false }
-		for i in 0 ..< wL.m.count { if Equal( wL.m[ i ], wR.m[ i ] ) == Nil { return false } }
-		return true
-	}
-	return l == r
-}
 
 func
 == ( l: Object, r: Object ) -> Bool {
@@ -553,7 +537,7 @@ func
 	if let wL = l as? List, let wR = r as? List {
 		if wL.type != wR.type { return false }
 		if wL.m.count != wR.m.count { return false }
-		for i in 0 ..< wL.m.count { if Equal( wL.m[ i ], wR.m[ i ] ) == Nil { return false } }
+		for i in 0 ..< wL.m.count { if !( wL.m[ i ] == wR.m[ i ] ) { return false } }
 		return true
 	}
 	return l as NSObject == r as NSObject
@@ -561,7 +545,7 @@ func
 
 let
 Eq = Operator(
-	{ c, p, l, r in Equal( l, r ) ? T : Nil }
+	{ c, p, l, r in l == r ? T : Nil }
 ,	8
 )
 
@@ -570,7 +554,7 @@ GE = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m >= wR.m ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() >= wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) >= \(r)" )
+		throw SliPError.RuntimeError( "\(l) >= \(r)" )
 	}
 ,	8
 )
@@ -580,14 +564,14 @@ LE = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m <= wR.m ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() <= wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) <= \(r)" )
+		throw SliPError.RuntimeError( "\(l) <= \(r)" )
 	}
 ,	8
 )
 
 let
 Neq = Operator(
-	{ c, p, l, r in Equal( l, r ) ? Nil : T }
+	{ c, p, l, r in l == r ? Nil : T }
 ,	8
 )
 
@@ -596,7 +580,7 @@ LT = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m < wR.m ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() < wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) < \(r)" )
+		throw SliPError.RuntimeError( "\(l) < \(r)" )
 	}
 ,	8
 )
@@ -606,7 +590,7 @@ GT = Operator(
 	{	c, p, l, r in
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m > wR.m ? T : Nil }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return wL.Value() > wR.Value() ? T : Nil }
-		throw Error.RuntimeError( "\(l) > \(r)" )
+		throw SliPError.RuntimeError( "\(l) > \(r)" )
 	}
 ,	8
 )
@@ -618,7 +602,7 @@ Define = Operator(
 			c.dicts.m[ w.m ] = r
 			return l
 		}
-		throw Error.RuntimeError( "\(l) = \(r)" )
+		throw SliPError.RuntimeError( "\(l) = \(r)" )
 	}
 ,	10
 )
@@ -629,7 +613,7 @@ MemberOf = Operator(
 		if let wR = r as? List {
 			return wR.m.contains( { $0 == l } ) ? T : Nil
 		}
-		throw Error.RuntimeError( "\(l) ∈ \(r)" )
+		throw SliPError.RuntimeError( "\(l) ∈ \(r)" )
 	}
 ,	8
 )
@@ -640,15 +624,16 @@ Contains = Operator(
 		if let wL = l as? List {
 			return wL.m.contains( { $0 == r } ) ? T : Nil
 		}
-		throw Error.RuntimeError( "\(l) ∋ \(r)" )
+		throw SliPError.RuntimeError( "\(l) ∋ \(r)" )
 	}
 ,	8
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 func
-SkipWhite( r: Reader< UnicodeScalar > ) {
-	while let u = r.Read() {
+SkipWhite( r: Reader< UnicodeScalar > ) throws {
+	while true {
+		let u = try r.Read()
 		if !NSCharacterSet.whitespaceAndNewlineCharacterSet().longCharacterIsMember( u.value ) {
 			r.Unread( u )
 			break
@@ -661,7 +646,8 @@ func
 ReadNumber( r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
  	var	v = ""
 	var	wRealF = false
-	while let u = r.Read() {
+	while true {
+		let u = try r.Read()
 		switch u {
 		case	( "0"..."9" ), "+", "-":
 			v += String( u )
@@ -672,16 +658,16 @@ ReadNumber( r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
 			r.Unread( u )
 			if wRealF	{ if let w = Float64( v ) { return RealNumber( neg ? -w : w ) } }
 			else		{ return IntNumber( MakeBigInteger( v, minus: neg ) ) }
-			throw Error.ReadError( "NumberFormat\(v)" )
+			throw SliPError.ReadError( "NumberFormat\(v)" )
 		}
 	}
-	throw Error.ReadError( "EOD" )
 }
 
 func
 ReadName( r: Reader< UnicodeScalar > ) throws -> Object {
 	var	v = ""
-	while let u = r.Read() {
+	while true {
+		let u = try r.Read()
 		switch u {
 		case ( "0" ... "9" ), ( "a" ... "z" ), ( "A" ... "Z" ), "_":
 			v += String( u )
@@ -690,14 +676,14 @@ ReadName( r: Reader< UnicodeScalar > ) throws -> Object {
 			return Name( v )
 		}
 	}
-	throw Error.ReadError( "EOD" )
 }
 
 func
 ReadStr( r: Reader< UnicodeScalar > ) throws -> StringL {
 	var	v = ""
 	var	wEscaped = false
-	while let u = r.Read() {
+	while true {
+		let u = try r.Read()
 		if wEscaped {
 			wEscaped = false
 			switch u {
@@ -715,7 +701,6 @@ ReadStr( r: Reader< UnicodeScalar > ) throws -> StringL {
 			}
 		}
 	}
-	throw Error.ReadError( "EOD" )
 }
 
 func
@@ -727,98 +712,87 @@ ReadObjects( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws ->
 
 func
 Read( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
-	SkipWhite( r )
-	if let u = r.Read() {
-		switch u {
-		case terminator			:	return nil
-		case "}", "]", ")", "»"	:	throw Error.ReadError( "Unexpected \(u)" )
-		case "["				:	return List( try ReadObjects( r, "]" as UnicodeScalar ), .Literal )
-		case "«"				:	return List( try ReadObjects( r, "»" as UnicodeScalar ), .Parallel )
-		case "("				:	return List( try ReadObjects( r, ")" as UnicodeScalar ), .Sentence )
-		case "{"				:	return List( try ReadObjects( r, "}" as UnicodeScalar ), .Block )
-		case "\""				:	return try ReadStr( r )
-		case "'"				:	if let w = try Read( r ) { return Quote( w ) }; throw Error.ReadError( "No object to quote" )
-		case "`"				:	if let w = try Read( r ) { return Combiner( w ) }; throw Error.ReadError( "No object to combine" )
-		case "¡"				:	return Exception
-		case "@"				:	return StackTop
-		case "·"				:	return CurrentDict
-		case "*"				:	return Cdr
-		case "#"				:	return Count
-		case "$"				:	return Last
-		case "¦"				:	return Print
-		case "∈"				:	return MemberOf
-		case "∋"				:	return Contains
-		case "?"				:	return IfElse
-		case "¿"				:	return If
-		case ","				:	return Cons
-		case ":"				:	return Apply
-		case "&"				:	return And
-		case "^"				:	return Xor
-		case "|"				:	return Or
-		case "×"				:	return Mul
-		case "÷"				:	return Div
-		case "/"				:	return IDiv
-		case "%"				:	return Remainder
-		case "+"				:
-			if let w = r.Read() {
-				r.Unread( w )
-				switch w {
-				case ( "0"..."9" ), ".":
-									return try ReadNumber( r )
-				default			:	return Add
-				}
-			}
-			throw Error.ReadError( "EOD" )
-		case "-"				:
-			if let w = r.Read() {
-				r.Unread( w )
-				switch w {
-				case ( "0"..."9" ), ".":
-									return try ReadNumber( r, true )
-				default			:	return Minus
-				}
-			}
-			throw Error.ReadError( "EOD" )
-		case "="			:
-			if let w = r.Read() {
-				switch w {
-				case "="		:	return Eq
-				case ">"		:	return GE
-				case "<"		:	return LE
-				default			:	r.Unread( w )
-									return Define
-				}
-			}
-			throw Error.ReadError( "EOD" )
-		case "<"				:
-			if let w = r.Read() {
-				switch w {
-				case ">"		:	return Neq
-				case "="		:	return LE
-				default			:	r.Unread( w )
-									return LT
-				}
-			}
-			throw Error.ReadError( "EOD" )
-		case ">"				:
-			if let w = r.Read() {
-				switch w {
-				case "<"		:	return Neq
-				case "="		:	return GE
-				default			:	r.Unread( w )
-									return GT
-				}
-			}
-			throw Error.ReadError( "EOD" )
-		case ( "0"..."9" )		:	r.Unread( u )
-									return try ReadNumber( r )
-		case ( "a"..."z" ), ( "A"..."Z" ), "_":
-									r.Unread( u )
-									return try ReadName( r )
-		default					:	throw Error.ReadError( "Invalid character \(u):\(u.value)" )
+	try SkipWhite( r )
+	let u = try r.Read()
+	switch u {
+	case terminator			:	return nil
+	case "}", "]", ")", "»"	:	throw SliPError.ReadError( "Unexpected \(u)" )
+	case "["				:	return List( try ReadObjects( r, "]" as UnicodeScalar ), .Literal )
+	case "«"				:	return List( try ReadObjects( r, "»" as UnicodeScalar ), .Parallel )
+	case "("				:	return List( try ReadObjects( r, ")" as UnicodeScalar ), .Sentence )
+	case "{"				:	return List( try ReadObjects( r, "}" as UnicodeScalar ), .Block )
+	case "\""				:	return try ReadStr( r )
+	case "'"				:	if let w = try Read( r ) { return Quote( w ) }; throw SliPError.ReadError( "No object to quote" )
+	case "`"				:	if let w = try Read( r ) { return Combiner( w ) }; throw SliPError.ReadError( "No object to combine" )
+	case "¡"				:	return Exception
+	case "@"				:	return StackTop
+	case "·"				:	return CurrentDict
+	case "*"				:	return Cdr
+	case "#"				:	return Count
+	case "$"				:	return Last
+	case "¦"				:	return Print
+	case "∈"				:	return MemberOf
+	case "∋"				:	return Contains
+	case "?"				:	return IfElse
+	case "¿"				:	return If
+	case ","				:	return Cons
+	case ":"				:	return Apply
+	case "&"				:	return And
+	case "^"				:	return Xor
+	case "|"				:	return Or
+	case "×"				:	return Mul
+	case "÷"				:	return Div
+	case "/"				:	return IDiv
+	case "%"				:	return Remainder
+	case "+"				:
+		let w = try r.Read()
+		r.Unread( w )
+		switch w {
+		case ( "0"..."9" )
+		,	 "."			:	return try ReadNumber( r )
+		default				:	return Add
 		}
+	case "-"				:
+		let w = try r.Read()
+		r.Unread( w )
+		switch w {
+		case ( "0"..."9" )
+		,	 "."			:	return try ReadNumber( r, true )
+		default				:	return Minus
+		}
+	case "="			:
+		let w = try r.Read()
+		switch w {
+		case "="			:	return Eq
+		case ">"			:	return GE
+		case "<"			:	return LE
+		default				:	r.Unread( w )
+								return Define
+		}
+	case "<"				:
+		let w = try r.Read()
+		switch w {
+		case ">"			:	return Neq
+		case "="			:	return LE
+		default				:	r.Unread( w )
+								return LT
+		}
+	case ">"				:
+		let w = try r.Read()
+		switch w {
+		case "<"			:	return Neq
+		case "="			:	return GE
+		default				:	r.Unread( w )
+								return GT
+		}
+	case ( "0"..."9" )		:	r.Unread( u )
+								return try ReadNumber( r )
+	case ( "a"..."z" )
+	,	 ( "A"..."Z" )
+	,	"_"					:	r.Unread( u )
+								return try ReadName( r )
+	default					:	throw SliPError.ReadError( "Invalid character \(u):\(u.value)" )
 	}
-	return nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -835,11 +809,11 @@ GUIPreProcessor: Reader< UnicodeScalar > {
 		m = ( wLines as NSArray ).componentsJoinedByString( "\n" ).unicodeScalars
 	}
 	override func
-	_Read() -> UnicodeScalar? {
-		if m.count == 0 { return nil }
+	_Read() throws -> UnicodeScalar {
+		if m.count == 0 { throw ReaderError.EOD }
 		let v = m.first
 		m = m.dropFirst()
-		return v
+		return v!
 	}
 }
 

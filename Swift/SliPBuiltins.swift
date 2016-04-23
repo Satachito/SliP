@@ -17,7 +17,7 @@ Register( dicts: Cell< [ String: Object ] > ) {
 					return List( v, wList.type )
 				}
 			}
-			throw Error.RuntimeError( "\(a):for" )
+			throw SliPError.RuntimeError( "\(a):for" )
 		}
 	)
 	dicts.m[ "int" ] = Builtin(
@@ -40,7 +40,7 @@ Register( dicts: Cell< [ String: Object ] > ) {
 			default:
 				break
 			}
-			throw Error.RuntimeError( "\(a):int" )
+			throw SliPError.RuntimeError( "\(a):int" )
 		}
 	)
 	dicts.m[ "qr" ] = Builtin(
@@ -57,7 +57,7 @@ Register( dicts: Cell< [ String: Object ] > ) {
 				,	.Literal
 				)
 			}
-			throw Error.RuntimeError( "\(a):qr" )
+			throw SliPError.RuntimeError( "\(a):qr" )
 		}
 	)
 	dicts.m[ "string" ] = Builtin(
@@ -68,7 +68,7 @@ Register( dicts: Cell< [ String: Object ] > ) {
 				
 				return StringL( wL.m.StringRepresentation( wR.m.RemainderE() ) )
 			}
-			throw Error.RuntimeError( "\(a):string" )
+			throw SliPError.RuntimeError( "\(a):string" )
 		}
 	)
 	dicts.m[ "M_E" ] = RealNumber( M_E )
@@ -155,7 +155,7 @@ MathFunc( f: Float64 -> Float64, _ name: String ) -> Builtin {
 			if let w = a as? NumberL {
 				return RealNumber( f( w.Value() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)
@@ -167,7 +167,7 @@ MathFuncFF( f: ( Float64, Float64 ) -> Float64, _ name: String ) -> Builtin {
 			if let w = a as? List, let w0 = w.m[ 0 ] as? NumberL, let w1 = w.m[ 1 ] as? NumberL {
 				return RealNumber( f( w0.Value(), w1.Value() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)
@@ -179,7 +179,7 @@ MathFuncFI( f: ( Float64, Int ) -> Float64, _ name: String ) -> Builtin {
 			if let w = a as? List, let w0 = w.m[ 0 ] as? NumberL, let w1 = w.m[ 1 ] as? IntNumber {
 				return RealNumber( f( w0.Value(), w1.m.RemainderE() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)
@@ -191,7 +191,7 @@ MathFuncIF( f: ( Int, Float64 ) -> Float64, _ name: String ) -> Builtin {
 			if let w = a as? List, let w0 = w.m[ 0 ] as? IntNumber, let w1 = w.m[ 1 ] as? NumberL {
 				return RealNumber( f( w0.m.RemainderE(), w1.Value() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)
@@ -203,7 +203,7 @@ MathFuncFFF( f: ( Float64, Float64, Float64 ) -> Float64, _ name: String ) -> Bu
 			if let w = a as? List, let w0 = w.m[ 0 ] as? NumberL, let w1 = w.m[ 1 ] as? NumberL, let w2 = w.m[ 2 ] as? NumberL {
 				return RealNumber( f( w0.Value(), w1.Value(), w2.Value() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)
@@ -215,7 +215,7 @@ IMathFunc( f: Float64 -> Int, _ name: String ) -> Builtin {
 			if let w = a as? NumberL {
 				return IntNumber( int: f( w.Value() ) )
 			} else {
-				throw Error.RuntimeError( "\(a):\(name)" )
+				throw SliPError.RuntimeError( "\(a):\(name)" )
 			}
 		}
 	)

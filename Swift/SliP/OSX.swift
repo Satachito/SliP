@@ -76,13 +76,14 @@ Document	:	NSDocument {
 			while true {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
-					if wObjects.count == 0 { continue }
+					if wObjects.count == 0 { print( "-" ); continue }
 					let w = try List( wObjects, .Sentence ).Eval(
 						wContext
 					,	{ a in Main{ self.output = self.output + a } }
 					)
 					Main{ self.result = self.result + "\(w)\n" }
 				} catch let e {
+					if e is ReaderError { break }
 					Main{ self.result = self.result + "\(e)\n" }
 				}
 			}
