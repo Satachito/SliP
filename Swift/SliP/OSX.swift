@@ -24,7 +24,7 @@ OSXVC	: NSViewController {
 	}
 	
 	@IBAction func
-	DoInsert( a: NSButton ) {
+	DoInsert( _ a: NSButton ) {
 		if let w = sourceItemView as? NSTextView { w.insertText( a.title , replacementRange: w.selectedRange() ) }
 	}
 }

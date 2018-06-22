@@ -789,24 +789,22 @@ Read( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar(
 class
 GUIPreProcessor: Reader< UnicodeScalar > {
 	var
-	m		: String.UnicodeScalarView
+	m		: String.UnicodeScalarView.Iterator
 
 	init( _ p: String ) {
 		var wLines = p.components( separatedBy: NSCharacterSet.newlines )
 		for ( i, w ) in wLines.enumerated() {
-			wLines[ i ] = w.components( separatedBy: "//" )[ 0 ]
+			wLines[ i ] = w.components( separatedBy: "//" )[ 0 ].trimmingCharacters( in: .whitespaces )
 			if wLines[ i ].unicodeScalars.last == "=" {
 				wLines[ i ] = wLines[ i ].dropLast() + ":¦;"
 			}
 		}
-		m = ( wLines as NSArray ).componentsJoined( by: "\n" ).unicodeScalars
+		m = wLines.joined( separator: "\n" ).unicodeScalars.makeIterator()
 	}
 
 	override func
 	_Read() throws -> UnicodeScalar {
-		if m.count == 0 { throw ReaderError.eod }
-		let v = m.first!
-		m = String.UnicodeScalarView( m.dropFirst() )
+		guard let v = m.next() else { throw ReaderError.eod }
 		return v
 	}
 }

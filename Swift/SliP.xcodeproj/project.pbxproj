@@ -7,17 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E32145E20DD668A00131B26 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E32145D20DD668A00131B26 /* BigInteger.slip */; };
+		5E32146020DD669800131B26 /* Test.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E32145F20DD669800131B26 /* Test.slip */; };
+		5E32146220DD66AD00131B26 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E32146120DD66AD00131B26 /* Sample.slip */; };
 		5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DAC791CAC84E300867721 /* iOS.swift */; };
 		5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7B1CAC84E300867721 /* Main.storyboard */; };
 		5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7E1CAC84E300867721 /* Assets.xcassets */; };
 		5E3DAC821CAC84E300867721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC801CAC84E300867721 /* LaunchScreen.storyboard */; };
 		5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
-		5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
 		5E42C6731CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
 		5E42C6741CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
-		5E525BC51CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
-		5E525BC61CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
-		5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
 		5E9352431EAB4D7D006CCD97 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352411EAB4D7D006CCD97 /* JP.swift */; };
 		5E9352441EAB4D7D006CCD97 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352411EAB4D7D006CCD97 /* JP.swift */; };
 		5E9352471EAB4D87006CCD97 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */; };
@@ -43,16 +42,16 @@
 
 /* Begin PBXFileReference section */
 		5E1E2C111C87C5E100928E65 /* main.go */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.go; path = Sample/main.go; sourceTree = "<group>"; };
-		5E1E2C141C894E7200928E65 /* Test.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Test.slip; sourceTree = "<group>"; };
+		5E32145D20DD668A00131B26 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BigInteger.slip; path = ../BigInteger.slip; sourceTree = "<group>"; };
+		5E32145F20DD669800131B26 /* Test.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Test.slip; path = ../Test.slip; sourceTree = "<group>"; };
+		5E32146120DD66AD00131B26 /* Sample.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Sample.slip; path = ../Sample.slip; sourceTree = "<group>"; };
 		5E3DAC751CAC84E300867721 /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E3DAC791CAC84E300867721 /* iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS.swift; sourceTree = "<group>"; };
 		5E3DAC7C1CAC84E300867721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5E3DAC7E1CAC84E300867721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5E3DAC811CAC84E300867721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5E3DAC831CAC84E300867721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5E3DF2B91C8D49F4007A6F94 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
 		5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
-		5E525BC41CB7E52700CEC182 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BigInteger.slip; sourceTree = "<group>"; };
 		5E7100C51CAB799000E1C341 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
 		5E9212691C92987400291735 /* SliP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = SOURCE_ROOT; };
 		5E9352411EAB4D7D006CCD97 /* JP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JP.swift; path = ../../JP/JP.swift; sourceTree = "<group>"; };
@@ -108,9 +107,9 @@
 			isa = PBXGroup;
 			children = (
 				5E1E2C111C87C5E100928E65 /* main.go */,
-				5E1E2C141C894E7200928E65 /* Test.slip */,
-				5E525BC41CB7E52700CEC182 /* BigInteger.slip */,
-				5E3DF2B91C8D49F4007A6F94 /* Sample.slip */,
+				5E32146120DD66AD00131B26 /* Sample.slip */,
+				5E32145F20DD669800131B26 /* Test.slip */,
+				5E32145D20DD668A00131B26 /* BigInteger.slip */,
 				5E9352411EAB4D7D006CCD97 /* JP.swift */,
 				5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */,
 				5E9212691C92987400291735 /* SliP.swift */,
@@ -266,8 +265,6 @@
 				5E3DAC821CAC84E300867721 /* LaunchScreen.storyboard in Resources */,
 				5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */,
 				5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */,
-				5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */,
-				5E525BC61CB7E52700CEC182 /* BigInteger.slip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,9 +273,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EF00C191CAB752500F17138 /* Assets.xcassets in Resources */,
-				5E525BC51CB7E52700CEC182 /* BigInteger.slip in Resources */,
 				5EF00C1C1CAB752500F17138 /* Main.storyboard in Resources */,
-				5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */,
+				5E32146020DD669800131B26 /* Test.slip in Resources */,
+				5E32146220DD66AD00131B26 /* Sample.slip in Resources */,
+				5E32145E20DD668A00131B26 /* BigInteger.slip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
