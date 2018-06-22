@@ -15,7 +15,7 @@ iOSVC: UIViewController {
 	@IBAction func
 	DoLoadSample( _: AnyObject ) {
 		if	let wURL = ResourceURL( "Sample", "slip" )
-		,	let	wData = Data( wURL )
+		,	let	wData = try? Data( contentsOf: wURL )
 		,	let	wString = UTF8String( wData ) {
 			oFormularTV.text = wString
 			oFormularTV.scrollRangeToVisible( NSRange() )

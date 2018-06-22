@@ -3,10 +3,10 @@
 import Foundation
 
 enum
-SliPError			:	ErrorType {
-	case				ReadError( String )
-	case				RuntimeError( String )
-	case				UserException
+SliPError	:	Error {
+	case	ReadError( String )
+	case	RuntimeError( String )
+	case	UserException
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ Context {
 	stack			:	Cell< Object >?
 
 	func
-	Push( o: Object ) {
+	Push( _ o: Object ) {
 		stack = Cell( o, stack )
 	}
 	func
@@ -41,7 +41,7 @@ Context {
 class
 Object				:	NSObject {
 	func
-	Eval( c: Context, _ p: String -> () ) throws -> Object { return self }
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws -> Object { return self }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ Name				:	Object {
 	override var
 	description 	:	String { return m }
 	override func
-	Eval( c: Context, _ p: String -> () )	throws	->	Object {
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws -> Object {
 		var	wAL = c.dicts as Cell< [ String: Object ] >?
 		while let w = wAL {
 			if let v = w.m[ m ] { return v }
@@ -75,7 +75,7 @@ IntNumber			:	NumberL {
 	let
 	m				:	BigInteger
 	init(	_ a		:	BigInteger ) { m = a }
-	init(	int		:	Int ) { m = MakeBigInteger( int ) }
+	init(	_ a		:	Int ) { m = MakeBigInteger( a ) }
 	override var
 	description		:	String { return "\(m)" }
 	override func
@@ -106,20 +106,20 @@ StringL				:	Object {
 class
 Primitive			:	Object {
 	var
-	m				:	Context throws -> Object
-	init(	_ a		:	Context throws -> Object ) { m = a }
+	m				:	( Context ) throws -> Object
+	init(	_ a		:	@escaping ( Context ) throws -> Object ) { m = a }
 	override var
 	description		:	String { return "P" }
 	override func
-	Eval( c: Context, _ p: String -> () ) throws	->	Object { return try m( c ) }
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws	->	Object { return try m( c ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
 Builtin				:	Object {
 	var
-	m				:	( Context, String -> (), Object ) throws -> Object
-	init(	_ a		:	( Context, String -> (), Object ) throws -> Object ) { m = a }
+	m				:	( Context, @escaping ( String ) -> (), Object ) throws -> Object
+	init(	_ a		:	@escaping ( Context, @escaping ( String ) -> (), Object ) throws -> Object ) { m = a }
 	override var
 	description		:	String { return "B" }
 }
@@ -130,8 +130,8 @@ Operator			:	Object {
 	var
 	bond			:	Int
 	var
-	m				:	( Context, String -> (), Object, Object ) throws -> Object
-	init(	_ a		:	( Context, String -> (), Object, Object ) throws -> Object, _ pBond: Int ) { m = a; bond = pBond }
+	m				:	( Context, @escaping ( String ) -> (), Object, Object ) throws -> Object
+	init(	_ a		:	@escaping ( Context, @escaping ( String ) -> (), Object, Object ) throws -> Object, _ pBond: Int ) { m = a; bond = pBond }
 	override var
 	description		:	String { return ":\(bond)" }
 }
@@ -145,7 +145,7 @@ Quote				:	Object {
 	override var
 	description		:	String { return "'\(m)" }
 	override func
-	Eval( c: Context, _ p: String -> () ) throws	->	Object { return m }
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws	->	Object { return m }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ Combiner			:	Object {
 	override var
 	description		:	String { return "`\(m)" }
 	override func
-	Eval( c: Context, _ p: String -> () ) throws	->	Object { return EvalAssoc( m, c.dicts.m ) }
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws	->	Object { return EvalAssoc( m, c.dicts.m ) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ EvalAssoc			:	Object {
 	override var
 	description		:	String { return "<\(dict):\(m)>" }
 	override func
-	Eval( c: Context, _ p: String -> () ) throws	->	Object {
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws	->	Object {
 		c.dicts = Cell< [ String: Object ] >( dict, c.dicts )
 		defer{ c.dicts = c.dicts.next! }
 		return try m.Eval( c, p )
@@ -196,7 +196,7 @@ List				:	Object {
 	object = Object()
 
 	func
-	EvalSentence( c: Context, _ p: String -> (), _ o: [ Object ] ) throws -> Object {
+	EvalSentence( _ c: Context, _ p: @escaping ( String ) -> (), _ o: [ Object ] ) throws -> Object {
 		switch o.count {
 		case  1:	return try o[ 0 ].Eval( c, p )
 		case  0, 2:	throw SliPError.RuntimeError( "No operator in \(List( o, .Sentence ))" )
@@ -224,17 +224,17 @@ List				:	Object {
 		}
 	}
 	enum
-	Type {
+	ListType {
 		case Literal
 		case Parallel
 		case Block
 		case Sentence
 	}
 	let
-	type			:	Type
+	type			:	ListType
 	let
 	m				:	[ Object ]
-	init(	_ a		:	[ Object ], _ pType: Type ) { m = a; type = pType }
+	init(	_ a		:	[ Object ], _ pType: ListType ) { m = a; type = pType }
 	func
 	_Str()			->	String {
  		var	v = " "
@@ -251,17 +251,17 @@ List				:	Object {
 		}
 	}
 	override	func
-	Eval( c: Context, _ p: String -> () ) throws	->	Object {
+	Eval( _ c: Context, _ p: @escaping ( String ) -> () ) throws	->	Object {
 		switch type {
 		case .Literal:
 			return self
 		case .Parallel:
-			var	v = [ Object ]( count: m.count, repeatedValue: List.object )
-			let	wG = dispatch_group_create()
-			let	wQ = dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 )
+			var	v = [ Object ]( repeating: List.object, count: m.count )
+			let	wG = DispatchGroup()
+			let	wQ = DispatchQueue.global()
 			
-			for ( i, w ) in m.enumerate() {
-				dispatch_group_async( wG, wQ ) {
+			for ( i, w ) in m.enumerated() {
+				wQ.async( group: wG ) {
 					do {
 						v[ i ] = try w.Eval( Context( c ), p )
 					} catch let e {
@@ -269,7 +269,7 @@ List				:	Object {
 					}
 				}
 			}
-			dispatch_group_wait( wG, DISPATCH_TIME_FOREVER )
+			wG.wait()
 			for w in m {
 				if w == List.object { throw SliPError.RuntimeError( "Parallel" ) }	//	UC
 			}
@@ -277,8 +277,8 @@ List				:	Object {
 		case .Block:
 			c.dicts = Cell< [ String: Object ] >( [ String: Object ](), c.dicts )
 			defer{ c.dicts = c.dicts.next! }
-			var	v = [ Object ]( count: m.count, repeatedValue:Object() )
-			for ( i, w ) in m.enumerate() { v[ i ] = try w.Eval( c, p ) }
+			var	v = [ Object ]( repeating: Object(), count: m.count )
+			for ( i, w ) in m.enumerated() { v[ i ] = try w.Eval( c, p ) }
 			return List( v, .Literal )
 		case .Sentence:
 			return try EvalSentence( c, p, m )
@@ -288,7 +288,7 @@ List				:	Object {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 func
-IsNil( o: Object )	->	Bool {
+IsNil( _ o: Object )	->	Bool {
 	if let w = o as? List { return w.m.count == 0 }
 	return false
 }
@@ -316,7 +316,7 @@ Exception = Primitive( { c in throw SliPError.UserException } )
 let
 Cdr = Builtin(
 	{	c, p, a in
-		if let w = a as? List where w.m.count > 0 { return List( Array( w.m.dropFirst() ), w.type ) }
+		if let w = a as? List, w.m.count > 0 { return List( Array( w.m.dropFirst() ), w.type ) }
 		throw SliPError.RuntimeError( "\(a):*" )
 	}
 )
@@ -324,7 +324,7 @@ Cdr = Builtin(
 let
 Count = Builtin(
 	{	c, p, a in
-		if let w = a as? List { return IntNumber( int: w.m.count ) }
+		if let w = a as? List { return IntNumber( w.m.count ) }
 		throw SliPError.RuntimeError( "\(a):#" )
 	}
 )
@@ -332,7 +332,7 @@ Count = Builtin(
 let
 Last = Builtin(
 	{	c, p, a in
-		if let w = a as? List where w.m.count > 0 { return w.m.last! }
+		if let w = a as? List, w.m.count > 0 { return w.m.last! }
 		throw SliPError.RuntimeError( "\(a):$" )
 	}
 )
@@ -362,7 +362,7 @@ If = Operator(
 let
 IfElse = Operator(
 	{	c, p, l, r in
-		if let w = r as? List where w.type == .Literal && w.m.count == 2 {
+		if let w = r as? List, w.type == .Literal && w.m.count == 2 {
 			return try IsNil( l ) ? w.m[ 1 ].Eval( c, p ) : w.m[ 0 ].Eval( c, p )
 		}
 		throw SliPError.RuntimeError( "\(l) ? \(r)" )
@@ -375,7 +375,7 @@ Cons = Operator(
 	{	c, p, l, r in
 		if let w = r as? List {
 			var	wM = w.m
-			wM.insert( l, atIndex: 0 )
+			wM.insert( l, at: 0 )
 			return List( wM, w.type )
 		}
 		throw SliPError.RuntimeError( "\(l) , \(r)" )
@@ -512,7 +512,7 @@ Add = Operator(
 		if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m + wR.m ) }
 		if let wL = l as? NumberL, let wR = r as? NumberL { return RealNumber( wL.Value() + wR.Value() ) }
 		if let wL = l as? StringL, let wR = r as? StringL { return StringL( wL.m + wR.m ) }
-		if let wL = l as? List, let wR = r as? List where wL.type == wR.type { return List( wL.m + wR.m, wL.type ) }
+		if let wL = l as? List, let wR = r as? List, wL.type == wR.type { return List( wL.m + wR.m, wL.type ) }
 		throw SliPError.RuntimeError( "\(l) + \(r)" )
 	}
 ,	6
@@ -611,7 +611,7 @@ let
 MemberOf = Operator(
 	{	c, p, l, r in
 		if let wR = r as? List {
-			return wR.m.contains( { $0 == l } ) ? T : Nil
+			return wR.m.contains( l ) ? T : Nil
 		}
 		throw SliPError.RuntimeError( "\(l) ∈ \(r)" )
 	}
@@ -622,7 +622,7 @@ let
 Contains = Operator(
 	{	c, p, l, r in
 		if let wL = l as? List {
-			return wL.m.contains( { $0 == r } ) ? T : Nil
+			return wL.m.contains( r ) ? T : Nil
 		}
 		throw SliPError.RuntimeError( "\(l) ∋ \(r)" )
 	}
@@ -630,20 +630,10 @@ Contains = Operator(
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-func
-SkipWhite( r: Reader< UnicodeScalar > ) throws {
-	while true {
-		let u = try r.Read()
-		if !NSCharacterSet.whitespaceAndNewlineCharacterSet().longCharacterIsMember( u.value ) {
-			r.Unread( u )
-			break
-		}
-	}
-}
 
 
 func
-ReadNumber( r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
+ReadNumber( _ r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
  	var	v = ""
 	var	wRealF = false
 	while true {
@@ -657,14 +647,14 @@ ReadNumber( r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
 		default:
 			r.Unread( u )
 			if wRealF	{ if let w = Float64( v ) { return RealNumber( neg ? -w : w ) } }
-			else		{ return IntNumber( MakeBigInteger( v, minus: neg ) ) }
+			else		{ return IntNumber( MakeBigInteger( v, 10, neg ) ) }
 			throw SliPError.ReadError( "NumberFormat\(v)" )
 		}
 	}
 }
 
 func
-ReadName( r: Reader< UnicodeScalar > ) throws -> Object {
+ReadName( _ r: Reader< UnicodeScalar > ) throws -> Object {
 	var	v = ""
 	while true {
 		let u = try r.Read()
@@ -679,7 +669,7 @@ ReadName( r: Reader< UnicodeScalar > ) throws -> Object {
 }
 
 func
-ReadStr( r: Reader< UnicodeScalar > ) throws -> StringL {
+ReadStr( _ r: Reader< UnicodeScalar > ) throws -> StringL {
 	var	v = ""
 	var	wEscaped = false
 	while true {
@@ -704,14 +694,14 @@ ReadStr( r: Reader< UnicodeScalar > ) throws -> StringL {
 }
 
 func
-ReadObjects( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
+ReadObjects( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
 	var	v = [ Object ]()
 	while let w = try Read( r, terminator ) { v.append( w ) }
 	return v
 }
 
 func
-Read( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
+Read( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
 	try SkipWhite( r )
 	let u = try r.Read()
 	switch u {
@@ -731,8 +721,8 @@ Read( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0
 	case "#"				:	return Count
 	case "$"				:	return Last
 	case "¦"				:	return Print
-	case "∈"				:	return MemberOf
-	case "∋"				:	return Contains
+	case "∈"					:	return MemberOf
+	case "∋"					:	return Contains
 	case "?"				:	return IfElse
 	case "¿"				:	return If
 	case ","				:	return Cons
@@ -796,24 +786,30 @@ Read( r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class
 GUIPreProcessor: Reader< UnicodeScalar > {
 	var
-	m	= String.UnicodeScalarView()
-	init(	_ p	:	String ) {
-		var wLines = p.componentsSeparatedByCharactersInSet( NSCharacterSet.newlineCharacterSet() )
-		for ( i, w ) in wLines.enumerate() {
-			wLines[ i ] = w.componentsSeparatedByString( "//" )[ 0 ]
+	m		: String.UnicodeScalarView
+
+	init( _ p: String ) {
+		var wLines = p.components( separatedBy: NSCharacterSet.newlines )
+		for ( i, w ) in wLines.enumerated() {
+			wLines[ i ] = w.components( separatedBy: "//" )[ 0 ]
+			if wLines[ i ].unicodeScalars.last == "=" {
+				wLines[ i ] = wLines[ i ].dropLast() + ":¦;"
+			}
 		}
-		m = ( wLines as NSArray ).componentsJoinedByString( "\n" ).unicodeScalars
+		m = ( wLines as NSArray ).componentsJoined( by: "\n" ).unicodeScalars
 	}
+
 	override func
 	_Read() throws -> UnicodeScalar {
-		if m.count == 0 { throw ReaderError.EOD }
-		let v = m.first
-		m = m.dropFirst()
-		return v!
+		if m.count == 0 { throw ReaderError.eod }
+		let v = m.first!
+		m = String.UnicodeScalarView( m.dropFirst() )
+		return v
 	}
 }
+
+
 

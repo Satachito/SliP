@@ -11,30 +11,26 @@
 		5E3DAC7D1CAC84E300867721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7B1CAC84E300867721 /* Main.storyboard */; };
 		5E3DAC7F1CAC84E300867721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC7E1CAC84E300867721 /* Assets.xcassets */; };
 		5E3DAC821CAC84E300867721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DAC801CAC84E300867721 /* LaunchScreen.storyboard */; };
-		5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
 		5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 		5E3DAC8B1CAC9C0900867721 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
-		5E42C6721CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
 		5E42C6731CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
 		5E42C6741CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */; };
-		5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
-		5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
-		5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */; };
 		5E525BC51CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
 		5E525BC61CB7E52700CEC182 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E525BC41CB7E52700CEC182 /* BigInteger.slip */; };
 		5E7100C41CAB76E100E1C341 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B91C8D49F4007A6F94 /* Sample.slip */; };
-		5E9212651C9293F600291735 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212641C9293F600291735 /* main.swift */; };
-		5E92126B1C92989600291735 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
-		5E92126D1C929AB300291735 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
+		5E9352431EAB4D7D006CCD97 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352411EAB4D7D006CCD97 /* JP.swift */; };
+		5E9352441EAB4D7D006CCD97 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352411EAB4D7D006CCD97 /* JP.swift */; };
+		5E9352471EAB4D87006CCD97 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */; };
+		5E9352481EAB4D87006CCD97 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */; };
+		5E9352501EAB4F4E006CCD97 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E93524F1EAB4F4E006CCD97 /* main.cpp */; };
 		5EF00C191CAB752500F17138 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EF00C181CAB752500F17138 /* Assets.xcassets */; };
 		5EF00C1C1CAB752500F17138 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EF00C1A1CAB752500F17138 /* Main.storyboard */; };
 		5EF00C221CAB753C00F17138 /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF00C211CAB753C00F17138 /* OSX.swift */; };
-		5EF00C231CAB754C00F17138 /* JMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */; };
 		5EF00C241CAB754C00F17138 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9212691C92987400291735 /* SliP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		5E9212601C9293F600291735 /* CopyFiles */ = {
+		5E93524B1EAB4F4E006CCD97 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -54,16 +50,16 @@
 		5E3DAC7E1CAC84E300867721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5E3DAC811CAC84E300867721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5E3DAC831CAC84E300867721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5E3DAC871CAC961300867721 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/iAd.framework; sourceTree = DEVELOPER_DIR; };
-		5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMP.swift; path = ../../JMP/Swift/JMP.swift; sourceTree = "<group>"; };
 		5E3DF2B91C8D49F4007A6F94 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
 		5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
-		5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JMPBigInteger.swift; path = ../../JMP/Swift/JMPBigInteger.swift; sourceTree = "<group>"; };
 		5E525BC41CB7E52700CEC182 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BigInteger.slip; sourceTree = "<group>"; };
 		5E7100C51CAB799000E1C341 /* SliP.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SliP.entitlements; sourceTree = "<group>"; };
-		5E9212621C9293F600291735 /* CUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CUI; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E9212641C9293F600291735 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5E9212691C92987400291735 /* SliP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = SOURCE_ROOT; };
+		5E9352411EAB4D7D006CCD97 /* JP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JP.swift; path = ../../JP/JP.swift; sourceTree = "<group>"; };
+		5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JPBigInteger.swift; path = ../../JP/JPBigInteger.swift; sourceTree = "<group>"; };
+		5E93524D1EAB4F4E006CCD97 /* CUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CUI; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E93524F1EAB4F4E006CCD97 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		5E9352541EAB4F82006CCD97 /* JP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JP.h; path = ../../../JP/JP.h; sourceTree = "<group>"; };
 		5EF00C101CAB752500F17138 /* SliP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SliP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF00C181CAB752500F17138 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5EF00C1B1CAB752500F17138 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -79,7 +75,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5E92125F1C9293F600291735 /* Frameworks */ = {
+		5E93524A1EAB4F4E006CCD97 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -111,18 +107,17 @@
 		5E673DD41C87C4EA00478AFD = {
 			isa = PBXGroup;
 			children = (
-				5E3DAC871CAC961300867721 /* iAd.framework */,
 				5E1E2C111C87C5E100928E65 /* main.go */,
 				5E1E2C141C894E7200928E65 /* Test.slip */,
 				5E525BC41CB7E52700CEC182 /* BigInteger.slip */,
 				5E3DF2B91C8D49F4007A6F94 /* Sample.slip */,
-				5E3DF2B61C8D1EE9007A6F94 /* JMP.swift */,
-				5E525BC01CB79F6900CEC182 /* JMPBigInteger.swift */,
+				5E9352411EAB4D7D006CCD97 /* JP.swift */,
+				5E9352451EAB4D87006CCD97 /* JPBigInteger.swift */,
 				5E9212691C92987400291735 /* SliP.swift */,
 				5E42C6711CC85D4A009D33C2 /* SliPBuiltins.swift */,
-				5E9212631C9293F600291735 /* CUI */,
 				5EF00C111CAB752500F17138 /* SliP */,
 				5E3DAC761CAC84E300867721 /* iOS */,
+				5E93524E1EAB4F4E006CCD97 /* CUI */,
 				5E673DDE1C87C4EA00478AFD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,17 +125,18 @@
 		5E673DDE1C87C4EA00478AFD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5E9212621C9293F600291735 /* CUI */,
 				5EF00C101CAB752500F17138 /* SliP.app */,
 				5E3DAC751CAC84E300867721 /* iOS.app */,
+				5E93524D1EAB4F4E006CCD97 /* CUI */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5E9212631C9293F600291735 /* CUI */ = {
+		5E93524E1EAB4F4E006CCD97 /* CUI */ = {
 			isa = PBXGroup;
 			children = (
-				5E9212641C9293F600291735 /* main.swift */,
+				5E9352541EAB4F82006CCD97 /* JP.h */,
+				5E93524F1EAB4F4E006CCD97 /* main.cpp */,
 			);
 			path = CUI;
 			sourceTree = "<group>";
@@ -177,13 +173,13 @@
 			productReference = 5E3DAC751CAC84E300867721 /* iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5E9212611C9293F600291735 /* CUI */ = {
+		5E93524C1EAB4F4E006CCD97 /* CUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5E9212661C9293F600291735 /* Build configuration list for PBXNativeTarget "CUI" */;
+			buildConfigurationList = 5E9352511EAB4F4E006CCD97 /* Build configuration list for PBXNativeTarget "CUI" */;
 			buildPhases = (
-				5E92125E1C9293F600291735 /* Sources */,
-				5E92125F1C9293F600291735 /* Frameworks */,
-				5E9212601C9293F600291735 /* CopyFiles */,
+				5E9352491EAB4F4E006CCD97 /* Sources */,
+				5E93524A1EAB4F4E006CCD97 /* Frameworks */,
+				5E93524B1EAB4F4E006CCD97 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -191,7 +187,7 @@
 			);
 			name = CUI;
 			productName = CUI;
-			productReference = 5E9212621C9293F600291735 /* CUI */;
+			productReference = 5E93524D1EAB4F4E006CCD97 /* CUI */;
 			productType = "com.apple.product-type.tool";
 		};
 		5EF00C0F1CAB752500F17138 /* SliP */ = {
@@ -218,17 +214,22 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Satoru Ogura";
 				TargetAttributes = {
 					5E3DAC741CAC84E300867721 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 42D35TL6R9;
 					};
-					5E9212611C9293F600291735 = {
-						CreatedOnToolsVersion = 7.3;
+					5E93524C1EAB4F4E006CCD97 = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 42D35TL6R9;
+						ProvisioningStyle = Automatic;
 					};
 					5EF00C0F1CAB752500F17138 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 42D35TL6R9;
+						LastSwiftMigration = 0940;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 1;
@@ -250,9 +251,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5E9212611C9293F600291735 /* CUI */,
 				5EF00C0F1CAB752500F17138 /* SliP */,
 				5E3DAC741CAC84E300867721 /* iOS */,
+				5E93524C1EAB4F4E006CCD97 /* CUI */,
 			);
 		};
 /* End PBXProject section */
@@ -289,22 +290,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E42C6741CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
+				5E9352441EAB4D7D006CCD97 /* JP.swift in Sources */,
 				5E3DAC7A1CAC84E300867721 /* iOS.swift in Sources */,
-				5E525BC31CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5E3DAC8A1CAC9A9800867721 /* SliP.swift in Sources */,
-				5E3DAC891CAC9A9800867721 /* JMP.swift in Sources */,
+				5E9352481EAB4D87006CCD97 /* JPBigInteger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5E92125E1C9293F600291735 /* Sources */ = {
+		5E9352491EAB4F4E006CCD97 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E42C6721CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
-				5E9212651C9293F600291735 /* main.swift in Sources */,
-				5E525BC11CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
-				5E92126B1C92989600291735 /* SliP.swift in Sources */,
-				5E92126D1C929AB300291735 /* JMP.swift in Sources */,
+				5E9352501EAB4F4E006CCD97 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,10 +310,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E42C6731CC85D4A009D33C2 /* SliPBuiltins.swift in Sources */,
+				5E9352431EAB4D7D006CCD97 /* JP.swift in Sources */,
 				5EF00C221CAB753C00F17138 /* OSX.swift in Sources */,
-				5E525BC21CB79F6900CEC182 /* JMPBigInteger.swift in Sources */,
 				5EF00C241CAB754C00F17138 /* SliP.swift in Sources */,
-				5EF00C231CAB754C00F17138 /* JMP.swift in Sources */,
+				5E9352471EAB4D87006CCD97 /* JPBigInteger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,10 +353,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.moo.paraiso.iOS;
+				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -372,10 +370,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				INFOPLIST_FILE = iOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.moo.paraiso.iOS;
+				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -391,13 +390,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -420,11 +429,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -436,13 +446,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -459,22 +479,34 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
-		5E9212671C9293F600291735 /* Debug */ = {
+		5E9352521EAB4F4E006CCD97 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		5E9212681C9293F600291735 /* Release */ = {
+		5E9352531EAB4F4E006CCD97 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -487,11 +519,14 @@
 				CODE_SIGN_ENTITLEMENTS = SliP/SliP.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				INFOPLIST_FILE = SliP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -503,11 +538,14 @@
 				CODE_SIGN_ENTITLEMENTS = SliP/SliP.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 42D35TL6R9;
 				INFOPLIST_FILE = SliP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -532,11 +570,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5E9212661C9293F600291735 /* Build configuration list for PBXNativeTarget "CUI" */ = {
+		5E9352511EAB4F4E006CCD97 /* Build configuration list for PBXNativeTarget "CUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5E9212671C9293F600291735 /* Debug */,
-				5E9212681C9293F600291735 /* Release */,
+				5E9352521EAB4F4E006CCD97 /* Debug */,
+				5E9352531EAB4F4E006CCD97 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

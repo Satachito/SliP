@@ -3,11 +3,11 @@
 import Cocoa
 
 @NSApplicationMain class
-OSXAD	:	NSObject, NSApplicationDelegate {
+OSXAD	: NSObject, NSApplicationDelegate {
 }
 
 class
-OSXVC	:	NSViewController {
+OSXVC	: NSViewController {
 	@IBAction func
 	Do( _: AnyObject ) {
 		if let w = view.window?.windowController?.document as? Document { w.Do() }
@@ -16,7 +16,7 @@ OSXVC	:	NSViewController {
 	@IBAction func
 	DoLoadSample( _: AnyObject ) {
 		if	let wURL = ResourceURL( "Sample", "slip" )
-		,	let	wData = Data( wURL )
+		,	let	wData = try? Data( contentsOf: wURL )
 		,	let	wString = UTF8String( wData )
 		,	let w = view.window?.windowController?.document as? Document {
 			w.m = wString
@@ -30,36 +30,36 @@ OSXVC	:	NSViewController {
 }
 
 class
-Document	:	NSDocument {
+Document	: NSDocument {
 
-	dynamic	var	m = ""
-	dynamic	var	result = ""
-	dynamic	var	output = ""
+	@objc dynamic	var	m = ""
+	@objc dynamic	var	result = ""
+	@objc dynamic	var	output = ""
 
-	override class func
-	autosavesInPlace() -> Bool {
+	override class var
+	autosavesInPlace: Bool {
 		return true
 	}
 
 	override func
 	makeWindowControllers() {
 		addWindowController(
-			NSStoryboard( name: "Main", bundle: nil ).instantiateControllerWithIdentifier(
-				"Document Window Controller"
+			NSStoryboard( name: NSStoryboard.Name(rawValue: "Main"), bundle: nil ).instantiateController(
+				withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
 			) as! NSWindowController
 		)
 	}
 
 	override func
-	dataOfType( typeName: String ) throws -> NSData {
-		NSApplication.sharedApplication().keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
+	data( ofType typeName: String ) throws -> Data {
+		NSApplication.shared.keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
 		if let v = UTF8Data( m ) { return v } else {
 			throw NSError( domain: "ApplicationErrorDomain", code: 1, userInfo: nil )
 		}
 	}
 
 	override func
-	readFromData( data: NSData, ofType typeName: String ) throws {
+	read( from data: Data, ofType typeName: String ) throws {
 		if let w = UTF8String( data ) { m = w } else {
 			throw NSError( domain: "ApplicationErrorDomain", code: 2, userInfo: nil )
 		}
@@ -67,7 +67,7 @@ Document	:	NSDocument {
 
 	func
 	Do() {
-		NSApplication.sharedApplication().keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
+		NSApplication.shared.keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
 		let	wContext = Context()
 		let	wReader	= GUIPreProcessor( m )
 		result = ""
@@ -76,7 +76,6 @@ Document	:	NSDocument {
 			while true {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
-					if wObjects.count == 0 { print( "-" ); continue }
 					let w = try List( wObjects, .Sentence ).Eval(
 						wContext
 					,	{ a in Main{ self.output = self.output + a } }

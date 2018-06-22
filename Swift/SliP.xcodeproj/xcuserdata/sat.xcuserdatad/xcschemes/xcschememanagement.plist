@@ -7,17 +7,17 @@
 		<key>CUI.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<key>SliP.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<key>iOS.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -53,6 +53,11 @@
 			<true/>
 		</dict>
 		<key>5E9212611C9293F600291735</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5E93524C1EAB4F4E006CCD97</key>
 		<dict>
 			<key>primary</key>
 			<true/>

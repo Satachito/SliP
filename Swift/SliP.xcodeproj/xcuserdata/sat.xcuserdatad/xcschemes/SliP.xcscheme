@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0730"
+   LastUpgradeVersion = "0940"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5E9C15C81CA8FA22002F2F66"
+               BlueprintIdentifier = "5EF00C0F1CAB752500F17138"
                BuildableName = "SliP.app"
                BlueprintName = "SliP"
                ReferencedContainer = "container:SliP.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5E9C15C81CA8FA22002F2F66"
+            BlueprintIdentifier = "5EF00C0F1CAB752500F17138"
             BuildableName = "SliP.app"
             BlueprintName = "SliP"
             ReferencedContainer = "container:SliP.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5E9C15C81CA8FA22002F2F66"
+            BlueprintIdentifier = "5EF00C0F1CAB752500F17138"
             BuildableName = "SliP.app"
             BlueprintName = "SliP"
             ReferencedContainer = "container:SliP.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5E9C15C81CA8FA22002F2F66"
+            BlueprintIdentifier = "5EF00C0F1CAB752500F17138"
             BuildableName = "SliP.app"
             BlueprintName = "SliP"
             ReferencedContainer = "container:SliP.xcodeproj">
