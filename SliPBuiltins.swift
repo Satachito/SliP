@@ -21,24 +21,20 @@ SliPBuiltins() -> [ String: Object ] {
 	}
 	v[ "int" ] = Unary( "int" ) { c, p in
 		switch p {
-		case let w as StringL:
-			return IntNumber( MakeBigInteger( w.m ) )
-		case let w as List:
-			if let wString = w.m[ 0 ] as? StringL {
-				let	wRadix = ( w.m[ 1 ] as? IntNumber ) ?? IntNumber( 10 )
-				let	wMinus = w.m.count < 3 ? false : IsNil( w.m[ 2 ] )
-				return IntNumber(
-					MakeBigInteger(
-						wString.m
-					,	wRadix.m.NativeInt
-					,	wMinus
-					)
-				)
-			}
+		case let wStringL as StringL:
+			guard let v = try Read( StringUnicodeReader( wStringL.m ) ) as? IntNumber else { throw SliPError.RuntimeError( "\(p):int" ) }
+			return v
+		case let wList as List		:
+			guard
+				wList.m.count == 2
+			,	let wStringL = wList.m[ 0 ] as? StringL
+			,	let wIntNumber = wList.m[ 1 ] as? IntNumber
+			,	let v = MakeBigInteger( wStringL.m, wIntNumber.m.NativeInt )
+			else { throw SliPError.RuntimeError( "\(p):int" ) }
+			return IntNumber( v )
 		default:
-			break
+			throw SliPError.RuntimeError( "\(p):int" )
 		}
-		throw SliPError.RuntimeError( "\(p):int" )
 	}
 	v[ "qr" ] = Unary( "qr" ) { c, p in
 		if	let w = p as? List, w.m.count == 2

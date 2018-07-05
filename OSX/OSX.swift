@@ -38,7 +38,7 @@ Document	: NSDocument {
 
 	override class var
 	autosavesInPlace: Bool {
-		return true
+		return false
 	}
 
 	override func
@@ -69,15 +69,15 @@ Document	: NSDocument {
 	Do() {
 		NSApplication.shared.keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
 		let	wContext = Context( printer: { a in Main{ self.output = self.output + a } } )
-		let	wReader	= GUIPreProcessor( m )
+		let	wReader	= PreProcessor( m )
 		result = ""
 		output = ""
 		Sub {
 			while true {
 				do {
 					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
-					let w = try Sentence( wObjects ).Eval( wContext )
-					Main{ self.result = self.result + "\(w)\n" }
+					let v = try Sentence( wObjects ).Eval( wContext )
+					Main{ self.result = self.result + v.debug + "\n" }
 				} catch let e {
 					if e is ReaderError { break }
 					Main{ self.result = self.result + "\(e)\n" }

@@ -1,6 +1,45 @@
 //	SliP ver 1.0(Swift) 2016 written by Satoru Ogura, Tokyo.
-//	This is sample script for SliP, please push 'CALCULATE' button.
-
+//	This is sample script for SliP.
+//
+//
+//		push 'CALCULATE' button.
+//
+//
+"-------------------------------- Integer" =
+0 =
+1 =
+-1 =
+-0 =
+"-------------------------------- Integer(Big)" =
+18,446,744,073,709,551,616 =
+-18,446,744,073,709,551,616 =
++18,446,744,073,709,551,616 =
+[ "10000000000000000" 16 ] : int =
+[ "-10000000000000000" 16 ] : int =
+[ "+10000000000000000" 16 ] : int =
+"-------------------------------- Real" =
+0.0 =
+1.1 =
+-1.1 =
+-0.0 =
+"-------------------------------- Real(Exp)" =
+0e1 =
+1e1 =
+-1e1 =
+-0e1 =
+0e-1 =
+1e-1 =
+-1e-1 =
+-0e-1 =
+"-------------------------------- Real(Exp2)" =
+0e100 =
+1e100 =
+-1e100 =
+-0e100 =
+0e-100 =
+1e-100 =
+-1e-100 =
+-0e-100 =
 "-------------------------------- Four arithmetic operations" =
 //	Please insert spaces between operator and number.
 
@@ -17,9 +56,6 @@
 
 0 : cos =
 ( M_PI ÷ 3 ) : cos =
-		//	Show all
-· : ¦;
-
 
 "-------------------------------- Bitwise operations" =
 
@@ -230,4 +266,7 @@ d3 % d2 =
 };
 [ 3 "a" "b" "c" ]:hanoi;
 
+"-------------------------------- Builtins" =
+		//	Show all
+· : ¦;
 

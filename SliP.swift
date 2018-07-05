@@ -45,32 +45,13 @@ Context {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-Object				 {
+Object				{
+	var
+	debug			: String { return "" }
+	var
+	str				: String { return "" }
 	func
 	Eval(	_ c		: Context ) throws -> Object { return self }
-	var
-	description		: String { return "" }
-	var
-	debugDescription: String { return description }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class
-Name				: Object {
-	let
-	m				: String
-	init(	_ p		: String ) { m = p }
-	override var
-	debugDescription: String { return m }
-	override func
-	Eval(	_ c		: Context ) throws -> Object {
-		var	wAL = c.dicts
-		while let w = wAL {
-			if let v = w.m[ m ] { return v }
-			wAL = w.next
-		}
-		throw SliPError.RuntimeError( "UndefinedName \(m)" )
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +68,9 @@ IntNumber			: Numeric {
 	init(	_ p		: BigInteger ) { m = p }
 	init(	_ p		: Int ) { m = MakeBigInteger( p ) }
 	override var
-	description		: String { return m.description }
+	debug			: String { return m.description }
+	override var
+	str				: String { return m.description }
 	override var
 	v				: Float64 { return m.NativeFloat }
 }
@@ -97,7 +80,9 @@ RealNumber			: Numeric {
 	m				: Float64
 	init(	_ p		: Float64 ) { m = p }
 	override var
-	description		: String { return "\(m)" }
+	debug			: String { return "\(m)" }
+	override var
+	str				: String { return "\(m)" }
 	override var
 	v				: Float64 { return m }
 }
@@ -109,9 +94,28 @@ StringL				: Object {
 	m				: String
 	init(	_ p		: String ) { m = p }
 	override var
-	description		: String { return m }
+	debug			: String { return "\"\(m)\"" }
 	override var
-	debugDescription: String { return "\"" + m + "\"" }
+	str				: String { return m }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class
+Name				: Object {
+	let
+	m				: String
+	init(	_ p		: String ) { m = p }
+	override var
+	debug			: String { return m }
+	override func
+	Eval(	_ c		: Context ) throws -> Object {
+		var	wAL = c.dicts
+		while let w = wAL {
+			if let v = w.m[ m ] { return v }
+			wAL = w.next
+		}
+		throw SliPError.RuntimeError( "UndefinedName \(m)" )
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +127,7 @@ Primitive			: Object {
 	m				: ( Context ) throws -> Object
 	init(	_ pName : String, _ p: @escaping ( Context ) throws -> Object ) { name = pName; m = p }
 	override var
-	debugDescription: String { return name }
+	debug			: String { return name }
 	override func
 	Eval(	_ c		: Context ) throws	->	Object { return try m( c ) }
 }
@@ -137,7 +141,7 @@ Unary				: Object {
 	m				: ( Context, Object ) throws -> Object
 	init(	_ pName : String, _ p: @escaping ( Context, Object ) throws -> Object ) { name = pName; m = p }
 	override var
-	debugDescription: String { return name }
+	debug			: String { return name + "()" }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +155,8 @@ Dyadic				: Object {
 	m				: ( Context, Object, Object ) throws -> Object
 	init(	_ pName	: String, _ pPriority: Int, _ p: @escaping ( Context, Object, Object ) throws -> Object ) { name = pName; priority = pPriority; m = p }
 	override var
-	debugDescription: String { return name + "«\(priority)»" }
+	debug			: String { return name }
+//	debug			: String { return "\(name)«\(priority)»" }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,9 +166,9 @@ Quote				: Object {
 	m				: Object
 	init(	_ p		: Object ) { m = p }
 	override var
-	debugDescription: String { return "'" + m.debugDescription }
+	debug			: String { return "'" + m.debug }
 	override func
-	Eval(	_ c		: Context ) throws	->	Object { return m }
+	Eval(	_ c		: Context ) throws -> Object { return m }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,13 +177,13 @@ Combiner			: Object {
 	let
 	m				: Object
 	init(	_ p		: Object ) { m = p }
-	override var
-	debugDescription: String { return "`" + m.debugDescription }
 	override func
 	Eval(	_ c		: Context ) throws	-> Object {
 		guard let wDicts = c.dicts else { fatalError() }
 		return Assoc( m, wDicts.m )
 	}
+	override var
+	debug			: String { return "`" + m.debug }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,24 +194,29 @@ Assoc				: Object {
 	let
 	dict			: [ String: Object ]
 	init(	_ p		: Object, _ pDict: [ String: Object ] ) { m = p; dict = pDict }
-	override var
-	debugDescription: String { return "<\(dict):\(m)>" }
 	override func
 	Eval(	_ c		: Context ) throws	->	Object {
 		c.dicts = Cell< [ String: Object ] >( dict, c.dicts )
 		defer{ c.dicts = c.dicts!.next }
 		return try m.Eval( c )
 	}
+	override var
+	debug			: String { return "<\(dict):\(m.debug)>" }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class
 Dict				: Object {
 	let
 	m				: [ String: Object ]
 	init(	_ p		: [ String: Object ] ) { m = p }
 	override var
-	debugDescription: String { return "<\(m)>" }
+	debug			: String {
+						var	v = [ String ]()
+						for ( k, w ) in m { v.append( k + "\t" + w.debug ) }
+						return "<\t" + v.joined( separator: "\n,\t" ) + "\n>"
+					}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,9 +232,9 @@ List				: Object {
 	init(	_ p		: [ Object ] ) { m = p }
 	
 	override	var
-	debugDescription: String {
+	debug			: String {
  		var	v = " "
-		for w in m { v += w.debugDescription + " " }
+		for w in m { v += w.debug + " " }
 		return v
 	}
 }
@@ -235,16 +245,13 @@ ListL				: List {
 	override
 	init(	_ p		: [ Object ] ) { super.init( p ) }
 	override	var
-	debugDescription: String { return "[" + super.debugDescription + "]" }
+	debug			: String { return "[" + super.debug + "]" }
 }
 
 class
 Parallel			: List {
 	override
 	init(	_ p		: [ Object ] ) { super.init( p ) }
-	override	var
-	debugDescription: String { return "«" + super.debugDescription + "»" }
-
 	override	func
 	Eval(	_ c		: Context ) throws -> Object {
 		var	v = [ Object ]( repeating: List.object, count: m.count )
@@ -266,20 +273,23 @@ Parallel			: List {
 		}
 		return Parallel( v )
 	}
+	override	var
+	debug			: String { return "«" + super.debug + "»" }
 }
 
 class
 Sentence			: List {
 	override
 	init(	_ p		: [ Object ] ) { super.init( p ) }
-	override	var
-	debugDescription: String { return "(" + super.debugDescription + ")" }
 	override	func
 	Eval(	_ c		: Context ) throws -> Object {
 		return try Sentence.Eval( c, ArraySlice( m ) )
 	}
 	static	func
 	Eval(	_ c		: Context, _ p: ArraySlice< Object > ) throws -> Object {
+
+		guard p.count > 0 else { throw SliPError.RuntimeError( "Null sentence: \(Sentence( Array( p ) ).debug)" ) }
+
 		if p.count == 1 { return try p[ p.startIndex ].Eval( c ) }
 
 		var wTarget :	Dyadic?
@@ -287,7 +297,7 @@ Sentence			: List {
 		for i in 1 ..< p.count - 1 {
 			if let w = p[ p.startIndex + i ] as? Dyadic {
 				if let wCurrent = wTarget {
-					if w.priority >= wCurrent.priority {
+					if wCurrent.priority > 0 && w.priority <= wCurrent.priority {
 						wTarget = w
 						wIndex = p.startIndex + i
 					}
@@ -298,37 +308,39 @@ Sentence			: List {
 			}
 		}
 		if let w = wTarget {
-/*
-func
-DebStr( _ p: ArraySlice< Object > ) -> String {
-	var	v = "["
-	for w in p { v += " " + w.debugDescription }
-	return v + " ]"
-}
-print(
-	c.stack != nil ? c.stack!.m.debugDescription : "NIL"
-,	w.debugDescription
-,	DebStr( p[ p.startIndex ..< wIndex ] )
-,	DebStr( p[ wIndex + 1 ..< p.startIndex + p.count ] )
-//,	try Eval( c, p[ p.startIndex ..< wIndex ] )
-//,	try Eval( c, p[ wIndex + 1 ..< p.startIndex + p.count ] )
-)
-*/
+
+//func
+//DebStr( _ p: ArraySlice< Object > ) -> String {
+//	var	v = "["
+//	for w in p { v += " " + w.debug }
+//	return v + " ]"
+//}
+//print(
+//	c.stack != nil ? c.stack!.m.debug : "NIL"
+//,	w.debug
+//,	DebStr( p[ p.startIndex ..< wIndex ] )
+//,	DebStr( p[ wIndex + 1 ..< p.startIndex + p.count ] )
+////,	try Eval( c, p[ p.startIndex ..< wIndex ] )
+////,	try Eval( c, p[ wIndex + 1 ..< p.startIndex + p.count ] )
+//)
+
 			let v = try w.m( c, Eval( c, p[ p.startIndex ..< wIndex ] ), Eval( c, p[ wIndex + 1 ..< p.startIndex + p.count ] ) )
-//print( ">>", v.debugDescription )
+
+//print( ">>", v.debug )
+
 			return v
 		} else {
-			throw SliPError.RuntimeError( "No operator in \(Sentence( Array( p ) ) )" )
+			throw SliPError.RuntimeError( "No operator in: \(Sentence( Array( p ) ).debug)" )
 		}
 	}
+	override	var
+	debug			: String { return "(" + super.debug + ")" }
 }
 
 class
 Procedure			: List {
 	override
 	init(	_ p		: [ Object ] ) { super.init( p ) }
-	override	var
-	debugDescription: String { return "{" + super.debugDescription + "}" }
 	override	func
 	Eval(	_ c		: Context ) throws -> Object {
 		let	wContext = Context( parent: c )
@@ -336,6 +348,8 @@ Procedure			: List {
 		for ( i, w ) in m.enumerated() { v[ i ] = try w.Eval( wContext ) }
 		return Parallel( v )
 	}
+	override	var
+	debug			: String { return "{" + super.debug + "}" }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -370,32 +384,69 @@ Object: Equatable {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func
-ReadNumber( _ r: Reader< UnicodeScalar >, _ neg: Bool = false ) throws -> Object {
+ReadNumber( _ r: Reader< UnicodeScalar > ) throws -> Object {
  	var	v = ""
+ 	var	wNeg = false
 	var	wRealF = false
-	while true {
+	func
+	ReturnReal() throws -> Object {
+		guard let w = Float64( v ) else { throw SliPError.RuntimeError( "NumberFormat:" + v )  }
+		return RealNumber( wNeg ? -w : w )
+	}
+	func
+	Return() throws -> Object {
+		if wRealF {
+			return try ReturnReal()
+		} else {
+			guard let w = MakeBigInteger( v, 10 ) else { throw SliPError.RuntimeError( "NumberFormat:" + v )  }
+			return IntNumber( w )
+		}
+	}
+	repeat {
 		let u = try r.Read()
 		switch u {
-		case	( "0"..."9" ), "+", "-":
+		case	"0"..."9":
 			v.append( Character( u ) )
-		case	".", "e", "E":
+		case	"+", "-":
+			if v == "" { v.append( Character( u ) ) }
+			else {
+				if v.last == "e" || v.last == "E" {
+					v.append( Character( u ) )
+				} else {
+					r.Unread( u )
+					return try Return()
+				}
+			}
+		case	".":
 			if wRealF {
-				guard let w = Float64( v ) else { fatalError() }
 				r.Unread( u )
-				return RealNumber( neg ? -w : w )
+				return try ReturnReal()
 			}
 			v.append( Character( u ) )
 			wRealF = true
+		case	"e", "E":
+			if wRealF {
+				v.append( Character( u ) )
+				throw SliPError.RuntimeError( "NumberFormat:" + v )
+			}
+			v.append( Character( u ) )
+			wRealF = true
+		case	",":
+			let w = try r.Read()
+			r.Unread( w )
+			switch w {
+			case	( "0"..."9" ):
+				break
+			default:
+				r.Unread( u )
+				return try Return()
+			}
 		default:
 			r.Unread( u )
-			if wRealF	{
-				guard let w = Float64( v ) else { fatalError() }
-				return RealNumber( neg ? -w : w )
-			} else {
-				return IntNumber( MakeBigInteger( v, 10, neg ) )
-			}
+			return try Return()
 		}
-	}
+//		print( v )
+	} while true
 }
 
 func
@@ -404,7 +455,7 @@ ReadName( _ r: Reader< UnicodeScalar > ) throws -> Object {
 	while true {
 		let u = try r.Read()
 		switch u {
-		case ( "0" ... "9" ), ( "a" ... "z" ), ( "A" ... "Z" ), "_":
+		case "0" ... "9", "a" ... "z", "A" ... "Z", "_":
 			v.append( Character( u ) )
 		default:
 			r.Unread( u )
@@ -440,12 +491,10 @@ ReadStr( _ r: Reader< UnicodeScalar > ) throws -> StringL {
 
 func
 ReadObjects( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
-//print( terminator )
 	var	v = [ Object ]()
 	while let w = try Read( r, terminator ) {
 		v.append( w )
 	}
-//print( v )
 	return v
 }
 
@@ -463,11 +512,11 @@ let	CurretDict		=	Primitive( "·" ) { c in
 
 let	Eval			=	Unary( "!" ) { c, p in try p.Eval( c ) }
 let	Count			=	Unary( "#" ) { c, p in
-							guard let w = p as? List else { throw SliPError.RuntimeError( "\(p):#" ) }
+							guard let w = p as? List else { throw SliPError.RuntimeError( "\(p.debug):#" ) }
 							return IntNumber( w.m.count )
 						}
 let	Cdr				=	Unary( "*" ) { c, p in
-							guard let w = p as? List, w.m.count > 0 else { throw SliPError.RuntimeError( "\(p):*" ) }
+							guard let w = p as? List, w.m.count > 0 else { throw SliPError.RuntimeError( "\(p.debug):*" ) }
 							switch w {
 							case is ListL		: return ListL		( Array( w.m.dropFirst() ) )
 							case is Parallel	: return Parallel	( Array( w.m.dropFirst() ) )
@@ -477,26 +526,26 @@ let	Cdr				=	Unary( "*" ) { c, p in
 							}
 						}
 let	Last			=	Unary( "$" ) { c, p in
-							guard let w = p as? List, let v = w.m.last else { throw SliPError.RuntimeError( "\(p):$" ) }
+							guard let w = p as? List, let v = w.m.last else { throw SliPError.RuntimeError( "\(p.debug):$" ) }
 							return v
 						}
 let	Print			=	Unary( "." ) { c, p in
-							c.printer( p.description )
+							c.printer( p.str )
 							return p
 						}
 let	Dump			=	Unary( "¦" ) { c, p in
-							c.printer( p.debugDescription + "\n" )
+							c.printer( p.debug + "\n" )
 							return p
 						}
 
-let	Apply			=	Dyadic( ":", 0 ) { c, l, r in
+let	Apply			=	Dyadic( ":", 10 ) { c, l, r in
 							switch r {
 							case let wR as IntNumber:
-								guard let wL = l as? List else { throw SliPError.RuntimeError( "Index operation \(r) to \(l)" ) }
+								guard let wL = l as? List else { throw SliPError.RuntimeError( "Index operation \(r.debug) to \(l.debug)" ) }
 								let wIndex = wR.m.NativeInt
 								return wIndex < wL.m.count ? wL.m[ wL.m.startIndex + wIndex ] : Nil
 							case let wR as Name:
-								guard let wL = l as? Dict else { throw SliPError.RuntimeError( "Dict operation \(r) to \(l)" ) }
+								guard let wL = l as? Dict else { throw SliPError.RuntimeError( "Dict operation \(r.debug) to \(l.debug)" ) }
 								return wL.m[ wR.m ] ?? Nil
 							case let wR as Unary:
 								return try wR.m( c, l )
@@ -505,37 +554,55 @@ let	Apply			=	Dyadic( ":", 0 ) { c, l, r in
 								defer{ c.Pop() }
 								return try r.Eval( c )
 							default:
-								throw SliPError.RuntimeError( "\(l) : \(r)" )
+								throw SliPError.RuntimeError( "\(l.debug) : \(r.debug)" )
 							}
 						}
-let	EQ				=	Dyadic( "==", 8 ) { c, l, r in l == r ? T : Nil }
-let	NE				=	Dyadic( "<>", 8 ) { c, l, r in l != r ? T : Nil }
-let	LT				=	Dyadic( "<", 8 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m < wR.m ? T : Nil }
-							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v < wR.v ? T : Nil }
-							throw SliPError.RuntimeError( "\(l) < \(r)" )
+
+let	Or				=	Dyadic( "|" ,  9 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m | wR.m ) }
+							return IsNil( l ) || IsNil( r ) ? T : Nil
 						}
-let	GT				=	Dyadic( ">", 8 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m > wR.m ? T : Nil }
-							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v > wR.v ? T : Nil }
-							throw SliPError.RuntimeError( "\(l) > \(r)" )
+let	XOr				=	Dyadic( "^" ,  9 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m ^ wR.m ) }
+							return IsNil( l ) != IsNil( r ) ? T : Nil
 						}
-let	LE				=	Dyadic( "<=", 8 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m <= wR.m ? T : Nil }
-							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v <= wR.v ? T : Nil }
-							throw SliPError.RuntimeError( "\(l) <= \(r)" )
+let	And				=	Dyadic( "&" ,  9 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m & wR.m ) }
+							return IsNil( l ) && IsNil( r ) ? T : Nil
 						}
-let	GE				=	Dyadic( ">=", 8 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m >= wR.m ? T : Nil }
-							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v >= wR.v ? T : Nil }
-							throw SliPError.RuntimeError( "\(l) >= \(r)" )
+let	Reminder		=	Dyadic( "%" ,  8 ) { c, l, r in
+							do {
+								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IntNumber( wL.m % wR.m ) }
+							} catch {
+							}
+							throw SliPError.RuntimeError( "\(l.debug) % \(r.debug)" )
 						}
-						let	Minus = Dyadic( "-", 6 ) { c, l, r in
+let	IDiv			=	Dyadic( "/" ,  8 ) { c, l, r in
+							do {
+								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IntNumber( wL.m / wR.m ) }
+							} catch {
+							}
+							throw SliPError.RuntimeError( "\(l.debug) / \(r.debug)" )
+						}
+let	Div				=	Dyadic( "÷" ,  8 ) { c, l, r in
+							do {
+								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IsZero( wL.m % wR.m ) ? IntNumber( wL.m / wR.m ) : RealNumber( wL.v / wR.v ) }
+								if let wL = l as? Numeric, let wR = r as? Numeric { return RealNumber( wL.v / wR.v ) }
+							} catch {
+							}
+							throw SliPError.RuntimeError( "\(l.debug) ÷ \(r.debug)" )
+						}
+let	Mul				=	Dyadic( "×" ,  8 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m * wR.m ) }
+							if let wL = l as? Numeric,	let wR = r as? Numeric { return RealNumber( wL.v * wR.v ) }
+							throw SliPError.RuntimeError( "\(l.debug) × \(r.debug)" )
+						}
+let	Minus			=	Dyadic( "-" ,  7 ) { c, l, r in
 							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m - wR.m ) }
 							if let wL = l as? Numeric, let wR = r as? Numeric { return RealNumber( wL.v - wR.v ) }
-							throw SliPError.RuntimeError( "\(l) - \(r)" )
+							throw SliPError.RuntimeError( "\(l.debug) - \(r.debug)" )
 						}
-						let	Plus = Dyadic( "+", 6 ) { c, l, r in
+let	Plus			=	Dyadic( "+" ,  7 ) { c, l, r in
 							if let wL = l as? IntNumber	, let wR = r as? IntNumber	{ return IntNumber	( wL.m + wR.m ) }
 							if let wL = l as? Numeric	, let wR = r as? Numeric	{ return RealNumber	( wL.v + wR.v ) }
 							if let wL = l as? StringL	, let wR = r as? StringL	{ return StringL	( wL.m + wR.m ) }
@@ -543,78 +610,61 @@ let	GE				=	Dyadic( ">=", 8 ) { c, l, r in
 							if let wL = l as? Parallel	, let wR = r as? Parallel	{ return Parallel	( wL.m + wR.m ) }
 							if let wL = l as? Procedure	, let wR = r as? Procedure	{ return Procedure	( wL.m + wR.m ) }
 							if let wL = l as? Sentence	, let wR = r as? Sentence	{ return Sentence	( wL.m + wR.m ) }
-							throw SliPError.RuntimeError( "\(l) + \(r)" )
+							throw SliPError.RuntimeError( "\(l.debug) + \(r.debug)" )
 						}
-let	Reminder		=	Dyadic( "%", 5 ) { c, l, r in
-							do {
-								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IntNumber( wL.m % wR.m ) }
-							} catch {
-							}
-							throw SliPError.RuntimeError( "\(l) % \(r)" )
+let	MemberOf		=	Dyadic( "∈" ,  5 ) { c, l, r in
+							guard let wR = r as? List else { throw SliPError.RuntimeError( "\(l) ∈ \(r)" ) }
+							return wR.m.contains( l ) ? T : Nil
 						}
-let	IDiv			=	Dyadic( "/", 5 ) { c, l, r in
-							do {
-								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IntNumber( wL.m / wR.m ) }
-							} catch {
-							}
-							throw SliPError.RuntimeError( "\(l) / \(r)" )
+let	Contains		=	Dyadic( "∋" ,  5 ) { c, l, r in
+							guard let wL = l as? List else { throw SliPError.RuntimeError( "\(l) ∋ \(r)" ) }
+							return wL.m.contains( r ) ? T : Nil
 						}
-let	Div				=	Dyadic( "÷", 5 ) { c, l, r in
-							do {
-								if let wL = l as? IntNumber, let wR = r as? IntNumber { return try IsZero( wL.m % wR.m ) ? IntNumber( wL.m / wR.m ) : RealNumber( wL.v / wR.v ) }
-								if let wL = l as? Numeric, let wR = r as? Numeric { return RealNumber( wL.v / wR.v ) }
-							} catch {
-							}
-							throw SliPError.RuntimeError( "\(l) ÷ \(r)" )
+let	EQ				=	Dyadic( "==",  5 ) { c, l, r in l == r ? T : Nil }
+let	NE				=	Dyadic( "<>",  5 ) { c, l, r in l != r ? T : Nil }
+let	LT				=	Dyadic( "<" ,  5 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m < wR.m ? T : Nil }
+							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v < wR.v ? T : Nil }
+							throw SliPError.RuntimeError( "\(l.debug) < \(r.debug)" )
 						}
-let	Mul				=	Dyadic( "×", 5 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m * wR.m ) }
-							if let wL = l as? Numeric,	let wR = r as? Numeric { return RealNumber( wL.v * wR.v ) }
-							throw SliPError.RuntimeError( "\(l) × \(r)" )
+let	GT				=	Dyadic( ">" ,  5 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m > wR.m ? T : Nil }
+							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v > wR.v ? T : Nil }
+							throw SliPError.RuntimeError( "\(l.debug) > \(r.debug)" )
 						}
-let	Or				=	Dyadic( "|", 4 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m | wR.m ) }
-							return IsNil( l ) || IsNil( r ) ? T : Nil
+let	LE				=	Dyadic( "<=",  5 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m <= wR.m ? T : Nil }
+							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v <= wR.v ? T : Nil }
+							throw SliPError.RuntimeError( "\(l.debug) <= \(r.debug)" )
 						}
-let	XOr				=	Dyadic( "^", 4 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m ^ wR.m ) }
-							return IsNil( l ) != IsNil( r ) ? T : Nil
+let	GE				=	Dyadic( ">=",  5 ) { c, l, r in
+							if let wL = l as? IntNumber, let wR = r as? IntNumber { return wL.m >= wR.m ? T : Nil }
+							if let wL = l as? Numeric, let wR = r as? Numeric { return wL.v >= wR.v ? T : Nil }
+							throw SliPError.RuntimeError( "\(l.debug) >= \(r.debug)" )
 						}
-let	And				=	Dyadic( "&", 4 ) { c, l, r in
-							if let wL = l as? IntNumber, let wR = r as? IntNumber { return IntNumber( wL.m & wR.m ) }
-							return IsNil( l ) && IsNil( r ) ? T : Nil
-						}
-let	Cons			=	Dyadic( ",", 7 ) { c, l, r in
+let	Cons			=	Dyadic( "," ,  3 ) { c, l, r in
 							switch r {
 							case let w as ListL		: return ListL		( Array( [ l ] + w.m ) )
 							case let w as Parallel	: return Parallel	( Array( [ l ] + w.m ) )
 							case let w as Sentence	: return Sentence	( Array( [ l ] + w.m ) )
 							case let w as Procedure	: return Procedure	( Array( [ l ] + w.m ) )
-							default					: throw SliPError.RuntimeError( "\(l) , \(r)" )
+							default					: throw SliPError.RuntimeError( "\(l.debug) , \(r.debug)" )
 							}
 						}
-let	MemberOf		=	Dyadic( "∈", 8 ) { c, l, r in
-							guard let wR = r as? List else { throw SliPError.RuntimeError( "\(l) ∈ \(r)" ) }
-							return wR.m.contains( l ) ? T : Nil
-						}
-let	Contains		=	Dyadic( "∋", 8 ) { c, l, r in
-							guard let wL = l as? List else { throw SliPError.RuntimeError( "\(l) ∋ \(r)" ) }
-							return wL.m.contains( r ) ? T : Nil
-						}
-let	IfElse			=	Dyadic( "?", 9 ) { c, l, r in
-							guard let w = r as? List, w.m.count == 2 else { throw SliPError.RuntimeError( "\(l) ? \(r)" ) }
+let	IfElse			=	Dyadic( "?" ,  1 ) { c, l, r in
+							guard let w = r as? List, w.m.count == 2 else { throw SliPError.RuntimeError( "\(l.debug) ? \(r.debug)" ) }
 							return try w.m[ IsNil( l ) ? 1 : 0 ].Eval( c )
 						}
-let	If				=	Dyadic( "¿", 9 ) { c, l, r in
+let	If				=	Dyadic( "¿" ,  1 ) { c, l, r in
 							return try IsNil( l ) ? Nil : r.Eval( c )
 						}
-let	Define			=	Dyadic( "=", 10 ) { c, l, r in
+let	Define			=	Dyadic( "=" , -1 ) { c, l, r in
 							if let w = l as? Name {
 								guard let wDicts = c.dicts else { fatalError() }
 								wDicts.m[ w.m ] = r
 								return l
 							}
-							throw SliPError.RuntimeError( "\(l) = \(r)" )
+							throw SliPError.RuntimeError( "\(l.debug) = \(r.debug)" )
 						}
 
 func
@@ -622,85 +672,86 @@ Read( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar(
 	try SkipWhite( r )
 	let u = try r.Read()
 	switch u {
-	case terminator			:	return nil
-	case "}", "]", ")", "»"	:	throw SliPError.ReadError( "Unexpected \(u)" )
-	case "«"				:	return Parallel	( try ReadObjects( r, "»" ) )
-	case "["				:	return ListL	( try ReadObjects( r, "]" ) )
-	case "("				:	return Sentence	( try ReadObjects( r, ")" ) )
-	case "{"				:	return Procedure( try ReadObjects( r, "}" ) )
-	case "\""				:	return try ReadStr( r )
-	case "'"				:	guard let w = try Read( r ) else { throw SliPError.ReadError( "No object to quote" ) }
-								return Quote( w )
-	case "`"				:	guard let w = try Read( r ) else { throw SliPError.ReadError( "No object to combine" ) }
-								return Combiner( w )
-	case "¡"				:	return UserException
-	case "@"				:	return StackTop
-	case "·"				:	return CurretDict
-	case "!"				:	return Eval
-	case "#"				:	return Count
-	case "*"				:	return Cdr
-	case "$"				:	return Last
-	case "."				:	return Print
-	case "¦"				:	return Dump
-	case "∈"					:	return MemberOf
-	case "∋"					:	return Contains
-	case "?"				:	return IfElse
-	case "¿"				:	return If
-	case ","				:	return Cons
-	case ":"				:	return Apply
-	case "&"				:	return And
-	case "^"				:	return XOr
-	case "|"				:	return Or
-	case "×"				:	return Mul
-	case "÷"				:	return Div
-	case "/"				:	return IDiv
-	case "%"				:	return Reminder
-	case "+"				:
+	case	terminator			:	return nil
+	case	"}", "]", ")", "»"	:	throw SliPError.ReadError( "Unexpected \(u)" )
+	case	"«"					:	return Parallel	( try ReadObjects( r, "»" ) )
+	case	"["					:	return ListL	( try ReadObjects( r, "]" ) )
+	case	"("					:	return Sentence	( try ReadObjects( r, ")" ) )
+	case	"{"					:	return Procedure( try ReadObjects( r, "}" ) )
+	case	"\""				:	return try ReadStr( r )
+	case	"'"					:	guard let w = try Read( r ) else { throw SliPError.ReadError( "No object to quote" ) }
+									return Quote( w )
+	case	"`"					:	guard let w = try Read( r ) else { throw SliPError.ReadError( "No object to combine" ) }
+									return Combiner( w )
+	case	"¡"					:	return UserException
+	case	"@"					:	return StackTop
+	case	"·"					:	return CurretDict
+	case	"!"					:	return Eval
+	case	"#"					:	return Count
+	case	"*"					:	return Cdr
+	case	"$"					:	return Last
+	case	"."					:	return Print
+	case	"¦"					:	return Dump
+	case	"∈"					:	return MemberOf
+	case	"∋"					:	return Contains
+	case	"?"					:	return IfElse
+	case	"¿"					:	return If
+	case	","					:	return Cons
+	case	":"					:	return Apply
+	case	"&"					:	return And
+	case	"^"					:	return XOr
+	case	"|"					:	return Or
+	case	"×"					:	return Mul
+	case	"÷"					:	return Div
+	case	"/"					:	return IDiv
+	case	"%"					:	return Reminder
+	case	"+"					:
 		let w = try r.Read()
 		switch w {
-		case ( "0"..."9" )	:	r.Unread( w )
-								return try ReadNumber( r )
-		default				:	return Plus
+		case "0"..."9"			:	r.Unread( w )
+									return try ReadNumber( r )
+		default					:	return Plus
 		}
-	case "-"				:
+	case	"-"					:
 		let w = try r.Read()
 		switch w {
-		case ( "0"..."9" )	:	r.Unread( w )
-								return try ReadNumber( r, true )
-		default				:	return Minus
+		case "0"..."9"			:	r.Unread( w )
+									r.Unread( u )
+									return try ReadNumber( r )
+		default					:	return Minus
 		}
-	case "="			:
+	case	"="					:
 		let w = try r.Read()
 		switch w {
-		case "="			:	return EQ
-		case "<"			:	return LE
-		case ">"			:	return GE
-		default				:	r.Unread( w )
-								return Define
+		case "="				:	return EQ
+		case "<"				:	return LE
+		case ">"				:	return GE
+		default					:	r.Unread( w )
+									return Define
 		}
-	case "<"				:
+	case	"<"					:
 		let w = try r.Read()
 		switch w {
-		case ">"			:	return NE
-		case "="			:	return LE
-		default				:	r.Unread( w )
-								return LT
+		case ">"				:	return NE
+		case "="				:	return LE
+		default					:	r.Unread( w )
+									return LT
 		}
-	case ">"				:
+	case	">"					:
 		let w = try r.Read()
 		switch w {
-		case "<"			:	return NE
-		case "="			:	return GE
-		default				:	r.Unread( w )
-								return GT
+		case "<"				:	return NE
+		case "="				:	return GE
+		default					:	r.Unread( w )
+									return GT
 		}
-	case ( "0"..."9" )		:	r.Unread( u )
-								return try ReadNumber( r )
-	case ( "a"..."z" )
-	,	 ( "A"..."Z" )
-	,	"_"					:	r.Unread( u )
-								return try ReadName( r )
-	default					:	throw SliPError.ReadError( "Invalid character \(u):\(u.value)" )
+	case	"0"..."9"			:	r.Unread( u )
+									return try ReadNumber( r )
+	case	"a"..."z"
+	,		"A"..."Z"
+	,		"_"					:	r.Unread( u )
+									return try ReadName( r )
+	default						:	throw SliPError.ReadError( "Invalid character \(u):\(u.value)" )
 	}
 }
 

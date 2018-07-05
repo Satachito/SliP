@@ -18,8 +18,8 @@ do {
 		let	wReader	= PreProcessor( try String( contentsOfFile: CommandLine.arguments[ i ], encoding: .utf8 ) )
 		while true {
 			do {
-				let _ = try Sentence( try ReadObjects( wReader, ";" as UnicodeScalar ) ).Eval( wContext )
-			//	print( v.description, to: &sTOS )
+				let v = try Sentence( try ReadObjects( wReader, ";" as UnicodeScalar ) ).Eval( wContext )
+			//	print( v.debug, to: &sTOS )
 			} catch let e {
 				if e is ReaderError { break }
 				throw e
@@ -27,7 +27,12 @@ do {
 		}
 	}
 /*
-	let	w = "'A ∈ [ A B C ] =\n"
+	let	w = """
+		'factorial = '(
+			@ == 1 ? [ 1 ( @ × ( @ - 1 ):factorial ) ]
+		);
+		4 : factorial =
+	"""
 
 	let	wReader	= PreProcessor( w )
 	while true {

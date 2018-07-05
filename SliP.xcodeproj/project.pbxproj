@@ -14,7 +14,7 @@
 		5EF4D1CC20E0098F00AD8172 /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF4D1CB20E0098F00AD8172 /* OSX.swift */; };
 		5EF4D1D220E00BF900AD8172 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1D120E00BF900AD8172 /* Sample.slip */; };
 		5EF4D1D420E00C0500AD8172 /* BigInteger.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1D320E00C0500AD8172 /* BigInteger.slip */; };
-		5EF4D1D620E00C0C00AD8172 /* Test.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1D520E00C0C00AD8172 /* Test.slip */; };
+		5EF4D1D620E00C0C00AD8172 /* Functions.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1D520E00C0C00AD8172 /* Functions.slip */; };
 		5EF4D1DE20E0595400AD8172 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF4D1DD20E0595400AD8172 /* main.swift */; };
 		5EF4D1E420E0596900AD8172 /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF4D1C920E0076B00AD8172 /* SliP.swift */; };
 		5EF4D1E520E0596900AD8172 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF4D1C720E0076400AD8172 /* SliPBuiltins.swift */; };
@@ -47,7 +47,7 @@
 		5EF4D1CB20E0098F00AD8172 /* OSX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSX.swift; sourceTree = "<group>"; };
 		5EF4D1D120E00BF900AD8172 /* Sample.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
 		5EF4D1D320E00C0500AD8172 /* BigInteger.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BigInteger.slip; sourceTree = "<group>"; };
-		5EF4D1D520E00C0C00AD8172 /* Test.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Test.slip; sourceTree = "<group>"; };
+		5EF4D1D520E00C0C00AD8172 /* Functions.slip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Functions.slip; sourceTree = "<group>"; };
 		5EF4D1DB20E0595400AD8172 /* CUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1DD20E0595400AD8172 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5EF4D1E620E4B99B00AD8172 /* JP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JP.swift; path = ../JP/JP.swift; sourceTree = "<group>"; };
@@ -77,7 +77,7 @@
 			children = (
 				5EF4D1D120E00BF900AD8172 /* Sample.slip */,
 				5EF4D1D320E00C0500AD8172 /* BigInteger.slip */,
-				5EF4D1D520E00C0C00AD8172 /* Test.slip */,
+				5EF4D1D520E00C0C00AD8172 /* Functions.slip */,
 				5EF4D1E620E4B99B00AD8172 /* JP.swift */,
 				5EF4D1E820E4B9A100AD8172 /* JPBigInteger.swift */,
 				5EF4D1C920E0076B00AD8172 /* SliP.swift */,
@@ -198,7 +198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EF4D1BE20E0071400AD8172 /* Assets.xcassets in Resources */,
-				5EF4D1D620E00C0C00AD8172 /* Test.slip in Resources */,
+				5EF4D1D620E00C0C00AD8172 /* Functions.slip in Resources */,
 				5EF4D1D420E00C0500AD8172 /* BigInteger.slip in Resources */,
 				5EF4D1C120E0071400AD8172 /* Main.storyboard in Resources */,
 				5EF4D1D220E00BF900AD8172 /* Sample.slip in Resources */,
@@ -363,7 +363,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OSX/OSX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
@@ -382,7 +381,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OSX/OSX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
