@@ -12,13 +12,21 @@ OSXVC	: NSViewController {
 	Do( _: AnyObject ) {
 		if let w = view.window?.windowController?.document as? Document { w.Do() }
 	}
-
+	
+	/*
+	override var representedObject: Any? {
+		didSet {
+		// Update the view, if already loaded.
+		}
+	}
+	*/
+	
 	@IBAction func
 	DoLoadSample( _: AnyObject ) {
 		if	let wURL = ResourceURL( "Sample", "slip" )
 		,	let	wData = try? Data( contentsOf: wURL )
 		,	let	wString = UTF8String( wData )
-		,	let w = view.window?.windowController?.document as? Document {
+		,	let w = representedObject as? Document {
 			w.m = wString
 		}
 	}
@@ -43,11 +51,12 @@ Document	: NSDocument {
 
 	override func
 	makeWindowControllers() {
-		addWindowController(
-			NSStoryboard( name: "Main", bundle: nil ).instantiateController(
-				withIdentifier: NSStoryboard.SceneIdentifier( "Document Window Controller" )
-			) as! NSWindowController
-		)
+		if let wWC = NSStoryboard( name: "Main", bundle: nil ).instantiateController(
+			withIdentifier: NSStoryboard.SceneIdentifier( "Document Window Controller" )
+		) as? NSWindowController {
+			if let wVC = wWC.contentViewController { wVC.representedObject = self }
+			addWindowController( wWC )
+		}
 	}
 
 	override func

@@ -17,13 +17,13 @@ Context {
 	printer			= { ( p: String ) in print( p ) }
 
 	var
-	dicts			: Cell< [ String: Object ] >?
+	dicts			: Chain< [ String: Object ] >?
 
 	var
-	stack			: Cell< Object >?
+	stack			: Chain< Object >?
 	func
 	Push(	_ o		: Object ) {
-		stack = Cell( o, stack )
+		stack = Chain( o, stack )
 	}
 	func
 	Pop() {
@@ -33,13 +33,13 @@ Context {
 	
 	init(	parent	: Context ) {
 		printer = parent.printer
-		dicts = Cell( [ String: Object ](), parent.dicts )
+		dicts = Chain( [ String: Object ](), parent.dicts )
 		stack = parent.stack
 	}
 	
 	init( printer p	: @escaping ( String ) -> () ) {
 		printer = p
-		dicts = Cell( SliPBuiltins() )
+		dicts = Chain( SliPBuiltins() )
 	}
 }
 
@@ -196,7 +196,7 @@ Assoc				: Object {
 	init(	_ p		: Object, _ pDict: [ String: Object ] ) { m = p; dict = pDict }
 	override func
 	Eval(	_ c		: Context ) throws	->	Object {
-		c.dicts = Cell< [ String: Object ] >( dict, c.dicts )
+		c.dicts = Chain< [ String: Object ] >( dict, c.dicts )
 		defer{ c.dicts = c.dicts!.next }
 		return try m.Eval( c )
 	}
@@ -384,7 +384,7 @@ Object: Equatable {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func
-ReadNumber( _ r: Reader< UnicodeScalar > ) throws -> Object {
+ReadNumber( _ r: UnicodeReader ) throws -> Object {
  	var	v = ""
  	var	wNeg = false
 	var	wRealF = false
@@ -450,7 +450,7 @@ ReadNumber( _ r: Reader< UnicodeScalar > ) throws -> Object {
 }
 
 func
-ReadName( _ r: Reader< UnicodeScalar > ) throws -> Object {
+ReadName( _ r: UnicodeReader ) throws -> Object {
 	var	v = ""
 	while true {
 		let u = try r.Read()
@@ -465,7 +465,7 @@ ReadName( _ r: Reader< UnicodeScalar > ) throws -> Object {
 }
 
 func
-ReadStr( _ r: Reader< UnicodeScalar > ) throws -> StringL {
+ReadStr( _ r: UnicodeReader ) throws -> StringL {
 	var	v = ""
 	var	wEscaped = false
 	while true {
@@ -490,7 +490,7 @@ ReadStr( _ r: Reader< UnicodeScalar > ) throws -> StringL {
 }
 
 func
-ReadObjects( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar ) throws -> [ Object ] {
+ReadObjects( _ r: UnicodeReader, _ terminator: UnicodeScalar ) throws -> [ Object ] {
 	var	v = [ Object ]()
 	while let w = try Read( r, terminator ) {
 		v.append( w )
@@ -668,8 +668,8 @@ let	Define			=	Dyadic( "=" , -1 ) { c, l, r in
 						}
 
 func
-Read( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
-	try SkipWhite( r )
+Read( _ r: UnicodeReader, _ terminator: UnicodeScalar = UnicodeScalar( 0 ) ) throws -> Object? {
+	try r.SkipWhite()
 	let u = try r.Read()
 	switch u {
 	case	terminator			:	return nil
@@ -757,7 +757,7 @@ Read( _ r: Reader< UnicodeScalar >, _ terminator: UnicodeScalar = UnicodeScalar(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class
-PreProcessor: Reader< UnicodeScalar > {
+PreProcessor: UnicodeReader {
 	var
 	m		: String.UnicodeScalarView.Iterator
 

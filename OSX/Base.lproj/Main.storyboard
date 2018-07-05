@@ -702,7 +702,7 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.m" id="GHT-Bl-Yeq"/>
+                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.m" id="vWo-go-DhW"/>
                                                     </connections>
                                                 </textView>
                                             </subviews>
@@ -736,7 +736,7 @@
                                                             <size key="maxSize" width="525" height="10000000"/>
                                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.result" id="nm5-HD-bTn"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.result" id="InC-Ip-dav"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
@@ -766,7 +766,7 @@
                                                             <size key="maxSize" width="524" height="10000000"/>
                                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="view.window.windowController.document.output" id="sag-ES-60B"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.output" id="iIx-EP-zke"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
