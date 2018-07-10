@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		5EC87D8620EE1C9100B985FB /* Numbers.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EC87D8520EE1C9100B985FB /* Numbers.slip */; };
 		5EC87D8820EE221800B985FB /* Errors.slip in Resources */ = {isa = PBXBuildFile; fileRef = 5EC87D8720EE221800B985FB /* Errors.slip */; };
-		5EC87D9020EE23C100B985FB /* MiniLisp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC87D8F20EE23C100B985FB /* MiniLisp.swift */; };
-		5EC87D9620EE570A00B985FB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC87D9520EE570A00B985FB /* main.swift */; };
+		5EC87DBF20EED4A900B985FB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC87DBE20EED4A900B985FB /* main.swift */; };
 		5EF4D1BE20E0071400AD8172 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1BD20E0071400AD8172 /* Assets.xcassets */; };
 		5EF4D1C120E0071400AD8172 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EF4D1BF20E0071400AD8172 /* Main.storyboard */; };
 		5EF4D1C820E0076400AD8172 /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF4D1C720E0076400AD8172 /* SliPBuiltins.swift */; };
@@ -29,7 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		5EC87D8B20EE23C100B985FB /* CopyFiles */ = {
+		5EC87DBA20EED4A900B985FB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -52,9 +51,8 @@
 /* Begin PBXFileReference section */
 		5EC87D8520EE1C9100B985FB /* Numbers.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Numbers.slip; sourceTree = "<group>"; };
 		5EC87D8720EE221800B985FB /* Errors.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Errors.slip; sourceTree = "<group>"; };
-		5EC87D8D20EE23C100B985FB /* Lisp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lisp; sourceTree = BUILT_PRODUCTS_DIR; };
-		5EC87D8F20EE23C100B985FB /* MiniLisp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniLisp.swift; sourceTree = "<group>"; };
-		5EC87D9520EE570A00B985FB /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		5EC87DBC20EED4A900B985FB /* Survey */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Survey; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EC87DBE20EED4A900B985FB /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5EF4D1B520E0071400AD8172 /* OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1BD20E0071400AD8172 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5EF4D1C020E0071400AD8172 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -73,7 +71,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5EC87D8A20EE23C100B985FB /* Frameworks */ = {
+		5EC87DB920EED4A900B985FB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -97,13 +95,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5EC87D8E20EE23C100B985FB /* Lisp */ = {
+		5EC87DBD20EED4A900B985FB /* Survey */ = {
 			isa = PBXGroup;
 			children = (
-				5EC87D8F20EE23C100B985FB /* MiniLisp.swift */,
-				5EC87D9520EE570A00B985FB /* main.swift */,
+				5EC87DBE20EED4A900B985FB /* main.swift */,
 			);
-			path = Lisp;
+			path = Survey;
 			sourceTree = "<group>";
 		};
 		5EF4D18820E005F600AD8172 = {
@@ -120,7 +117,7 @@
 				5EF4D1C720E0076400AD8172 /* SliPBuiltins.swift */,
 				5EF4D1B620E0071400AD8172 /* OSX */,
 				5EF4D1DC20E0595400AD8172 /* CUI */,
-				5EC87D8E20EE23C100B985FB /* Lisp */,
+				5EC87DBD20EED4A900B985FB /* Survey */,
 				5EF4D19220E005F600AD8172 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,7 +127,7 @@
 			children = (
 				5EF4D1B520E0071400AD8172 /* OSX.app */,
 				5EF4D1DB20E0595400AD8172 /* CUI */,
-				5EC87D8D20EE23C100B985FB /* Lisp */,
+				5EC87DBC20EED4A900B985FB /* Survey */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,21 +155,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5EC87D8C20EE23C100B985FB /* Lisp */ = {
+		5EC87DBB20EED4A900B985FB /* Survey */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5EC87D9120EE23C100B985FB /* Build configuration list for PBXNativeTarget "Lisp" */;
+			buildConfigurationList = 5EC87DC020EED4A900B985FB /* Build configuration list for PBXNativeTarget "Survey" */;
 			buildPhases = (
-				5EC87D8920EE23C100B985FB /* Sources */,
-				5EC87D8A20EE23C100B985FB /* Frameworks */,
-				5EC87D8B20EE23C100B985FB /* CopyFiles */,
+				5EC87DB820EED4A900B985FB /* Sources */,
+				5EC87DB920EED4A900B985FB /* Frameworks */,
+				5EC87DBA20EED4A900B985FB /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Lisp;
-			productName = Lisp;
-			productReference = 5EC87D8D20EE23C100B985FB /* Lisp */;
+			name = Survey;
+			productName = Survey;
+			productReference = 5EC87DBC20EED4A900B985FB /* Survey */;
 			productType = "com.apple.product-type.tool";
 		};
 		5EF4D1B420E0071400AD8172 /* OSX */ = {
@@ -219,9 +216,8 @@
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Satoru Ogura";
 				TargetAttributes = {
-					5EC87D8C20EE23C100B985FB = {
+					5EC87DBB20EED4A900B985FB = {
 						CreatedOnToolsVersion = 10.0;
-						LastSwiftMigration = 1000;
 					};
 					5EF4D1B420E0071400AD8172 = {
 						CreatedOnToolsVersion = 10.0;
@@ -247,7 +243,7 @@
 			targets = (
 				5EF4D1B420E0071400AD8172 /* OSX */,
 				5EF4D1DA20E0595400AD8172 /* CUI */,
-				5EC87D8C20EE23C100B985FB /* Lisp */,
+				5EC87DBB20EED4A900B985FB /* Survey */,
 			);
 		};
 /* End PBXProject section */
@@ -270,12 +266,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5EC87D8920EE23C100B985FB /* Sources */ = {
+		5EC87DB820EED4A900B985FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EC87D9620EE570A00B985FB /* main.swift in Sources */,
-				5EC87D9020EE23C100B985FB /* MiniLisp.swift in Sources */,
+				5EC87DBF20EED4A900B985FB /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,23 +312,23 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		5EC87D9220EE23C100B985FB /* Debug */ = {
+		5EC87DC120EED4A900B985FB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
-		5EC87D9320EE23C100B985FB /* Release */ = {
+		5EC87DC220EED4A900B985FB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -509,11 +504,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5EC87D9120EE23C100B985FB /* Build configuration list for PBXNativeTarget "Lisp" */ = {
+		5EC87DC020EED4A900B985FB /* Build configuration list for PBXNativeTarget "Survey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5EC87D9220EE23C100B985FB /* Debug */,
-				5EC87D9320EE23C100B985FB /* Release */,
+				5EC87DC120EED4A900B985FB /* Debug */,
+				5EC87DC220EED4A900B985FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
