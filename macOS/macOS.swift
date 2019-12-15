@@ -3,11 +3,11 @@
 import Cocoa
 
 @NSApplicationMain class
-OSXAD	: NSObject, NSApplicationDelegate {
+AppDelegate	: NSObject, NSApplicationDelegate {
 }
 
 class
-OSXVC	: NSViewController {
+ViewController	: NSViewController {
 	@IBAction func
 	Do( _: Any? ) {
 		if let w = representedObject as? Document { w.Do() }
@@ -15,17 +15,16 @@ OSXVC	: NSViewController {
 	
 	@IBAction func
 	DoLoadSample( _: Any? ) {
-		if	let wURL = ResourceURL( "Sample", "slip" )
-		,	let	wData = try? Data( contentsOf: wURL )
-		,	let	wString = UTF8String( wData )
-		,	let w = representedObject as? Document {
-			w.m = wString
-		}
+		let wTV = sourceItemView as! NSTextView
+		wTV.insertText(
+			UTF8String( try! Data( contentsOf: ResourceURL( "Sample", "slip" )! ) )!
+		,	replacementRange: wTV.selectedRange()
+		)
 	}
 	
 	@IBAction func
 	DoInsert( _ p: NSButton ) {
-		if let w = sourceItemView as? NSTextView { w.insertText( p.title , replacementRange: w.selectedRange() ) }
+		if let w = sourceItemView as? NSTextView { w.insertText( p.title, replacementRange: w.selectedRange() ) }
 	}
 }
 
@@ -33,8 +32,8 @@ class
 Document	: NSDocument {
 
 	@objc dynamic	var	m = ""
-	@objc dynamic	var	result = ""
-	@objc dynamic	var	output = ""
+	@objc dynamic	var	err = ""
+	@objc dynamic	var	out = ""
 
 	override class var
 	autosavesInPlace: Bool {
@@ -71,14 +70,15 @@ Document	: NSDocument {
 		NSApplication.shared.keyWindow?.makeFirstResponder( nil )	//	Sync NSTextView and u
 		let	wContext = Context()
 		wContext.Load( SliPBuiltins() )
-		let	wReader	= PreProcessor( m )
+		let	wContextChain = Chain< Context >( wContext )
+		let	wReader	= StringUnicodeReader( PreProcess( m ) )
 		result = ""
 		output = ""
 		Sub {
 			while true {
 				do {
-					let wObjects = try ReadObjects( wReader, ";" as UnicodeScalar )
-					let v = try Sentence( ArraySlice( wObjects ) ).Eval( Chain< Context >( wContext ) )
+					let wObjects = try ReadList( wReader, ";" as UnicodeScalar )
+					let v = try Sentence( ArraySlice( wObjects ) ).Eval( wContextChain )
 					Main{ self.result += v.str + "\n" }
 				} catch let e {
 					Main{ self.result += "\(e)\n" }

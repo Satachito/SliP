@@ -4,18 +4,20 @@ import Foundation
 
 func
 SliPBuiltins() -> [ String: Object ] {
+
 	var	v = [ String: Object ]()
+
 	v[ "for" ] = Unary( "for" ) { c, p in
 		if	let wArgs = p as? List
 		,	wArgs.m.count >= 2
 		,	let wList = wArgs.m[ 0 ] as? List {
 			var	v = [ Object ]()
 			for w in wList.m {
-				c.Push( w )
-				defer{ c.Pop() }
+				c.m.Push( w )
+				defer{ c.m.Pop() }
 				v.append( try wArgs.m[ 1 ].Eval( c ) )
 			}
-			return ListL( v )
+			return ListL( ArraySlice( v ) )
 		}
 		throw SliPError.RuntimeError( "\(p):for" )
 	}
@@ -59,6 +61,7 @@ SliPBuiltins() -> [ String: Object ] {
 		}
 		throw SliPError.RuntimeError( "\(p):string" )
 	}
+
 	v[ "M_E"		] = RealNumber	( M_E						)
 	v[ "M_LOG2E"	] = RealNumber	( M_LOG2E					)
 	v[ "M_LOG10E"	] = RealNumber	( M_LOG10E					)
@@ -79,14 +82,14 @@ SliPBuiltins() -> [ String: Object ] {
 //	v[ "isnan"		] = IMathFunc	( isnan		, "isnan"		)
 //	v[ "isnormal"	] = IMathFunc	( isnormal	, "isnormal"	)
 //	v[ "sign"		] = IMathFunc	( sign		, "sign"		)
-	v[ "ceil"		] = MathFunc	( ceil		, "ceil"		)
-	v[ "floor"		] = MathFunc	( floor		, "floor"		)
-	v[ "nearbyint"	] = MathFunc	( nearbyint	, "nearbyint"	)
-	v[ "rint"		] = MathFunc	( rint		, "rint"		)
-	v[ "round"		] = MathFunc	( round		, "round"		)
+	v[ "ceil"		] = MathFunc		( ceil		, "ceil"		)
+	v[ "floor"		] = MathFunc		( floor		, "floor"		)
+	v[ "nearbyint"	] = MathFunc		( nearbyint	, "nearbyint"	)
+	v[ "rint"		] = MathFunc		( rint		, "rint"		)
+	v[ "round"		] = MathFunc		( round		, "round"		)
 	v[ "lrint"		] = IMathFunc	( lrint		, "lrint"		)
 	v[ "lround"		] = IMathFunc	( lrint		, "lround"		)
-	v[ "trunc"		] = MathFunc	( trunc		, "trunc"		)
+	v[ "trunc"		] = MathFunc		( trunc		, "trunc"		)
 	v[ "fmod"		] = MathFuncFF	( fmod		, "fmod"		)
 	v[ "remainder"	] = MathFuncFF	( remainder	, "remainder"	)
 //	v[ "remquo"		] = MathFuncFF	( remquo	, "remquo"		)
@@ -94,45 +97,44 @@ SliPBuiltins() -> [ String: Object ] {
 	v[ "fmax"		] = MathFuncFF	( fmax		, "fmax"		)
 	v[ "fmin"		] = MathFuncFF	( fmin		, "fmin"		)
 	v[ "fma"		] = MathFuncFFF	( fma		, "fma"			)
-	v[ "fabs"		] = MathFunc	( fabs		, "fabs"		)
-	v[ "sqrt"		] = MathFunc	( sqrt		, "sqrt"		)
-	v[ "cbrt"		] = MathFunc	( cbrt		, "cbrt"		)
+	v[ "fabs"		] = MathFunc		( fabs		, "fabs"		)
+	v[ "sqrt"		] = MathFunc		( sqrt		, "sqrt"		)
+	v[ "cbrt"		] = MathFunc		( cbrt		, "cbrt"		)
 	v[ "hypot"		] = MathFuncFF	( hypot		, "hypot"		)
-	v[ "exp"		] = MathFunc	( exp		, "exp"			)
-	v[ "exp2"		] = MathFunc	( exp2		, "exp2"		)
-	v[ "__exp10"	] = MathFunc	( __exp10	, "__exp10"		)
-	v[ "expm1"		] = MathFunc	( expm1		, "expm1"		)
-	v[ "log"		] = MathFunc	( log		, "log"			)
-	v[ "log2"		] = MathFunc	( log2		, "log2"		)
-	v[ "log10"		] = MathFunc	( log10		, "log10"		)
-	v[ "log1p"		] = MathFunc	( log1p		, "log1p"		)
-	v[ "logb"		] = MathFunc	( logb		, "logb"		)
+	v[ "exp"		] = MathFunc		( exp		, "exp"			)
+	v[ "exp2"		] = MathFunc		( exp2		, "exp2"		)
+	v[ "__exp10"	] = MathFunc		( __exp10	, "__exp10"		)
+	v[ "expm1"		] = MathFunc		( expm1		, "expm1"		)
+	v[ "log"		] = MathFunc		( log		, "log"			)
+	v[ "log2"		] = MathFunc		( log2		, "log2"		)
+	v[ "log10"		] = MathFunc		( log10		, "log10"		)
+	v[ "log1p"		] = MathFunc		( log1p		, "log1p"		)
+	v[ "logb"		] = MathFunc		( logb		, "logb"		)
 	v[ "scalbn"		] = MathFuncFI	( scalbn	, "scalbn"		)
 	v[ "pow"		] = MathFuncFF	( pow		, "pow"			)
-	v[ "cos"		] = MathFunc	( cos		, "cos"			)
-	v[ "sin"		] = MathFunc	( sin		, "sin"			)
-	v[ "tan"		] = MathFunc	( tan		, "tan"			)
-	v[ "cosh"		] = MathFunc	( cosh		, "cosh"		)
-	v[ "sinh"		] = MathFunc	( sinh		, "sinh"		)
-	v[ "tanh"		] = MathFunc	( tanh		, "tanh"		)
-	v[ "acos"		] = MathFunc	( acos		, "acos"		)
-	v[ "asin"		] = MathFunc	( asin		, "asin"		)
-	v[ "atan"		] = MathFunc	( atan		, "atan"		)
+	v[ "cos"		] = MathFunc		( cos		, "cos"			)
+	v[ "sin"		] = MathFunc		( sin		, "sin"			)
+	v[ "tan"		] = MathFunc		( tan		, "tan"			)
+	v[ "cosh"		] = MathFunc		( cosh		, "cosh"		)
+	v[ "sinh"		] = MathFunc		( sinh		, "sinh"		)
+	v[ "tanh"		] = MathFunc		( tanh		, "tanh"		)
+	v[ "acos"		] = MathFunc		( acos		, "acos"		)
+	v[ "asin"		] = MathFunc		( asin		, "asin"		)
+	v[ "atan"		] = MathFunc		( atan		, "atan"		)
 	v[ "atan2"		] = MathFuncFF	( atan2		, "atan2"		)
-	v[ "acosh"		] = MathFunc	( acosh		, "acosh"		)
-	v[ "asinh"		] = MathFunc	( asinh		, "asinh"		)
-	v[ "atanh"		] = MathFunc	( atanh		, "atanh"		)
-	v[ "tgamma"		] = MathFunc	( tgamma	, "tgamma"		)
-	v[ "lgamma"		] = MathFunc	( lgamma	, "lgamma"		)
-	v[ "j0"			] = MathFunc	( j0		, "j0"			)
-	v[ "j1"			] = MathFunc	( j1		, "j1"			)
-//	v[ "jn"			] = MathFunc	( jn		, "jn"			)
-	v[ "y0"			] = MathFunc	( y0		, "y0"			)
-	v[ "y1"			] = MathFunc	( y1		, "y1"			)
-//	v[ "yn"			] = MathFunc	( yn		, "yn"			)
-	v[ "erf"		] = MathFunc	( erf		, "erf"			)
-	v[ "erfc"		] = MathFunc	( erfc		, "erfc"		)
-	
+	v[ "acosh"		] = MathFunc		( acosh		, "acosh"		)
+	v[ "asinh"		] = MathFunc		( asinh		, "asinh"		)
+	v[ "atanh"		] = MathFunc		( atanh		, "atanh"		)
+	v[ "tgamma"		] = MathFunc		( tgamma	, "tgamma"		)
+	v[ "lgamma"		] = MathFunc		( lgamma	, "lgamma"		)
+	v[ "j0"			] = MathFunc		( j0		, "j0"			)
+	v[ "j1"			] = MathFunc		( j1		, "j1"			)
+//	v[ "jn"			] = MathFunc		( jn		, "jn"			)
+	v[ "y0"			] = MathFunc		( y0		, "y0"			)
+	v[ "y1"			] = MathFunc		( y1		, "y1"			)
+//	v[ "yn"			] = MathFunc		( yn		, "yn"			)
+	v[ "erf"		] = MathFunc		( erf		, "erf"			)
+	v[ "erfc"		] = MathFunc		( erfc		, "erfc"		)
 	return v
 }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -643,7 +642,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="OSXAD" customModule="OSX" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="macOS" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
@@ -669,74 +668,39 @@
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>
-        <!--OSXVC-->
+        <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="OSXVC" customModule="OSX" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="macOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="Jn8-Jb-niX">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" vertical="YES" id="G7Z-eJ-cMI">
+                            <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" id="G7Z-eJ-cMI">
                                 <rect key="frame" x="65" y="20" width="939" height="687"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="wIN-MV-GEW">
-                                        <rect key="frame" x="0.0" y="0.0" width="468" height="687"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <clipView key="contentView" drawsBackground="NO" id="2or-Zo-XdB">
-                                            <rect key="frame" x="1" y="1" width="466" height="685"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <subviews>
-                                                <textView importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="UnI-Z9-zF2">
-                                                    <rect key="frame" x="0.0" y="0.0" width="466" height="685"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <size key="minSize" width="466" height="685"/>
-                                                    <size key="maxSize" width="953" height="10000000"/>
-                                                    <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticQuoteSubstitutionEnabled" value="NO"/>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticDashSubstitutionEnabled" value="NO"/>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
-                                                    </userDefinedRuntimeAttributes>
-                                                    <connections>
-                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.m" id="vWo-go-DhW"/>
-                                                    </connections>
-                                                </textView>
-                                            </subviews>
-                                        </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="95s-7v-hnn">
-                                            <rect key="frame" x="-100" y="-100" width="87" height="18"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="LiE-wh-sci">
-                                            <rect key="frame" x="451" y="1" width="16" height="685"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </scroller>
-                                    </scrollView>
-                                    <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" id="uod-0R-4BS">
-                                        <rect key="frame" x="478" y="0.0" width="461" height="687"/>
+                                    <splitView arrangesAllSubviews="NO" dividerStyle="paneSplitter" vertical="YES" id="uod-0R-4BS">
+                                        <rect key="frame" x="0.0" y="0.0" width="939" height="478"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="keE-9J-PeC">
-                                                <rect key="frame" x="0.0" y="0.0" width="461" height="340"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="465" height="478"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <clipView key="contentView" drawsBackground="NO" id="zz0-mK-S12">
-                                                    <rect key="frame" x="1" y="1" width="459" height="338"/>
+                                                    <rect key="frame" x="1" y="1" width="463" height="476"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textView editable="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="8So-sm-6SV">
-                                                            <rect key="frame" x="0.0" y="0.0" width="459" height="338"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="463" height="476"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <size key="minSize" width="459" height="338"/>
-                                                            <size key="maxSize" width="525" height="10000000"/>
+                                                            <size key="minSize" width="463" height="476"/>
+                                                            <size key="maxSize" width="937" height="10000000"/>
                                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.result" id="InC-Ip-dav"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.m" id="BPn-aE-4fM"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
@@ -746,27 +710,27 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                                 <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="zqw-SE-FNd">
-                                                    <rect key="frame" x="444" y="1" width="16" height="338"/>
+                                                    <rect key="frame" x="448" y="1" width="16" height="476"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
                                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="CJ1-G5-SqC">
-                                                <rect key="frame" x="0.0" y="350" width="461" height="337"/>
+                                                <rect key="frame" x="475" y="0.0" width="464" height="478"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <clipView key="contentView" drawsBackground="NO" id="XH3-wT-12c">
-                                                    <rect key="frame" x="1" y="1" width="459" height="335"/>
+                                                    <rect key="frame" x="1" y="1" width="462" height="476"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textView editable="NO" importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="tut-Xu-6BC">
-                                                            <rect key="frame" x="0.0" y="0.0" width="459" height="335"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="462" height="476"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <size key="minSize" width="459" height="335"/>
-                                                            <size key="maxSize" width="524" height="10000000"/>
+                                                            <size key="minSize" width="462" height="476"/>
+                                                            <size key="maxSize" width="937" height="10000000"/>
                                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <connections>
-                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.output" id="iIx-EP-zke"/>
+                                                                <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.out" id="9HX-Mm-iz6"/>
                                                             </connections>
                                                         </textView>
                                                     </subviews>
@@ -776,7 +740,7 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                                 <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="98Z-D9-OZc">
-                                                    <rect key="frame" x="444" y="1" width="16" height="335"/>
+                                                    <rect key="frame" x="447" y="1" width="16" height="476"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
@@ -786,6 +750,41 @@
                                             <real value="250"/>
                                         </holdingPriorities>
                                     </splitView>
+                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="wIN-MV-GEW">
+                                        <rect key="frame" x="0.0" y="488" width="939" height="199"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <clipView key="contentView" drawsBackground="NO" id="2or-Zo-XdB">
+                                            <rect key="frame" x="1" y="1" width="937" height="197"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <textView importsGraphics="NO" richText="NO" horizontallyResizable="YES" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="UnI-Z9-zF2">
+                                                    <rect key="frame" x="0.0" y="0.0" width="937" height="197"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    <size key="minSize" width="937" height="197"/>
+                                                    <size key="maxSize" width="953" height="10000000"/>
+                                                    <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticQuoteSubstitutionEnabled" value="NO"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticDashSubstitutionEnabled" value="NO"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.err" id="9Ss-ZF-Pd8"/>
+                                                    </connections>
+                                                </textView>
+                                            </subviews>
+                                        </clipView>
+                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="95s-7v-hnn">
+                                            <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </scroller>
+                                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="LiE-wh-sci">
+                                            <rect key="frame" x="922" y="1" width="16" height="197"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </scroller>
+                                    </scrollView>
                                 </subviews>
                                 <holdingPriorities>
                                     <real value="250"/>
