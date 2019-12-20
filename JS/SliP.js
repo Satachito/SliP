@@ -498,7 +498,7 @@ functionFirstChars = Object.keys( Functions ).map( _ => _[ 0 ] )
 
 const
 ReadNumber = ( r, neg ) => {
-	let	v = ""
+	let	v = ''
 	while ( r.Avail() ) {
 		const _ = r.Peek()
 		if ( ! _.match( /\d/ ) && _ != '.' ) break
@@ -510,7 +510,7 @@ ReadNumber = ( r, neg ) => {
 
 const
 ReadName = r => {
-	let	v = ""
+	let	v = ''
 	while ( r.Avail() ) {
 		const _ = r.Peek()
 		if ( _.match( /\s/ ) ) break
@@ -524,7 +524,7 @@ ReadName = r => {
 
 const
 ReadLiteral = r => {
-	let	v = ""
+	let	v = ''
 	let	wEscaped = false
 	while ( r.Avail() ) {
 		const _ = r.Read()
@@ -539,8 +539,8 @@ ReadLiteral = r => {
 			}
 		} else {
 			switch ( _ ) {
-			case "\""	: return			new Literal( v )
-			case "\\"	: wEscaped = true;	break
+			case '"'	: return			new Literal( v )
+			case '\\'	: wEscaped = true;	break
 			default		: v += _;			break
 			}
 		}
@@ -646,7 +646,7 @@ const r = new StringReader(
 		_ => _.trim().startsWith( '//' )
 		?	''
 		:	_.endsWith( '=' )
-			?	'(' + ( _.substring( 0, _.length - 1 ) + "):¦;" )
+			?	'(' + ( _.substring( 0, _.length - 1 ) + '):¦;' )
 			:	_ 
 	).join( '\n' )
 )
