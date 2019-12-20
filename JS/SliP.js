@@ -4,8 +4,8 @@ stack = []
 
 class
 Context {
-	constructor( next ) {
-		this.dict = {}
+	constructor( _, next ) {
+		this.dict = _
 		this.next = next
 	}
 }
@@ -95,7 +95,7 @@ Unary extends SliP {
 }
 
 class
-Dyadic extends SliP {
+Infix extends SliP {
 	constructor( _, priority ) {
 		super( _ )
 		this.priority = priority
@@ -135,13 +135,13 @@ Procedure extends _List {
 	string() { return `{ ${super.string} }` }
 
 	Eval( c ) {
-		c = new Context( c )
+		c = new Context( {}, c )
 		return new List( this._.map( _ => _.Eval( c ) ) )
 	}
 }
 
 const
-EvalSentence = ( c, _ ) => {
+_EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
 		return new List( _ )
@@ -150,14 +150,14 @@ EvalSentence = ( c, _ ) => {
 	case  2:
 		break
 	default:
-		const wDyadicIndices = Object.keys( _ ).filter( i => _[ i ] instanceof Dyadic ).map( _ => Number( _ ) )
-		if ( wDyadicIndices.length ) {
-			const i = wDyadicIndices.reduce(
+		const wInfixIndices = Object.keys( _ ).filter( i => _[ i ] instanceof Infix ).map( _ => Number( _ ) )
+		if ( wInfixIndices.length ) {
+			const i = wInfixIndices.reduce(
 				( a, c ) => _[ c ].priority >= _[ a ].priority ? c : a
-			,	wDyadicIndices[ 0 ]
+			,	wInfixIndices[ 0 ]
 			)
 			if ( ( 0 < i ) && ( i < _.length - 1 ) ) {
-				return _[ i ]._( c, EvalSentence( c, _.slice( 0, i ) ), EvalSentence( c, _.slice( i + 1 ) ) )
+				return _[ i ]._( c, _EvalSentence( c, _.slice( 0, i ) ), _EvalSentence( c, _.slice( i + 1 ) ) )
 			}
 		}
 		break
@@ -172,7 +172,7 @@ Sentence extends _List {
 	string() { return `( ${super.string} )` }
 
 	Eval( c ) {
-		return EvalSentence( c, this._ )
+		return _EvalSentence( c, this._ )
 	}
 }
 
@@ -275,29 +275,29 @@ Functions = {
 	)
 ,	'.'		: new Unary(
 		( c, _ ) => {
-			console.log( _.string )
+			process.stdout.write( _.string )
 			return _
 		}
 	)
 ,	'¦'		: new Unary(
 		( c, _ ) => {
-			console.error( _.string )
+			process.stderr.write( _.string + '\n' )
 			return _
 		}
 	)
 /*
-	:	20	Apply		2 x [ 3, 4 ]:1			2 x 4
-	×	30	Multi/Div	2 + 3 x 4				2 + 12
-	+	40	Plus/Minus	2 | 3 + 4				2 | 7
-	|	50	Binary		2 , 3 | 4				2 < 7
-	,	55	Cons		[ 2 3 ] == 2 , [ 3 ]	[ 2 3 ] == [ 2, 3 ]
+	:	10	Apply		2 x [ 3, 4 ]:1			2 x 4
+	×	20	Multi/Div	2 + 3 x 4				2 + 12
+	+	30	Plus/Minus	2 | 3 + 4				2 | 7
+	|	40	Binary		2 , 3 | 4				2 < 7
+	,	50	Cons		[ 2 3 ] == 2 , [ 3 ]	[ 2 3 ] == [ 2, 3 ]
 	<	60	Compare		1 || 2 < 3				1 || T
 	∈	60	Member		1 || 2 ∈ [ 1, 2, 3 ]	1 || T
-	||	80	Logical		'a = [ 2 ] || T			a = T
-	?	85	IfElse		
+	||	70	Logical		'a = [ 2 ] || T			a = T
+	?	80	IfElse		
 	=	90	Define		
 */
-,	'='		: new Dyadic(
+,	'='		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Name ) {
 				c.dict[ l._ ] = r
@@ -307,82 +307,82 @@ Functions = {
 		}
 	,	90
 	)
-,	'?'		: new Dyadic(
+,	'?'		: new Infix(
 		( c, l, r ) => {
 			if ( r instanceof List && r._.length == 2 ) return r._[ _IsT( l ) ? 0 : 1 ].Eval( c )
 			throw `${l.string}?${r.string}`
 		}
-	,	85
+	,	80
 	)
-,	'¿'		: new Dyadic(
+,	'¿'		: new Infix(
 		( c, l, r ) => _IsT( l ) ? r.Eval( c ) : Nil
-	,	85
+	,	80
 	)
-,	'&&'	: new Dyadic(
+,	'&&'	: new Infix(
 		( c, l, r ) => {
 			return _IsT( l ) & _IsT( r ) ? T : Nil
 		}
-	,	80
+	,	70
 	)
-,	'||'	: new Dyadic(
+,	'||'	: new Infix(
 		( c, l, r ) => _IsT( l ) | _IsT( r ) ? T : Nil
-	,	80
+	,	70
 	)
-,	'^^'	: new Dyadic(
+,	'^^'	: new Infix(
 		( c, l, r ) => _IsT( l ) ^ _IsT( r ) ? T : Nil
-	,	80
+	,	70
 	)
-,	'∈'		: new Dyadic(
+,	'∈'		: new Infix(
 		( c, l, r ) => {
 			if ( r instanceof _List ) return r._.filter( _ => _EQ( _, l ) ).length ? T : Nil
 			throw `${l.string}∈${r.string}`
 		}
 	,	60
 	)
-,	'∋'		: new Dyadic(
+,	'∋'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof _List ) return l._.filter( _ => _EQ( _, r ) ).length ? T : Nil
 			throw `${l.string}∋${r.string}`
 		}
 	,	60
 	)
-,	'=='	: new Dyadic(
+,	'=='	: new Infix(
 		( c, l, r ) => _EQ( l, r ) ? T : Nil
 	,	60
 	)
-,	'<>'	: new Dyadic(
+,	'<>'	: new Infix(
 		( c, l, r ) => _EQ( l, r ) ? Nil : T
 	,	60
 	)
-,	'<'		: new Dyadic(
+,	'<'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ < r._ ? T : Nil
 			throw `${l.string}<${r.string}`
 		}
 	,	60
 	)
-,	'>'		: new Dyadic(
+,	'>'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ > r._ ? T : Nil
 			throw `${l.string}>${r.string}`
 		}
 	,	60
 	)
-,	'<='	: new Dyadic(
+,	'<='	: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ <= r._ ? T : Nil
 			throw `${l.string}<=${r.string}`
 		}
 	,	60
 	)
-,	'>='	: new Dyadic(
+,	'>='	: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ >= r._ ? T : Nil
 			throw `${l.string}>=${r.string}`
 		}
 	,	60
 	)
-,	','		: new Dyadic(
+,	','		: new Infix(
 		( c, l, r ) => {
 			if ( r instanceof _List ) {
 				switch ( r.constructor.name ) {
@@ -395,30 +395,30 @@ Functions = {
 			}
 			throw `${l.string},${r.string}`
 		}
-	,	55
+	,	50
 	)
-,	'&'		: new Dyadic(
+,	'&'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ & r._ )
 			throw `${l.string}&${r.string}`
 		}
-	,	50
+	,	40
 	)
-,	'|'		: new Dyadic(
+,	'|'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ | r._ )
 			throw `${l.string}|${r.string}`
 		}
-	,	50
+	,	40
 	)
-,	'^'		: new Dyadic(
+,	'^'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ ^ r._ )
 			throw `${l.string}^${r.string}`
 		}
-	,	50
+	,	40
 	)
-,	'+'		: new Dyadic(
+,	'+'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric	&& r instanceof Numeric		) return new Numeric	( l._ + r._ )
 			if ( l instanceof Literal	&& r instanceof Literal		) return new Literal	( l._ + r._ )
@@ -428,37 +428,37 @@ Functions = {
 			if ( l instanceof Sentence	&& r instanceof Sentence	) return new Sentence	( [ ...l._, ...r._ ] )
 			throw `${l.string}+${r.string}`
 		}
-	,	40
+	,	30
 	)
-,	'-'		: new Dyadic(
+,	'-'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ - r._ )
 			throw `${l.string}-${r.string}`
 		}
-	,	40
+	,	30
 	)
-,	'×'		: new Dyadic(
+,	'×'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ * r._ )
 			throw `${l.string}*${r.string}`
 		}
-	,	30
+	,	20
 	)
-,	'÷'		: new Dyadic(
+,	'÷'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ / r._ )
 			throw `${l.string}÷${r.string}`
 		}
-	,	30
+	,	20
 	)
-,	'%'		: new Dyadic(
+,	'%'		: new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ % r._ )
 			throw `${l.string}%${r.string}`
 		}
-	,	30
+	,	20
 	)
-,	':'		: new Dyadic(
+,	':'		: new Infix(
 		( c, l, r ) => {
 			switch ( r.constructor.name ) {
 			case 'Numeric'	:
@@ -481,7 +481,7 @@ Functions = {
 				}
 			}
 		}
-	,	20
+	,	10
 	)
 ,	'`'		: new Primitive( c => T )	//	Reserved for Context
 ,	'¤'		: new Primitive( c => T )	//	Reserved for Context
@@ -495,18 +495,6 @@ functionFirstChars = Object.keys( Functions ).map( _ => _[ 0 ] )
 ////////////////////////////////////////////////////////////////
 //	Reader
 ////////////////////////////////////////////////////////////////
-
-class
-StringReader {
-	constructor( _ ) {
-		this._ = _
-		this.i = 0
-	}
-	Avail()		{ return this.i < this._.length }
-	Peek()		{ return this.Avail() ? this._[ this.i ] : null }
-	Read()		{ return this.Avail() ? this._[ this.i++ ] : null }
-	Unread()	{ --this.i }
-}
 
 const
 ReadNumber = ( r, neg ) => {
@@ -535,7 +523,7 @@ ReadName = r => {
 }
 
 const
-ReadStr = r => {
+ReadLiteral = r => {
 	let	v = ""
 	let	wEscaped = false
 	while ( r.Avail() ) {
@@ -594,7 +582,7 @@ Read = ( r, terminator ) => {
 		case	'('			: return new Sentence	( ReadList( r, ')' ) )
 		case	'{'			: return new Procedure	( ReadList( r, '}' ) )
 		case	'«'			: return new Parallel	( ReadList( r, '»' ) )
-		case	'"'			: return ReadStr( r )
+		case	'"'			: return ReadLiteral( r )
 		case	'+'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, false ) : Functions[ _ ]
 		case	'-'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, true  ) : Functions[ _ ]
 		default				:
@@ -627,20 +615,54 @@ Read = ( r, terminator ) => {
 //	REPL
 ////////////////////////////////////////////////////////////////
 
-const r = new StringReader( fs.readFileSync( '/dev/stdin', 'utf8' ) )
-const c = new Context()
+class
+StringReader {
+	constructor( _ ) {
+		this._ = _
+		this.i = 0
+	}
+	Avail()		{ return this.i < this._.length }
+	Peek()		{ return this.Avail() ? this._[ this.i ] : null }
+	Read()		{ return this.Avail() ? this._[ this.i++ ] : null }
+	Unread()	{ --this.i }
+}
+
+const c = new Context(
+	{	T
+	,	int		: new Unary(
+			( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
+		)
+	,	string	: new Unary(
+			( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
+		)
+	,	cos		: new Unary(
+			( c, _ ) => new Numeric( Math.cos( _._ ) )
+		)
+	}
+)
+
+const r = new StringReader(
+	fs.readFileSync( '/dev/stdin', 'utf8' ).split( '\n' ).map(
+		_ => _.trim().startsWith( '//' )
+		?	''
+		:	_.endsWith( '=' )
+			?	'(' + ( _.substring( 0, _.length - 1 ) + "):¦;" )
+			:	_ 
+	).join( '\n' )
+)
 while ( true ) {
 	try {
 		const _ = ReadList( r, ';' )
 		if ( !_ ) break
-		console.log( new Sentence( _ ).Eval( c ).string )
+		new Sentence( _ ).Eval( c )
 	} catch ( e ) {
 		console.error( e )
 	}
 }
+
 /*
+const r = new StringReader( fs.readFileSync( '/dev/stdin', 'utf8' ) )
 while ( true ) {
-//console.log( _ )
 	try {
 		const _ = Read( r )
 		if ( !_ ) break
@@ -650,3 +672,4 @@ while ( true ) {
 	}
 }
 */
+
