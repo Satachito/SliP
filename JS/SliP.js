@@ -569,14 +569,6 @@ ReadLiteral = r => {
 
 const
 ReadList = ( r, terminator ) => {
-//	console.log( '>RL', terminator )
-	const v = _ReadList( r, terminator )
-//	console.log( '<RL', terminator, v )
-	return v
-}
-
-const
-_ReadList = ( r, terminator ) => {
 	let	v = []
 	while ( true ) {
 		const _ = Read( r, terminator )
