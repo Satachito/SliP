@@ -695,13 +695,13 @@ const r = new StringReader(
 	).join( '\n' )
 )
 while ( true ) {
-//	try {
+	try {
 		const _ = ReadList( r, ';' )
 		if ( !_ ) break
 		new Sentence( _ ).Eval( c )
-//	} catch ( e ) {
-//		console.error( e )
-//	}
+	} catch ( e ) {
+		console.error( e )
+	}
 }
 
 /*
