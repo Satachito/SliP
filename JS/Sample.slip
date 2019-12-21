@@ -215,3 +215,6 @@ a =
 
 `[ cd a ] =
 
+'theDict = "{\"b\":4}":dict;
+theDict =
+theDict : 'b =

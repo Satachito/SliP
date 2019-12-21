@@ -47,7 +47,6 @@ Name extends SliP {
 	string() { return this._ }
 
 	Eval( c ) {
-//console.log( 'Name', c.dict )
 		while ( c ) {
 			const v = c.dict[ this._ ]
 			if ( v ) return v
@@ -480,6 +479,7 @@ Functions = {
 				}
 			case 'Name'		:
 				{	if ( ! l instanceof Dict ) throw `${l.string}:${r.string}`
+					console.log( l._, r._ )
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
@@ -649,6 +649,28 @@ const c = new Context(
 	{}
 ,	new Context(
 		{	T
+		,	dict	: new Unary(
+				( c, _ ) => {
+					const wJSON = JSON.parse( _._ )
+					return new Dict(
+						Object.keys( wJSON ).reduce(
+							( dict, key ) => {
+								const value = wJSON[ key ]
+								switch ( typeof value ) {
+								case 'number':
+									dict[ key ] = new Numeric( value )
+									break
+								case 'string':
+									dict[ key ] = new Literal( value )
+									break
+								}
+								return dict
+							}
+						,	{}
+						)
+					)
+				}
+			)
 		,	int		: new Unary(
 				( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
 			)
