@@ -34,12 +34,20 @@ Literal extends SliP {
 }
 
 class
+Dict extends SliP {
+	constructor( _ ) { super( _ ) }
+	get
+	string() { return `${ JSON.stringify( this._ ) }` }
+}
+
+class
 Name extends SliP {
 	constructor( _ ) { super( _ ) }
 	get
 	string() { return this._ }
 
 	Eval( c ) {
+//console.log( 'Name', c.dict )
 		while ( c ) {
 			const v = c.dict[ this._ ]
 			if ( v ) return v
@@ -193,20 +201,16 @@ const
 _IsNil = _ => _ instanceof _List && !_._.length
 
 const
-_EQ_List = ( p, q ) => {
-	if ( p._.length != q._.length ) return false
-	for ( let i = 0; i < p._.length; i++ ) if ( !_EQ( p._[ i ], q._[ i ] ) ) return false
-	return true
-}
-const
 _EQ = ( p, q ) => {
-	if ( p instanceof Numeric   && q instanceof Numeric   ) return p._ == q._
-	if ( p instanceof Literal   && q instanceof Literal   ) return p._ == q._
-	if ( p instanceof Name      && q instanceof Name      ) return p._ == q._
-	if ( p instanceof List      && q instanceof List      ) return _EQ_List( p, q )
-	if ( p instanceof Procedure && q instanceof Procedure ) return _EQ_List( p, q )
-	if ( p instanceof Parallel  && q instanceof Parallel  ) return _EQ_List( p, q )
-	if ( p instanceof Sentence  && q instanceof Sentence  ) return _EQ_List( p, q )
+	if ( p instanceof Numeric	&& q instanceof Numeric	) return p._ == q._
+	if ( p instanceof Literal	&& q instanceof Literal	) return p._ == q._
+	if ( p instanceof Name		&& q instanceof Name	) return p._ == q._
+	if ( p instanceof _List		&& q instanceof _List	) {
+		if ( p.constructor.name != q.constructor.name ) return false
+		if ( p._.length != q._.length ) return false
+		for ( let i = 0; i < p._.length; i++ ) if ( !_EQ( p._[ i ], q._[ i ] ) ) return false
+		return true
+	}
 	return p === q
 }
 
@@ -219,7 +223,13 @@ Functions = {
 		}
 	)
 ,	'@@'	: new Primitive(
-		c => new List( stack )
+		c => new _List( stack )
+	)
+,	'¤'		: new Primitive(
+		c => new Dict( c.dict )
+	)
+,	'`'		: new PrefixFactory(
+		( c, _ ) => _._[ 1 ].Eval( new Context( _._[ 0 ].Eval( c )._, c ) )
 	)
 ,	'\''	: new PrefixFactory(
 		( c, _ ) => _
@@ -254,6 +264,7 @@ Functions = {
 		( c, _ ) => {
 			if ( _ instanceof _List && _._.length ) {
 				switch ( _.constructor.name ) {
+				case '_List'	: return new _List		( _._.slice( 1 ) )
 				case 'List'		: return new List		( _._.slice( 1 ) )
 				case 'Parallel'	: return new Parallel	( _._.slice( 1 ) )
 				case 'Sentence'	: return new Sentence	( _._.slice( 1 ) )
@@ -386,6 +397,7 @@ Functions = {
 		( c, l, r ) => {
 			if ( r instanceof _List ) {
 				switch ( r.constructor.name ) {
+				case '_List'		: return new _List		( [ l, ...r._ ] )
 				case 'List'			: return new List		( [ l, ...r._ ] )
 				case 'Parallel'		: return new Parallel	( [ l, ...r._ ] )
 				case 'Sentence'		: return new Sentence	( [ l, ...r._ ] )
@@ -466,11 +478,11 @@ Functions = {
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
-//			case 'Name'		:
-//				{	if ( ! l instanceof Dict ) throw `${l.string}:${r.string}`
-//					let v = l._[ r._ ]
-//					return v ? v : Nil
-//				}
+			case 'Name'		:
+				{	if ( ! l instanceof Dict ) throw `${l.string}:${r.string}`
+					let v = l._[ r._ ]
+					return v ? v : Nil
+				}
 			case 'Unary'	:
 				return r._( c, l )
 			default:
@@ -483,8 +495,6 @@ Functions = {
 		}
 	,	10
 	)
-,	'`'		: new Primitive( c => T )	//	Reserved for Context
-,	'¤'		: new Primitive( c => T )	//	Reserved for Context
 ,	'/'		: new Primitive( c => T )	//	Reserved for rational number
 }
 
@@ -550,6 +560,14 @@ ReadLiteral = r => {
 
 const
 ReadList = ( r, terminator ) => {
+//	console.log( '>RL', terminator )
+	const v = _ReadList( r, terminator )
+//	console.log( '<RL', terminator, v )
+	return v
+}
+
+const
+_ReadList = ( r, terminator ) => {
 	let	v = []
 	while ( true ) {
 		const _ = Read( r, terminator )
@@ -628,17 +646,20 @@ StringReader {
 }
 
 const c = new Context(
-	{	T
-	,	int		: new Unary(
-			( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
-		)
-	,	string	: new Unary(
-			( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
-		)
-	,	cos		: new Unary(
-			( c, _ ) => new Numeric( Math.cos( _._ ) )
-		)
-	}
+	{}
+,	new Context(
+		{	T
+		,	int		: new Unary(
+				( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
+			)
+		,	string	: new Unary(
+				( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
+			)
+		,	cos		: new Unary(
+				( c, _ ) => new Numeric( Math.cos( _._ ) )
+			)
+		}
+	)
 )
 
 const r = new StringReader(
@@ -646,21 +667,22 @@ const r = new StringReader(
 		_ => _.trim().startsWith( '//' )
 		?	''
 		:	_.endsWith( '=' )
-			?	'(' + ( _.substring( 0, _.length - 1 ) + '):¦;' )
+			?	( _.substring( 0, _.length - 1 ) + ':¦;' )
 			:	_ 
 	).join( '\n' )
 )
 while ( true ) {
-	try {
+//	try {
 		const _ = ReadList( r, ';' )
 		if ( !_ ) break
 		new Sentence( _ ).Eval( c )
-	} catch ( e ) {
-		console.error( e )
-	}
+//	} catch ( e ) {
+//		console.error( e )
+//	}
 }
 
 /*
+
 const r = new StringReader( fs.readFileSync( '/dev/stdin', 'utf8' ) )
 while ( true ) {
 	try {
@@ -668,8 +690,8 @@ while ( true ) {
 		if ( !_ ) break
 		console.log( _.Eval( c ).string )
 	} catch ( e ) {
-		console.error( e )
+		console.error( 'EXCEPTION:', e )
 	}
 }
-*/
 
+*/
