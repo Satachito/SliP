@@ -228,7 +228,7 @@ Functions = {
 	'@'		: new Primitive(
 		c => {
 			if ( stack.length ) return stack[ 0 ]
-			throw new Error( 'Stack underflow' )
+			throw 'Stack underflow'
 		}
 	)
 ,	'@@'	: new Primitive(
@@ -244,7 +244,7 @@ Functions = {
 		( c, _ ) => _
 	)
 ,	'¡'		: new PrefixFactory(
-		( c, _ ) => { throw _ }
+		( c, _ ) => { throw _.string }
 	)
 ,	'~'		: new PrefixFactory(
 		( c, _ ) => {
@@ -581,7 +581,7 @@ _ReadList = ( r, terminator ) => {
 	while ( true ) {
 		const _ = Read( r, terminator )
 		if ( !_ ) {
-			if ( v.length ) throw new Error( 'Open list' )
+			if ( v.length ) throw 'Open list'
 			return null
 		}
 		if ( Array.isArray( _ ) ) break
@@ -700,7 +700,7 @@ while ( true ) {
 		if ( !_ ) break
 		new Sentence( _ ).Eval( c )
 	} catch ( e ) {
-		console.error( e )
+		console.error( 'EXCEPTION:', e )
 	}
 }
 
