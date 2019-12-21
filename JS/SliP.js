@@ -201,7 +201,7 @@ const
 T = new SliP()
 
 const
-Nil = new List( [] )
+Nil = new _List( [] )
 
 const
 _IsT = _ => !( _ instanceof _List ) || _._.length
