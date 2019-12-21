@@ -215,6 +215,12 @@ a =
 
 `[ cd a ] =
 
-'theDict = "{\"b\":4}":dict;
-theDict =
-theDict : 'b =
+'a = 3;
+'add1 = '( @ + 1 );
+
+¤ =
+
+"{\"b\":\"4\"}" : dict : 'b =
+
+3:( ( "{\"add2\":\"( @ + 2 )\"}" : dict ) : 'add2 ) =
+

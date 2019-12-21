@@ -37,7 +37,17 @@ class
 Dict extends SliP {
 	constructor( _ ) { super( _ ) }
 	get
-	string() { return `${ JSON.stringify( this._ ) }` }
+	string() {
+		const v = Object.keys( this._ ).reduce(
+			( dict, key ) => {
+				const value = this._[ key ]
+				dict[ key ] = value instanceof Literal ? value._ : value.string
+				return dict
+			}
+		,	{}
+		)
+		return `${ JSON.stringify( v ) }`
+	}
 }
 
 class
@@ -479,7 +489,6 @@ Functions = {
 				}
 			case 'Name'		:
 				{	if ( ! l instanceof Dict ) throw `${l.string}:${r.string}`
-					console.log( l._, r._ )
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
@@ -655,15 +664,7 @@ const c = new Context(
 					return new Dict(
 						Object.keys( wJSON ).reduce(
 							( dict, key ) => {
-								const value = wJSON[ key ]
-								switch ( typeof value ) {
-								case 'number':
-									dict[ key ] = new Numeric( value )
-									break
-								case 'string':
-									dict[ key ] = new Literal( value )
-									break
-								}
+								dict[ key ] = Read( new StringReader( wJSON[ key ] ) )
 								return dict
 							}
 						,	{}
@@ -704,7 +705,7 @@ while ( true ) {
 }
 
 /*
-
+//	Non sugar
 const r = new StringReader( fs.readFileSync( '/dev/stdin', 'utf8' ) )
 while ( true ) {
 	try {
