@@ -250,7 +250,7 @@ Functions = {
 		( c, _ ) => {
 			const v = _.Eval( c )
 			if ( v instanceof Numeric ) return new Numeric( ~v._ )
-			throw `~${_.string}:`
+			throw `~${_.string}`
 		}
 	)
 ,	'¬'		: new PrefixFactory(
