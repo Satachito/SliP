@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html lang=zxx>
+<title>SliP, the resulting calculator.</title>
+<style>
+button, input, select, textarea {
+;	font-family				: inherit
+;	font-size				: 100%
+}
+html {
+;	height					: 100%
+}
+body {
+;	height					: 100%
+;	margin					: 0
+;	display					: grid
+;	grid-template-rows		: auto 1fr auto
+;	grid-template-columns	: auto 1fr auto
+}
+header {
+;	grid-column				: 1 / 4
+;	border-bottom			: 1px solid black
+;	padding					: 6px
+;	font-family				: fantasy
+}
+footer {
+;	grid-column				: 1 / 4
+;	border-top				: 1px solid black
+;	padding					: 6px
+;	font-family				: cursive
+}
+nav {
+;	border-right			: 1px solid black
+;	padding					: 6px
+;	font-family				: monospace
+}
+aside {
+;	border-left				: 1px solid black
+;	padding					: 6px
+}
+jp-split-h {
+;	font-family				: math
+;	font-size				: 12px
+}
+textarea {
+;	resize					: none
+;	border					: none
+}
+#GUTTER {
+;	background				: lightgrey
+;	cursor					: col-resize
+}
+#RESULT {
+;	padding					: 6px
+}
+</style>
+
+<header>
+	SliP, the resulting calculator.
+</header>
+
+<nav>
+	<input type=button style="height:32px; width:32px" value=7	id=KEY_7		>
+	<input type=button style="height:32px; width:32px" value=8	id=KEY_8		>
+	<input type=button style="height:32px; width:32px" value=9	id=KEY_9		>
+	<input type=button style="height:32px; width:32px" value=÷	id=KEY_DIV		><br>
+	<input type=button style="height:32px; width:32px" value=4	id=KEY_4		>
+	<input type=button style="height:32px; width:32px" value=5	id=KEY_5		>
+	<input type=button style="height:32px; width:32px" value=6	id=KEY_6		>
+	<input type=button style="height:32px; width:32px" value=×	id=KEY_MUL		><br>
+	<input type=button style="height:32px; width:32px" value=3	id=KEY_3		>
+	<input type=button style="height:32px; width:32px" value=2	id=KEY_2		>
+	<input type=button style="height:32px; width:32px" value=1	id=KEY_1		>
+	<input type=button style="height:32px; width:32px" value=-	id=KEY_MINUS	><br>
+	<input type=button style="height:32px; width:32px" value=0	id=KEY_0		>
+	<input type=button style="height:32px; width:32px" value=.	id=KEY_DOT		>
+	<input type=button style="height:32px; width:32px" value=⏎	id=KEY_RET		>
+	<input type=button style="height:32px; width:32px" value=+	id=KEY_PLUS		><br>
+	<input type=button style="height:32px; width:32px" value=(	id=KEY_OPEN		>
+	<input type=button style="height:32px; width:32px" value=)	id=KEY_CLOSE	>
+	<input type=button style="height:32px" value=CALCULATE		id=CALCULATE	><br>
+	<br>
+	<label for=CONV_X			><input type=checkbox id=CONV_X			checked> x,X -> ×		</label><br>
+	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked> * -> ×			</label><br>
+	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked> / -> ÷			</label><br>
+	<br>
+	<label for=NEW_LINE_MODE	><input type=checkbox id=NEW_LINE_MODE	checked> New line mode	</label><br>
+	<br>
+	<label for=SYNTAX_CHECK		><input type=checkbox id=SYNTAX_CHECK	checked> Syntax check	</label><br>
+	<br>
+	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
+	<br>
+	<input type=button style="height:32px" value=CLEAR			id=CLEAR		><br>
+</nav>
+
+<jp-split-h grid-template="1fr 6px 1fr">
+	<textarea id=SOURCE></textarea>
+	<div id=GUTTER></div>
+	<div id=RESULT></div>
+</jp-split-h>
+
+<aside>ASIDE</aside>
+
+<footer>Copyright 2022 SliP LLC, Tokyo.</footer>
+
+<script type=module>
+import { Read, StringReader, Sugared, NonSugared } from './SliP.js'
+
+const
+InsertToSOURCE = _ => {
+	const $ = SOURCE.selectionStart
+	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( SOURCE.selectionEnd )
+	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
+}
+
+KEY_0		.onclick = () => InsertToSOURCE( '0' )
+KEY_1		.onclick = () => InsertToSOURCE( '1' )
+KEY_2		.onclick = () => InsertToSOURCE( '2' )
+KEY_3		.onclick = () => InsertToSOURCE( '3' )
+KEY_4		.onclick = () => InsertToSOURCE( '4' )
+KEY_5		.onclick = () => InsertToSOURCE( '5' )
+KEY_6		.onclick = () => InsertToSOURCE( '6' )
+KEY_7		.onclick = () => InsertToSOURCE( '7' )
+KEY_8		.onclick = () => InsertToSOURCE( '8' )
+KEY_9		.onclick = () => InsertToSOURCE( '9' )
+KEY_DIV		.onclick = () => InsertToSOURCE( '÷' )
+KEY_MUL		.onclick = () => InsertToSOURCE( '×' )
+KEY_MINUS	.onclick = () => InsertToSOURCE( '-' )
+KEY_PLUS	.onclick = () => InsertToSOURCE( '+' )
+KEY_DOT		.onclick = () => InsertToSOURCE( '.' )
+KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
+KEY_OPEN	.onclick = () => InsertToSOURCE( '(' )
+KEY_CLOSE	.onclick = () => InsertToSOURCE( ')' )
+
+SOURCE.onkeydown = ev => {
+	if ( ev.metaKey ) return
+	switch ( ev.key ) {
+	case 'x':
+	case 'X':
+		CONV_X.checked && (
+			ev.preventDefault()
+		,	InsertToSOURCE( '×' )
+		)
+		break
+	case '*':
+		CONV_ASTERISK.checked && (
+			ev.preventDefault()
+		,	InsertToSOURCE( '×' )
+		)
+		break
+	case '/':
+		CONV_SLASH.checked && (
+			ev.preventDefault()
+		,	InsertToSOURCE( '÷' )
+		)
+		break
+	}
+}
+
+CLEAR.onclick = () => SOURCE.value = ''
+
+const
+AppendDIV = text => {
+	const $ = RESULT.appendChild( document.createElement( 'div' ) )
+	$.textContent = text
+	return $
+}
+
+CALCULATE.onclick = () => {
+
+	RESULT.textContent = ''
+
+	if ( NEW_LINE_MODE.checked ) {
+		SOURCE.value.split( '\n' ).map( $ => $.trim() ).filter( $ => $.length ).forEach(
+			$ => {
+				INCLUDE_SOURCE.checked && ( AppendDIV( $ ).style.color = 'grey' )
+				try {
+					AppendDIV( Sugared( $ + ';' ) )
+				} catch ( ex ) {
+					AppendDIV( ex ).style.color = 'red'
+				}
+			}
+		)
+	} else {
+		const $ = new StringReader( SOURCE.value )
+		while ( true ) {
+			const start = $.i
+			const _ = Read( $ )
+			if ( !_ ) break
+			const end = $.i
+			INCLUDE_SOURCE.checked && ( AppendDIV( SOURCE.value.substring( start, end ) ).style.color = 'grey' )
+			try {
+				AppendDIV( NonSugared( _ ) )
+			} catch ( ex ) {
+				AppendDIV( ex ).style.color = 'red'
+			}
+		}
+	}
+}
+
+window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
+
+window.onload = () => SOURCE.value = localStorage.getItem( 'SOURCE' )
+
+</script>
+
+<script src=./jp-split/jp-split.js></script>
+
