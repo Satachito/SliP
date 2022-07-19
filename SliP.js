@@ -172,6 +172,7 @@ Procedure extends _List {
 
 const
 _EvalSentence = ( c, _ ) => {
+console.log( 'EvalSentence', _ )
 	switch ( _.length ) {
 	case  0:
 		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
@@ -786,7 +787,7 @@ NonSugared = _ => {
 		try {
 			const _ = Read( r )
 			if ( !_ ) break
-console.log( _.string(), _ )
+console.log( 'Read', _.string(), _ )
 			const $ = _.Eval( c )
 			console.log( $.string() + '\t:', $ )
 		} catch ( e ) {
