@@ -1,6 +1,9 @@
 const
 RESERVED_CHARACTERS = [
-	'!'		//	21	Eval
+	'\n'	//	0A
+,	'\r'	//	0D
+,	' '		//	20
+,	'!'		//	21	Eval
 ,	'"'		//	22	Literal
 ,	'#'		//	23	Num
 ,	'$'		//	24	Last
@@ -25,7 +28,7 @@ RESERVED_CHARACTERS = [
 ,	'['		//	5B	Open list
 ,	']'		//	5D	Close list
 ,	'^'		//	5E	排他的論理和
-,	'`'		//	60	右辺に2要素のリストをとり、0番目の要素である辞書をコンテクスト辞書チェーンの最初に付け加え、1番目の要素を評価したもの
+,	'`'		//	60													RESERVED
 ,	'{'		//	7B	Open procedure
 ,	'|'		//	7C	OR
 ,	'}'		//	7D	Close procedure
@@ -33,7 +36,7 @@ RESERVED_CHARACTERS = [
 ,	'¡'		//	A1	Throw
 ,	'¤'		//	A4	Dict
 ,	'¦'		//	A6	標準エラー出力に改行をつけて表示します。引数をそのまま返します。
-,	'§'		//	A7													RESERVED
+,	'§'		//	A7	右辺に2要素のリストをとり、0番目の要素である辞書をコンテクスト辞書チェーンの最初に付け加え、1番目の要素を評価したもの
 ,	'«'		//	AB	Open parallel
 ,	'¬'		//	AC	論理的に反転したもの
 ,	'±'		//	B1													RESERVED
@@ -100,11 +103,8 @@ Name extends SliP {
 	string()	{ return this._ }
 	Eval( c )	{
 		while ( c ) {
-			try {
-				return c.dict._[ this._ ]
-	// ありゃこれ EXCEPTION になっちゃう
-			} catch ( ex ) {
-			}
+			const $ = c.dict[ this._ ]
+			if ( $ !== void 0 ) return $
 			c = c.next
 		}
 		throw `Undefined:${this._}`
@@ -127,6 +127,10 @@ Primitive extends _Func {
 
 class
 Prefix extends _Func {
+	constructor( _, label, target ) {
+		super( _, label )
+		this.target = target
+	}
 	string()	{ return this.label }
 	Eval( c )	{ return this._( c, this.target ) }
 }
@@ -172,7 +176,7 @@ Procedure extends _List {
 
 const
 _EvalSentence = ( c, _ ) => {
-console.log( 'EvalSentence', _ )
+//console.log( 'EvalSentence', _ )
 	switch ( _.length ) {
 	case  0:
 		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
@@ -184,10 +188,7 @@ console.log( 'EvalSentence', _ )
 		if ( infixEntries.length ) {
 			let $ = infixEntries[ 0 ]
 			infixEntries.slice( 1 ).forEach(
-				_ => (
-console.log( $, _ )
-				,	_[ 1 ].priority >= $[ 1 ].priority && ( $ = _ )
-				)
+				_ => _[ 1 ].priority >= $[ 1 ].priority && ( $ = _ )
 			)
 			const [ index, infix ] = $
 			try {
@@ -197,7 +198,14 @@ console.log( $, _ )
 				,	_EvalSentence( c, _.slice( index + 1 ) )
 				)
 			} catch ( ex ) {
-				throw ex.push( [ `Syntax error: ${ new _List( _ ).string() }` ] )
+//console.error( '_EvalSentence:ex', ex )
+				let $ = `Syntax error: ${ new _List( _ ).string() }`
+				if ( Array.isArray( ex ) ) {
+					ex.push( $ )
+					throw ex
+				} else {
+					throw [ $, ex ]
+				}
 			}
 		} else {
 			throw [ `Syntax error: No infix operators: ${ new _List( _ ).string() }` ]
@@ -218,10 +226,7 @@ Sentence extends _List {
 ////////////////////////////////////////////////////////////////
 
 const
-T = new SliP( 'T' )
-
-const
-Nil = new _List( [] )
+Nil = new List( [] )
 
 const
 _IsT = _ => !( _ instanceof _List ) || _._.length
@@ -244,7 +249,7 @@ _EQ = ( p, q ) => {
 }
 
 const
-Funcs = [
+Builtins = [
 	new Primitive(
 		c => {
 			if ( stack.length ) return stack[ 0 ]
@@ -262,7 +267,7 @@ Funcs = [
 	)
 ,	new Prefix(
 		( c, _ ) => _._[ 1 ].Eval( new Context( _._[ 0 ].Eval( c )._, c ) )
-	,	'`'		
+	,	'§'
 	)
 ,	new Prefix(
 		( c, _ ) => _
@@ -537,6 +542,7 @@ Funcs = [
 	)
 ,	new Infix(
 		( c, l, r ) => {
+//console.log( c, l, r )
 			switch ( r.constructor.name ) {
 			case 'Numeric'	:
 				{	if ( ! l instanceof _List ) throw `${l.string}:${r.string}`
@@ -568,7 +574,7 @@ Funcs = [
 	)
 ]
 const
-FuncDict = Funcs.reduce(
+BuiltinDict = Builtins.reduce(
 	( $, _ ) => ( $[ _.label ] = _, $ )
 ,	{}
 )
@@ -599,8 +605,6 @@ ReadName = r => {
 	let	v = ''
 	while ( r.Avail() ) {
 		const _ = r.Peek()
-		if ( _.match( /\s/ ) ) break
-		if ( _.match( /[\[\]{}()«»;]/ ) ) break
 		if ( RESERVED_CHARACTERS.includes( _ ) ) break
 		r.Forward()
 		v += _
@@ -609,7 +613,7 @@ ReadName = r => {
 }
 
 const
-ReadLiteral = r => {
+ReadLiteral = ( r, terminator ) => {
 	let	v = ''
 	let	escaped = false
 	while ( r.Avail() ) {
@@ -617,36 +621,36 @@ ReadLiteral = r => {
 		if ( escaped ) {
 			escaped = false
 			switch ( _ ) {
-			case '0'	: v += '\0';	break
-			case 't'	: v += '\t';	break
-			case 'n'	: v += '\n';	break
-			case 'r'	: v += '\r';	break
-			default		: v += _;		break
+			case '0'		: v += '\0';		break
+			case 't'		: v += '\t';		break
+			case 'n'		: v += '\n';		break
+			case 'r'		: v += '\r';		break
+			default			: v += _;			break
 			}
 		} else {
 			switch ( _ ) {
-			case '"'	: return			new Literal( v )
-			case '\\'	: escaped = true;	break
-			default		: v += _;			break
+			case terminator	: return			new Literal( v )
+			case '\\'		: escaped = true;	break
+			default			: v += _;			break
 			}
 		}
 	}
 	throw `Syntax error: Unterminated string: ${v}`
 }
 
+let
+level = 0
+
 const
 ReadList = ( r, terminator ) => {
-	let	v = []
+	const	v = []
 	while ( true ) {
 		const _ = Read( r, terminator )
-		if ( !_ ) {
-			if ( v.length ) throw 'Open list'
-			return null
-		}
-		if ( Array.isArray( _ ) ) break
-		v.push( _ )
+		if ( _ === void 0 ) return v	//	Read terminator
+		if ( _ instanceof SliP ) v.push( _ )
+		else break
 	}
-	return v
+	throw 'Open list: ' + v
 }
 
 export const
@@ -657,34 +661,37 @@ Read = ( r, terminator ) => {
 		r.Forward()
 		if ( _.match( /\s/ ) ) continue
 		switch ( _ ) {
-		case	terminator	: return []	//	Must be before close brace
-		case	']'			: throw `Unexpected ${_}`
-		case	'}'			: throw `Unexpected ${_}`
-		case	')'			: throw `Unexpected ${_}`
-		case	'»'			: throw `Unexpected ${_}`
+		case	terminator	: return void 0	//	Must be before close brace
+		case	']'			:
+		case	'}'			:
+		case	')'			:
+		case	'»'			:
+			throw `Unexpected brace closer: ${_}`
 		case	'['			: return new List		( ReadList( r, ']' ) )
 		case	'('			: return new Sentence	( ReadList( r, ')' ) )
 		case	'{'			: return new Procedure	( ReadList( r, '}' ) )
 		case	'«'			: return new Parallel	( ReadList( r, '»' ) )
-		case	'"'			: return ReadLiteral( r )
-		case	'+'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, false ) : FuncDict[ _ ]
-		case	'-'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, true  ) : FuncDict[ _ ]
+		case	'"'			: return ReadLiteral( r, _ )
+		case	'`'			: return ReadLiteral( r, _ )
+	//	case	'+'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, false ) : BuiltinDict[ _ ]
+	//	case	'-'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, true ) : BuiltinDict[ _ ]
 		default				:
 			if ( RESERVED_CHARACTERS.includes( _ ) ) {
 				let v = null
-				const c2s = Object.keys( FuncDict ).filter( key => key[ 0 ] == _ && key.length > 1 ).map( _ => _[ 1 ] )
+				const c2s = Object.keys( BuiltinDict ).filter( key => key[ 0 ] == _ && key.length > 1 ).map( _ => _[ 1 ] )
 				if ( c2s.length ) {
 					const c2 = r.Read()
 					if ( c2s.includes( c2 ) ) {
-						v = FuncDict[ _ + c2 ]
+						v = BuiltinDict[ _ + c2 ]
 					} else {
 						r.Backward()
-						v = FuncDict[ _ ]
+						v = BuiltinDict[ _ ]
 					}
 				} else {
-					v = FuncDict[ _ ]
+					v = BuiltinDict[ _ ]
 				}
-				if ( v instanceof Prefix ) v = v.target = Read( r )
+				if ( v instanceof Prefix ) v = new Prefix( v._, v.label, Read( r ) )
+//console.log( 'Read:', v )
 				return v
 			} else {
 				r.Backward()
@@ -736,7 +743,7 @@ Dump = _ => console.log( _.string() )
 //	REPL
 ////////////////////////////////////////////////////////////////
 
-class
+export class
 StringReader {
 	constructor( _ ) {
 		this._ = _
@@ -749,11 +756,11 @@ StringReader {
 	Backward()	{ --this.i }
 }
 
-const c = new Context(
+export const
+NewContext = () => new Context(
 	{}
 ,	new Context(
-		{	T
-		,	dict	: new Unary(
+		[	new Unary(
 				( c, _ ) => {
 					const wJSON = JSON.parse( _._ )
 					return new Dict(
@@ -766,40 +773,26 @@ const c = new Context(
 						)
 					)
 				}
+			,	'dict'
 			)
-		,	int		: new Unary(
+		,	new Unary(
 				( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
+			,	'int'
 			)
-		,	string	: new Unary(
+		,	new Unary(
 				( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
+			,	'string'
 			)
-		,	cos		: new Unary(
+		,	new Unary(
 				( c, _ ) => new Numeric( Math.cos( _._ ) )
+			,	'cos'
 			)
-		}
+		].reduce(
+			( $, _ ) => ( $[ _.label ] = _, $ )
+		,	{}
+		)
 	)
 )
 
 export const
-NonSugared = _ => {
-	const r = new StringReader( _ )
-	while ( true ) {
-		try {
-			const _ = Read( r )
-			if ( !_ ) break
-console.log( 'Read', _.string(), _ )
-			const $ = _.Eval( c )
-			console.log( $.string() + '\t:', $ )
-		} catch ( e ) {
-			console.error( 'EXCEPTION:', e )
-		}
-	}
-}
-
-export const
-Sugared = _ => new Sentence( ReadList( new StringReader( _ ), ';' ) ).Eval( c ).string
-
-
-import * as fs from 'fs'
-NonSugared( fs.readFileSync( '/dev/stdin', 'utf8' ) )
-
+Sugared = _ => new Sentence( ReadList( new StringReader( _ + ';' ), ';' ) )
