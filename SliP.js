@@ -12,8 +12,8 @@ Context {
 class
 SliP {
 	constructor( _ ) { this._ = _ }
-	string()	{ return `${this._}` }
-	Eval( c )	{ return this }
+	string() { return `${this._}` }
+	Eval( c ) { return this }
 }
 
 class
@@ -22,13 +22,13 @@ Numeric extends SliP {
 
 class
 Literal extends SliP {
-	string()	{ return `"${this._}"` }
+	string() { return `"${this._}"` }
 }
 
 class
 Dict extends SliP {		//	_ : Entries, key type is Name -> Object
 	constructor( _ ) { super( Object.fromEntries( _.map( ( [ k, v ] ) => [ k.string(), v ] ) ) ) }
-	string()	{
+	string() {
 		let initChar = '{'
 		return Object.entries( this._ ).reduce(
 			( $, [ key, value ] ) => (
@@ -43,8 +43,8 @@ Dict extends SliP {		//	_ : Entries, key type is Name -> Object
 
 class
 Name extends SliP {
-	string()	{ return this._ }
-	Eval( c )	{
+	string() { return this._ }
+	Eval( c ) {
 		while ( c ) {
 			const $ = c.dict[ this._ ]
 			if ( $ !== void 0 ) return $
@@ -60,11 +60,11 @@ _Func extends SliP {
 		super( _ )
 		this.label = label
 	}
+	string() { return this.label }
 }
 
 class
 Primitive extends _Func {
-	string() { return this.label }
 	Eval( c ) { return this._( c ) }
 }
 
@@ -74,13 +74,11 @@ Prefix extends _Func {
 		super( _, label )
 		this.target = target
 	}
-	string()	{ return this.label }
-	Eval( c )	{ return this._( c, this.target ) }
+	Eval( c ) { return this._( c, this.target ) }
 }
 
 class
 Unary extends _Func {
-	string()	{ return this.label }
 }
 
 class
@@ -89,29 +87,28 @@ Infix extends _Func {
 		super( _, label )
 		this.priority = priority
 	}
-	string()	{ return this.label }
 }
 
 class
 _List extends SliP {
-	string()	{ return this._.map( _ => _.string() ).join( ' ' ) }
+	string() { return this._.map( _ => _.string() ).join( ' ' ) }
 }
 
 class
 List extends _List {
-	string()	{ return `[ ${super.string()} ]` }
+	string() { return `[ ${super.string()} ]` }
 }
 
 class
 Parallel extends _List {
-	string()	{ return `« ${super.string()} »` }
-	Eval( c )	{ return new List( this._.map( _ => _.Eval( c ) ) ) }
+	string() { return `« ${super.string()} »` }
+	Eval( c ) { return new List( this._.map( _ => _.Eval( c ) ) ) }
 }
 
 class
 Procedure extends _List {
-	string()	{ return `{ ${super.string()} }` }
-	Eval( c )	{
+	string() { return `{ ${super.string()} }` }
+	Eval( c ) {
 		c = new Context( {}, c )
 		return new List( this._.map( _ => _.Eval( c ) ) )
 	}
@@ -119,7 +116,6 @@ Procedure extends _List {
 
 const
 _EvalSentence = ( c, _ ) => {
-//console.log( 'EvalSentence', _ )
 	switch ( _.length ) {
 	case  0:
 		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
@@ -141,7 +137,6 @@ _EvalSentence = ( c, _ ) => {
 				,	_EvalSentence( c, _.slice( index + 1 ) )
 				)
 			} catch ( ex ) {
-//console.error( '_EvalSentence:ex', ex )
 				let $ = `Syntax error: ${ new _List( _ ).string() }`
 				if ( Array.isArray( ex ) ) {
 					ex.push( $ )
@@ -151,6 +146,14 @@ _EvalSentence = ( c, _ ) => {
 				}
 			}
 		} else {
+			let index = _.length - 1
+			while ( index-- ) {
+				let $ = _[ index ]
+				$ instanceof Name && ( $ = $.Eval( c ) )
+				if ( ! $ instanceof Prefix ) break
+				_.splice( index, 2, $._( c, _[ index + 1 ] ) )
+			}
+			if ( _.length === 1 ) return _[ 0 ]
 			throw [ `Syntax error: No infix operators: ${ new _List( _ ).string() }` ]
 		}
 		break
@@ -182,12 +185,12 @@ _IsNil = _ => _ instanceof _List && !_._.length
 
 const
 _EQ = ( p, q ) => {
-	if ( p instanceof Numeric	&& q instanceof Numeric	) return p._ == q._
-	if ( p instanceof Literal	&& q instanceof Literal	) return p._ == q._
-	if ( p instanceof Name		&& q instanceof Name	) return p._ == q._
+	if ( p instanceof Numeric	&& q instanceof Numeric	) return p._ === q._
+	if ( p instanceof Literal	&& q instanceof Literal	) return p._ === q._
+	if ( p instanceof Name		&& q instanceof Name	) return p._ === q._
 	if ( p instanceof _List		&& q instanceof _List	) {
-		if ( p.constructor.name != q.constructor.name ) return false
-		if ( p._.length != q._.length ) return false
+		if ( p.constructor.name !== q.constructor.name ) return false
+		if ( p._.length !== q._.length ) return false
 		for ( let i = 0; i < p._.length; i++ ) if ( !_EQ( p._[ i ], q._[ i ] ) ) return false
 		return true
 	}
@@ -201,15 +204,15 @@ Builtins = [
 			if ( stack.length ) return stack[ 0 ]
 			throw 'Stack underflow'
 		}
-	,	'@'		
+	,	'@'
 	)
 ,	new Primitive(
 		c => new List( stack )
-	,	'@@'	
+	,	'@@'
 	)
 ,	new Primitive(
 		c => new Dict( Object.entries( c.dict ).map( ( [ k, v ] ) => [ new Name( k ), v ] ) )
-	,	'¤'		
+	,	'¤'
 	)
 ,	new Prefix(
 		( c, _ ) => _._[ 1 ].Eval( new Context( _._[ 0 ].Eval( c )._, c ) )
@@ -217,11 +220,11 @@ Builtins = [
 	)
 ,	new Prefix(
 		( c, _ ) => _
-	,	'\''	
+	,	'\''
 	)
 ,	new Prefix(
 		( c, _ ) => { throw _.string() }
-	,	'¡'		
+	,	'¡'
 	)
 ,	new Prefix(
 		( c, _ ) => {
@@ -229,18 +232,15 @@ Builtins = [
 			if ( v instanceof Numeric ) return new Numeric( ~v._ )
 			throw `~${_.string()}`
 		}
-	,	'~'		
+	,	'~'
 	)
 ,	new Prefix(
-		( c, _ ) => {
-			const v = _.Eval( c )
-			return _IsT( v ) ? Nil : T
-		}
-	,	'¬'		
+		( c, _ ) => _IsT( _.Eval( c ) ) ? Nil : T
+	,	'¬'
 	)
 ,	new Prefix(
 		( c, _ ) => _.Eval( c ).Eval( c )
-	,	'!'		
+	,	'!'
 	)
 ,	new Unary(
 		( c, _ ) => {
@@ -248,7 +248,7 @@ Builtins = [
 			if ( _ instanceof Literal	) return new Numeric( _._.length )
 			throw `#${_.string()}`
 		}
-	,	'#'		
+	,	'#'
 	)
 ,	new Unary(
 		( c, _ ) => {
@@ -263,7 +263,7 @@ Builtins = [
 			}
 			throw `*${_.string()}`
 		}
-	,	'*'		
+	,	'*'
 	)
 ,	new Unary(
 		( c, _ ) => {
@@ -271,25 +271,19 @@ Builtins = [
 			if ( _ instanceof _List && length ) return _._[ length - 1 ]
 			throw `$${_.string()}`
 		}
-	,	'$'		
+	,	'$'
 	)
 ,	new Unary(
 		( c, _ ) => _ instanceof Literal ? _ : new Literal( _.string() )
-	,	'·'		
+	,	'¶'
 	)
 ,	new Unary(
-		( c, _ ) => {
-			process.stdout.write( _.string() )
-			return _
-		}
-	,	'.'		
+		( c, _ ) => ( process.stdout.write( _.string() ), _ )
+	,	'.'
 	)
 ,	new Unary(
-		( c, _ ) => {
-			process.stderr.write( _.string() + '\n' )
-			return _
-		}
-	,	'¦'		
+		( c, _ ) => ( process.stderr.write( _.string() + '\n' ), _ )
+	,	'¦'
 	)
 /*
 	:	10	Apply		2 x [ 3, 4 ]:1			2 x 4
@@ -300,8 +294,8 @@ Builtins = [
 	<	60	Compare		1 || 2 < 3				1 || T
 	∈	60	Member		1 || 2 ∈ [ 1, 2, 3 ]	1 || T
 	||	70	Logical		'a = [ 2 ] || T			a = T
-	?	80	IfElse		
-	=	90	Define		
+	?	80	IfElse
+	=	90	Define
 */
 ,	new Infix(
 		( c, l, r ) => {
@@ -311,7 +305,7 @@ Builtins = [
 			}
 			throw `${l.string()}=${r.string()}`
 		}
-	,	'='		
+	,	'='
 	,	90
 	)
 ,	new Infix(
@@ -319,27 +313,27 @@ Builtins = [
 			if ( r instanceof List && r._.length == 2 ) return r._[ _IsT( l ) ? 0 : 1 ].Eval( c )
 			throw `${l.string()}?${r.string()}`
 		}
-	,	'?'		
+	,	'?'
 	,	80
 	)
 ,	new Infix(
 		( c, l, r ) => _IsT( l ) ? r.Eval( c ) : Nil
-	,	'¿'		
+	,	'¿'
 	,	80
 	)
 ,	new Infix(
 		( c, l, r ) => _IsT( l ) & _IsT( r ) ? T : Nil
-	,	'&&'	
+	,	'&&'
 	,	70
 	)
 ,	new Infix(
 		( c, l, r ) => _IsT( l ) | _IsT( r ) ? T : Nil
-	,	'||'	
+	,	'||'
 	,	70
 	)
 ,	new Infix(
 		( c, l, r ) => _IsT( l ) ^ _IsT( r ) ? T : Nil
-	,	'^^'	
+	,	'^^'
 	,	70
 	)
 ,	new Infix(
@@ -347,7 +341,7 @@ Builtins = [
 			if ( r instanceof _List ) return r._.filter( _ => _EQ( _, l ) ).length ? T : Nil
 			throw `${l.string()}∈${r.string}()`
 		}
-	,	'∈'		
+	,	'∈'
 	,	60
 	)
 ,	new Infix(
@@ -355,17 +349,17 @@ Builtins = [
 			if ( l instanceof _List ) return l._.filter( _ => _EQ( _, r ) ).length ? T : Nil
 			throw `${l.string()}∋${r.string()}`
 		}
-	,	'∋'		
+	,	'∋'
 	,	60
 	)
 ,	new Infix(
 		( c, l, r ) => _EQ( l, r ) ? T : Nil
-	,	'=='	
+	,	'=='
 	,	60
 	)
 ,	new Infix(
 		( c, l, r ) => _EQ( l, r ) ? Nil : T
-	,	'<>'	
+	,	'<>'
 	,	60
 	)
 ,	new Infix(
@@ -373,7 +367,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ < r._ ? T : Nil
 			throw `${l.string()}<${r.string()}`
 		}
-	,	'<'		
+	,	'<'
 	,	60
 	)
 ,	new Infix(
@@ -381,7 +375,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ > r._ ? T : Nil
 			throw `${l.string()}>${r.string()}`
 		}
-	,	'>'		
+	,	'>'
 	,	60
 	)
 ,	new Infix(
@@ -389,7 +383,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ <= r._ ? T : Nil
 			throw `${l.string()}<=${r.string()}`
 		}
-	,	'<='	
+	,	'<='
 	,	60
 	)
 ,	new Infix(
@@ -397,7 +391,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ >= r._ ? T : Nil
 			throw `${l.string()}>=${r.string()}`
 		}
-	,	'>='	
+	,	'>='
 	,	60
 	)
 ,	new Infix(
@@ -414,7 +408,7 @@ Builtins = [
 			}
 			throw `${l.string()},${r.string()}`
 		}
-	,	','		
+	,	','
 	,	50
 	)
 ,	new Infix(
@@ -422,7 +416,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ & r._ )
 			throw `${l.string()}&${r.string()}`
 		}
-	,	'&'		
+	,	'&'
 	,	40
 	)
 ,	new Infix(
@@ -430,7 +424,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ | r._ )
 			throw `${l.string()}|${r.string()}`
 		}
-	,	'|'		
+	,	'|'
 	,	40
 	)
 ,	new Infix(
@@ -438,8 +432,15 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ ^ r._ )
 			throw `${l.string()}^${r.string()}`
 		}
-	,	'^'		
+	,	'^'
 	,	40
+	)
+,	new Infix(
+		( c, l, r ) => {
+			throw 'Not yet implemented'
+		}
+	,	'·'
+	,	30
 	)
 ,	new Infix(
 		( c, l, r ) => {
@@ -451,7 +452,7 @@ Builtins = [
 			if ( l instanceof Sentence	&& r instanceof Sentence	) return new Sentence	( [ ...l._, ...r._ ] )
 			throw `${l.string()}+${r.string()}`
 		}
-	,	'+'		
+	,	'+'
 	,	30
 	)
 ,	new Infix(
@@ -459,7 +460,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ - r._ )
 			throw `${l.string()}-${r.string()}`
 		}
-	,	'-'		
+	,	'-'
 	,	30
 	)
 ,	new Infix(
@@ -467,7 +468,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ * r._ )
 			throw `${l.string()}*${r.string()}`
 		}
-	,	'×'		
+	,	'×'
 	,	20
 	)
 ,	new Infix(
@@ -475,7 +476,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ / r._ )
 			throw `${l.string()}÷${r.string()}`
 		}
-	,	'÷'		
+	,	'÷'
 	,	20
 	)
 ,	new Infix(
@@ -483,7 +484,7 @@ Builtins = [
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ % r._ )
 			throw `${l.string()}%${r.string()}`
 		}
-	,	'%'		
+	,	'%'
 	,	20
 	)
 ,	new Infix(
@@ -510,13 +511,8 @@ Builtins = [
 				}
 			}
 		}
-	,	':'		
+	,	':'
 	,	10
-	)
-	//	Reserved for rational number
-,	new Primitive(
-		c => T
-	,	'/'		
 	)
 ]
 
@@ -569,8 +565,8 @@ NAME_BREAKING_CHARACTERS = [
 ,	'¬'		//	AC	論理的に反転したもの
 ,	'±'		//	B1
 ,	'µ'		//	B5
-,	'¶'		//	B6
-,	'·'		//	B7	Stringify
+,	'¶'		//	B6	Stringify
+,	'·'		//	B7	Dot
 ,	'»'		//	BB	Close parallel
 ,	'¿'		//	BF	l が Nil でなければ r を評価、そうでなければ Nil
 ,	'×'		//	D7	MUL
@@ -587,24 +583,24 @@ NAME_BREAKING_CHARACTERS = [
 ]
 
 const
-ReadNumber = ( r, neg ) => {
-	let	v = ''
-	let	dotRead = false
+ReadNumber = ( r, _ ) => {
+	let	v = _
+	let	readDot = false
 	while ( r.Avail() ) {
 		const _ = r.Peek()
-		if ( ! _.match( /\d/ ) && _ != '.' ) break
-		if ( _ === '.' ) {
-			if ( dotRead ) break
-			else dotRead = true
-		}
+		if ( !_.match( /[\d.]/ ) ) break
 		r.Forward()
+		if ( _ === '.' ) {
+			if ( readDot ) break
+			else readDot = true
+		}
 		v += _
 	}
-	return new Numeric( Number( neg ? -v : v ) )
+	return new Numeric( Number( v ) )
 }
 
 const
-ReadName = ( _, r ) => {
+ReadName = ( r, _ ) => {
 
 	let	escaped = false
 
@@ -615,7 +611,6 @@ ReadName = ( _, r ) => {
 	while ( r.Avail() ) {
 
 		const _ = r.Peek()
-console.log( 'ReadName:' + _ + ':' )
 
 		if ( escaped ) {
 			r.Forward()
@@ -639,7 +634,6 @@ console.log( 'ReadName:' + _ + ':' )
 			}
 		}
 	}
-console.log( v )
 	return new Name( v )
 }
 
@@ -662,7 +656,7 @@ ReadLiteral = ( r, terminator ) => {
 			}
 		} else {
 			switch ( _ ) {
-			case terminator	: return			new Literal( v )
+			case terminator	: return new Literal( v )
 			case '\\'		: escaped = true	; break
 			default			: v += _			; break
 			}
@@ -689,9 +683,8 @@ BuiltinDict = Object.fromEntries( Builtins.map( _ => [ _.label, _ ] ) )
 export const
 Read = ( r, terminator ) => {
 	while ( r.Avail() ) {
-		let _ = r.Peek()
-		if ( _.match( /\d/ ) ) return ReadNumber( r, false )
-		r.Forward()
+		let _ = r.Read()
+		if ( _.match( /\d/ ) ) return ReadNumber( r, _ )
 		if ( _.match( /\s/ ) ) continue	//	[ \f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]
 		switch ( _ ) {
 		case	terminator	: return void 0	//	Must be before close brace
@@ -711,56 +704,18 @@ Read = ( r, terminator ) => {
 		default				:
 			if ( BuiltinLabel0s.includes( _ ) ) {
 				const c2 = r.Peek()
-				let v = BuiltinLabels.includes( _ + c2 )
+				return BuiltinLabels.includes( _ + c2 )
 				?	(	r.Forward()
 					,	BuiltinDict[ _ + c2 ]
 					)
 				:	BuiltinDict[ _ ]
-				return v instanceof Prefix ? new Prefix( v._, v.label, Read( r ) ) : v
 			} else {
-				return ReadName( _, r )
+				return ReadName( r, _ )
 			}
 		}
 	}
 	return null
 }
-
-/*
-const _SliP		= new SliP( 'T' )
-const _Numeric	= new Numeric( 3.14 )
-const _Literal	= new Literal( "theLiteral" )
-const _Name		= new Name( "theName" )
-const _Name2	= new Name( "theName2" )
-const _Dict		= new Dict(
-	[	[ _Name		, _Literal ]
-	,	[ _Name2	, _SliP ]
-	]
-)
-const _Prefix	= new Prefix(
-	( c, target ) => new Literal( target.Eval( c )._.toUpperCase() )
-,	'thePrefix'
-)
-_Prefix.target = _Name
-const _Unary	= new Unary( _ => _SliP, 'theUnary' )
-const _Infix	= new Unary( ( $, _ ) => _SliP, 'theInfix' )
-
-const
-Dump = _ => console.log( _.string() )
-	Dump( _SliP )
-	Dump( _Numeric )
-	Dump( _Literal )
-	Dump( _Name )
-	Dump( _Dict )
-	Dump( _Name.Eval( new Context( _Dict ) ) )
-	Dump( _Name2.Eval( new Context( _Dict ) ) )
-	Dump( _Prefix )
-	Dump( _Prefix.Eval( new Context( _Dict ) ) )
-	Dump( _Unary )
-	Dump( _Unary._( _Name ) )
-	Dump( _Infix )
-	Dump( _Infix._( _Name, _Name2 ) )
-//	6 / 2 * 3
-*/
 
 ////////////////////////////////////////////////////////////////
 //	REPL
@@ -768,15 +723,15 @@ Dump = _ => console.log( _.string() )
 
 export class
 StringReader {
-	constructor( _ ) {
-		this._ = _
-		this.i = 0
+	constructor( $ ) {
+		this.$ = $
+		this._ = 0
 	}
-	Avail()		{ return this.i < this._.length }
-	Read()		{ return this._[ this.i++ ] }
-	Peek()		{ return this._[ this.i ] }
-	Forward()	{ this.i++ }
-	Backward()	{ --this.i }
+	Avail()		{ return this._ < this.$.length }
+	Read()		{ return this.$[ this._++ ] }
+	Peek()		{ return this.$[ this._ ] }
+	Forward()	{ this._++ }
+	Backward()	{ --this._ }
 }
 
 export const
@@ -807,12 +762,30 @@ NewContext = () => new Context(
 			,	'string'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.cos( _._ ) )
+				( c, _ ) => new Numeric( Math.cos( _.Eval( c )._ ) )
 			,	'cos'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.sin( _.Eval( c )._ ) )
+			,	'sin'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.tan( _.Eval( c )._ ) )
+			,	'tan'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.exp( _.Eval( c )._ ) )
+			,	'exp'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.log( _.Eval( c )._ ) )
+			,	'log'
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
-		,	{}
+		,	{	π	: new Numeric( Math.PI )
+			,	e	: new Numeric( Math.E )
+			}
 		)
 	)
 )
