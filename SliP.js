@@ -1,61 +1,4 @@
 const
-RESERVED_CHARACTERS = [
-	'\n'	//	0A
-,	'\r'	//	0D
-,	' '		//	20
-,	'!'		//	21	Eval
-,	'"'		//	22	Literal
-,	'#'		//	23	Num
-,	'$'		//	24	Last
-,	'%'		//	25	Reminder
-,	'&'		//	26	AND
-,	'\''	//	27	Quote
-,	'('		//	28	Open sentence
-,	')'		//	29	Close sentence
-,	'*'		//	2A	CDR
-,	'+'		//	2B	Plus
-,	','		//	2C	CONS
-,	'-'		//	2D	Minus
-,	'.'		//	2E	標準出力に表示します。引数をそのまま返します。
-,	'/'		//	2F													RESERVED for rational number
-,	':'		//	3A	Apply
-,	';'		//	3B													RESERVED for END OF SENTENCE
-,	'<'		//	3C	COMPARATOR
-,	'='		//	3D	COMPARATOR
-,	'>'		//	3E	COMPARATOR
-,	'?'		//	3F	l が Nil でなければ r[ 0 ] を、そうでなければ r[ 1 ] を評価する
-,	'@'		//	40	Stack top, Stack
-,	'['		//	5B	Open list
-,	']'		//	5D	Close list
-,	'^'		//	5E	排他的論理和
-,	'`'		//	60													RESERVED
-,	'{'		//	7B	Open procedure
-,	'|'		//	7C	OR
-,	'}'		//	7D	Close procedure
-,	'~'		//	7E	反転
-,	'¡'		//	A1	Throw
-,	'¤'		//	A4	Dict
-,	'¦'		//	A6	標準エラー出力に改行をつけて表示します。引数をそのまま返します。
-,	'§'		//	A7	右辺に2要素のリストをとり、0番目の要素である辞書をコンテクスト辞書チェーンの最初に付け加え、1番目の要素を評価したもの
-,	'«'		//	AB	Open parallel
-,	'¬'		//	AC	論理的に反転したもの
-,	'±'		//	B1													RESERVED
-,	'¶'		//	B6													RESERVED
-,	'·'		//	B7	Stringify
-,	'»'		//	BB	Close parallel
-,	'¿'		//	BF	l が Nil でなければ r を評価、そうでなければ Nil
-,	'×'		//	D7	MUL
-,	'÷'		//	F7	DIV
-,	'∈'		//	2208	要素
-,	'∋'		//	220B	要素として含む
-,	'⊂'		//														RESERVED
-,	'⊃'		//														RESERVED
-,	'∩'		//														RESERVED
-,	'∪'		//														RESERVED
-,	'∅'		//														RESERVED
-]
-
-const
 stack = []
 
 class
@@ -226,6 +169,9 @@ Sentence extends _List {
 ////////////////////////////////////////////////////////////////
 
 const
+T = new SliP( 'T' )
+
+const
 Nil = new List( [] )
 
 const
@@ -292,8 +238,8 @@ Builtins = [
 		}
 	,	'¬'		
 	)
-,	new Unary(
-		( c, _ ) => _.Eval( c )
+,	new Prefix(
+		( c, _ ) => _.Eval( c ).Eval( c )
 	,	'!'		
 	)
 ,	new Unary(
@@ -573,15 +519,72 @@ Builtins = [
 	,	'/'		
 	)
 ]
-const
-BuiltinDict = Builtins.reduce(
-	( $, _ ) => ( $[ _.label ] = _, $ )
-,	{}
-)
 
 ////////////////////////////////////////////////////////////////
 //	Reader
 ////////////////////////////////////////////////////////////////
+
+const
+BuiltinLabels = Builtins.map( _ => _.label )
+const
+BuiltinLabel0s = BuiltinLabels.map( _ => _[ 0 ] )
+
+const
+NAME_BREAKING_CHARACTERS = [
+	'!'		//	21	Eval
+,	'"'		//	22	StringLiteral
+,	'#'		//	23	Num
+,	'$'		//	24	Last
+,	'%'		//	25	Reminder
+,	'&'		//	26	AND
+,	'\''	//	27	Quote
+,	'('		//	28	Open sentence
+,	')'		//	29	Close sentence
+,	'*'		//	2A	CDR
+,	'+'		//	2B	Plus
+,	','		//	2C	CONS
+,	'-'		//	2D	Minus
+,	'.'		//	2E	標準出力に表示します。引数をそのまま返します。
+,	'/'		//	2F
+,	':'		//	3A	Apply
+,	';'		//	3B
+,	'<'		//	3C	COMPARATOR
+,	'='		//	3D	COMPARATOR
+,	'>'		//	3E	COMPARATOR
+,	'?'		//	3F	l が Nil でなければ r[ 0 ] を、そうでなければ r[ 1 ] を評価する
+,	'@'		//	40	Stack top, Stack
+,	'['		//	5B	Open list
+,	']'		//	5D	Close list
+,	'^'		//	5E	排他的論理和
+,	'`'		//	60	String Literal
+,	'{'		//	7B	Open procedure
+,	'|'		//	7C	OR
+,	'}'		//	7D	Close procedure
+,	'~'		//	7E	反転
+,	'¡'		//	A1	Throw
+,	'¤'		//	A4	Dict
+,	'¦'		//	A6	標準エラー出力に改行をつけて表示します。引数をそのまま返します。
+,	'§'		//	A7	右辺に2要素のリストをとり、0番目の要素である辞書をコンテクスト辞書チェーンの最初に付け加え、1番目の要素を評価したもの
+,	'«'		//	AB	Open parallel
+,	'¬'		//	AC	論理的に反転したもの
+,	'±'		//	B1
+,	'µ'		//	B5
+,	'¶'		//	B6
+,	'·'		//	B7	Stringify
+,	'»'		//	BB	Close parallel
+,	'¿'		//	BF	l が Nil でなければ r を評価、そうでなければ Nil
+,	'×'		//	D7	MUL
+,	'÷'		//	F7	DIV
+,	'∈'		//	2208	要素
+,	'∋'		//	220B	要素として含む
+,	'⊂'		//
+,	'⊃'		//
+,	'∩'		//
+,	'∪'		//
+,	'∅'		//
+,	'Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω'
+,	'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο', 'π', 'ρ', 'ς', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'
+]
 
 const
 ReadNumber = ( r, neg ) => {
@@ -601,14 +604,42 @@ ReadNumber = ( r, neg ) => {
 }
 
 const
-ReadName = r => {
-	let	v = ''
+ReadName = ( _, r ) => {
+
+	let	escaped = false
+
+	let	v = _ === '\\'
+	?	( escaped = true, '' )
+	:	_
+
 	while ( r.Avail() ) {
+
 		const _ = r.Peek()
-		if ( RESERVED_CHARACTERS.includes( _ ) ) break
-		r.Forward()
-		v += _
+console.log( 'ReadName:' + _ + ':' )
+
+		if ( escaped ) {
+			r.Forward()
+			escaped = false
+			switch ( _ ) {
+			case '0'		: v += '\0'			; break
+			case 'f'		: v += '\f'			; break
+			case 'n'		: v += '\n'			; break
+			case 'r'		: v += '\r'			; break
+			case 't'		: v += '\t'			; break
+			case 'v'		: v += '\v'			; break
+			default			: v += _			; break
+			}
+		} else {
+			if ( NAME_BREAKING_CHARACTERS.includes( _ )	) break
+			r.Forward()
+			if ( _.match( /\s/ )						) break	//	[ \f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]
+			switch ( _ ) {
+			case '\\'		: escaped = true	; break
+			default			: v += _			; break
+			}
+		}
 	}
+console.log( v )
 	return new Name( v )
 }
 
@@ -621,25 +652,24 @@ ReadLiteral = ( r, terminator ) => {
 		if ( escaped ) {
 			escaped = false
 			switch ( _ ) {
-			case '0'		: v += '\0';		break
-			case 't'		: v += '\t';		break
-			case 'n'		: v += '\n';		break
-			case 'r'		: v += '\r';		break
-			default			: v += _;			break
+			case '0'		: v += '\0'			; break
+			case 'f'		: v += '\f'			; break
+			case 'n'		: v += '\n'			; break
+			case 'r'		: v += '\r'			; break
+			case 't'		: v += '\t'			; break
+			case 'v'		: v += '\v'			; break
+			default			: v += _			; break
 			}
 		} else {
 			switch ( _ ) {
 			case terminator	: return			new Literal( v )
-			case '\\'		: escaped = true;	break
-			default			: v += _;			break
+			case '\\'		: escaped = true	; break
+			default			: v += _			; break
 			}
 		}
 	}
 	throw `Syntax error: Unterminated string: ${v}`
 }
-
-let
-level = 0
 
 const
 ReadList = ( r, terminator ) => {
@@ -653,13 +683,16 @@ ReadList = ( r, terminator ) => {
 	throw 'Open list: ' + v
 }
 
+const
+BuiltinDict = Object.fromEntries( Builtins.map( _ => [ _.label, _ ] ) )
+
 export const
 Read = ( r, terminator ) => {
 	while ( r.Avail() ) {
 		let _ = r.Peek()
 		if ( _.match( /\d/ ) ) return ReadNumber( r, false )
 		r.Forward()
-		if ( _.match( /\s/ ) ) continue
+		if ( _.match( /\s/ ) ) continue	//	[ \f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]
 		switch ( _ ) {
 		case	terminator	: return void 0	//	Must be before close brace
 		case	']'			:
@@ -676,26 +709,16 @@ Read = ( r, terminator ) => {
 	//	case	'+'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, false ) : BuiltinDict[ _ ]
 	//	case	'-'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, true ) : BuiltinDict[ _ ]
 		default				:
-			if ( RESERVED_CHARACTERS.includes( _ ) ) {
-				let v = null
-				const c2s = Object.keys( BuiltinDict ).filter( key => key[ 0 ] == _ && key.length > 1 ).map( _ => _[ 1 ] )
-				if ( c2s.length ) {
-					const c2 = r.Read()
-					if ( c2s.includes( c2 ) ) {
-						v = BuiltinDict[ _ + c2 ]
-					} else {
-						r.Backward()
-						v = BuiltinDict[ _ ]
-					}
-				} else {
-					v = BuiltinDict[ _ ]
-				}
-				if ( v instanceof Prefix ) v = new Prefix( v._, v.label, Read( r ) )
-//console.log( 'Read:', v )
-				return v
+			if ( BuiltinLabel0s.includes( _ ) ) {
+				const c2 = r.Peek()
+				let v = BuiltinLabels.includes( _ + c2 )
+				?	(	r.Forward()
+					,	BuiltinDict[ _ + c2 ]
+					)
+				:	BuiltinDict[ _ ]
+				return v instanceof Prefix ? new Prefix( v._, v.label, Read( r ) ) : v
 			} else {
-				r.Backward()
-				return ReadName( r )
+				return ReadName( _, r )
 			}
 		}
 	}
@@ -783,7 +806,7 @@ NewContext = () => new Context(
 				( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
 			,	'string'
 			)
-		,	new Unary(
+		,	new Prefix(
 				( c, _ ) => new Numeric( Math.cos( _._ ) )
 			,	'cos'
 			)
