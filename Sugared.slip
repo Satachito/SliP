@@ -1,23 +1,34 @@
-//	SliP ver 1.0(Swift) 2016 written by Satoru Ogura, Tokyo.
-//	This is sample script for SliP.
-//
-//
-//		push 'CALCULATE' button.
-//
-//
-
 2+3
 2-3
 2×3
 2÷3
+2+3×4
+(2+3)×4
+2×3+4
+2×(3+4)
 6÷2×3
 
+π
+sin(0)
+sinπ
+cos(0)
+cosπ
 
+e
+exp(0)
+// expected output: 1
+exp(1)
+// expected output: 2.718281828459 (approximately)
+exp(0-1)
+// expected output: 0.36787944117144233
+exp(2)
+// expected output: 7.38905609893065
 
+log( e )
+log( e × e )
 
-
-
-
+'log10 = '( log( @ ) ÷ log( 10 ) )
+log10( 100 )
 
 "-------------------------------- String"
 
@@ -108,6 +119,5 @@ a + b
 [ "A" "B" "C" ] ∋ "D"
 
 "-------------------------------- Builtins"
-		//	Show all
-·
-
+"Show all"
+¤
