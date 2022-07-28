@@ -87,7 +87,7 @@ textarea {
 	<input type=button class=hw32 value=1	id=KEY_1		>
 	<input type=button class=hw32 value=-	id=KEY_MINUS	><br>
 	<input type=button class=hw32 value=0	id=KEY_0		>
-	<input type=button class=hw32 value=.	id=KEY_DOT		>
+	<input type=button class=hw32 value=.	id=KEY_PERIOD	>
 	<input type=button class=hw32 value=⏎	id=KEY_RET		>
 	<input type=button class=hw32 value=+	id=KEY_PLUS		><br>
 	<input type=button class=hw32 value=(	id=KEY_OPEN		>
@@ -152,13 +152,14 @@ textarea {
 	<input type=button class=hw16 value=ψ	id=KEY_ψ	>
 	<input type=button class=hw16 value=ω	id=KEY_ω	><br>
 	<br>
+	<input type=button class=hw16 value=·	id=KEY_DOT		>
 	<input type=button class=hw16 value=¡	id=KEY_REV_EX	>
 	<input type=button class=hw16 value=¿	id=KEY_REV_Q	>
 	<input type=button class=hw16 value=¦	id=KEY_BRK_BAR	>
 	<input type=button class=hw16 value=§	id=KEY_SECTION	>
-	<input type=button class=hw16 value=¶	id=KEY_PILCROW	>
+	<input type=button class=hw16 value=¶	id=KEY_PILCROW	><br>
 	<input type=button class=hw16 value=¤	id=KEY_CURRENCY	>
-	<input type=button class=hw16 value=¬	id=KEY_NOT		><br>
+	<input type=button class=hw16 value=¬	id=KEY_NOT		>
 	<input type=button class=hw16 value=«	id=KEY_OPEN_DA	>
 	<input type=button class=hw16 value=»	id=KEY_CLOSE_DA	>
 	<input type=button class=hw16 value=∈	id=KEY_MEM_OF	>
@@ -212,18 +213,19 @@ KEY_DIV		.onclick = () => InsertToSOURCE( '÷' )
 KEY_MUL		.onclick = () => InsertToSOURCE( '×' )
 KEY_MINUS	.onclick = () => InsertToSOURCE( '-' )
 KEY_PLUS	.onclick = () => InsertToSOURCE( '+' )
-KEY_DOT		.onclick = () => InsertToSOURCE( '.' )
+KEY_PERIOD	.onclick = () => InsertToSOURCE( '.' )
 KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_OPEN	.onclick = () => InsertToSOURCE( '(' )
 KEY_CLOSE	.onclick = () => InsertToSOURCE( ')' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 
-KEY_SIN		.onclick = () => InsertToSOURCE( 'sin' )
-KEY_COS		.onclick = () => InsertToSOURCE( 'cos' )
-KEY_TAN		.onclick = () => InsertToSOURCE( 'tan' )
-KEY_EXP		.onclick = () => InsertToSOURCE( 'exp' )
-KEY_LOG		.onclick = () => InsertToSOURCE( 'log' )
+KEY_SIN		.onclick = () => InsertToSOURCE( 'sin()' )
+KEY_COS		.onclick = () => InsertToSOURCE( 'cos()' )
+KEY_TAN		.onclick = () => InsertToSOURCE( 'tan()' )
+KEY_EXP		.onclick = () => InsertToSOURCE( 'exp()' )
+KEY_LOG		.onclick = () => InsertToSOURCE( 'log()' )
 
+KEY_DOT		.onclick = () => InsertToSOURCE( '·' )
 KEY_REV_EX	.onclick = () => InsertToSOURCE( '¡' )
 KEY_REV_Q	.onclick = () => InsertToSOURCE( '¿' )
 KEY_BRK_BAR	.onclick = () => InsertToSOURCE( '¦' )

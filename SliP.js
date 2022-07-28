@@ -307,11 +307,11 @@ Builtins = [
 	,	'¶'
 	)
 ,	new Unary(
-		( c, _ ) => ( process.stdout.write( _.string() ), _ )
+		( c, _ ) => ( process && process.stdout.write( _.string() ), _ )
 	,	'.'
 	)
 ,	new Unary(
-		( c, _ ) => ( process.stderr.write( _.string() + '\n' ), _ )
+		( c, _ ) => ( process && process.stderr.write( _.string() + '\n' ), _ )
 	,	'¦'
 	)
 /*
