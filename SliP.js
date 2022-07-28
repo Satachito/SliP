@@ -13,7 +13,6 @@ class
 SliP {
 	constructor( _ ) { this._ = _ }
 	string() { return `${this._}` }
-	Eval( c ) { return this }
 }
 
 class
@@ -22,7 +21,7 @@ Numeric extends SliP {
 
 class
 Literal extends SliP {
-	string() { return `"${this._}"` }
+	string() { return this._ }
 }
 
 class
@@ -44,14 +43,6 @@ Dict extends SliP {		//	_ : Entries, key type is Name -> Object
 class
 Name extends SliP {
 	string() { return this._ }
-	Eval( c ) {
-		while ( c ) {
-			const $ = c.dict[ this._ ]
-			if ( $ !== void 0 ) return $
-			c = c.next
-		}
-		throw `Undefined:${this._}`
-	}
 }
 
 class
@@ -60,21 +51,15 @@ _Func extends SliP {
 		super( _ )
 		this.label = label
 	}
-	string() { return this.label }
+	string() { return this.label + ':' + this._ }
 }
 
 class
 Primitive extends _Func {
-	Eval( c ) { return this._( c ) }
 }
 
 class
 Prefix extends _Func {
-	constructor( _, label, target ) {
-		super( _, label )
-		this.target = target
-	}
-	Eval( c ) { return this._( c, this.target ) }
 }
 
 class
@@ -102,16 +87,16 @@ List extends _List {
 class
 Parallel extends _List {
 	string() { return `« ${super.string()} »` }
-	Eval( c ) { return new List( this._.map( _ => _.Eval( c ) ) ) }
 }
 
 class
 Procedure extends _List {
 	string() { return `{ ${super.string()} }` }
-	Eval( c ) {
-		c = new Context( {}, c )
-		return new List( this._.map( _ => _.Eval( c ) ) )
-	}
+}
+
+class
+Sentence extends _List {
+	string() { return `( ${super.string()} )` }
 }
 
 const
@@ -121,8 +106,17 @@ _EvalSentence = ( c, _ ) => {
 		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
 		break
 	case  1:
-		return _[ 0 ].Eval( c )
+		return Eval( c, _[ 0 ] )
 	default:
+		for ( let i = 2; i < _.length; i++ ) {
+			if ( _[ i - 1 ] instanceof Infix ) {
+				switch ( _[ i ]._ ) {
+				case Plus	: _[ i ] = new Prefix( ( c, _ ) => new Numeric( +Eval( c, _ )._ ), '+' ); break
+				case Minus	: _[ i ] = new Prefix( ( c, _ ) => new Numeric( -Eval( c, _ )._ ), '-' ); break
+				}
+			}
+		}
+console.log( 'After MOD:', _ )
 		const infixEntries = _.map( ( v, k ) => [ k, v ] ).filter( ( [ k, v ] ) => v instanceof Infix )
 		if ( infixEntries.length ) {
 			let $ = infixEntries[ 0 ]
@@ -149,7 +143,7 @@ _EvalSentence = ( c, _ ) => {
 			let index = _.length - 1
 			while ( index-- ) {
 				let $ = _[ index ]
-				$ instanceof Name && ( $ = $.Eval( c ) )
+				$ instanceof Name && ( $ = Eval( c, $ ) )
 				if ( ! $ instanceof Prefix ) break
 				_.splice( index, 2, $._( c, _[ index + 1 ] ) )
 			}
@@ -159,11 +153,29 @@ _EvalSentence = ( c, _ ) => {
 		break
 	}
 }
-class
-Sentence extends _List {
-	string() { return `( ${super.string()} )` }
-	Eval( c ) {
-		return _EvalSentence( c, this._ )
+
+export const
+Eval = ( c, _ ) => {
+	switch ( _.constructor.name ) {
+	case 'Name':
+		while ( c ) {
+			const $ = c.dict[ _._ ]
+			if ( $ !== void 0 ) return $
+			c = c.next
+		}
+		throw `Undefined:${this._}`
+	case 'Primitive':
+		return _._( c )
+	case 'Parallel':
+		return new List( _._.map( _ => Eval( c, _ ) ) )
+	case 'Procedure':
+		{	c = new Context( {}, c )
+			return new List( this._.map( _ => Eval( c, _ ) ) )
+		}
+	case 'Sentence':
+		return _EvalSentence( c, _._ )
+	default:
+		return _
 	}
 }
 
@@ -198,6 +210,23 @@ _EQ = ( p, q ) => {
 }
 
 const
+Plus = ( c, l, r ) => {
+	if ( l instanceof Numeric	&& r instanceof Numeric		) return new Numeric	( l._ + r._ )
+	if ( l instanceof Literal	&& r instanceof Literal		) return new Literal	( l._ + r._ )
+	if ( l instanceof List		&& r instanceof List		) return new List		( [ ...l._, ...r._ ] )
+	if ( l instanceof Parallel	&& r instanceof Parallel	) return new Parallel	( [ ...l._, ...r._ ] )
+	if ( l instanceof Procedure	&& r instanceof Procedure	) return new Procedure	( [ ...l._, ...r._ ] )
+	if ( l instanceof Sentence	&& r instanceof Sentence	) return new Sentence	( [ ...l._, ...r._ ] )
+	throw `${l.string()}+${r.string()}`
+}
+
+const
+Minus = ( c, l, r ) => {
+	if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ - r._ )
+	throw `${l.string()}-${r.string()}`
+}
+
+const
 Builtins = [
 	new Primitive(
 		c => {
@@ -215,7 +244,7 @@ Builtins = [
 	,	'¤'
 	)
 ,	new Prefix(
-		( c, _ ) => _._[ 1 ].Eval( new Context( _._[ 0 ].Eval( c )._, c ) )
+		( c, _ ) => Eval( new Context( Eval( c, _._[ 0 ] )._, c ), _._[ 1 ] )
 	,	'§'
 	)
 ,	new Prefix(
@@ -228,18 +257,18 @@ Builtins = [
 	)
 ,	new Prefix(
 		( c, _ ) => {
-			const v = _.Eval( c )
+			const v = Eval( c, _ )
 			if ( v instanceof Numeric ) return new Numeric( ~v._ )
 			throw `~${_.string()}`
 		}
 	,	'~'
 	)
 ,	new Prefix(
-		( c, _ ) => _IsT( _.Eval( c ) ) ? Nil : T
+		( c, _ ) => _IsT( Eval( c, _ ) ) ? Nil : T
 	,	'¬'
 	)
 ,	new Prefix(
-		( c, _ ) => _.Eval( c ).Eval( c )
+		( c, _ ) => Eval( c, Eval( c, _ ) )
 	,	'!'
 	)
 ,	new Unary(
@@ -310,14 +339,14 @@ Builtins = [
 	)
 ,	new Infix(
 		( c, l, r ) => {
-			if ( r instanceof List && r._.length == 2 ) return r._[ _IsT( l ) ? 0 : 1 ].Eval( c )
+			if ( r instanceof List && r._.length == 2 ) return Eval( c, r._[ _IsT( l ) ? 0 : 1 ] )
 			throw `${l.string()}?${r.string()}`
 		}
 	,	'?'
 	,	80
 	)
 ,	new Infix(
-		( c, l, r ) => _IsT( l ) ? r.Eval( c ) : Nil
+		( c, l, r ) => _IsT( l ) ? Eval( c, r ) : Nil
 	,	'¿'
 	,	80
 	)
@@ -443,23 +472,12 @@ Builtins = [
 	,	30
 	)
 ,	new Infix(
-		( c, l, r ) => {
-			if ( l instanceof Numeric	&& r instanceof Numeric		) return new Numeric	( l._ + r._ )
-			if ( l instanceof Literal	&& r instanceof Literal		) return new Literal	( l._ + r._ )
-			if ( l instanceof List		&& r instanceof List		) return new List		( [ ...l._, ...r._ ] )
-			if ( l instanceof Parallel	&& r instanceof Parallel	) return new Parallel	( [ ...l._, ...r._ ] )
-			if ( l instanceof Procedure	&& r instanceof Procedure	) return new Procedure	( [ ...l._, ...r._ ] )
-			if ( l instanceof Sentence	&& r instanceof Sentence	) return new Sentence	( [ ...l._, ...r._ ] )
-			throw `${l.string()}+${r.string()}`
-		}
+		Plus
 	,	'+'
 	,	30
 	)
 ,	new Infix(
-		( c, l, r ) => {
-			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ - r._ )
-			throw `${l.string()}-${r.string()}`
-		}
+		Minus
 	,	'-'
 	,	30
 	)
@@ -505,7 +523,7 @@ Builtins = [
 				return r._( c, l )
 			default:
 				{	stack.unshift( l )
-					const v = r.Eval( c )
+					const v = Eval( c, r )
 					stack.shift()
 					return v
 				}
@@ -762,23 +780,23 @@ NewContext = () => new Context(
 			,	'string'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.cos( _.Eval( c )._ ) )
+				( c, _ ) => new Numeric( Math.cos( Eval( c, _ )._ ) )
 			,	'cos'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sin( _.Eval( c )._ ) )
+				( c, _ ) => new Numeric( Math.sin( Eval( c, _ )._ ) )
 			,	'sin'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.tan( _.Eval( c )._ ) )
+				( c, _ ) => new Numeric( Math.tan( Eval( c, _ )._ ) )
 			,	'tan'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.exp( _.Eval( c )._ ) )
+				( c, _ ) => new Numeric( Math.exp( Eval( c, _ )._ ) )
 			,	'exp'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.log( _.Eval( c )._ ) )
+				( c, _ ) => new Numeric( Math.log( Eval( c, _ )._ ) )
 			,	'log'
 			)
 		].reduce(

@@ -1,4 +1,4 @@
-import { NewContext, StringReader, Read } from './SliP.js'
+import { NewContext, StringReader, Read, Eval } from './SliP.js'
 
 const
 c = NewContext()
@@ -10,7 +10,7 @@ while ( true ) {
 		const _ = Read( r )
 		if ( !_ ) break
 		console.log( 'READ:', _ )
-		const $ = _.Eval( c )
+		const $ = Eval( c, _ )
 		console.log( 'CONTEXT:', c )
 		console.log( 'VALUE:', $.string() + '\t:', $ )
 	} catch ( e ) {

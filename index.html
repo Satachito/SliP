@@ -181,7 +181,7 @@ textarea {
 <footer>Copyright 2022 SliP LLC, Tokyo.</footer>
 
 <script type=module>
-import { NewContext, StringReader, Read, Sugared } from './SliP.js'
+import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
 
 const
 InsertToSOURCE = _ => {
@@ -324,7 +324,7 @@ CALCULATE.onclick = () => {
 				if ( _.length ) {
 					INCLUDE_SOURCE.checked && ( AppendDIV( _ ).style.color = 'grey' )
 					try {
-						AppendDIV( Sugared( _ ).Eval( c ).string() )
+						AppendDIV( Eval( c, Sugared( _ ) ).string() )
 					} catch ( ex ) {
 						AppendDIV( ex ).style.color = 'red'
 					}
@@ -341,7 +341,7 @@ CALCULATE.onclick = () => {
 			if ( !_ ) break
 			INCLUDE_SOURCE.checked && ( AppendDIV( SOURCE.value.substring( start, $._ ) ).style.color = 'grey' )
 			try {
-				AppendDIV( _.Eval( c ).string() )
+				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
 				AppendDIV( ex ).style.color = 'red'
 			}
