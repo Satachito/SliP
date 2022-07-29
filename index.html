@@ -323,7 +323,7 @@ CALCULATE.onclick = () => {
 	RESULT.textContent = ''
 
 	const source = CONV_X.checked
-	?	SOURCE.value.replaceAll( /xX/, '×' )
+	?	SOURCE.value.replaceAll( /[xX]/, '×' )
 	:	SOURCE.value
 
 	if ( NEW_LINE_MODE.checked ) {
