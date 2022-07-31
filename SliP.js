@@ -51,7 +51,8 @@ _Func extends SliP {
 		super( _ )
 		this.label = label
 	}
-	string() { return this.label + ':' + this._ }
+	string() { return this.label }
+//	string() { return this.label + ':' + this._ }
 }
 
 class
@@ -81,7 +82,14 @@ _List extends SliP {
 
 class
 List extends _List {
-	string() { return `[ ${super.string()} ]` }
+	string() {
+		const $ = `[ ${super.string()} ]`
+		return this.matrix
+		?	this.matrix > 0
+			?	$ + `(${this.matrix},${this._.length/this.matrix})`
+			:	$ + `(${this._.length/-this.matrix},${-this.matrix})`
+		:	$
+	}
 }
 
 class
@@ -104,23 +112,9 @@ _EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
 		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
-		break
 	case  1:
 		return Eval( c, _[ 0 ] )
 	default:
-		switch ( _[ 0 ]._ ) {
-		case Plus	: _[ 0 ] = new Prefix( ( c, _ ) => new Numeric( +Eval( c, _ )._ ), '+' ); break
-		case Minus	: _[ 0 ] = new Prefix( ( c, _ ) => new Numeric( -Eval( c, _ )._ ), '-' ); break
-		}
-		for ( let i = 2; i < _.length; i++ ) {
-			if ( _[ i - 1 ] instanceof Infix ) {
-				switch ( _[ i ]._ ) {
-				case Plus	: _[ i ] = new Prefix( ( c, _ ) => new Numeric( +Eval( c, _ )._ ), '+' ); break
-				case Minus	: _[ i ] = new Prefix( ( c, _ ) => new Numeric( -Eval( c, _ )._ ), '-' ); break
-				}
-			}
-		}
-console.log( 'After MOD:', _ )
 		const infixEntries = _.map( ( v, k ) => [ k, v ] ).filter( ( [ k, v ] ) => v instanceof Infix )
 		if ( infixEntries.length ) {
 			let $ = infixEntries[ 0 ]
@@ -135,6 +129,7 @@ console.log( 'After MOD:', _ )
 				,	_EvalSentence( c, _.slice( index + 1 ) )
 				)
 			} catch ( ex ) {
+console.error( ex )
 				let $ = `Syntax error: ${ new _List( _ ).string() }`
 				if ( Array.isArray( ex ) ) {
 					ex.push( $ )
@@ -147,12 +142,11 @@ console.log( 'After MOD:', _ )
 			let index = _.length - 1
 			while ( index-- ) {
 				let $ = _[ index ]
-				$ instanceof Name && ( $ = Eval( c, $ ) )
-				if ( ! $ instanceof Prefix ) break
+				$ instanceof Prefix || ( $ = Eval( c, $ ) )
+				if ( ! ( $ instanceof Prefix ) ) throw [ `Syntax error: No infix operators: ${ new _List( _ ).string() }` ]
 				_.splice( index, 2, $._( c, _[ index + 1 ] ) )
 			}
-			if ( _.length === 1 ) return _[ 0 ]
-			throw [ `Syntax error: No infix operators: ${ new _List( _ ).string() }` ]
+			return _[ 0 ]
 		}
 		break
 	}
@@ -167,14 +161,14 @@ Eval = ( c, _ ) => {
 			if ( $ !== void 0 ) return $
 			c = c.next
 		}
-		throw `Undefined:${this._}`
+		throw `Undefined:${_._}`
 	case 'Primitive':
 		return _._( c )
 	case 'Parallel':
 		return new List( _._.map( _ => Eval( c, _ ) ) )
 	case 'Procedure':
 		{	c = new Context( {}, c )
-			return new List( this._.map( _ => Eval( c, _ ) ) )
+			return new List( _._.map( _ => Eval( c, _ ) ) )
 		}
 	case 'Sentence':
 		return _EvalSentence( c, _._ )
@@ -689,14 +683,44 @@ ReadLiteral = ( r, terminator ) => {
 
 const
 ReadList = ( r, terminator ) => {
-	const	v = []
+
+	const $ = []
 	while ( true ) {
-		const _ = Read( r, terminator )
-		if ( _ === void 0 ) return v	//	Read terminator
-		if ( _ instanceof SliP ) v.push( _ )
-		else break
+		const slip = Read( r, terminator )
+		if ( slip === void 0 )	break	//	Read terminator
+		if ( slip === null )	throw 'Open list: ' + $
+		$.push( slip )
 	}
-	throw 'Open list: ' + v
+
+	const
+	ModP = _ => $[ _ + 1 ] instanceof Numeric
+	?	$.splice( _, 1 )
+	:	$[ _ ] = new Prefix( ( c, _ ) => new Numeric( +Eval( c, _ )._ ), '+' )
+
+	const
+	ModM = _ => $[ _ + 1 ] instanceof Numeric
+	?	$.splice( _, 2, new Numeric( -$[ _ + 1 ]._ ) )
+	:	$[ _ ] = new Prefix( ( c, _ ) => new Numeric( -Eval( c, _ )._ ), '-' )
+	
+	if ( $.length > 1 ) {
+		switch ( $[ 0 ]._ ) {
+		case Plus	: ModP( 0 )	; break
+		case Minus	: ModM( 0 )	; break
+		}
+	}
+
+	{	let	i = $.length - 1
+		while ( i-- > 1 ) {
+			if ( $[ i - 1 ] instanceof Infix ) {
+				switch ( $[ i ]._ ) {
+				case Plus	: ModP( i )	; break
+				case Minus	: ModM( i )	; break
+				}
+			}
+		}
+	}
+console.log( 'ReadList:', $ )
+	return $
 }
 
 const
@@ -721,8 +745,6 @@ Read = ( r, terminator ) => {
 		case	'«'			: return new Parallel	( ReadList( r, '»' ) )
 		case	'"'			: return ReadLiteral( r, _ )
 		case	'`'			: return ReadLiteral( r, _ )
-	//	case	'+'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, false ) : BuiltinDict[ _ ]
-	//	case	'-'			: return ( r.Peek().match( /\d/ ) ) ? ReadNumber( r, true ) : BuiltinDict[ _ ]
 		default				:
 			if ( BuiltinLabel0s.includes( _ ) ) {
 				const c2 = r.Peek()
@@ -802,6 +824,23 @@ NewContext = () => new Context(
 		,	new Prefix(
 				( c, _ ) => new Numeric( Math.log( Eval( c, _ )._ ) )
 			,	'log'
+			)
+		,	new Unary(
+				( c, _ ) => {
+					if ( ! _ instanceof List								) throw "matrix's argument must be List." 
+console.log( _._.length )
+					if ( _._.length !== 2									) throw "matrix's argument length must be 2." 
+					const [ list, numeric ] = _._
+					if ( ! list		instanceof List							) throw "matrix's 1st element must be List." 
+					if ( ! numeric	instanceof Numeric						) throw "matrix's 2nd element must be Numeric." 
+					if ( ! Number.isInteger( numeric._ )					) throw "matrix's 2nd element must be integer."
+					if ( numeric._ === 0									) throw "matrix's 2nd element must be non zero."
+					if ( ! Number.isInteger( list._.length / numeric._ )	) throw "matrix's size unmatch."
+					const $ = new List( list._.slice() )
+					$.matrix = numeric._
+					return $
+				}
+			,	'matrix'
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
