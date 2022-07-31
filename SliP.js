@@ -464,7 +464,36 @@ Builtins = [
 	)
 ,	new Infix(
 		( c, l, r ) => {
-			throw 'Not yet implemented'
+			if ( l instanceof List && r instanceof List ) {
+				const [ numRowL, numColL ] = l.matrix
+				?	l.matrix > 0
+					?	[ l.matrix, l._.length / l.matrix ]
+					:	[ l._.length / -l.matrix, -l.matrix ]
+				:	[ 1, l._.length ]
+				const [ numRowR, numColR ] = r.matrix
+				?	r.matrix > 0
+					?	[ r.matrix, r._.length / r.matrix ]
+					:	[ r._.length / -r.matrix, -r.matrix ]
+				:	[ r._.length, 1 ]
+				if ( numColL !== numRowR ) throw `${l.string()}·${r.string()}`
+				if ( numRowL === 1 && numColR === 1 ) {
+					let $ = 0
+					for ( let _ = 0; _ < numColL; _++ ) $ += l._[ _ ]._ * r._[ _ ]._
+					return new Numeric( $ )
+				} else {
+					const $ = new Array( numRowL * numColR )
+					for ( let row = 0; row < numRowL; row++ ) {
+						const _$ = row * numColR
+						for ( let col = 0; col < numColR; col++ ) {
+							let _ = 0
+							for ( let k = 0; k < numColL; k++ ) _ += l._[ row * numColL + k ]._ * r._[ col + k * numColR ]._
+							$[ _$ + col ] = _
+						}
+					}
+					return new List( $.map( _ => new Numeric( _ ) ) )
+				}
+			}
+			throw `${l.string()}·${r.string()}`
 		}
 	,	'·'
 	,	30
@@ -711,7 +740,8 @@ ReadList = ( r, terminator ) => {
 
 	{	let	i = $.length - 1
 		while ( i-- > 1 ) {
-			if ( $[ i - 1 ] instanceof Infix ) {
+			const _ = $[ i - 1 ]
+			if ( _ instanceof Infix ) {
 				switch ( $[ i ]._ ) {
 				case Plus	: ModP( i )	; break
 				case Minus	: ModM( i )	; break
@@ -719,7 +749,6 @@ ReadList = ( r, terminator ) => {
 			}
 		}
 	}
-console.log( 'ReadList:', $ )
 	return $
 }
 
@@ -828,7 +857,6 @@ NewContext = () => new Context(
 		,	new Unary(
 				( c, _ ) => {
 					if ( ! _ instanceof List								) throw "matrix's argument must be List." 
-console.log( _._.length )
 					if ( _._.length !== 2									) throw "matrix's argument length must be 2." 
 					const [ list, numeric ] = _._
 					if ( ! list		instanceof List							) throw "matrix's 1st element must be List." 
