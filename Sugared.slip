@@ -19,7 +19,7 @@ exp(0)
 // expected output: 1
 exp(1)
 // expected output: 2.718281828459 (approximately)
-exp(0-1)
+exp(-1)
 // expected output: 0.36787944117144233
 exp(2)
 // expected output: 7.38905609893065

@@ -108,6 +108,10 @@ _EvalSentence = ( c, _ ) => {
 	case  1:
 		return Eval( c, _[ 0 ] )
 	default:
+		switch ( _[ 0 ]._ ) {
+		case Plus	: _[ 0 ] = new Prefix( ( c, _ ) => new Numeric( +Eval( c, _ )._ ), '+' ); break
+		case Minus	: _[ 0 ] = new Prefix( ( c, _ ) => new Numeric( -Eval( c, _ )._ ), '-' ); break
+		}
 		for ( let i = 2; i < _.length; i++ ) {
 			if ( _[ i - 1 ] instanceof Infix ) {
 				switch ( _[ i ]._ ) {
