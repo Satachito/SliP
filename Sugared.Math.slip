@@ -14,25 +14,25 @@ acos 0.8
 acos ( 1.1 )
 //	NaN
 acosh(1)
-//	expected output: 0
+//	0
 acosh(2)
-//	expected output: 1.3169578969248166
+//	1.3169578969248166
 asin 0.6
-// expected output: 0.6435011087932844
+//	0.6435011087932844
 asin 1.1
-// expected output: NaN
+//	NaN
 asinh(1)
-// expected output: 0.881373587019543
+//	0.881373587019543
 asinh(0)
-// expected output: 0
+//	0
 asinh(-1)
-// expected output: -0.881373587019543
+//	-0.881373587019543
 asinh(2)
-// expected output: 1.4436354751788103
+//	1.4436354751788103
 atan 0.8
-// expected output: 0.6747409422235527
+//	0.6747409422235527
 atan( 5 ÷ 3 )
-// expected output: 1.0303768265243125
+//	1.0303768265243125
 atan2[ 1 1 ]
 //	0.7853981633974483
 'calcAngleDegrees = '( atan2[ ( @:1 ) (@:0 ) ] × 180 ÷ π ) 
@@ -41,195 +41,195 @@ atan2[ 1 1 ]
 [ 0 10 ]:calcAngleDegrees
 //	90
 atanh(-1)
-// expected output: -Infinity
+//	-Infinity
 atanh(0)
-// expected output: 0
+//	0
 atanh(0.5)
-// expected output: 0.549306144334055 (approximately)
+//	0.549306144334055 (approximately)
 atanh(1)
-// expected output: Infinity
+//	Infinity
 cbrt(-1)
-// expected output: -1
+//	-1
 cbrt(1)
-// expected output: 1
+//	1
 cbrt( Infinity )
-// expected output: Infinit
+//	Infinit
 cbrt(64)
-// expected output: 4
+//	4
 ceil(0.95)
-// expected output: 1
+//	1
 ceil(4)
-// expected output: 4
+//	4
 ceil(7.004)
-// expected output: 8
+//	8
 ceil(-7.004)
-// expected output: -7
+//	-7
 'getCircleX = '( cos( @:0 ) × @:1 )
 [ 1 10 ]:getCircleX
-// expected output: 5.403023058681398
+//	5.403023058681398
 [ 2 10 ]:getCircleX
-// expected output: -4.161468365471424
+//	-4.161468365471424
 {π 10 }:getCircleX
-// expected output: -10
+//	-10
 «π 10 »:getCircleX
-// expected output: -10
+//	-10
 cosh(0)
-// expected output: 1
+//	1
 cosh(1)
-// expected output: 1.543080634815244 (approximately)
+//	1.543080634815244 (approximately)
 cosh(-1)
-// expected output: 1.543080634815244 (approximately)
+//	1.543080634815244 (approximately)
 cosh(2)
-// expected output: 3.7621956910836314
+//	3.7621956910836314
 exp(0)
-// expected output: 1
+//	1
 exp(1)
-// expected output: 2.718281828459 (approximately)
+//	2.718281828459 (approximately)
 exp(-1)
-// expected output: 0.36787944117144233
+//	0.36787944117144233
 exp(2)
-// expected output: 7.38905609893065
+//	7.38905609893065
 floor(5.95)
-// expected output: 5
+//	5
 floor(5.05)
-// expected output: 5
+//	5
 floor(5)
-// expected output: 5
+//	5
 floor(-5.05)
-// expected output: -6
+//	-6
 hypot[ 3 4 ]
-// expected output: 5
+//	5
 hypot[ 5 12 ]
-// expected output: 13
+//	13
 hypot[ 3 4 5 ]
-// expected output: 7.0710678118654755
+//	7.0710678118654755
 hypot[-5]
-// expected output: 5
+//	5
 'getBaseLog = '( log( @:1 ) ÷ log( @: 0 ) )
 [ 2 8 ]:getBaseLog
-// expected output: 3
+//	3
 [ 5 625 ]:getBaseLog
-// expected output: 4
+//	4
 log10(100000)
-// expected output: 5
+//	5
 log10(2)
-// expected output: 0.3010299956639812
+//	0.3010299956639812
 log10(1)
-// expected output: 0
+//	0
 log10(0)
-// expected output: -Infinity
+//	-Infinity
 log2(3)
-// expected output: 1.584962500721156
+//	1.584962500721156
 log2(2)
-// expected output: 1
+//	1
 log2(1)
-// expected output: 0
+//	0
 log2(0)
-// expected output: -Infinity
+//	-Infinity
 max[ 1 3 2 ]
-// expected output: 3
-max[ -1 -3 -2 ]
-// expected output: -1
+//	3
+max[ (-1) (-3) (-2) ]
+//	-1
 'array1 = [ 1 3 2 ]
 max( array1 )
-// expected output: 3
+//	3
 min[ 2 3 1 ]
-// expected output: 1
+//	1
 min[ -2 (-3) (-1) ]
-// expected output: -3
+//	-3
 'array1 = [2 3 1]
 min(array1)
-// expected output: 1
+//	1
 pow[ 7 3 ]
-// expected output: 343
+//	343
 pow[ 4 0.5 ]
-// expected output: 2
+//	2
 pow[ 7 (-2) ]
-// expected output: 0.02040816326530612
+//	0.02040816326530612
 //                  (1/49)
 pow[ -7 0.5 ]
-// expected output: NaN
+//	NaN
 random
 //
 'getRandomInt = '( floor( random × @ ) )
 3:getRandomInt
-// expected output: 0, 1 or 2
+//	0, 1 or 2
 1:getRandomInt
-// expected output: 0
+//	0
 round(0.9)
-// expected output: 1
+//	1
 « (round(5.95))(round(5.5))(round(5.05))»
-// expected output: [6 6 5]
+//	[6 6 5]
 « (round(-5.05))(round(-5.5))(round(-5.95))»
-// expected output: [-5 -5 -6]
+//	[-5 -5 -6]
 sign(3)
-// expected output: 1
+//	1
 sign(-3)
-// expected output: -1
+//	-1
 sign(0)
-// expected output: 0
+//	0
 'getCircleY = '(sin(@:0) × @:1)
 [ 1 10 ]:getCircleY
-// expected output: 8.414709848078965
+//	8.414709848078965
 [ 2 10 ]:getCircleY
-// expected output: 9.092974268256818
+//	9.092974268256818
 « π 10 »:getCircleY
-// expected output: 1.2246467991473533e-15
+//	1.2246467991473533e-15
 round(0.9)
-// expected output: 1
+//	1
 « (round(5.95))(round(5.5))(round(5.05))»
-// expected output: [6 6 5]
+//	[6 6 5]
 « (round(-5.05))(round(-5.5))(round(-5.95))»
-// expected output: [-5 -5 -6]
+//	[-5 -5 -6]
 sign(3)
-// expected output: 1
+//	1
 sign(-3)
-// expected output: -1
+//	-1
 sign(0)
-// expected output: 0
+//	0
 'getCircleY = '(sin(@:0) × @:1)
 [ 1 10 ]:getCircleY
-// expected output: 8.414709848078965
+//	8.414709848078965
 [ 2 10 ]:getCircleY
-// expected output: 9.092974268256818
+//	9.092974268256818
 « π 10 »:getCircleY
-// expected output: 1.2246467991473533e-15
+//	1.2246467991473533e-15
 sinh(0)
-// expected output: 0
+//	0
 sinh(1)
-// expected output: 1.1752011936438014
+//	1.1752011936438014
 sinh(-1)
-// expected output: -1.1752011936438014
+//	-1.1752011936438014
 sinh(2)
-// expected output: 3.626860407847019
+//	3.626860407847019
 'calcHypotenuse = '( sqrt( @:0 × @:0 + @:1 × @:1 ) )
 [ 3 4 ]:calcHypotenuse
-// expected output: 5
+//	5
 [ 5 12 ]:calcHypotenuse
-// expected output: 13
+//	13
 [ 0 0 ]:calcHypotenuse
-// expected output: 0
+//	0
 'getTanFromDegrees = '( tan(@ × π ÷ 180) )
 0:getTanFromDegrees
-// expected output: 0
+//	0
 45:getTanFromDegrees
-// expected output: 0.9999999999999999
+//	0.9999999999999999
 90:getTanFromDegrees
-// expected output: 16331239353195370
+//	16331239353195370
 tanh(-1)
-// expected output: -0.7615941559557649
+//	-0.7615941559557649
 tanh(0)
-// expected output: 0
+//	0
 tanh(Infinity)
-// expected output: 1
+//	1
 tanh(1)
-// expected output: 0.7615941559557649
+//	0.7615941559557649
 trunc(13.37)
-// expected output: 13
+//	13
 trunc(42.84)
-// expected output: 42
+//	42
 trunc(0.123)
-// expected output: 0
+//	0
 trunc(-0.123)
-// expected output: -0
+//	-0
 
