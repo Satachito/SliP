@@ -111,9 +111,18 @@ const
 _EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
-		throw `No operand for ${ infix.label }`
+		throw `No operand`
 	case  1:
 		return Eval( c, _[ 0 ] )
+//	case  2:
+//		{	const $0 = Eval( c, _[ 0 ] )
+//			if ( $0 instanceof Prefix ) return $0._( c, _[ 1 ] )
+//			if ( $0 instanceof Numeric ) {
+//				const $1 = Eval( c, _[ 1 ] )
+//				if ( $1 instanceof Numeric ) return new Numeric( $0._ * $1._ )
+//			}
+//		}
+//		throw `No infix operators: ${ new _List( _ ).string() }`
 	default:
 		const infixEntries = _.map( ( v, k ) => [ k, v ] ).filter( ( [ k, v ] ) => v instanceof Infix )
 		if ( infixEntries.length ) {
@@ -144,10 +153,21 @@ console.error( ex )
 			while ( index-- ) {
 				let $ = _[ index ]
 				$ instanceof Prefix || ( $ = Eval( c, $ ) )
-				if ( ! ( $ instanceof Prefix ) ) throw `No infix operators: ${ new _List( _ ).string() }`
-				_.splice( index, 2, $._( c, _[ index + 1 ] ) )
+				$ instanceof Prefix && _.splice( index, 2, $._( c, _[ index + 1 ] ) )
 			}
-			return _[ 0 ]
+			if ( _.length === 1 ) return _[ 0 ]
+			const
+			$ = _.map( _ => Eval( c, _ ) )
+			if ( $.every( _ => _ instanceof Numeric ) ) return new Numeric( $.reduce( ( $, _ ) => $ * _._, 1 ) )
+			throw `Syntax error: ${ new _List( _ ).string() }`
+
+		//	while ( index-- ) {
+		//		let $ = _[ index ]
+		//		$ instanceof Prefix || ( $ = Eval( c, $ ) )
+		//		if ( ! ( $ instanceof Prefix ) ) throw `No infix operators: ${ new _List( _ ).string() }`
+		//		_.splice( index, 2, $._( c, _[ index + 1 ] ) )
+		//	}
+		//	if ( _.length === 1 ) return _[ 0 ]
 		}
 		break
 	}
