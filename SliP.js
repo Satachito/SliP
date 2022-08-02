@@ -647,11 +647,9 @@ ReadNumber = ( r, _ ) => {
 const
 ReadName = ( r, _ ) => {
 
-	let	escaped = false
+	let	escaped = _ === '\\'
 
-	let	v = _ === '\\'
-	?	( escaped = true, '' )
-	:	_
+	let	v = escaped ? '' : _
 
 	while ( r.Avail() ) {
 
@@ -684,8 +682,8 @@ ReadName = ( r, _ ) => {
 
 const
 ReadLiteral = ( r, terminator ) => {
-	let	v = ''
 	let	escaped = false
+	let	v = ''
 	while ( r.Avail() ) {
 		const _ = r.Read()
 		if ( escaped ) {
