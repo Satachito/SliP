@@ -1,2 +1,0 @@
-( 'calcAngleDegrees = '( atan2[ ( @:1 ) (@:0 ) ] × 180 ÷ π ) )
-( « ( sqrt 3 ) 1 »:calcAngleDegrees )

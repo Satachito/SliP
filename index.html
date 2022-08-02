@@ -93,8 +93,10 @@ textarea {
 	<input type=button class=hw32 value=+	id=KEY_PLUS		><br>
 	<input type=button class=hw32 value=(	id=KEY_OPEN		>
 	<input type=button class=hw32 value=)	id=KEY_CLOSE	>
-	<input type=button class=hw32 value=" "	id=KEY_SPACE	>
+	<input type=button class=hw32 value=%	id=KEY_REMAIN	>
 	<input type=button class=hw32 value=C	id=CLEAR		><br>
+	<br>
+	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
 	<br>
 	<input type=button class=hw value=sin	id=KEY_SIN	>
 	<input type=button class=hw value=cos	id=KEY_COS	>
@@ -129,31 +131,33 @@ textarea {
 	<input type=button class=hw16 value=ψ	id=KEY_ψ	>
 	<input type=button class=hw16 value=ω	id=KEY_ω	><br>
 	<br>
-	<input type=button class=hw16 value=Α	id=KEY_Α	>
-	<input type=button class=hw16 value=Β	id=KEY_Β	>
-	<input type=button class=hw16 value=Γ	id=KEY_Γ	>
-	<input type=button class=hw16 value=Δ	id=KEY_Δ	>
-	<input type=button class=hw16 value=Ε	id=KEY_Ε	>
-	<input type=button class=hw16 value=Ζ	id=KEY_Ζ	><br>
-	<input type=button class=hw16 value=Η	id=KEY_Η	>
-	<input type=button class=hw16 value=Θ	id=KEY_Θ	>
-	<input type=button class=hw16 value=Ι	id=KEY_Ι	>
-	<input type=button class=hw16 value=Κ	id=KEY_Κ	>
-	<input type=button class=hw16 value=Λ	id=KEY_Λ	>
-	<input type=button class=hw16 value=Μ	id=KEY_Μ	><br>
-	<input type=button class=hw16 value=Ν	id=KEY_Ν	>
-	<input type=button class=hw16 value=Ξ	id=KEY_Ξ	>
-	<input type=button class=hw16 value=Ο	id=KEY_Ο	>
-	<input type=button class=hw16 value=Π	id=KEY_Π	>
-	<input type=button class=hw16 value=Ρ	id=KEY_Ρ	>
-	<input type=button class=hw16 value=Σ	id=KEY_Σ	><br>
-	<input type=button class=hw16 value=Τ	id=KEY_Τ	>
-	<input type=button class=hw16 value=Υ	id=KEY_Υ	>
-	<input type=button class=hw16 value=Φ	id=KEY_Φ	>
-	<input type=button class=hw16 value=Χ	id=KEY_Χ	>
-	<input type=button class=hw16 value=Ψ	id=KEY_Ψ	>
-	<input type=button class=hw16 value=Ω	id=KEY_Ω	><br>
-	<br>
+	<div style="display: none">
+		<input type=button class=hw16 value=Α	id=KEY_Α	>
+		<input type=button class=hw16 value=Β	id=KEY_Β	>
+		<input type=button class=hw16 value=Γ	id=KEY_Γ	>
+		<input type=button class=hw16 value=Δ	id=KEY_Δ	>
+		<input type=button class=hw16 value=Ε	id=KEY_Ε	>
+		<input type=button class=hw16 value=Ζ	id=KEY_Ζ	><br>
+		<input type=button class=hw16 value=Η	id=KEY_Η	>
+		<input type=button class=hw16 value=Θ	id=KEY_Θ	>
+		<input type=button class=hw16 value=Ι	id=KEY_Ι	>
+		<input type=button class=hw16 value=Κ	id=KEY_Κ	>
+		<input type=button class=hw16 value=Λ	id=KEY_Λ	>
+		<input type=button class=hw16 value=Μ	id=KEY_Μ	><br>
+		<input type=button class=hw16 value=Ν	id=KEY_Ν	>
+		<input type=button class=hw16 value=Ξ	id=KEY_Ξ	>
+		<input type=button class=hw16 value=Ο	id=KEY_Ο	>
+		<input type=button class=hw16 value=Π	id=KEY_Π	>
+		<input type=button class=hw16 value=Ρ	id=KEY_Ρ	>
+		<input type=button class=hw16 value=Σ	id=KEY_Σ	><br>
+		<input type=button class=hw16 value=Τ	id=KEY_Τ	>
+		<input type=button class=hw16 value=Υ	id=KEY_Υ	>
+		<input type=button class=hw16 value=Φ	id=KEY_Φ	>
+		<input type=button class=hw16 value=Χ	id=KEY_Χ	>
+		<input type=button class=hw16 value=Ψ	id=KEY_Ψ	>
+		<input type=button class=hw16 value=Ω	id=KEY_Ω	><br>
+		<br>
+	</div>
 	<input type=button class=hw16 value=·	id=KEY_DOT		>
 	<input type=button class=hw16 value=¡	id=KEY_REV_EX	>
 	<input type=button class=hw16 value=¿	id=KEY_REV_Q	>
@@ -199,6 +203,7 @@ InsertToSOURCE = _ => {
 	const $ = SOURCE.selectionStart
 	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( SOURCE.selectionEnd )
 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
+	SOURCE.focus()
 }
 
 KEY_0		.onclick = () => InsertToSOURCE( '0' )
@@ -219,6 +224,7 @@ KEY_PERIOD	.onclick = () => InsertToSOURCE( '.' )
 KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_OPEN	.onclick = () => InsertToSOURCE( '(' )
 KEY_CLOSE	.onclick = () => InsertToSOURCE( ')' )
+KEY_REMAIN	.onclick = () => InsertToSOURCE( '%' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 
 KEY_SIN		.onclick = () => InsertToSOURCE( 'sin()' )
