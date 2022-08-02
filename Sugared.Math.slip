@@ -1,0 +1,36 @@
+abs(-1)
+//	1
+abs(2)
+//	2
+acos 0.8
+//	0.6435011087932843
+acos ( 1.1 )
+//	NaN
+acosh(1)
+//	expected output: 0
+acosh(2)
+//	expected output: 1.3169578969248166
+asin 0.6
+// expected output: 0.6435011087932844
+asin 1.1
+// expected output: NaN
+asinh(1)
+// expected output: 0.881373587019543
+asinh(0)
+// expected output: 0
+asinh(-1)
+// expected output: -0.881373587019543
+asinh(2)
+// expected output: 1.4436354751788103
+atan 0.8
+// expected output: 0.6747409422235527
+atan( 5 ÷ 3 )
+// expected output: 1.0303768265243125
+atan2[ 1 1 ]
+//	0.7853981633974483
+'calcAngleDegrees = '( atan2[ ( @:1 ) (@:0 ) ] × 180 ÷ π ) 
+[ 5 5 ]:calcAngleDegrees
+//	45
+[ 0 10 ]:calcAngleDegrees
+//	90
+

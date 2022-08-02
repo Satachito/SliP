@@ -833,24 +833,124 @@ NewContext = () => new Context(
 			,	'string'
 			)
 		,	new Prefix(
+				( c, _ ) => new Numeric( Math.abs( Eval( c, _ )._ ) )
+			,	'abs'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.acos( Eval( c, _ )._ ) )
+			,	'acos'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.acosh( Eval( c, _ )._ ) )
+			,	'acosh'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.asin( Eval( c, _ )._ ) )
+			,	'asin'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.asinh( Eval( c, _ )._ ) )
+			,	'asinh'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.atan( Eval( c, _ )._ ) )
+			,	'atan'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.atanh( Eval( c, _ )._ ) )
+			,	'atanh'
+			)
+		,	new Prefix(
+				( c, _ ) => ( console.log( _ ), new Numeric( Math.atan2( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) ) )
+			,	'atan2'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.cbrt( Eval( c, _ )._ ) )
+			,	'cbrt'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.ceil( Eval( c, _ )._ ) )
+			,	'ceil'
+			)
+		,	new Prefix(
 				( c, _ ) => new Numeric( Math.cos( Eval( c, _ )._ ) )
 			,	'cos'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sin( Eval( c, _ )._ ) )
-			,	'sin'
-			)
-		,	new Prefix(
-				( c, _ ) => new Numeric( Math.tan( Eval( c, _ )._ ) )
-			,	'tan'
+				( c, _ ) => new Numeric( Math.cosh( Eval( c, _ )._ ) )
+			,	'cosh'
 			)
 		,	new Prefix(
 				( c, _ ) => new Numeric( Math.exp( Eval( c, _ )._ ) )
 			,	'exp'
 			)
 		,	new Prefix(
+				( c, _ ) => new Numeric( Math.floor( Eval( c, _ )._ ) )
+			,	'floor'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.hypot( ..._.map( _ => Eval( c, _ )._ ) ) )
+			,	'hypot'
+			)
+		,	new Prefix(
 				( c, _ ) => new Numeric( Math.log( Eval( c, _ )._ ) )
 			,	'log'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.log10( Eval( c, _ )._ ) )
+			,	'log10'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.log2( Eval( c, _ )._ ) )
+			,	'log2'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.max( ..._._.map( _ => Eval( c, _ )._ ) ) )
+			,	'max'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.min( ..._._.map( _ => Eval( c, _ )._ ) ) )
+			,	'min'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.pow( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) )
+			,	'pow'
+			)
+		,	new Primitive(
+				c => new Numeric( Math.random() )
+			,	'random'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.round( Eval( c, _ )._ ) )
+			,	'round'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.sign( Eval( c, _ )._ ) )
+			,	'sign'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.sin( Eval( c, _ )._ ) )
+			,	'sin'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.sinh( Eval( c, _ )._ ) )
+			,	'sinh'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.sqrt( Eval( c, _ )._ ) )
+			,	'sqrt'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.tan( Eval( c, _ )._ ) )
+			,	'tan'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.tanh( Eval( c, _ )._ ) )
+			,	'tanh'
+			)
+		,	new Prefix(
+				( c, _ ) => new Numeric( Math.trunc( Eval( c, _ )._ ) )
+			,	'trunc'
 			)
 		,	new Unary(
 				( c, _ ) => {

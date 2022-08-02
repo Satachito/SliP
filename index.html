@@ -342,6 +342,7 @@ CALCULATE.onclick = () => {
 					try {
 						AppendDIV( Eval( c, Sugared( _ ) ).string() )
 					} catch ( ex ) {
+console.log( ex )
 						AppendDIV( ex ).style.color = 'red'
 					}
 				} else {
