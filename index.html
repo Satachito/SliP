@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang=zxx>
-<title>SliP, the resulting calculator.</title>
+<title>The monster calculator.</title>
 <style>
 button, input, select, textarea {
 ;	font-family				: inherit
@@ -70,9 +70,7 @@ textarea {
 }
 </style>
 
-<header>
-	SliP, the resulting calculator.
-</header>
+<header>The monster calculator.</header>
 
 <nav>
 	<input type=button style="height:32px; width:100%" value=CALCULATE	id=CALCULATE><br>
@@ -332,15 +330,17 @@ CALCULATE.onclick = () => {
 	:	SOURCE.value
 
 	if ( NEW_LINE_MODE.checked ) {
-		source.split( '\n' ).map(
+		const lines = source.split( '\n' )
+		lines.map(
 			_ => {
-				const $ = _.indexOf( '//' )
-				return $ < 0 ? _ : _.substring( 0, $ )
-			}
-		).map( _ => _.trim() ).forEach(
-			_ => {
-				if ( _.length ) {
-					INCLUDE_SOURCE.checked && ( AppendDIV( _ ).style.color = 'grey' )
+				INCLUDE_SOURCE.checked && (
+					_.length
+					?	( AppendDIV( _ ).style.color = 'grey' )
+					:	RESULT.appendChild( document.createElement( 'br' ) )
+				)
+				const index = _.indexOf( '//' )
+				const $ = ( index < 0 ? _ : _.substring( 0, index ) ).trim()
+				if ( $.length ) {
 					try {
 						AppendDIV( Eval( c, Sugared( _ ) ).string() )
 					} catch ( ex ) {
@@ -348,8 +348,6 @@ CALCULATE.onclick = () => {
 						?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
 						:	AppendDIV( ex ).style.color = 'red'
 					}
-				} else {
-					RESULT.appendChild( document.createElement( 'br' ) )
 				}
 			}
 		)
