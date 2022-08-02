@@ -111,7 +111,7 @@ const
 _EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
-		throw [ `No left or right operand for infix operator: ${ infix.label } : ${ new _List( _ ).string() }` ]
+		throw `No operand for ${ infix.label }`
 	case  1:
 		return Eval( c, _[ 0 ] )
 	default:
@@ -130,20 +130,21 @@ _EvalSentence = ( c, _ ) => {
 				)
 			} catch ( ex ) {
 console.error( ex )
-				let $ = `Syntax error: ${ new _List( _ ).string() }`
+				let $ = `Evaluating: ${ new _List( _ ).string() }`
 				if ( Array.isArray( ex ) ) {
 					ex.push( $ )
 					throw ex
 				} else {
-					throw [ $, ex ]
+					throw [ ex, $ ]
 				}
 			}
 		} else {
 			let index = _.length - 1
+			_ = _.slice()
 			while ( index-- ) {
 				let $ = _[ index ]
 				$ instanceof Prefix || ( $ = Eval( c, $ ) )
-				if ( ! ( $ instanceof Prefix ) ) throw [ `Syntax error: No infix operators: ${ new _List( _ ).string() }` ]
+				if ( ! ( $ instanceof Prefix ) ) throw `No infix operators: ${ new _List( _ ).string() }`
 				_.splice( index, 2, $._( c, _[ index + 1 ] ) )
 			}
 			return _[ 0 ]
@@ -158,7 +159,7 @@ Eval = ( c, _ ) => {
 	case 'Name':
 		while ( c ) {
 			const $ = c.dict[ _._ ]
-			if ( $ !== void 0 ) return $
+			if ( $ !== void 0 ) return $ instanceof Primitive ? $._( c ) : $
 			c = c.next
 		}
 		throw `Undefined:${_._}`
@@ -705,7 +706,7 @@ ReadLiteral = ( r, terminator ) => {
 			}
 		}
 	}
-	throw `Syntax error: Unterminated string: ${v}`
+	throw `Unterminated string: ${v}`
 }
 
 const
@@ -889,7 +890,7 @@ NewContext = () => new Context(
 			,	'floor'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.hypot( ..._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.hypot( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
 			,	'hypot'
 			)
 		,	new Prefix(
@@ -905,11 +906,11 @@ NewContext = () => new Context(
 			,	'log2'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.max( ..._._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.max( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
 			,	'max'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.min( ..._._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.min( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
 			,	'min'
 			)
 		,	new Prefix(
@@ -970,8 +971,9 @@ NewContext = () => new Context(
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
-		,	{	π	: new Numeric( Math.PI )
-			,	e	: new Numeric( Math.E )
+		,	{	π			: new Numeric( Math.PI )
+			,	e			: new Numeric( Math.E )
+			,	Infinity	: new Numeric( Infinity )
 			}
 		)
 	)
