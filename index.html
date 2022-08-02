@@ -331,9 +331,10 @@ CALCULATE.onclick = () => {
 
 	RESULT.textContent = ''
 
-	const source = CONV_X.checked
-	?	SOURCE.value.replaceAll( /[xX]/, '×' )
-	:	SOURCE.value
+	let source = SOURCE.value
+	CONV_X.checked && ( source = SOURCE.value.replaceAll( /[xX]/, '×' ) )
+//	CONV_PLUS.checked && ( source = SOURCE.value.replaceAll( /＋/, '+' ) )
+//	CONV_MINUS.checked && ( source = SOURCE.value.replaceAll( /－/, '-' ) )
 
 	if ( NEW_LINE_MODE.checked ) {
 		const lines = source.split( '\n' )
