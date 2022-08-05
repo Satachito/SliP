@@ -41,7 +41,7 @@ aside {
 ;	overflow				: scroll
 }
 jp-split-h {
-;	font-family				: math
+;	font-family				: monospace
 ;	font-size				: 12px
 ;	overflow				: scroll
 }
@@ -185,7 +185,7 @@ textarea {
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / -> ÷		</label><br>
 	<br>
 	When CALCULATE<br>
-	<label for=NEW_LINE_MODE	><input type=checkbox id=NEW_LINE_MODE	checked	> New line mode	</label><br>
+	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Program mode	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X -> ×		</label><br>
 	<br>
 	When OUTPUT<br>
@@ -336,7 +336,20 @@ CALCULATE.onclick = () => {
 //	CONV_PLUS.checked && ( source = SOURCE.value.replaceAll( /＋/, '+' ) )
 //	CONV_MINUS.checked && ( source = SOURCE.value.replaceAll( /－/, '-' ) )
 
-	if ( NEW_LINE_MODE.checked ) {
+	if ( PROGRAM_MODE.checked ) {
+		const $ = new StringReader( source )
+		while ( true ) {
+			const start = $._
+			const _ = Read( $ )
+			if ( !_ ) break
+			INCLUDE_SOURCE.checked && ( AppendDIV( SOURCE.value.substring( start, $._ ) ).style.color = 'grey' )
+			try {
+				AppendDIV( Eval( c, _ ).string() )
+			} catch ( ex ) {
+				ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
+			}
+		}
+	} else {
 		const lines = source.split( '\n' )
 		lines.map(
 			_ => {
@@ -358,19 +371,6 @@ CALCULATE.onclick = () => {
 				}
 			}
 		)
-	} else {
-		const $ = new StringReader( source )
-		while ( true ) {
-			const start = $._
-			const _ = Read( $ )
-			if ( !_ ) break
-			INCLUDE_SOURCE.checked && ( AppendDIV( SOURCE.value.substring( start, $._ ) ).style.color = 'grey' )
-			try {
-				AppendDIV( Eval( c, _ ).string() )
-			} catch ( ex ) {
-				ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
-			}
-		}
 	}
 }
 

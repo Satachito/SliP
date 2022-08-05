@@ -174,28 +174,30 @@
 ) )
 ( [ [ a b c ] b ]:remove )
 
-( 'komachi = '( {
-	( @:# <> 3 ¿ '(!) )
-	( 'candidate = @:0 )
-	( 'currentValue = @:1 )
-	( 'callback = @:2 )
-	(	candidate ?
-		[	(	{	candidate
-					'(	{	(	{	candidate
-									@
-								}:remove
+(	'komachi = '
+	(	{	( @:# <> 3 ¿ '(!) )
+			( 'candidate = @:0 )
+			( 'currentValue = @:1 )
+			( 'callback = @:2 )
+			(	candidate ?
+				[	(	{	candidate
+							'(	{	(	{	candidate
+											@
+										}:remove
+									)
+									( currentValue × 10 + @ )
+									callback
+								}:komachi
 							)
-							( currentValue × 10 + @ )
-							callback
-						}:komachi
+						}:for
 					)
-				}:for
+					( currentValue:callback )
+				]
 			)
-			( currentValue:callback )
-		]
+			[]
+		}:$
 	)
-	[]
-}:$ ) )
+)
 
 ( [ [ 1 2 3 ] 0 ¦ ]:komachi )
 ( [ [ 1 2 3 4 5 6 7 8 9 ] 0 ( ( @ % 10000 × 2 == ( @ / 10000 ) ) ¿ '(@:¦) ) ]:komachi )

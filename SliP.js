@@ -21,22 +21,21 @@ Numeric extends SliP {
 
 class
 Literal extends SliP {
-	string() { return this._ }
+	string() { return '`' + this._ + '`' }
 }
 
 class
-Dict extends SliP {		//	_ : Entries, key type is Name -> Object
-	constructor( _ ) { super( Object.fromEntries( _.map( ( [ k, v ] ) => [ k.string(), v ] ) ) ) }
+Dict extends SliP {
 	string() {
-		let initChar = '{'
-		return Object.entries( this._ ).reduce(
-			( $, [ key, value ] ) => (
-				$ = $ + initChar + '\t' + key + '\t: ' + value.string() + '\n'
+		let	$ = '{'
+		let initChar = ''
+		Object.entries( this._ ).forEach(
+			( [ k, v ] ) => (
+				$ = $ + initChar + '\t' + k + '\t: ' + v.string() + '\n'
 			,	initChar = ','
-			,	$
 			)
-		,	''
-		) + '}'
+		)
+		return $ + '}'
 	}
 }
 
@@ -52,7 +51,7 @@ _Func extends SliP {
 		this.label = label
 	}
 	string() { return this.label }
-//	string() { return this.label + ':' + this._ }
+//	string() { return this.label + '/' + this.constructor.name }
 }
 
 class
@@ -114,15 +113,6 @@ _EvalSentence = ( c, _ ) => {
 		throw `No operand`
 	case  1:
 		return Eval( c, _[ 0 ] )
-//	case  2:
-//		{	const $0 = Eval( c, _[ 0 ] )
-//			if ( $0 instanceof Prefix ) return $0._( c, _[ 1 ] )
-//			if ( $0 instanceof Numeric ) {
-//				const $1 = Eval( c, _[ 1 ] )
-//				if ( $1 instanceof Numeric ) return new Numeric( $0._ * $1._ )
-//			}
-//		}
-//		throw `No infix operators: ${ new _List( _ ).string() }`
 	default:
 		const infixEntries = _.map( ( v, k ) => [ k, v ] ).filter( ( [ k, v ] ) => v instanceof Infix )
 		if ( infixEntries.length ) {
@@ -160,14 +150,6 @@ console.error( ex )
 			$ = _.map( _ => Eval( c, _ ) )
 			if ( $.every( _ => _ instanceof Numeric ) ) return new Numeric( $.reduce( ( $, _ ) => $ * _._, 1 ) )
 			throw `Syntax error: ${ new _List( _ ).string() }`
-
-		//	while ( index-- ) {
-		//		let $ = _[ index ]
-		//		$ instanceof Prefix || ( $ = Eval( c, $ ) )
-		//		if ( ! ( $ instanceof Prefix ) ) throw `No infix operators: ${ new _List( _ ).string() }`
-		//		_.splice( index, 2, $._( c, _[ index + 1 ] ) )
-		//	}
-		//	if ( _.length === 1 ) return _[ 0 ]
 		}
 		break
 	}
@@ -255,16 +237,12 @@ Builtins = [
 	,	'@'
 	)
 ,	new Primitive(
-		c => new List( stack )
+		c => new List( stack.slice() )
 	,	'@@'
 	)
 ,	new Primitive(
-		c => new Dict( Object.entries( c.dict ).map( ( [ k, v ] ) => [ new Name( k ), v ] ) )
+		c => new Dict( c.dict )
 	,	'¤'
-	)
-,	new Prefix(
-		( c, _ ) => Eval( new Context( Eval( c, _._[ 0 ] )._, c ), _._[ 1 ] )
-	,	'§'
 	)
 ,	new Prefix(
 		( c, _ ) => _
@@ -289,6 +267,10 @@ Builtins = [
 ,	new Prefix(
 		( c, _ ) => Eval( c, Eval( c, _ ) )
 	,	'!'
+	)
+,	new Prefix(
+		( c, _ ) => _ instanceof Literal ? _ : new Literal( _.string() )
+	,	'¶'
 	)
 ,	new Unary(
 		( c, _ ) => {
@@ -322,15 +304,11 @@ Builtins = [
 	,	'$'
 	)
 ,	new Unary(
-		( c, _ ) => _ instanceof Literal ? _ : new Literal( _.string() )
-	,	'¶'
-	)
-,	new Unary(
-		( c, _ ) => ( process && process.stdout.write( _.string() ), _ )
+		( c, _ ) => ( console.log( _ ), _ )
 	,	'.'
 	)
 ,	new Unary(
-		( c, _ ) => ( process && process.stderr.write( _.string() + '\n' ), _ )
+		( c, _ ) => ( console.error( _ ), _ )
 	,	'¦'
 	)
 /*
@@ -346,11 +324,13 @@ Builtins = [
 	=	90	Define
 */
 ,	new Infix(
+		( c, l, r ) => Eval( new Context( l._, c ), r )
+	,	'§'
+	,	100
+	)
+,	new Infix(
 		( c, l, r ) => {
-			if ( l instanceof Name ) {
-				c.dict[ l._ ] = r
-				return r
-			}
+			if ( l instanceof Name ) return c.dict[ l._ ] = r
 			throw `${l.string()}=${r.string()}`
 		}
 	,	'='
@@ -387,7 +367,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( r instanceof _List ) return r._.filter( _ => _EQ( _, l ) ).length ? T : Nil
-			throw `${l.string()}∈${r.string}()`
+			throw `${l.string()}∈${r.string()}()`
 		}
 	,	'∈'
 	,	60
@@ -484,6 +464,16 @@ Builtins = [
 	,	40
 	)
 ,	new Infix(
+		Plus
+	,	'+'
+	,	30
+	)
+,	new Infix(
+		Minus
+	,	'-'
+	,	30
+	)
+,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof List && r instanceof List ) {
 				const [ numRowL, numColL ] = l.matrix
@@ -517,17 +507,7 @@ Builtins = [
 			throw `${l.string()}·${r.string()}`
 		}
 	,	'·'
-	,	30
-	)
-,	new Infix(
-		Plus
-	,	'+'
-	,	30
-	)
-,	new Infix(
-		Minus
-	,	'-'
-	,	30
+	,	20
 	)
 ,	new Infix(
 		( c, l, r ) => {
@@ -558,12 +538,13 @@ Builtins = [
 //console.log( c, l, r )
 			switch ( r.constructor.name ) {
 			case 'Numeric'	:
-				{	if ( ! l instanceof _List ) throw `${l.string}:${r.string}`
+				{	if ( ! l instanceof _List ) throw `${l.string()}:${r.string()}`
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
 			case 'Name'		:
-				{	if ( ! l instanceof Dict ) throw `${l.string}:${r.string}`
+			case 'Literal'	:
+				{	if ( ! l instanceof Dict ) throw `${l.string()}:${r.string()}`
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
@@ -832,24 +813,52 @@ StringReader {
 	Backward()	{ --this._ }
 }
 
+const
+SliP_JObject = _ => {
+	switch ( typeof _ ) {
+	case 'number'	: return new Numeric( _ )
+	case 'string'	: return new Literal( _ )
+	case 'object'	:
+		if ( _ === null ) return new List( [] )
+		switch ( _.constructor ) {
+		case Array:
+			return new List( _.map( _ => SliP_JObject( _ ) ) )
+		case Object:
+			return new Dict( Object.fromEntries( Object.entries( _ ).map( ( [ k, v ] ) => [ k, SliP_JObject( v ) ] ) ) )
+		case String:
+			return new Literal( _ )
+		}
+	}
+}
+
+const
+JObject_SliP = _ => {
+	switch ( _.constructor ) {
+	case Numeric:
+	case Literal:
+		return _._
+	case List:
+		return _._.length
+		?	_._.map( _ => JObject_SliP( _ ) )
+		:	null
+	case Dict:
+		console.log( _._.entries )
+		return Object.fromEntries( Object.entries( _._ ).map( ( [ k, v ] ) => [ k, JObject_SliP( v ) ] ) )
+	}
+	throw _.string() + ' can not be converted to JSON'
+}
+
 export const
 NewContext = () => new Context(
 	{}
 ,	new Context(
 		[	new Unary(
-				( c, _ ) => {
-					const wJSON = JSON.parse( _._ )
-					return new Dict(
-						Object.keys( wJSON ).reduce(
-							( dict, key ) => {
-								dict[ key ] = Read( new StringReader( wJSON[ key ] ) )
-								return dict
-							}
-						,	{}
-						)
-					)
-				}
-			,	'dict'
+				( c, _ ) => SliP_JObject( JSON.parse( _._ ) )
+			,	'byJSON'
+			)
+		,	new Unary(
+				( c, _ ) => new Literal( JSON.stringify( JObject_SliP( _ ) ) )
+			,	'toJSON'
 			)
 		,	new Unary(
 				( c, _ ) => new Numeric( parseInt( _._[ 0 ]._, _._[ 1 ]._ ) )
