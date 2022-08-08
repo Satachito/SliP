@@ -59,7 +59,7 @@ textarea {
 #RESULT {
 ;	padding					: 6px
 }
-.hw32 {
+.hw24 {
 ;	height					: 32px
 ;	width					: 32px
 }
@@ -68,10 +68,13 @@ textarea {
 ;	height					: 24px
 ;	width					: 20px
 }
-.hw {
+.w56 {
 ;	padding					: 0
 ;	width					: 56px
 }
+.w24 {
+;	padding					: 0
+;	width					: 24px
 </style>
 
 <header>The monster calculator.</header>
@@ -79,67 +82,67 @@ textarea {
 <nav>
 	<input type=button style="height:32px; width:100%" value=CALCULATE	id=CALCULATE><br>
 	<br>
-	<input type=button class="di hw32" value=7>
-	<input type=button class="di hw32" value=8>
-	<input type=button class="di hw32" value=9>
-	<input type=button class="di hw32" value=÷><br>
-	<input type=button class="di hw32" value=4>
-	<input type=button class="di hw32" value=5>
-	<input type=button class="di hw32" value=6>
-	<input type=button class="di hw32" value=×><br>
-	<input type=button class="di hw32" value=1>
-	<input type=button class="di hw32" value=2>
-	<input type=button class="di hw32" value=3>
-	<input type=button class="di hw32" value=-><br>
-	<input type=button class="di hw32" value=0>
-	<input type=button class="di hw32" value=.>
-	<input type=button class="   hw32" value=⏎	id=KEY_RET	>
-	<input type=button class="di hw32" value=+><br>
-	<input type=button class="di hw32" value=(>
-	<input type=button class="di hw32" value=)>
-	<input type=button class="di hw32" value=%>
-	<input type=button class="   hw32" value=C	id=CLEAR	><br>
+	<input type=button class="di hw24" value=7>
+	<input type=button class="di hw24" value=8>
+	<input type=button class="di hw24" value=9>
+	<input type=button class="di hw24" value=÷><br>
+	<input type=button class="di hw24" value=4>
+	<input type=button class="di hw24" value=5>
+	<input type=button class="di hw24" value=6>
+	<input type=button class="di hw24" value=×><br>
+	<input type=button class="di hw24" value=1>
+	<input type=button class="di hw24" value=2>
+	<input type=button class="di hw24" value=3>
+	<input type=button class="di hw24" value=-><br>
+	<input type=button class="di hw24" value=0>
+	<input type=button class="di hw24" value=.>
+	<input type=button class="   hw24" value=⏎	id=KEY_RET	>
+	<input type=button class="di hw24" value=+><br>
+	<input type=button class="di hw24" value=(>
+	<input type=button class="di hw24" value=)>
+	<input type=button class="di hw24" value=%>
+	<input type=button class="   hw24" value=C	id=CLEAR	><br>
 	<br>
 	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
 	<br>
 	<input type=button class="di hw16"	value=π>
 	<input type=button class="di hw16"	value=e>
-	<input type=button class="di hw"	value=Infinity><br>
+	<input type=button class="di w56"	value=Infinity><br>
 	<br>
-	<input type=button class="di hw" value=sin()>
-	<input type=button class="di hw" value=cos()>
-	<input type=button class="di hw" value=tan()><br>
-	<input type=button class="di hw" value=log()>
-	<input type=button class="di hw" value=exp()>
-	<input type=button class="di hw" value=sqrt()><br>
-	<input type=button class="di hw" value=atan2[]>
-	<input type=button class="di hw" value=pow[]><br>
+	<input type=button class="di w56" value=sin()>
+	<input type=button class="di w56" value=cos()>
+	<input type=button class="di w56" value=tan()><br>
+	<input type=button class="di w56" value=log()>
+	<input type=button class="di w56" value=exp()>
+	<input type=button class="di w56" value=sqrt()><br>
+	<input type=button class="di w56" value=atan2[]>
+	<input type=button class="di w56" value=pow[]><br>
 	<br>
-	<input type=button class="di hw" value=asin()>
-	<input type=button class="di hw" value=acos()>
-	<input type=button class="di hw" value=atan()><br>
+	<input type=button class="di w56" value=asin()>
+	<input type=button class="di w56" value=acos()>
+	<input type=button class="di w56" value=atan()><br>
 
-	<input type=button class="di hw" value=sinh()>
-	<input type=button class="di hw" value=cosh()>
-	<input type=button class="di hw" value=tanh()><br>
+	<input type=button class="di w56" value=sinh()>
+	<input type=button class="di w56" value=cosh()>
+	<input type=button class="di w56" value=tanh()><br>
 
-	<input type=button class="di hw" value=asinh()>
-	<input type=button class="di hw" value=acosh()>
-	<input type=button class="di hw" value=atanh()><br>
+	<input type=button class="di w56" value=asinh()>
+	<input type=button class="di w56" value=acosh()>
+	<input type=button class="di w56" value=atanh()><br>
 
-	<input type=button class="di hw" value=round()>
-	<input type=button class="di hw" value=ceil()>
-	<input type=button class="di hw" value=floor()><br>
-	<input type=button class="di hw" value=abs()>
-	<input type=button class="di hw" value=trunc()>
-	<input type=button class="di hw" value=sign()><br>
-	<input type=button class="di hw" value=cbrt()>
-	<input type=button class="di hw" value=log2()>
-	<input type=button class="di hw" value=log10()><br>
-	<input type=button class="di hw" value=hypot[]>
-	<input type=button class="di hw" value=max[]>
-	<input type=button class="di hw" value=min[]><br>
-	<input type=button class="di hw" value=random><br>
+	<input type=button class="di w56" value=round()>
+	<input type=button class="di w56" value=ceil()>
+	<input type=button class="di w56" value=floor()><br>
+	<input type=button class="di w56" value=abs()>
+	<input type=button class="di w56" value=trunc()>
+	<input type=button class="di w56" value=sign()><br>
+	<input type=button class="di w56" value=cbrt()>
+	<input type=button class="di w56" value=log2()>
+	<input type=button class="di w56" value=log10()><br>
+	<input type=button class="di w56" value=hypot[]>
+	<input type=button class="di w56" value=max[]>
+	<input type=button class="di w56" value=min[]><br>
+	<input type=button class="di w56" value=random><br>
 
 	<div id=PROGRAMMING_KEYS style="display: none">
 		<br>
@@ -169,6 +172,55 @@ textarea {
 		<input type=button class="di hw16" value=ψ>
 		<input type=button class="di hw16" value=ω><br>
 		<br>
+		<input type=button class="di w24" value=&> Bit and<br>
+		<input type=button class="di w24" value=|> Bit or<br>
+		<input type=button class="di w24" value=^> Bit xor<br>
+		<input type=button class="di w24" value=~> Bit not<br>
+		<input type=button class="di w24" value=&&> Logical and<br>
+		<input type=button class="di w24" value=||> Logical or<br>
+		<input type=button class="di w24" value=^^> Logical or<br>
+		<input type=button class="di w24" value=¬> Logical not<br>
+
+		<input type=button class="di w24" value=·> Inner product<br>
+
+		<input type=button class="di w24" value=.> Console.log<br>
+		<input type=button class="di w24" value=¦> Console.error<br>
+
+		<input type=button class="di w24" value="=="> Equal<br>
+		<input type=button class="di w24" value="<>"> Not equal<br>
+		<input type=button class="di w24" value="<"> Less than<br>
+		<input type=button class="di w24" value="<="> Less equal<br>
+		<input type=button class="di w24" value=">"> Greater than<br>
+		<input type=button class="di w24" value=">="> Greater equal<br>
+
+		<input type=button class="di w24" value=∈> Member of<br>
+		<input type=button class="di w24" value=∋> Include<br>
+
+		<input type=button class="di w24" value='""'> String<br>
+		<input type=button class="di w24" value=``> String<br>
+
+		<input type=button class="di w24" value=[]> List<br>
+		<input type=button class="di w24" value={}> Procedure evaluation<br>
+		<input type=button class="di w24" value=«»> Parallel evaluation<br>
+
+		<input type=button class="di w24" value=#> # of items in list<br>
+		<input type=button class="di w24" value=$> The last item of list<br>
+		<input type=button class="di w24" value=*> Lisp's cdr<br>
+		<input type=button class="di w24" value=,> Insert L at the top of R<br>
+
+		<input type=button class="di w24" value=¶> Stringify<br>
+		<input type=button class="di w24" value="="> Assign<br>
+
+		<input type=button class="di w24" value=!> Eval<br>
+		<input type=button class="di w24" value="'"> Quote<br>
+		<input type=button class="di w24" value=¡> Throw<br>
+		<input type=button class="di w24" value=@> Stack top<br>
+		<input type=button class="di w24" value=¿> If<br>
+		<input type=button class="di w24" value=?> If else<br>
+		<input type=button class="di w24" value=§> Evaluate R in context L<br>
+		<input type=button class="di w24" value=¤> Current context dictionay<br>
+		<input type=button class="di w24" value=:> Apply<br>
+		<br>
 		<input type=button class="di hw16" value=Α>
 		<input type=button class="di hw16" value=Β>
 		<input type=button class="di hw16" value=Γ>
@@ -194,18 +246,6 @@ textarea {
 		<input type=button class="di hw16" value=Ψ>
 		<input type=button class="di hw16" value=Ω><br>
 		<br>
-		<input type=button class="di hw16" value=·>
-		<input type=button class="di hw16" value=¡>
-		<input type=button class="di hw16" value=¿>
-		<input type=button class="di hw16" value=¦>
-		<input type=button class="di hw16" value=§>
-		<input type=button class="di hw16" value=¶><br>
-		<input type=button class="di hw16" value=¤>
-		<input type=button class="di hw16" value=¬>
-		<input type=button class="di hw16" value=«>
-		<input type=button class="di hw16" value=»>
-		<input type=button class="di hw16" value=∈>
-		<input type=button class="di hw16" value=∋><br>
 	</div>
 	<br>
 </nav>
