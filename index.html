@@ -100,10 +100,12 @@ textarea {
 	<br>
 	<input type=button class=hw value=sin	id=KEY_SIN	>
 	<input type=button class=hw value=cos	id=KEY_COS	>
-	<input type=button class=hw value=tan	id=KEY_TAN	><br>
+	<input type=button class=hw value=tan	id=KEY_TAN	>
+	<input type=button class=hw value=atan2	id=KEY_ATAN2><br>
 	<input type=button class=hw value=log	id=KEY_LOG	>
 	<input type=button class=hw value=exp	id=KEY_EXP	>
-	<input type=button class=hw value=pow	id=KEY_POW	><br>
+	<input type=button class=hw value=pow	id=KEY_POW	>
+	<input type=button class=hw value=sqrt	id=KEY_SQRT	><br>
 	<br>
 	<input type=button class=hw16 value=α	id=KEY_α	>
 	<input type=button class=hw16 value=β	id=KEY_β	>
@@ -230,9 +232,11 @@ KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 KEY_SIN		.onclick = () => InsertToSOURCE( 'sin()' )
 KEY_COS		.onclick = () => InsertToSOURCE( 'cos()' )
 KEY_TAN		.onclick = () => InsertToSOURCE( 'tan()' )
-KEY_EXP		.onclick = () => InsertToSOURCE( 'exp()' )
+KEY_ATAN2	.onclick = () => InsertToSOURCE( 'atan2()' )
 KEY_LOG		.onclick = () => InsertToSOURCE( 'log()' )
+KEY_EXP		.onclick = () => InsertToSOURCE( 'exp()' )
 KEY_POW		.onclick = () => InsertToSOURCE( 'pow[]' )
+KEY_SQRT	.onclick = () => InsertToSOURCE( 'sqrt()' )
 
 KEY_DOT		.onclick = () => InsertToSOURCE( '·' )
 KEY_REV_EX	.onclick = () => InsertToSOURCE( '¡' )
