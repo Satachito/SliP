@@ -83,9 +83,9 @@ textarea {
 	<input type=button class=hw32 value=5	id=KEY_5		>
 	<input type=button class=hw32 value=6	id=KEY_6		>
 	<input type=button class=hw32 value=×	id=KEY_MUL		><br>
-	<input type=button class=hw32 value=3	id=KEY_3		>
-	<input type=button class=hw32 value=2	id=KEY_2		>
 	<input type=button class=hw32 value=1	id=KEY_1		>
+	<input type=button class=hw32 value=2	id=KEY_2		>
+	<input type=button class=hw32 value=3	id=KEY_3		>
 	<input type=button class=hw32 value=-	id=KEY_MINUS	><br>
 	<input type=button class=hw32 value=0	id=KEY_0		>
 	<input type=button class=hw32 value=.	id=KEY_PERIOD	>
@@ -98,42 +98,46 @@ textarea {
 	<br>
 	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
 	<br>
-	<input type=button class=hw value=sin	id=KEY_SIN	>
-	<input type=button class=hw value=cos	id=KEY_COS	>
-	<input type=button class=hw value=tan	id=KEY_TAN	>
-	<input type=button class=hw value=atan2	id=KEY_ATAN2><br>
-	<input type=button class=hw value=log	id=KEY_LOG	>
-	<input type=button class=hw value=exp	id=KEY_EXP	>
-	<input type=button class=hw value=pow	id=KEY_POW	>
-	<input type=button class=hw value=sqrt	id=KEY_SQRT	><br>
+	<input type=button class=hw16	value=π			id=KEY_PI		>
+	<input type=button class=hw16	value=e			id=KEY_NAPIER	>
+	<input type=button class=hw		value=Infinity	id=KEY_INFINITY	><br>
 	<br>
-	<input type=button class=hw16 value=α	id=KEY_α	>
-	<input type=button class=hw16 value=β	id=KEY_β	>
-	<input type=button class=hw16 value=γ	id=KEY_γ	>
-	<input type=button class=hw16 value=δ	id=KEY_δ	>
-	<input type=button class=hw16 value=ε	id=KEY_ε	>
-	<input type=button class=hw16 value=ζ	id=KEY_ζ	><br>
-	<input type=button class=hw16 value=η	id=KEY_η	>
-	<input type=button class=hw16 value=θ	id=KEY_θ	>
-	<input type=button class=hw16 value=ι	id=KEY_ι	>
-	<input type=button class=hw16 value=κ	id=KEY_κ	>
-	<input type=button class=hw16 value=λ	id=KEY_λ	>
-	<input type=button class=hw16 value=μ	id=KEY_μ	><br>
-	<input type=button class=hw16 value=ν	id=KEY_ν	>
-	<input type=button class=hw16 value=ξ	id=KEY_ξ	>
-	<input type=button class=hw16 value=ο	id=KEY_ο	>
-	<input type=button class=hw16 value=π	id=KEY_π	>
-	<input type=button class=hw16 value=ρ	id=KEY_ρ	>
-	<input type=button class=hw16 value=ς	id=KEY_ς	>
-	<input type=button class=hw16 value=σ	id=KEY_σ	><br>
-	<input type=button class=hw16 value=τ	id=KEY_τ	>
-	<input type=button class=hw16 value=υ	id=KEY_υ	>
-	<input type=button class=hw16 value=φ	id=KEY_φ	>
-	<input type=button class=hw16 value=χ	id=KEY_χ	>
-	<input type=button class=hw16 value=ψ	id=KEY_ψ	>
-	<input type=button class=hw16 value=ω	id=KEY_ω	><br>
+	<input type=button class=hw value=sin	id=KEY_SIN		>
+	<input type=button class=hw value=cos	id=KEY_COS		>
+	<input type=button class=hw value=tan	id=KEY_TAN		>
+	<input type=button class=hw value=atan2	id=KEY_ATAN2	><br>
+	<input type=button class=hw value=log	id=KEY_LOG		>
+	<input type=button class=hw value=exp	id=KEY_EXP		>
+	<input type=button class=hw value=pow	id=KEY_POW		>
+	<input type=button class=hw value=sqrt	id=KEY_SQRT		><br>
 	<br>
-	<div style="display: none">
+	<div id=PROGRAMMING_KEYS style="display: none">
+		<input type=button class=hw16 value=α	id=KEY_α	>
+		<input type=button class=hw16 value=β	id=KEY_β	>
+		<input type=button class=hw16 value=γ	id=KEY_γ	>
+		<input type=button class=hw16 value=δ	id=KEY_δ	>
+		<input type=button class=hw16 value=ε	id=KEY_ε	>
+		<input type=button class=hw16 value=ζ	id=KEY_ζ	><br>
+		<input type=button class=hw16 value=η	id=KEY_η	>
+		<input type=button class=hw16 value=θ	id=KEY_θ	>
+		<input type=button class=hw16 value=ι	id=KEY_ι	>
+		<input type=button class=hw16 value=κ	id=KEY_κ	>
+		<input type=button class=hw16 value=λ	id=KEY_λ	>
+		<input type=button class=hw16 value=μ	id=KEY_μ	><br>
+		<input type=button class=hw16 value=ν	id=KEY_ν	>
+		<input type=button class=hw16 value=ξ	id=KEY_ξ	>
+		<input type=button class=hw16 value=ο	id=KEY_ο	>
+		<input type=button class=hw16 value=π	id=KEY_π	>
+		<input type=button class=hw16 value=ρ	id=KEY_ρ	>
+		<input type=button class=hw16 value=ς	id=KEY_ς	>
+		<input type=button class=hw16 value=σ	id=KEY_σ	><br>
+		<input type=button class=hw16 value=τ	id=KEY_τ	>
+		<input type=button class=hw16 value=υ	id=KEY_υ	>
+		<input type=button class=hw16 value=φ	id=KEY_φ	>
+		<input type=button class=hw16 value=χ	id=KEY_χ	>
+		<input type=button class=hw16 value=ψ	id=KEY_ψ	>
+		<input type=button class=hw16 value=ω	id=KEY_ω	><br>
+		<br>
 		<input type=button class=hw16 value=Α	id=KEY_Α	>
 		<input type=button class=hw16 value=Β	id=KEY_Β	>
 		<input type=button class=hw16 value=Γ	id=KEY_Γ	>
@@ -159,19 +163,19 @@ textarea {
 		<input type=button class=hw16 value=Ψ	id=KEY_Ψ	>
 		<input type=button class=hw16 value=Ω	id=KEY_Ω	><br>
 		<br>
+		<input type=button class=hw16 value=·	id=KEY_DOT		>
+		<input type=button class=hw16 value=¡	id=KEY_REV_EX	>
+		<input type=button class=hw16 value=¿	id=KEY_REV_Q	>
+		<input type=button class=hw16 value=¦	id=KEY_BRK_BAR	>
+		<input type=button class=hw16 value=§	id=KEY_SECTION	>
+		<input type=button class=hw16 value=¶	id=KEY_PILCROW	><br>
+		<input type=button class=hw16 value=¤	id=KEY_CURRENCY	>
+		<input type=button class=hw16 value=¬	id=KEY_NOT		>
+		<input type=button class=hw16 value=«	id=KEY_OPEN_DA	>
+		<input type=button class=hw16 value=»	id=KEY_CLOSE_DA	>
+		<input type=button class=hw16 value=∈	id=KEY_MEM_OF	>
+		<input type=button class=hw16 value=∋	id=KEY_INCLUDES	><br>
 	</div>
-	<input type=button class=hw16 value=·	id=KEY_DOT		>
-	<input type=button class=hw16 value=¡	id=KEY_REV_EX	>
-	<input type=button class=hw16 value=¿	id=KEY_REV_Q	>
-	<input type=button class=hw16 value=¦	id=KEY_BRK_BAR	>
-	<input type=button class=hw16 value=§	id=KEY_SECTION	>
-	<input type=button class=hw16 value=¶	id=KEY_PILCROW	><br>
-	<input type=button class=hw16 value=¤	id=KEY_CURRENCY	>
-	<input type=button class=hw16 value=¬	id=KEY_NOT		>
-	<input type=button class=hw16 value=«	id=KEY_OPEN_DA	>
-	<input type=button class=hw16 value=»	id=KEY_CLOSE_DA	>
-	<input type=button class=hw16 value=∈	id=KEY_MEM_OF	>
-	<input type=button class=hw16 value=∋	id=KEY_INCLUDES	><br>
 	<br>
 </nav>
 
@@ -228,6 +232,10 @@ KEY_OPEN	.onclick = () => InsertToSOURCE( '(' )
 KEY_CLOSE	.onclick = () => InsertToSOURCE( ')' )
 KEY_REMAIN	.onclick = () => InsertToSOURCE( '%' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
+
+KEY_PI		.onclick = () => InsertToSOURCE( 'π' )
+KEY_NAPIER	.onclick = () => InsertToSOURCE( 'e' )
+KEY_INFINITY.onclick = () => InsertToSOURCE( 'Infinity' )
 
 KEY_SIN		.onclick = () => InsertToSOURCE( 'sin()' )
 KEY_COS		.onclick = () => InsertToSOURCE( 'cos()' )
@@ -380,7 +388,15 @@ CALCULATE.onclick = () => {
 
 window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
 
-window.onload = () => SOURCE.value = localStorage.getItem( 'SOURCE' )
+const
+SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
+
+PROGRAM_MODE.onchange = () => SyncProgrammingKeys()
+
+window.onload = () => (
+	SOURCE.value = localStorage.getItem( 'SOURCE' )
+,	SyncProgrammingKeys()
+)
 
 </script>
 
