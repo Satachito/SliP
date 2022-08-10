@@ -258,12 +258,12 @@ textarea {
 
 <aside>
 	When INPUT<br>
-	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * -> ×		</label><br>
-	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / -> ÷		</label><br>
+	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * → ×		</label><br>
+	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷		</label><br>
 	<br>
 	When CALCULATE<br>
 	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Program mode	</label><br>
-	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X -> ×		</label><br>
+	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×		</label><br>
 	<br>
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
@@ -343,7 +343,10 @@ CALCULATE.onclick = () => {
 			try {
 				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
-				ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
+				console.error( ex )
+				Array.isArray( ex )
+				?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
+				:	AppendDIV( ex ).style.color = 'red'
 			}
 		}
 	} else {
@@ -361,6 +364,7 @@ CALCULATE.onclick = () => {
 					try {
 						AppendDIV( Eval( c, Sugared( _ ) ).string() )
 					} catch ( ex ) {
+						console.error( ex )
 						Array.isArray( ex )
 						?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
 						:	AppendDIV( ex ).style.color = 'red'

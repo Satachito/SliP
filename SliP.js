@@ -17,6 +17,11 @@ SliP {
 
 class
 Numeric extends SliP {
+	string() {
+		return this._ === Infinity 
+		?	'∞'
+		:	'' + this._
+	}
 }
 
 class
@@ -597,7 +602,7 @@ NAME_BREAKING_CHARACTERS = [
 ,	'.'		//	2E	標準出力に表示します。引数をそのまま返します。
 ,	'/'		//	2F
 ,	':'		//	3A	Apply
-,	';'		//	3B
+,	';'		//	3B	Dummy sentence terminator for Sugared syntax
 ,	'<'		//	3C	COMPARATOR
 ,	'='		//	3D	COMPARATOR
 ,	'>'		//	3E	COMPARATOR
@@ -724,7 +729,7 @@ ReadList = ( r, terminator ) => {
 	while ( true ) {
 		const slip = Read( r, terminator )
 		if ( slip === void 0 )	break	//	Read terminator
-		if ( slip === null )	throw 'Open list: ' + $
+		if ( slip === null )	throw 'Open list: ' + $.map( _ => _.string() )
 		$.push( slip )
 	}
 
