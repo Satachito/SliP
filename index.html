@@ -107,7 +107,7 @@ textarea {
 	<br>
 	<input type=button class="di hw16"	value=π>
 	<input type=button class="di hw16"	value=e>
-	<input type=button class="di w56"	value=Infinity><br>
+	<input type=button class="di hw16"	value=∞><br>
 	<br>
 	<input type=button class="di w56" value=sin()>
 	<input type=button class="di w56" value=cos()>
@@ -331,9 +331,7 @@ CALCULATE.onclick = () => {
 	RESULT.textContent = ''
 
 	let source = SOURCE.value
-	CONV_X.checked && ( source = SOURCE.value.replaceAll( /[xX]/, '×' ) )
-//	CONV_PLUS.checked && ( source = SOURCE.value.replaceAll( /＋/, '+' ) )
-//	CONV_MINUS.checked && ( source = SOURCE.value.replaceAll( /－/, '-' ) )
+	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 
 	if ( PROGRAM_MODE.checked ) {
 		const $ = new StringReader( source )

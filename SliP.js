@@ -573,13 +573,14 @@ const
 BuiltinLabel0s = BuiltinLabels.map( _ => _[ 0 ] )
 
 const
-GreekChars = [
+SoloChars = [
 	'Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω'
 ,	'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο', 'π', 'ρ', 'ς', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'
+,	'∞'
 ]
 const
 NAME_BREAKING_CHARACTERS = [
-	...GreekChars
+	...SoloChars
 ,	'!'		//	21	Eval
 ,	'"'		//	22	StringLiteral
 ,	'#'		//	23	Num
@@ -653,7 +654,7 @@ ReadNumber = ( r, _ ) => {
 const
 ReadName = ( r, _ ) => {
 
-	if ( GreekChars.includes( _ ) ) return new Name( _ )
+	if ( SoloChars.includes( _ ) ) return new Name( _ )
 
 	let	escaped = _ === '\\'
 
@@ -1006,9 +1007,9 @@ NewContext = () => new Context(
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
-		,	{	π			: new Numeric( Math.PI )
-			,	e			: new Numeric( Math.E )
-			,	Infinity	: new Numeric( Infinity )
+		,	{	π	: new Numeric( Math.PI )
+			,	e	: new Numeric( Math.E )
+			,	'∞'	: new Numeric( Infinity )
 			}
 		)
 	)
