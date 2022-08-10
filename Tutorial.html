@@ -1,0 +1,115 @@
+<h1>SliP Tutorial</h1>
+
+<h2>Screen shot and area names</h2>
+
+<img src=SS.Tutorial.png></img>
+
+<h2>Basic usage</h2>
+
+<pre>
+Enter an expression in the Source Area and press the CALCULATE button in the Keypad area to display the value of the entered expression in the Result area.
+If Include Source is checked in the Option area, the evaluated expression will also be displayed in the Result area.
+</pre>
+
+
+<pre>
+Let's type 2+3 in the Source area. You can do this either from the keyboard or from the keypad.
+Press the CALCULATE button and you will see the value 5 in the Result area.
+</pre>
+
+<pre>
+Next, type 2-3 under the formula above.
+Then press the Calculate button and you will see a value of -1 in the Result area.
+</pre>
+
+<pre>
+Next, let's type 2 x 3 under the above formula.
+You can also enter the multiplication symbol x from the keypad by pressing * on the keyboard if the '* → x' checkbox in the Option area is checked.
+If you press the CALCULATE button, you will see the value 6 in the Result area.
+</pre>
+
+<pre>
+The same goes for division. Let's type 2 divided by 3 under the formula above.
+The division symbol ÷ can be easily entered from the keypad, or by pressing / on the keyboard if the '/ → ÷' checkbox in the Option area is checked.
+If you press the CALCULATE button, you will see the value 0.6666... in the Result area.
+</pre>
+
+<pre>
+The order of the operators in the four arithmetic operations is calculated from left to right,
+but multiplication and division are calculated before addition and subtraction.
+</pre>
+
+<pre>
+The order of computation can also be specified using parentheses.
+The operators in parentheses are calculated before the other operators.
+Let's enter the following formula
+2 x 3 ÷ (4+5-6)
+Pressing the CALCULATE button will calculate (4+5-6) first and this expression will be equal to 2×3÷3 and the value 2 will be displayed.
+</pre>
+
+<pre>
+The multiplication operator can be omitted.
+Let's enter the following equation
+2 3 4
+Pressing the CALCULATE button will make this expression equal 2 x 3 x 4 and display the value 24.
+</pre>
+
+<h2>Prefix operators</h2>
+<pre>
+Several prefix operators are available. The main ones are as follows.
++ means the next number as it is
+- means negative of the next number
+
+3-+2 is evaluated as 1
+3--2 is evaluated as 5
+3-(-2) is also evaluated as 5
+</pre>
+
+<h2>Constants</h2>
+<pre>
+The following three symbols have pre-set values.
+π Pi
+e Napier number
+∞ Infinity
+</pre>
+
+<h2>Variables</h2>
+<pre>
+Variables
+A variable is a named memory.
+For example, to make a variable named r remember the value 2, you would do the following
+'r = 2
+Now let's enter the following equation
+2 × pi × r
+Pressing the Calculate button displays the value 12.566370614359172, which is the circumference of a circle of radius 2.
+This equation can also be made to look like the following using the abbreviation of the multiplication operator above.
+2πr
+
+The names of the variables are actually a bit complicated, but they generally look like the following.
+Basically, it starts with a letter, followed by repeating letters or numbers, and ends with a space.
+For example
+abc
+na12me
+
+Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, pi, cd, ∞, and ef.
+</pre>
+
+<h2>Arithmetic Functions</h2>
+<pre>
+Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad area.
+Let's enter the following equation
+cosπ
+Pressing the Calculate button displays the value -1.
+
+The arithmetic functions atan2, pow, hypot, max, and min require two or more parameters. You can pass parameters to them in an array.
+atan2[ 1 1 ] → 0.7853981633974483
+pow[ 2 3 ] → 8
+hypot[ 3 4 ] → 5
+max[ 3 2 1 ] → 3
+min[ 3 2 1 ] → 1
+
+<h2>Primitives</h2>
+'random' is also available, it is not secure enough to be used in cryptography. It should not be used for security-related purposes.
+
+
+
