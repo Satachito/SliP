@@ -4,7 +4,11 @@
 
 <img src=SS.Tutorial.png></img>
 
-<h2>Basic usage</h2>
+<h2>Normal mode</h2>
+
+Make sure 'Programming mode' in the Option area is unchecked.
+
+<h3>Basic usage</h3>
 
 <pre>
 Enter an expression in the Source Area and press the CALCULATE button in the Keypad area to display the value of the entered expression in the Result area.
@@ -23,8 +27,8 @@ Then press the Calculate button and you will see a value of -1 in the Result are
 </pre>
 
 <pre>
-Next, let's type 2 x 3 under the above formula.
-You can also enter the multiplication symbol x from the keypad by pressing * on the keyboard if the '* → x' checkbox in the Option area is checked.
+Next, let's type 2 × 3 under the above formula.
+You can also enter the multiplication symbol × from the keypad by pressing * on the keyboard if the '* → ×' checkbox in the Option area is checked.
 If you press the CALCULATE button, you will see the value 6 in the Result area.
 </pre>
 
@@ -43,7 +47,7 @@ but multiplication and division are calculated before addition and subtraction.
 The order of computation can also be specified using parentheses.
 The operators in parentheses are calculated before the other operators.
 Let's enter the following formula
-2 x 3 ÷ (4+5-6)
+2 × 3 ÷ (4+5-6)
 Pressing the CALCULATE button will calculate (4+5-6) first and this expression will be equal to 2×3÷3 and the value 2 will be displayed.
 </pre>
 
@@ -51,10 +55,10 @@ Pressing the CALCULATE button will calculate (4+5-6) first and this expression w
 The multiplication operator can be omitted.
 Let's enter the following equation
 2 3 4
-Pressing the CALCULATE button will make this expression equal 2 x 3 x 4 and display the value 24.
+Pressing the CALCULATE button will make this expression equal 2 × 3 × 4 and display the value 24.
 </pre>
 
-<h2>Prefix operators</h2>
+<h3>Prefix operators</h3>
 <pre>
 Several prefix operators are available. The main ones are as follows.
 + means the next number as it is
@@ -65,7 +69,7 @@ Several prefix operators are available. The main ones are as follows.
 3-(-2) is also evaluated as 5
 </pre>
 
-<h2>Constants</h2>
+<h3>Constants</h3>
 <pre>
 The following three symbols have pre-set values.
 π Pi
@@ -73,7 +77,7 @@ e Napier number
 ∞ Infinity
 </pre>
 
-<h2>Variables</h2>
+<h3>Variables</h2>
 <pre>
 Variables
 A variable is a named memory.
@@ -91,10 +95,10 @@ For example
 abc
 na12me
 
-Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, pi, cd, ∞, and ef.
+Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, π, cd, ∞, and ef.
 </pre>
 
-<h2>Arithmetic Functions</h2>
+<h3>Arithmetic Functions</h3>
 <pre>
 Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad area.
 Let's enter the following equation
@@ -108,8 +112,78 @@ hypot[ 3 4 ] → 5
 max[ 3 2 1 ] → 3
 min[ 3 2 1 ] → 1
 
-<h2>Primitives</h2>
+<h3>Primitives</h3>
+<pre>
 'random' is also available, it is not secure enough to be used in cryptography. It should not be used for security-related purposes.
+</pre>
 
 
+<h2>Programming mode</h2>
+
+<pre>
+SliP is also a programming language; it is a functional language influenced by Lisp.
+You can use this feature by checking the 'Programming mode' checkbox in the Option area. If checked, the Keypad area will look like the screenshot below and you can easily enter various arithmetic symbols.
+</pre>
+
+<img src=SS.Programming.png></img>
+
+<h3>Basics</h3>
+
+<pre>
+Programming SliP is done by evaluating what is called an SliP object.
+The main SliP objects are
+* Numbers
+* Strings
+* Operators
+* Names
+* Sentences
+etc.
+
+The numbers, strings, and operators return themselves when evaluated.
+
+3
+→ 3
+
+"abc"
+→ "abc"
+
+×
+→ ×
+
+A list of SliP objects enclosed in parentheses is a sentence, and when evaluated, various calculations are performed according to the operators in the sentence.
+
+First, let's look at a function that returns the value of its argument multiplied by two as an example.
+
+( 'mul2 = '( @ × 2 ) )
+
+The meaning of this sentence is to assign the expression '( @ × 2 )' to the name 'mul2'.
+' is called 'quote' and when evaluated returns the next SliP object without evaluation.
+'@' denotes an argument.
+
+Let's use the function we just defined named mul2.
+
+( 3 : mul2 )
+→ 6
+Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
+
+
+</pre>
+
+
+<h3>IfElse</h3>
+<pre>
+In Programming mode, the entire expression is enclosed in parentheses to allow it to span lines.
+
+As an example, let's try to calculate the factorial of n by programming.
+
+( 'factorial = '(
+    @ == 0 ?
+    [   1
+        ( @ × ( @ - 1 ):factorial )
+    ]
+) )
+( 4 : factorial )
+→ 24
+
+</pre>
 
