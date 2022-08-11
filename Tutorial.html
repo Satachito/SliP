@@ -1,4 +1,6 @@
+<body style="width: 640px; overflow: scroll">
 <h1>SliP Tutorial</h1>
+<hr>
 
 <h2>Screen shot and area names</h2>
 
@@ -6,63 +8,57 @@
 
 <h2>Normal mode</h2>
 
-<pre>
-Make sure 'Programming mode' in the Option area is unchecked.
-</pre>
+Make sure 'Programming mode' checkbox in the Option Area is unchecked.
 
 <h3>Basic usage</h3>
 
-<pre>
-Enter an expression in the Source Area and press the CALCULATE button in the Keypad area to display the value of the entered expression in the Result area.
-If Include Source is checked in the Option area, the evaluated expression will also be displayed in the Result area.
-</pre>
-
-
-<pre>
-Let's type 2+3 in the Source area. You can do this either from the keyboard or from the keypad.
-Press the CALCULATE button and you will see the value 5 in the Result area.
-</pre>
-
-<pre>
-Next, type 2-3 under the formula above.
-Then press the Calculate button and you will see a value of -1 in the Result area.
-</pre>
-
-<pre>
-Next, let's type 2 × 3 under the above formula.
-You can also enter the multiplication symbol × from the keypad by pressing * on the keyboard if the '* → ×' checkbox in the Option area is checked.
-If you press the CALCULATE button, you will see the value 6 in the Result area.
-</pre>
-
-<pre>
-The same goes for division. Let's type 2 divided by 3 under the formula above.
-The division symbol ÷ can be easily entered from the keypad, or by pressing / on the keyboard if the '/ → ÷' checkbox in the Option area is checked.
-If you press the CALCULATE button, you will see the value 0.6666... in the Result area.
-</pre>
-
-<pre>
+Enter an expression in the Source Area and press the CALCULATE button in the Keypad Area to display the value of the entered expression in the Result Area.
+If Include Source is checked in the Option Area, the evaluated expression will also be displayed in the Result Area.
+<br>
+<br>
+Let's type<pre>2+3</pre>in the Source Area. You can do this either from the keyboard or from the keypad.
+Press the CALCULATE button and you will see the value 5 in the Result Area.
+<br>
+<br>
+Next, type<pre>2-3</pre>under the formula above.
+Then press the CALCULATE button and you will see a value of -1 in the Result Area.
+<br>
+<br>
+Next, let's type<pre>2×3</pre>under the above formula.
+You can also enter the multiplication symbol × from the keypad by pressing * on the keyboard if the '* → ×' checkbox in the Option Area is checked.
+If you press the CALCULATE button, you will see the value 6 in the Result Area.
+<br>
+<br>
+The same goes for division. Let's type<pre>2÷3</pre>under the formula above.
+The division symbol ÷ can be easily entered from the keypad, or by pressing / on the keyboard if the '/ → ÷' checkbox in the Option Area is checked.
+If you press the CALCULATE button, you will see the value 0.6666... in the Result Area.
+<br>
+<br>
 The order of the operators in the four arithmetic operations is calculated from left to right,
 but multiplication and division are calculated before addition and subtraction.
-</pre>
-
-<pre>
+<br>
+<br>
 The order of computation can also be specified using parentheses.
 The operators in parentheses are calculated before the other operators.
 Let's enter the following formula
-2 × 3 ÷ (4+5-6)
-Pressing the CALCULATE button will calculate (4+5-6) first and this expression will be equal to 2×3÷3 and the value 2 will be displayed.
-</pre>
-
 <pre>
+2 × 3 ÷ (4+5-6)
+</pre>
+Pressing the CALCULATE button will calculate (4+5-6) first and this expression will be equal to 2×3÷3 and the value 2 will be displayed.
+<br>
+<br>
 The multiplication operator can be omitted.
 Let's enter the following equation
+<pre>
 2 3 4
-Pressing the CALCULATE button will make this expression equal 2 × 3 × 4 and display the value 24.
 </pre>
+Pressing the CALCULATE button will make this expression equal 2 × 3 × 4 and display the value 24.
+<br>
+<br>
 
 <h3>Prefix operators</h3>
-<pre>
 Several prefix operators are available. The main ones are as follows.
+<pre>
 + means the next number as it is
 - means negative of the next number
 
@@ -72,91 +68,100 @@ Several prefix operators are available. The main ones are as follows.
 </pre>
 
 <h3>Constants</h3>
-<pre>
 The following three symbols have pre-set values.
+<pre>
 π Pi
 e Napier number
 ∞ Infinity
 </pre>
 
 <h3>Variables</h2>
-<pre>
-Variables
 A variable is a named memory.
 For example, to make a variable named r remember the value 2, you would do the following
+<pre>
 'r = 2
+</pre>
 Now let's enter the following equation
-2 × pi × r
-Pressing the Calculate button displays the value 12.566370614359172, which is the circumference of a circle of radius 2.
+<pre>
+2 × π × r
+</pre>
+Pressing the CALCULATE button displays the value 12.566370614359172, which is the circumference of a circle of radius 2.
 This equation can also be made to look like the following using the abbreviation of the multiplication operator above.
+<pre>
 2πr
+</pre>
 
 The names of the variables are actually a bit complicated, but they generally look like the following.
 Basically, it starts with a letter, followed by repeating letters or numbers, and ends with a space.
 For example
+<pre>
 abc
 na12me
+</pre>
+These names have not yet been defined and will result in 'undefined' error.
 
 Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, π, cd, ∞, and ef.
 </pre>
 
 <h3>Arithmetic Functions</h3>
-<pre>
-Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad area.
+Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad Area.
 Let's enter the following equation
+<pre>
 cosπ
-Pressing the Calculate button displays the value -1.
+</pre>
+Pressing the CALCULATE button displays the value -1.
 
 The arithmetic functions atan2, pow, hypot, max, and min require two or more parameters. You can pass parameters to them in an array.
-atan2[ 1 1 ] → 0.7853981633974483
-pow[ 2 3 ] → 8
-hypot[ 3 4 ] → 5
-max[ 3 2 1 ] → 3
-min[ 3 2 1 ] → 1
+<pre>
+atan2[ 1 1 ] // → 0.7853981633974483
+pow[ 2 3 ] // → 8
+hypot[ 3 4 ] // → 5
+max[ 3 2 1 ] // → 3
+min[ 3 2 1 ] // → 1
+</pre>
 
 <h3>Primitives</h3>
-<pre>
 'random' is also available, it is not secure enough to be used in cryptography. It should not be used for security-related purposes.
+<pre>
+random
 </pre>
-
-
+<br>
+<br>
 <h2>Programming mode</h2>
 
-<pre>
 SliP is also a programming language; it is a functional language influenced by Lisp.
-You can use this feature by checking the 'Programming mode' checkbox in the Option area. If checked, the Keypad area will look like the screenshot below and you can easily enter various arithmetic symbols.
-</pre>
+You can use this feature by checking the 'Programming mode' checkbox in the Option Area. If checked, the Keypad Area will look like the screenshot below and you can easily enter various arithmetic symbols.
 
 <img src=SS.Programming.png></img>
 
 <h3>Basics</h3>
 
-<pre>
 Programming SliP is done by evaluating what is called an SliP object.
 The main SliP objects are
-* Numbers
-* Strings
-* Operators
-* Names
-* Sentences
-etc.
+<ul>
+<li> Numbers</li>
+<li> Strings</li>
+<li> Operators</li>
+<li> Names</li>
+<li> Sentences</li>
+<li> and etc.</li>
+</ul>
 
 The numbers, strings, and operators return themselves when evaluated.
 
-3
-→ 3
-
-"abc"
-→ "abc"
-
-×
-→ ×
+<pre>
+3 // → 3
+"abc" // → "abc"
+× // → ×
+</pre>
 
 A list of SliP objects enclosed in parentheses is a sentence, and when evaluated, various calculations are performed according to the operators in the sentence.
 
 First, let's look at a function that returns the value of its argument multiplied by two as an example.
 
+<pre>
 ( 'mul2 = '( @ × 2 ) )
+</pre>
 
 The meaning of this sentence is to assign the expression '( @ × 2 )' to the name 'mul2'.
 ' is called 'quote' and when evaluated returns the next SliP object without evaluation.
@@ -164,28 +169,29 @@ The meaning of this sentence is to assign the expression '( @ × 2 )' to the nam
 
 Let's use the function we just defined named mul2.
 
-( 3 : mul2 )
-→ 6
-Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
-
-
+<pre>
+( 3 : mul2 ) // → 6
 </pre>
+
+Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
+: is infix operator, which evaluates the right side (R) with the left side (L) as its argument.
 
 
 <h3>IfElse</h3>
-<pre>
 In Programming mode, the entire expression is enclosed in parentheses to allow it to span lines.
-
 As an example, let's try to calculate the factorial of n by programming.
-
+<pre>
 ( 'factorial = '(
     @ == 0 ?
     [   1
         ( @ × ( @ - 1 ):factorial )
     ]
 ) )
-( 4 : factorial )
-→ 24
-
+( 4 : factorial ) // → 24
 </pre>
 
+<hr>
+TO BE CONTINUED
+<br>
+<br>
+</body>
