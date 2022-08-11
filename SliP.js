@@ -18,9 +18,11 @@ SliP {
 class
 Numeric extends SliP {
 	string() {
-		return this._ === Infinity 
-		?	'∞'
-		:	'' + this._
+		switch ( this._ ) {
+		case  Infinity	: return '∞'
+		case -Infinity	: return '-∞'
+		default			: return '' + this._
+		}
 	}
 }
 
@@ -729,7 +731,7 @@ ReadList = ( r, terminator ) => {
 	while ( true ) {
 		const slip = Read( r, terminator )
 		if ( slip === void 0 )	break	//	Read terminator
-		if ( slip === null )	throw 'Open list: ' + $.map( _ => _.string() )
+		if ( slip === null )	throw $.reduce( ( $, _ ) => $ + ' ' + _.string(), 'Open list: ' )	//	 + $.map( _ => _.string() )
 		$.push( slip )
 	}
 
@@ -779,7 +781,8 @@ Read = ( r, terminator ) => {
 		case	'}'			:
 		case	')'			:
 		case	'»'			:
-			throw `Unexpected brace closer: ${_}`
+			return null
+		//	throw `Unexpected brace closer: ${_}`
 		case	'['			: return new List		( ReadList( r, ']' ) )
 		case	'('			: return new Sentence	( ReadList( r, ')' ) )
 		case	'{'			: return new Procedure	( ReadList( r, '}' ) )
@@ -1021,4 +1024,4 @@ NewContext = () => new Context(
 )
 
 export const
-Sugared = _ => new Sentence( ReadList( new StringReader( _ + ';' ), ';' ) )
+Sugared = _ => new Sentence( ReadList( new StringReader( _ + ')' ), ')' ) )
