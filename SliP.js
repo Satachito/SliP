@@ -135,7 +135,6 @@ _EvalSentence = ( c, _ ) => {
 				,	_EvalSentence( c, _.slice( index + 1 ) )
 				)
 			} catch ( ex ) {
-console.error( ex )
 				let $ = `Evaluating: ${ new _List( _ ).string() }`
 				if ( Array.isArray( ex ) ) {
 					ex.push( $ )
@@ -311,11 +310,11 @@ Builtins = [
 	,	'$'
 	)
 ,	new Unary(
-		( c, _ ) => ( console.log( _ ), _ )
+		( c, _ ) => ( console.log( _.string() ), _ )
 	,	'.'
 	)
 ,	new Unary(
-		( c, _ ) => ( console.error( _ ), _ )
+		( c, _ ) => ( console.error( _.string() ), _ )
 	,	'¦'
 	)
 /*

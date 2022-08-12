@@ -134,6 +134,9 @@ You can use this feature by checking the 'Programming mode' checkbox in the Opti
 
 <img src=SS.Programming.png></img>
 
+<h3>Spanning lines</h3>
+Expressions that had to be written to fit on a single line in NORMAL mode can be written in PROGRAMMING mode by enclosing the entire expression in parentheses and spanning lines.
+
 <h3>Basics</h3>
 
 Programming SliP is done by evaluating what is called an SliP object.
@@ -176,10 +179,15 @@ Let's use the function we just defined named mul2.
 Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
 : is infix operator, which evaluates the right side (R) with the left side (L) as its argument.
 
+<h3>NULL</h3>
 
-<h3>IfElse</h3>
-In Programming mode, the entire expression is enclosed in parentheses to allow it to span lines.
-As an example, let's try to calculate the factorial of n by programming.
+<h3>Boolean?</h3>
+SliP does not have a boolean type. Instead, empty lists such as [] are called NULL and treated like false in other languages.
+Therefore, all boolean operators such as EQU return NULL or non-NULL.
+
+<h3>Recursive</h3>
+Let's try to calculate the factorial of N by programming.
+The factorial of N is the factorial of (N-1) multiplied by N. This can be expressed in SliP as follows.
 <pre>
 ( 'factorial = '(
     @ == 0 ?
@@ -188,10 +196,15 @@ As an example, let's try to calculate the factorial of n by programming.
     ]
 ) )
 ( 4 : factorial ) // → 24
+
+<h4>==</h4>
+This operator returns non-NULL if the left and right arguments are equal, NULL otherwise.
+
+<h4>?</h4>
+This operator evaluates the first element of the right argument if the left argument is non-null, otherwise it evaluates the second element of the right argument.
+
 </pre>
 
-<hr>
-TO BE CONTINUED
-<br>
-<br>
+
+
 </body>

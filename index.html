@@ -328,6 +328,13 @@ window.onload = () => (
 
 import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
 
+const
+TreatEX = ex => (
+	console.error( ex )
+,	Array.isArray( ex )
+	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
+	:	AppendDIV( ex ).style.color = 'red'
+)
 CALCULATE.onclick = () => {
 
 	const c = NewContext()
@@ -338,24 +345,26 @@ CALCULATE.onclick = () => {
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 
 	if ( PROGRAM_MODE.checked ) {
+		source = source.split( '\n' ).map(
+			_ => {
+				const index = _.indexOf( '//' )
+				return ( index < 0 ? _ : _.substring( 0, index ) ).trim()
+			}
+		).join( '\n' )
 		const $ = new StringReader( source )
 		while ( true ) {
 			const start = $._
 			const _ = Read( $ )
 			if ( !_ ) break
-			INCLUDE_SOURCE.checked && ( AppendDIV( SOURCE.value.substring( start, $._ ) ).style.color = 'grey' )
+			INCLUDE_SOURCE.checked && ( AppendDIV( source.substring( start, $._ ) ).style.color = 'grey' )
 			try {
 				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
-				console.error( ex )
-				Array.isArray( ex )
-				?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
-				:	AppendDIV( ex ).style.color = 'red'
+				TreatEX( ex )
 			}
 		}
 	} else {
-		const lines = source.split( '\n' )
-		lines.map(
+		source.split( '\n' ).map(
 			_ => {
 				INCLUDE_SOURCE.checked && (
 					_.length
@@ -368,10 +377,7 @@ CALCULATE.onclick = () => {
 					try {
 						AppendDIV( Eval( c, Sugared( _ ) ).string() )
 					} catch ( ex ) {
-						console.error( ex )
-						Array.isArray( ex )
-						?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
-						:	AppendDIV( ex ).style.color = 'red'
+						TreatEX( ex )
 					}
 				}
 			}
