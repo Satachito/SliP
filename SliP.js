@@ -507,7 +507,9 @@ Builtins = [
 							$[ _$ + col ] = _
 						}
 					}
-					return new List( $.map( _ => new Numeric( _ ) ) )
+					const v = new List( $.map( _ => new Numeric( _ ) ) )
+					v.matrix = numRowL
+					return v
 				}
 			}
 			throw `${l.string()}·${r.string()}`
