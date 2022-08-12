@@ -272,6 +272,7 @@ textarea {
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
 	<br>
+	<input type=button value="Load sample" id=LOAD_SAMPLE><br>
 </aside>
 
 <footer>Copyright 2022 SliP LLC, Tokyo.</footer>
@@ -319,11 +320,22 @@ window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
 const
 SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
 
-PROGRAM_MODE.onchange = SyncProgrammingKeys
+PROGRAM_MODE.onchange = () => (
+	SyncProgrammingKeys
+,	SOURCE.value = ''
+,	RESULT.textContent = ''
+)
 
 window.onload = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' )
 ,	SyncProgrammingKeys()
+)
+
+LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
+	_ => (
+		SOURCE.value = _.default
+	,	CALCULATE.click()
+	)
 )
 
 import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'

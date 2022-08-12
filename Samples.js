@@ -1,3 +1,7 @@
+export default `//
+//	Samples for PROGRAM mode
+//
+
 ( 'count = '( @ ? [ ( @:*:count + 1 ) 0 ] ) )
 ( [ a b c ] : count )
 
@@ -8,11 +12,6 @@
 	]
 ) )
 ( 4 : factorial )
-
-( 'sigma = '(	//	別の書き方。0 + 0 の分だけ遅いが参考まで。
-	@ + ( @ == 0 ? [ 0 ( ( @ - 1 ):sigma ) ] )
-) )
-( 4 : sigma )
 
 ( 'dropLast = '(
 	@:# == 0 ?
@@ -174,35 +173,6 @@
 ) )
 ( [ [ a b c ] b ]:remove )
 
-(	'komachi = '
-	(	{	( @:# <> 3 ¿ '(!) )
-			( 'candidate = @:0 )
-			( 'currentValue = @:1 )
-			( 'callback = @:2 )
-			(	candidate ?
-				[	(	{	candidate
-							'(	{	(	{	candidate
-											@
-										}:remove
-									)
-									( currentValue × 10 + @ )
-									callback
-								}:komachi
-							)
-						}:for
-					)
-					( currentValue:callback )
-				]
-			)
-			[]
-		}:$
-	)
-)
-
-( [ [ 1 2 3 ] 0 ¦ ]:komachi )
-( [ [ 1 2 3 4 5 6 7 8 9 ] 0 ( ( @ % 10000 × 2 == ( @ / 10000 ) ) ¿ '(@:¦) ) ]:komachi )
-
-
 ( 'reduce = '(
 	@:0:# == 1 ? [
 		(@:0:0)
@@ -240,26 +210,4 @@
 	¤
 }:$ )
 ( Graph )
-
-//( 'searchSub = '(
-//	@:0:# ? [
-//		(	{ ( @:0:0 ) (@:2) }:member ? [
-//				( { (@:0:*) (@:1) (@:2) }:searchSub )
-//				( ( { Graph:(@:0:0) (@:1) (@:2) }:searchSub ) + ( { @:0:*) (@:1) (@:2) }:searchSub )
-//			]
-//		)
-//		[]
-//	]
-//) )
-
-//( 'search = '(
-//	{ (@:1) (@:0:0) }:member
-//	(	'p		= @:0 )	//	[ b c ]
-//	(	'to		= @:1 )	//	g
-//	(	'path	= @:2 )	//	[ a ]
-//	(	{ to p }:member ?
-//		[	( ( to, path ), [] )
-//
-//
-//	)
-//} )
+`

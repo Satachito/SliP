@@ -852,7 +852,6 @@ JObject_SliP = _ => {
 		?	_._.map( _ => JObject_SliP( _ ) )
 		:	null
 	case Dict:
-		console.log( _._.entries )
 		return Object.fromEntries( Object.entries( _._ ).map( ( [ k, v ] ) => [ k, JObject_SliP( v ) ] ) )
 	}
 	throw _.string() + ' can not be converted to JSON'

@@ -1,3 +1,175 @@
+export default `//
+//	Samples for normal mode
+//
+
+2
+-3
+2-3
+2--3
+
+2+3
+2-3
+2×3
+2÷3
+2+3×4
+(2+3)×4
+2×3+4
+2×(3+4)
+6÷2×3
+
+1+2+3-4+5+6+78+9
+123-45-67+89
+1×2×3×4+5+6+7×8+9
+1+2+3+4+5+6+7+8×9
+1×2×3-4×5+6×7+8×9
+123+45-67+8-9
+123-4-5-6-7+8-9
+1+2+34-5+67-8+9
+1+23-4+5+6+78-9
+12+3+4+5-6-7+89
+123+4-5+67-89
+12-3-4+5-6+7+89
+-1+2-3+4+5+6+78+9
+1+23-4+56+7+8+9
+98-76+54+3+21
+98+7-6+5-4+3-2-1
+98+7-6×5+4×3×2+1
+
+sqrt(4)
+cbrt(8)
+
+π
+sin(0)
+sinπ
+cos(0)
+cosπ
+tan(0)
+tanπ
+
+e
+exp(0)
+exp(1)
+exp(-1)
+exp(2)
+
+log( e )
+log( e × e )
+
+'log8 = '( log( @ ) ÷ log( 8 ) )
+512:log8
+
+//	 Variables
+'a = 2
+3a
+'b = 3
+a b
+'r = 2
+2πr
+
+//	 String
+
+""
+"ABC"
+"A\\tB\\"C"
+"ABC" + "DEF"
+
+//	 Memory
+
+'a = 1 + 2
+'b = 3 + 4
+a + b
+
+
+//	 Logical
+//	"T" for true, Nil i.e. '[ ]' for false.
+
+3 == 3
+3 == 4
+
+"A" == "A"
+
+"A" == "B"
+
+
+//	 If else
+
+3 == 3 ? [ "TRUE" "FALSE" ]
+3 == 4 ? [ "TRUE" "FALSE" ]
+
+//	 List
+[ a b ]
+'[ a b ]
+'( a b )
+'{ a b }
+[ a b c ]:#
+
+
+//	 Primitives
+3:'(@)
+3:'@
+
+3:'(@==3)
+
+'[]:'(@=={})
+'{}:'(@=={})
+'{}:'(@=='{})
+
+//	 Function
+
+'add1 = '( @ + 1 )
+3 : add1
+//	'3 : add1' means push 3 to stack and evaluate function associated with name 'add1'.
+//	@ is stack top.
+
+'factorial = '( @ == 1 ? [ 1 ( @ × ( @ - 1 ):factorial ) ] )
+4 : factorial
+
+'sigma = '( @ == 0 ? [ 0 ( @ + ( @ - 1 ):sigma ) ] )
+4 : sigma
+
+//	 List
+
+[ "A" "B" "C" ] + [ "D" "E" "F" ]
+//	Lisp's CAR
+[ "A" "B" "C" ]:0
+[ "A" "B" "C" ]:1
+[ "A" "B" "C" ]:$
+[ "A" "B" "C" ]:#
+//	Lisp's CDR
+[ "A" "B" "C" ]:*
+
+//	Lisp's CONS
+"A", [ "B" "C" ]
+
+//	 Members
+
+"A" ∈ [ "A" "B" "C" ]
+"D" ∈ [ "A" "B" "C" ]
+[ "A" "B" "C" ] ∋ "A"
+[ "A" "B" "C" ] ∋ "D"
+
+//	 String <-> Integer
+
+[ 65536 16 ] : string
+[ "10000" 16 ] : int
+
+//	 byJSON, toJSON
+\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON
+\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON:'C
+\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON:toJSON
+
+//	 Matrix
+[ 1 2 3 ] · [ 1 2 3 ]
+[ [ 1 2 3 4 5 6 ] 3 ] : matrix
+[ [ 1 2 3 4 5 6 ] 2 ] : matrix · [ [ 1 2 3 4 5 6 ] 3 ]: matrix
+
+//	 Builtins
+"Show all"
+¤
+
+
+///////////////////////////////////	MATH
+
 //	https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math
 
 π
@@ -233,3 +405,104 @@ trunc(0.123)
 trunc(-0.123)
 //	-0
 
+///////////////////////	Operators
+
+3:'@
+3:'@@
+¤
+¡"Exception"
+
+~3
+~~3
+
+¬3
+¬[] 
+
+'{ ( 'a = 3 ) a }
+!'{ ( 'a = 3 ) a }
+!'{ ( 'a = 3 ) a }:0
+
+\`{"a":3,"b":2}\`:byJSON§'( a b ) 
+//	6
+
+\`{"a":3,"b":2}\`:byJSON:toJSON
+//	\`{"a":3,"b":2}\`
+
+"[ 1, 2, 3 ]":byJSON:toJSON
+//	\`[1,2,3]\`
+
+"null":byJSON:toJSON
+//	\`null\`
+
+\`"string"\`: byJSON:toJSON
+//	\`"string"\`
+
+\`1\`: byJSON:toJSON
+//	\`1\`
+
+'{ 1 2 3 }:toJSON
+//	{ 1 2 3 } can not be converted to JSON
+//	Evaluating: ' { 1 2 3 } : toJSON
+
+[ 2 3 4 ]:#
+[ 2 3 4 ]:*
+[ 2 3 4 ]:$
+
+¶3 + "ab"
+3:.:¦
+//	See console
+
+"abc"?[ ( 3 + 4 ) ( 5 + 6 ) ]
+[]?[ ( 3 + 4 ) ( 5 + 6 ) ]
+
+"abc"¿'( 3 + 4 )
+[]¿'( 3 + 4 )
+¬[]¿'( 3 + 4 )
+
+0 && 0
+0 && []
+[] && 0
+[] && []
+
+0 || 0
+0 || []
+[] || 0
+[] || []
+
+0 ^^ 0
+0 ^^ []
+[] ^^ 0
+[] ^^ []
+
+1 ∈ [ 1 2 3 ]
+1 ∈ [ 2 3 4 ]
+
+[ 1 2 3 ] ∋ 1
+[ 2 3 4 ] ∋ 1
+
+2 == 1
+2 == 2
+2 == 3
+
+2 <> 1
+2 <> 2
+2 <> 3
+
+2 < 1
+2 < 2
+2 < 3
+
+2 > 1
+2 > 2
+2 > 3
+
+2 <= 1
+2 <= 2
+2 <= 3
+
+2 >= 1
+2 >= 2
+2 >= 3
+
+"a", [ "b" "c" ]
+`

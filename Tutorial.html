@@ -179,9 +179,10 @@ Let's use the function we just defined named mul2.
 Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
 : is infix operator, which evaluates the right side (R) with the left side (L) as its argument.
 
-<h3>NULL</h3>
-SliP does not have a boolean type. Instead, empty lists such as [] are called NULL and treated like false in other computer languages.
-Therefore, all boolean operators such as == return NULL or non-NULL.
+<h3>NIL</h3>
+SliP does not have a boolean type. Instead, empty lists such as [] are called NIL and treated like false in other computer languages.
+A dummy SliP Object with a display name of T may be used to represent something that is non-NIL.
+Therefore, all boolean operators such as == return NIL or non-NIL.
 
 <h3>Recursive</h3>
 Let's try to calculate the factorial of N by programming.
@@ -197,7 +198,7 @@ The factorial of N is the factorial of (N-1) multiplied by N. This can be expres
 </pre>
 
 <h5>==</h5>
-This operator returns non-NULL if the left and right arguments are equal, NULL otherwise.
+This operator returns non-NIL if the left and right arguments are equal, NIL otherwise.
 
 <h5>?</h5>
 This operator evaluates the first element of the right argument if the left argument is non-null, otherwise it evaluates the second element of the right argument.
