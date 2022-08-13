@@ -78,9 +78,9 @@ textarea {
 </style>
 
 <header style="display: grid; grid-template-columns: auto 1fr auto">
-       SliP, the monster calculator.
-       <div></div>
-       <a href=Tutorial.html target=_blank>Tutorial</a>
+	SliP, the monster calculator.
+	<div></div>
+	<a href=Tutorial.html target=_blank>Tutorial</a>
 </header>
 
 <nav>
@@ -275,7 +275,9 @@ textarea {
 	<input type=button value="Load sample" id=LOAD_SAMPLE><br>
 </aside>
 
-<footer>Copyright 2022 SliP LLC, Tokyo.</footer>
+<footer>
+	Copyright 2022 SliP LLC, Tokyo.
+</footer>
 
 <script type=module>
 CLEAR		.onclick = () => ( SOURCE.value = '', SOURCE.focus() )
@@ -315,6 +317,16 @@ AppendDIV = text => {
 	return $
 }
 
+const
+AppendPRE = text => {
+	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
+	$.textContent = text
+	$.style.width = '100%'
+	$.style.color = 'grey'
+	$.style.margin = '6px 0 2px 0'
+	return $
+}
+
 window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
 
 const
@@ -350,18 +362,26 @@ CALCULATE.onclick = () => {
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 
 	if ( PROGRAM_MODE.checked ) {
-		source = source.split( '\n' ).map(
+		const deleted = []
+		let tracer = 0
+		const pped = source.split( '\n' ).map(
 			_ => {
+				const L = _.length + 1
 				const index = _.indexOf( '//' )
-				return ( index < 0 ? _ : _.substring( 0, index ) ).trim()
+				const prev = tracer
+				tracer += L
+				return index < 0 ? _ : (
+					deleted.push( [ prev + index, L - index ] )
+				,	_.substring( 0, index )
+				)
 			}
 		).join( '\n' )
-		const $ = new StringReader( source )
+		const $ = new StringReader( pped )
 		while ( true ) {
 			const start = $._
 			const _ = Read( $ )
 			if ( !_ ) break
-			INCLUDE_SOURCE.checked && ( AppendDIV( source.substring( start, $._ ) ).style.color = 'grey' )
+			INCLUDE_SOURCE.checked && ( AppendPRE( pped.substring( start, $._ ).trim() ) )
 			try {
 				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
