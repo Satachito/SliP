@@ -320,16 +320,9 @@ window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
 const
 SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
 
-PROGRAM_MODE.onchange = () => (
-	SyncProgrammingKeys
-,	SOURCE.value = ''
-,	RESULT.textContent = ''
-)
+PROGRAM_MODE.onchange = SyncProgrammingKeys
 
-window.onload = () => (
-	SOURCE.value = localStorage.getItem( 'SOURCE' )
-,	SyncProgrammingKeys()
-)
+window.onload = () => SOURCE.value = localStorage.getItem( 'SOURCE' )
 
 LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
 	_ => (
