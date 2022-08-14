@@ -413,9 +413,16 @@ CALCULATE.onclick = () => {
 	}
 }
 
-window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
+window.onbeforeunload = () => (
+	localStorage.setItem( 'SOURCE', SOURCE.value )
+,	PROGRAM_MODE.checked
+	?	localStorage.setItem( 'MODE', 'PROGRAMMING' )
+	:	localStorage.removeItem( 'MODE' )
+)
+
 window.onload = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' )
+,	PROGRAM_MODE.checked = localStorage.getItem( 'MODE' ) != null
 ,	SyncProgrammingKeys()
 )
 
