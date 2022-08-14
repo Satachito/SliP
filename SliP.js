@@ -28,7 +28,11 @@ Numeric extends SliP {
 
 class
 Literal extends SliP {
-	string() { return '`' + this._ + '`' }
+	constructor( _, hint ) {
+		super( _ )
+		this.hint = hint ? hint : '"'
+	}
+	string() { return this.hint + this._ + this.hint }
 }
 
 class
@@ -602,39 +606,39 @@ NAME_BREAKING_CHARACTERS = [
 ,	'+'		//	2B	Plus
 ,	','		//	2C	CONS
 ,	'-'		//	2D	Minus
-,	'.'		//	2E	標準出力に表示します。引数をそのまま返します。
+,	'.'		//	2E	Console.log, returns argument
 ,	'/'		//	2F
 ,	':'		//	3A	Apply
 ,	';'		//	3B	Dummy sentence terminator for Sugared syntax
 ,	'<'		//	3C	COMPARATOR
 ,	'='		//	3D	COMPARATOR
 ,	'>'		//	3E	COMPARATOR
-,	'?'		//	3F	l が Nil でなければ r[ 0 ] を、そうでなければ r[ 1 ] を評価する
+,	'?'		//	3F	if L is non-Nil evaluate R[ 0 ] otherwise evaluate R[ 1 ]
 ,	'@'		//	40	Stack top, Stack
 ,	'['		//	5B	Open list
 ,	']'		//	5D	Close list
-,	'^'		//	5E	排他的論理和
+,	'^'		//	5E	Exclusive logical OR
 ,	'`'		//	60	String Literal
 ,	'{'		//	7B	Open procedure
 ,	'|'		//	7C	OR
 ,	'}'		//	7D	Close procedure
-,	'~'		//	7E	反転
+,	'~'		//	7E	Bit flip
 ,	'¡'		//	A1	Throw
 ,	'¤'		//	A4	Dict
-,	'¦'		//	A6	標準エラー出力に改行をつけて表示します。引数をそのまま返します。
-,	'§'		//	A7	右辺に2要素のリストをとり、0番目の要素である辞書をコンテクスト辞書チェーンの最初に付け加え、1番目の要素を評価したもの
+,	'¦'		//	A6	Console.error, returns argument
+,	'§'		//	A7	Evaluate R in context of L
 ,	'«'		//	AB	Open parallel
-,	'¬'		//	AC	論理的に反転したもの
+,	'¬'		//	AC	NOT
 ,	'±'		//	B1
 ,	'µ'		//	B5
 ,	'¶'		//	B6	Stringify
 ,	'·'		//	B7	Dot
 ,	'»'		//	BB	Close parallel
-,	'¿'		//	BF	l が Nil でなければ r を評価、そうでなければ Nil
+,	'¿'		//	BF	If L is non-NIL evaluate R otherwise Nil
 ,	'×'		//	D7	MUL
 ,	'÷'		//	F7	DIV
-,	'∈'		//	2208	要素
-,	'∋'		//	220B	要素として含む
+,	'∈'		//	2208	Member
+,	'∋'		//	220B	Includes
 ,	'⊂'		//
 ,	'⊃'		//
 ,	'∩'		//
@@ -716,7 +720,7 @@ ReadLiteral = ( r, terminator ) => {
 			}
 		} else {
 			switch ( _ ) {
-			case terminator	: return new Literal( v )
+			case terminator	: return new Literal( v, terminator )
 			case '\\'		: escaped = true	; break
 			default			: v += _			; break
 			}

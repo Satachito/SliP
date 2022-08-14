@@ -1,3 +1,9 @@
+<style>
+pre {
+;	background-color	: lightgrey
+}
+</style>
+
 <body style="width: 640px; overflow: scroll">
 <h1>SliP Tutorial</h1>
 <hr>
@@ -70,9 +76,9 @@ Several prefix operators are available. The main ones are as follows.
 <h3>Constants</h3>
 The following three symbols have pre-set values.
 <pre>
-π Pi
-e Napier number
-∞ Infinity
+π	//  PI
+e	//  Napier number
+∞	//  Infinity
 </pre>
 
 <h3>Variables</h2>
@@ -113,11 +119,11 @@ Pressing the CALCULATE button displays the value -1.
 
 The arithmetic functions atan2, pow, hypot, max, and min require two or more parameters. You can pass parameters to them in an array.
 <pre>
-atan2[ 1 1 ] // → 0.7853981633974483
-pow[ 2 3 ] // → 8
-hypot[ 3 4 ] // → 5
-max[ 3 2 1 ] // → 3
-min[ 3 2 1 ] // → 1
+atan2[ 1 1 ]	// → 0.7853981633974483
+pow[ 2 3 ]	// → 8
+hypot[ 3 4 ]	// → 5
+max[ 3 2 1 ]	// → 3
+min[ 3 2 1 ]	// → 1
 </pre>
 
 <h3>Primitives</h3>
@@ -153,9 +159,9 @@ The main SliP objects are
 The numbers, strings, and operators return themselves when evaluated.
 
 <pre>
-3 // → 3
-"abc" // → "abc"
-× // → ×
+3	// → 3
+"abc"	// → "abc"
+×	// → ×
 </pre>
 
 A list of SliP objects enclosed in parentheses is a sentence, and when evaluated, various calculations are performed according to the operators in the sentence.
@@ -205,6 +211,103 @@ This operator evaluates the first element of the right argument if the left argu
 
 </pre>
 
+<h3>String</h3>
+SliP strings are available in two notations. One is to use " and the other is to use `.
+
+<pre>
+"This is `STRING` enclosed in \""	//	→ "This is `STRING` enclosed in ""
+`This is "STRING" enclosed in \``	//	→ `This is "STRING" enclosed in ``
+</pre>
+
+<h3>Dictionary</h3>
+
+SliP also has a dictionary type.
+There is no native notation for describing dictionaries, but they can be created from JSON using 'byJSON' operator.
+When pulling dictionary values, you can use strings and names as keys.
+
+<pre>
+(   'json = `{
+        "a" : 1
+    ,   "b" : "The String"
+    ,   "c" : [ 2, "Another string" ]
+    ,   "d" : {
+            "A" : 3
+        ,   "B" : [ 4, "Yet another string" ]
+        }
+    }`:byJSON
+)
+//	→ { a : 1 , b : "The String" ...
+
+( json:"d" )
+//	→ { A : 3 , B : [ 4 "Yet another string" ] }
+
+( json:'d )
+//	→ { A : 3 , B : [ 4 "Yet another string" ] }
+</pre>
+
+<h3>Context</h3>
+Contexts are the environment in which variables are evaluated.
+Each context has its own dictionary and is a chained structure.
+When looking for a value for a variable, if it is not found in the variable's own dictionary, it will go to a higher-level dictionary.
+
+<h3>Procedure evaluation</h3>
+If you list sentences in {}, they are evaluated in order.
+A new context is created at this time.
+A list of values for the statement being evaluated is returned.
+
+<pre>
+{   ( 'a = 2 )
+    ( 'b = 3 )
+    ( a + b )
+}
+//	→ [ 2 3 5 ]
+</pre>
 
 
+<h3>Parallel evaluation</h3>
+If you list sentences in «», they are evaluated in parallel.
+No new context is created.
+<pre>
+«   ( 'a = 2 )
+    ( 'b = 3 )
+    ( a + b )
+»
+//	→ [ 2 3 5 ]
+</pre>
+
+<h3>Difference between Procedure and Parallel</h3>
+
+Operator ¤ creates a Dictionary object from the current context.
+
+<pre>
+¤
+//  → {}
+
+{   ( 'a = 2 )
+    ( 'b = 3 )
+    ( a + b )
+}
+//  → [ 2 3 5 ]
+
+¤
+//  → {}
+
+«   ( 'a = 2 )
+    ( 'b = 3 )
+    ( a + b )
+»
+//  → [ 2 3 5 ]
+
+¤
+//  → { a : 2 , b : 3 }
+</pre>
+
+After parallel evaluation, a new variable is registered in the current context.
+
+<h2>Finally</h2>
+We are currently working on the reference. We hope you enjoy SliP.
+
+<br>
+<br>
+<br>
 </body>
