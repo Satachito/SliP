@@ -357,7 +357,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 				const $ = ( index < 0 ? _ : _.substring( 0, index ) ).trim()
 				if ( $.length ) {
 					try {
-						AppendDIV( Eval( c, Sugared( _ ) ).string() )
+						AppendDIV( Eval( c, Sugared( $ ) ).string() )
 					} catch ( ex ) {
 						TreatEX( ex )
 					}
