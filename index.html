@@ -368,22 +368,31 @@ CALCULATE.onclick = () => {
 		let tracer = 0
 		const pped = source.split( '\n' ).map(
 			_ => {
-				const L = _.length + 1
 				const index = _.indexOf( '//' )
-				const prev = tracer
-				tracer += L
-				return index < 0 ? _ : (
-					deleted.push( [ prev + index, L - index ] )
+				const $ = index < 0 ? _ : (
+					deleted.push( [ tracer + index, _.length - index ] )
 				,	_.substring( 0, index )
 				)
+				tracer += _.length + 1
+				return $
 			}
 		).join( '\n' )
+		const
+		OI = _ => {
+			let $ = _
+			let index = 0
+			while ( index < deleted.length ) {
+				if ( deleted[ index ][ 0 ] < $ ) $ += deleted[ index++ ][ 1 ]
+				else break
+			}
+			return $
+		}
 		const $ = new StringReader( pped )
 		while ( true ) {
 			const start = $._
 			const _ = Read( $ )
 			if ( !_ ) break
-			INCLUDE_SOURCE.checked && ( AppendPRE( pped.substring( start, $._ ).trim() ) )
+			INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ) )
 			try {
 				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
