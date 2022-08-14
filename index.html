@@ -75,6 +75,16 @@ textarea {
 .mid-key {
 ;	padding					: 0
 ;	width					: 24px
+}
+
+dialog {
+;	border					: none
+}
+dialog::backdrop {
+}
+dialog * {
+;	user-select				: none
+}
 </style>
 
 <header style="display: grid; grid-template-columns: auto 1fr auto">
@@ -282,6 +292,10 @@ textarea {
 	<div></div>
 	We are not responsible for any damages caused by the use of this site.
 </footer>
+
+<dialog id=DIALOG open>
+	<canvas id=CANVAS></canvas>
+</dialog>
 
 <script type=module>
 

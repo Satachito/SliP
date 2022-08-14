@@ -768,6 +768,7 @@ ReadList = ( r, terminator ) => {
 			}
 		}
 	}
+console.log( $ )
 	return $
 }
 
@@ -1016,6 +1017,32 @@ NewContext = () => new Context(
 					return $
 				}
 			,	'matrix'
+			)
+		,	new Unary(
+				( c, _ ) => {
+					CANVAS.width = _[ 0 ]
+					CANVAS.heght = _[ 1 ]
+					const $ = CANVAS.getContext( '2d' )
+					return new SliP( $ )
+				}
+			,	'canvas'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary(
+					( c, canvas ) => (
+						canvas._.moveTo( _[ 0 ], _[ 1 ] )
+					)
+				,	'(generated moveTo)'
+				)
+			,	'moveTo'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => canvas.$.lineTo( _[ 0 ], _[ 1 ] ) )
+			,	'lineTo'
+			)
+		,	new Unary(
+				( c, canvas ) => canvas.$.stroke()
+			,	'stroke'
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
