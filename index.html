@@ -389,11 +389,11 @@ CALCULATE.onclick = () => {
 		}
 		const $ = new StringReader( pped )
 		while ( true ) {
-			const start = $._
-			const _ = Read( $ )
-			if ( !_ ) break
-			INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ) )
 			try {
+				const start = $._
+				const _ = Read( $ )
+				if ( !_ ) break
+				INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ) )
 				AppendDIV( Eval( c, _ ).string() )
 			} catch ( ex ) {
 				TreatEX( ex )
