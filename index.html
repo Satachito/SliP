@@ -84,7 +84,7 @@ textarea {
 </header>
 
 <nav>
-	<input type=button style="height:32px; width:100%" value=CALCULATE	id=CALCULATE><br>
+	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALCULATE><br>
 	<br>
 	<input type=button class="di big-key" value=7>
 	<input type=button class="di big-key" value=8>
@@ -261,6 +261,8 @@ textarea {
 </jp-split-h>
 
 <aside>
+	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALSUB><br>
+	<br>
 	When INPUT<br>
 	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * → ×				</label><br>
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷				</label><br>
@@ -283,70 +285,8 @@ textarea {
 
 <script type=module>
 
-CLEAR		.onclick = () => ( SOURCE.value = '', SOURCE.focus() )
 const
-InsertToSOURCE = _ => {
-	const $ = SOURCE.selectionStart
-	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( SOURCE.selectionEnd )
-	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
-	SOURCE.focus()
-}
-KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
-KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
-document.querySelectorAll( 'input.di' ).forEach( _ => _.onclick = () => InsertToSOURCE( _.value ) )
-SOURCE.onkeydown = ev => {
-	if ( ev.metaKey ) return
-	switch ( ev.key ) {
-	case '*':
-		CONV_ASTERISK.checked && (
-			ev.preventDefault()
-		,	InsertToSOURCE( '×' )
-		)
-		break
-	case '/':
-		CONV_SLASH.checked && (
-			ev.preventDefault()
-		,	InsertToSOURCE( '÷' )
-		)
-		break
-	}
-}
-const
-SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
-PROGRAM_MODE.onchange = SyncProgrammingKeys
-LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
-	_ => (
-		SOURCE.value = _.default
-	,	CALCULATE.click()
-	)
-)
-
-const
-AppendDIV = text => {
-	const $ = RESULT.appendChild( document.createElement( 'div' ) )
-	$.textContent = text
-	return $
-}
-const
-AppendPRE = text => {
-	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
-	$.textContent = text
-	$.style.width = '100%'
-	$.style.color = 'grey'
-	$.style.margin = '6px 0 2px 0'
-	return $
-}
-const
-TreatEX = ex => (
-	console.error( ex )
-,	Array.isArray( ex )
-	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
-	:	AppendDIV( ex ).style.color = 'red'
-)
-
-import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
-
-CALCULATE.onclick = () => {
+Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	const c = NewContext()
 
@@ -412,6 +352,69 @@ CALCULATE.onclick = () => {
 		)
 	}
 }
+
+CLEAR		.onclick = () => ( SOURCE.value = '', SOURCE.focus() )
+const
+InsertToSOURCE = _ => {
+	const $ = SOURCE.selectionStart
+	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( SOURCE.selectionEnd )
+	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
+	SOURCE.focus()
+}
+KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
+KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
+document.querySelectorAll( 'input.di' ).forEach( _ => _.onclick = () => InsertToSOURCE( _.value ) )
+SOURCE.onkeydown = ev => {
+	if ( ev.metaKey ) return
+	switch ( ev.key ) {
+	case '*':
+		CONV_ASTERISK.checked && (
+			ev.preventDefault()
+		,	InsertToSOURCE( '×' )
+		)
+		break
+	case '/':
+		CONV_SLASH.checked && (
+			ev.preventDefault()
+		,	InsertToSOURCE( '÷' )
+		)
+		break
+	}
+}
+const
+SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
+PROGRAM_MODE.onchange = SyncProgrammingKeys
+LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
+	_ => (
+		SOURCE.value = _.default
+	,	Calculate()
+	)
+)
+
+const
+AppendDIV = text => {
+	const $ = RESULT.appendChild( document.createElement( 'div' ) )
+	$.textContent = text
+	return $
+}
+const
+AppendPRE = text => {
+	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
+	$.textContent = text
+	$.style.width = '100%'
+	$.style.color = 'grey'
+	$.style.margin = '6px 0 2px 0'
+	return $
+}
+const
+TreatEX = ex => (
+	console.error( ex )
+,	Array.isArray( ex )
+	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
+	:	AppendDIV( ex ).style.color = 'red'
+)
+
+import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
