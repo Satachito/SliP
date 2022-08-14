@@ -2,6 +2,9 @@
 <html lang=zxx>
 <title>SliP, the monster calculator.</title>
 <style>
+canvas {
+;	cursor					: move
+}
 button, input, select, textarea {
 ;	font-family				: inherit
 ;	font-size				: 100%
@@ -77,14 +80,6 @@ textarea {
 ;	width					: 24px
 }
 
-dialog {
-;	border					: none
-}
-dialog::backdrop {
-}
-dialog * {
-;	user-select				: none
-}
 </style>
 
 <header style="display: grid; grid-template-columns: auto 1fr auto">
@@ -157,34 +152,34 @@ dialog * {
 	<input type=button class="di label" value=hypot[]>
 	<input type=button class="di label" value=max[]>
 	<input type=button class="di label" value=min[]><br>
+	<br>
+	<input type=button class="di mini-key" value=α>
+	<input type=button class="di mini-key" value=β>
+	<input type=button class="di mini-key" value=γ>
+	<input type=button class="di mini-key" value=δ>
+	<input type=button class="di mini-key" value=ε>
+	<input type=button class="di mini-key" value=ζ><br>
+	<input type=button class="di mini-key" value=η>
+	<input type=button class="di mini-key" value=θ>
+	<input type=button class="di mini-key" value=ι>
+	<input type=button class="di mini-key" value=κ>
+	<input type=button class="di mini-key" value=λ>
+	<input type=button class="di mini-key" value=μ><br>
+	<input type=button class="di mini-key" value=ν>
+	<input type=button class="di mini-key" value=ξ>
+	<input type=button class="di mini-key" value=ο>
+	<input type=button class="di mini-key" value=π>
+	<input type=button class="di mini-key" value=ρ>
+	<input type=button class="di mini-key" value=ς>
+	<input type=button class="di mini-key" value=σ><br>
+	<input type=button class="di mini-key" value=τ>
+	<input type=button class="di mini-key" value=υ>
+	<input type=button class="di mini-key" value=φ>
+	<input type=button class="di mini-key" value=χ>
+	<input type=button class="di mini-key" value=ψ>
+	<input type=button class="di mini-key" value=ω><br>
 
 	<div id=PROGRAMMING_KEYS style="display: none">
-		<br>
-		<input type=button class="di mini-key" value=α>
-		<input type=button class="di mini-key" value=β>
-		<input type=button class="di mini-key" value=γ>
-		<input type=button class="di mini-key" value=δ>
-		<input type=button class="di mini-key" value=ε>
-		<input type=button class="di mini-key" value=ζ><br>
-		<input type=button class="di mini-key" value=η>
-		<input type=button class="di mini-key" value=θ>
-		<input type=button class="di mini-key" value=ι>
-		<input type=button class="di mini-key" value=κ>
-		<input type=button class="di mini-key" value=λ>
-		<input type=button class="di mini-key" value=μ><br>
-		<input type=button class="di mini-key" value=ν>
-		<input type=button class="di mini-key" value=ξ>
-		<input type=button class="di mini-key" value=ο>
-		<input type=button class="di mini-key" value=π>
-		<input type=button class="di mini-key" value=ρ>
-		<input type=button class="di mini-key" value=ς>
-		<input type=button class="di mini-key" value=σ><br>
-		<input type=button class="di mini-key" value=τ>
-		<input type=button class="di mini-key" value=υ>
-		<input type=button class="di mini-key" value=φ>
-		<input type=button class="di mini-key" value=χ>
-		<input type=button class="di mini-key" value=ψ>
-		<input type=button class="di mini-key" value=ω><br>
 		<br>
 		<input type=button class="di mid-key" value=&>		Bit and<br>
 		<input type=button class="di mid-key" value=|>		Bit or<br>
@@ -234,33 +229,32 @@ dialog * {
 		<input type=button class="di mid-key" value=§>		Eval R in context L<br>
 		<input type=button class="di mid-key" value=¤>		Context dictionay<br>
 		<input type=button class="di mid-key" value=:>		Apply<br>
-		<br>
-		<input type=button class="di mini-key" value=Α>
-		<input type=button class="di mini-key" value=Β>
-		<input type=button class="di mini-key" value=Γ>
-		<input type=button class="di mini-key" value=Δ>
-		<input type=button class="di mini-key" value=Ε>
-		<input type=button class="di mini-key" value=Ζ><br>
-		<input type=button class="di mini-key" value=Η>
-		<input type=button class="di mini-key" value=Θ>
-		<input type=button class="di mini-key" value=Ι>
-		<input type=button class="di mini-key" value=Κ>
-		<input type=button class="di mini-key" value=Λ>
-		<input type=button class="di mini-key" value=Μ><br>
-		<input type=button class="di mini-key" value=Ν>
-		<input type=button class="di mini-key" value=Ξ>
-		<input type=button class="di mini-key" value=Ο>
-		<input type=button class="di mini-key" value=Π>
-		<input type=button class="di mini-key" value=Ρ>
-		<input type=button class="di mini-key" value=Σ><br>
-		<input type=button class="di mini-key" value=Τ>
-		<input type=button class="di mini-key" value=Υ>
-		<input type=button class="di mini-key" value=Φ>
-		<input type=button class="di mini-key" value=Χ>
-		<input type=button class="di mini-key" value=Ψ>
-		<input type=button class="di mini-key" value=Ω><br>
-		<br>
 	</div>
+	<br>
+	<input type=button class="di mini-key" value=Α>
+	<input type=button class="di mini-key" value=Β>
+	<input type=button class="di mini-key" value=Γ>
+	<input type=button class="di mini-key" value=Δ>
+	<input type=button class="di mini-key" value=Ε>
+	<input type=button class="di mini-key" value=Ζ><br>
+	<input type=button class="di mini-key" value=Η>
+	<input type=button class="di mini-key" value=Θ>
+	<input type=button class="di mini-key" value=Ι>
+	<input type=button class="di mini-key" value=Κ>
+	<input type=button class="di mini-key" value=Λ>
+	<input type=button class="di mini-key" value=Μ><br>
+	<input type=button class="di mini-key" value=Ν>
+	<input type=button class="di mini-key" value=Ξ>
+	<input type=button class="di mini-key" value=Ο>
+	<input type=button class="di mini-key" value=Π>
+	<input type=button class="di mini-key" value=Ρ>
+	<input type=button class="di mini-key" value=Σ><br>
+	<input type=button class="di mini-key" value=Τ>
+	<input type=button class="di mini-key" value=Υ>
+	<input type=button class="di mini-key" value=Φ>
+	<input type=button class="di mini-key" value=Χ>
+	<input type=button class="di mini-key" value=Ψ>
+	<input type=button class="di mini-key" value=Ω><br>
 	<br>
 </nav>
 
@@ -293,14 +287,14 @@ dialog * {
 	We are not responsible for any damages caused by the use of this site.
 </footer>
 
-<dialog id=DIALOG open>
-	<canvas id=CANVAS></canvas>
-</dialog>
-
 <script type=module>
 
 const
+RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
+const
 Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
+
+	RemoveCanvas()
 
 	const c = NewContext()
 
@@ -367,7 +361,12 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	}
 }
 
-CLEAR		.onclick = () => ( SOURCE.value = '', SOURCE.focus() )
+CLEAR		.onclick = () => (
+	RemoveCanvas()
+,	SOURCE.value = ''
+,	SOURCE.focus()
+)
+
 const
 InsertToSOURCE = _ => {
 	const $ = SOURCE.selectionStart

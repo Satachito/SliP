@@ -547,7 +547,6 @@ Builtins = [
 	)
 ,	new Infix(
 		( c, l, r ) => {
-//console.log( c, l, r )
 			switch ( r.constructor.name ) {
 			case 'Numeric'	:
 				{	if ( ! l instanceof _List ) throw `${l.string()}:${r.string()}`
@@ -768,7 +767,6 @@ ReadList = ( r, terminator ) => {
 			}
 		}
 	}
-console.log( $ )
 	return $
 }
 
@@ -911,7 +909,7 @@ NewContext = () => new Context(
 			,	'atanh'
 			)
 		,	new Prefix(
-				( c, _ ) => ( console.log( _ ), new Numeric( Math.atan2( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) ) )
+				( c, _ ) => new Numeric( Math.atan2( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) )
 			,	'atan2'
 			)
 		,	new Prefix(
@@ -1020,29 +1018,99 @@ NewContext = () => new Context(
 			)
 		,	new Unary(
 				( c, _ ) => {
-					CANVAS.width = _[ 0 ]
-					CANVAS.heght = _[ 1 ]
-					const $ = CANVAS.getContext( '2d' )
-					return new SliP( $ )
+					const $ = document.body.appendChild( document.createElement( 'canvas' ) )
+					$.style.position = 'fixed'
+					$.style.backgroundColor = 'white'
+					$.style.border = '1px solid black'
+					$.width = _._[ 0 ]._
+					$.height = _._[ 1 ]._
+					$.onmousedown = md => {
+						const org = $.getBoundingClientRect()
+						$.onmousemove = mm => (
+							$.style.left = org.left + mm.clientX - md.clientX + 'px'
+						,	$.style.top = org.top + mm.clientY - md.clientY + 'px'
+						)
+						$.onmouseup = $.onmouseleave = () => $.onmousemove = $.onmouseup = null
+					}
+					return new SliP( $.getContext( '2d' ) )
 				}
 			,	'canvas'
 			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.save(), canvas )
+			,	'save'
+			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.restore(), canvas )
+			,	'restore'
+			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.beginPath(), canvas )
+			,	'beginPath'
+			)
 		,	new Prefix(
-				( c, _ ) => new Unary(
-					( c, canvas ) => (
-						canvas._.moveTo( _[ 0 ], _[ 1 ] )
-					)
-				,	'(generated moveTo)'
-				)
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.moveTo( _._[ 0 ]._, _._[ 1 ]._ ), canvas ), '' )
 			,	'moveTo'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => canvas.$.lineTo( _[ 0 ], _[ 1 ] ) )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineTo( _._[ 0 ]._, _._[ 1 ]._ ), canvas ), '' )
 			,	'lineTo'
 			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.quadraticCurveTo( ..._._.map( _ => _._ ) ), canvas ), '' )
+			,	'quadraticCurveTo'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.bezierCurveTo( ..._._.map( _ => _._ ) ), canvas ), '' )
+			,	'bezierCurveTo'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.rect( ..._._.map( _ => _._ ) ), canvas ), '' )
+			,	'rect'
+			)
 		,	new Unary(
-				( c, canvas ) => canvas.$.stroke()
+				( c, canvas ) => ( canvas._.closePath(), canvas )
+			,	'closePath'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillStyle = _._, canvas ), '' )
+			,	'fillStyle'
+			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.fill(), canvas )
+			,	'fill'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeStyle = _._, canvas ), '' )
+			,	'strokeStyle'
+			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.stroke(), canvas )
 			,	'stroke'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineCap = _._, canvas ), '' )
+			,	'lineCap'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineJoin = _._, canvas ), '' )
+			,	'lineJoin'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineWidth = _._, canvas ), '' )
+			,	'lineWidth'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.setLineDash( _._.map( _ => _._ ) ), canvas ), '' )
+			,	'lineDash'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineDashOffset = _._, canvas ), '' )
+			,	'lineDashOffset'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.miterLimit = _._, canvas ), '' )
+			,	'miterLimit'
 			)
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )

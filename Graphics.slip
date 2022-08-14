@@ -1,0 +1,66 @@
+
+(   [ 700 500 ]
+    :canvas
+    :moveTo[ 100 200 ]
+    :lineTo[ 200 100 ]
+    :lineTo[ 300 200 ]
+    :fillStyle `red`
+    :fill
+    :strokeStyle `blue`
+    :lineWidth 4
+    :miterLimit 1
+    :stroke
+    :beginPath
+
+    :moveTo[ 400 200 ]
+    :lineTo[ 500 100 ]
+    :lineTo[ 600 200 ]
+    :lineCap `round`
+    :lineJoin `round`
+    :lineWidth 10
+    :lineDashOffset 10
+    :lineDash[ 20 30 ]
+    :stroke
+    :beginPath
+
+    :lineWidth 1
+    :lineDashOffset 0
+    :lineDash[]
+    :moveTo[ 100 400 ]
+    :quadraticCurveTo[ 200 300 300 400 ]
+    :stroke
+    :beginPath
+
+    :moveTo[ 400 400 ]
+    :bezierCurveTo[ 400 300 600 300 600 400 ]
+    :stroke
+    :beginPath
+)
+
+
+(   [ 700 500 ]
+    :canvas
+
+    :save
+    :moveTo[ 400 200 ]
+    :lineTo[ 500 100 ]
+    :lineTo[ 600 200 ]
+    :lineCap `round`
+    :lineJoin `round`
+    :lineWidth 10
+    :lineDashOffset 10
+    :lineDash[ 20 30 ]
+    :stroke
+    :restore
+    :beginPath
+
+    :moveTo[ 100 400 ]
+    :quadraticCurveTo[ 200 300 300 400 ]
+    :stroke
+    :beginPath
+
+	:rect[ 100 100 200 200 ]
+    :stroke
+    :beginPath
+
+)
