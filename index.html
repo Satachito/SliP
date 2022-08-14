@@ -208,9 +208,9 @@ textarea {
 		<input type=button class="di mid-key" value=«»>		Parallel evaluation<br>
 
 		<input type=button class="di mid-key" value=#>		# of items in list<br>
-		<input type=button class="di mid-key" value=$>		The last item of list<br>
-		<input type=button class="di mid-key" value=*>		Lisp's cdr<br>
-		<input type=button class="di mid-key" value=,>		Insert L at the top of R<br>
+		<input type=button class="di mid-key" value=$>		The last item<br>
+		<input type=button class="di mid-key" value=*>		List w/o 1st element<br>
+		<input type=button class="di mid-key" value=,>		[ L ] + R<br>
 
 		<input type=button class="di mid-key" value=¶>		Stringify<br>
 		<input type=button class="di mid-key" value="=">	Assign<br>
@@ -221,8 +221,8 @@ textarea {
 		<input type=button class="di mid-key" value=@>		Stack top<br>
 		<input type=button class="di mid-key" value=¿>		If<br>
 		<input type=button class="di mid-key" value=?>		If else<br>
-		<input type=button class="di mid-key" value=§>		Evaluate R in context L<br>
-		<input type=button class="di mid-key" value=¤>		Current context dictionay<br>
+		<input type=button class="di mid-key" value=§>		Eval R in context L<br>
+		<input type=button class="di mid-key" value=¤>		Context dictionay<br>
 		<input type=button class="di mid-key" value=:>		Apply<br>
 		<br>
 		<input type=button class="di mini-key" value=Α>
@@ -282,6 +282,7 @@ textarea {
 </footer>
 
 <script type=module>
+
 CLEAR		.onclick = () => ( SOURCE.value = '', SOURCE.focus() )
 const
 InsertToSOURCE = _ => {
@@ -293,7 +294,6 @@ InsertToSOURCE = _ => {
 KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 document.querySelectorAll( 'input.di' ).forEach( _ => _.onclick = () => InsertToSOURCE( _.value ) )
-
 SOURCE.onkeydown = ev => {
 	if ( ev.metaKey ) return
 	switch ( ev.key ) {
@@ -311,6 +311,15 @@ SOURCE.onkeydown = ev => {
 		break
 	}
 }
+const
+SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
+PROGRAM_MODE.onchange = SyncProgrammingKeys
+LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
+	_ => (
+		SOURCE.value = _.default
+	,	CALCULATE.click()
+	)
+)
 
 const
 AppendDIV = text => {
@@ -318,7 +327,6 @@ AppendDIV = text => {
 	$.textContent = text
 	return $
 }
-
 const
 AppendPRE = text => {
 	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
@@ -328,25 +336,6 @@ AppendPRE = text => {
 	$.style.margin = '6px 0 2px 0'
 	return $
 }
-
-window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
-
-const
-SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
-
-PROGRAM_MODE.onchange = SyncProgrammingKeys
-
-window.onload = () => SOURCE.value = localStorage.getItem( 'SOURCE' )
-
-LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
-	_ => (
-		SOURCE.value = _.default
-	,	CALCULATE.click()
-	)
-)
-
-import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
-
 const
 TreatEX = ex => (
 	console.error( ex )
@@ -354,6 +343,9 @@ TreatEX = ex => (
 	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
 	:	AppendDIV( ex ).style.color = 'red'
 )
+
+import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
+
 CALCULATE.onclick = () => {
 
 	const c = NewContext()
@@ -420,6 +412,12 @@ CALCULATE.onclick = () => {
 		)
 	}
 }
+
+window.onbeforeunload = () => localStorage.setItem( 'SOURCE', SOURCE.value )
+window.onload = () => (
+	SOURCE.value = localStorage.getItem( 'SOURCE' )
+,	SyncProgrammingKeys()
+)
 
 </script>
 
