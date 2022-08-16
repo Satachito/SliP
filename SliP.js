@@ -1016,14 +1016,14 @@ NewContext = () => new Context(
 				}
 			,	'matrix'
 			)
+//	GRAPHIC EXTENSIONS
+//		CANVAS
 		,	new Unary(
 				( c, _ ) => {
 					const $ = document.body.appendChild( document.createElement( 'canvas' ) )
-					$.style.position = 'fixed'
-					$.style.backgroundColor = 'white'
-					$.style.border = '1px solid black'
 					$.width = _._[ 0 ]._
 					$.height = _._[ 1 ]._
+					$.setAttribute( 'title', 'Double click to close' )
 					$.onmousedown = md => {
 						const org = $.getBoundingClientRect()
 						$.onmousemove = mm => (
@@ -1032,6 +1032,7 @@ NewContext = () => new Context(
 						)
 						$.onmouseup = $.onmouseleave = () => $.onmousemove = $.onmouseup = null
 					}
+					$.onclick = ev => ev.detail > 1 && $.parentNode.removeChild( $ )
 					return new SliP( $.getContext( '2d' ) )
 				}
 			,	'canvas'
@@ -1044,74 +1045,213 @@ NewContext = () => new Context(
 				( c, canvas ) => ( canvas._.restore(), canvas )
 			,	'restore'
 			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.translate( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'translate'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.scale( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'scale'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.setTransform( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'transform'
+			)
 		,	new Unary(
 				( c, canvas ) => ( canvas._.beginPath(), canvas )
 			,	'beginPath'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.moveTo( _._[ 0 ]._, _._[ 1 ]._ ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.moveTo( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'moveTo'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineTo( _._[ 0 ]._, _._[ 1 ]._ ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineTo( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'lineTo'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.quadraticCurveTo( ..._._.map( _ => _._ ) ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.quadraticCurveTo( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'quadraticCurveTo'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.bezierCurveTo( ..._._.map( _ => _._ ) ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.bezierCurveTo( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'bezierCurveTo'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.rect( ..._._.map( _ => _._ ) ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.arcTo( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'arcTo'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.arc( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) , '' )
+			,	'arc'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.rect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) , '' )
 			,	'rect'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.ellipse( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) , '' )
+			,	'ellipse'
 			)
 		,	new Unary(
 				( c, canvas ) => ( canvas._.closePath(), canvas )
 			,	'closePath'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillStyle = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillStyle = Eval( c, _ )._, canvas ), '' )
 			,	'fillStyle'
 			)
-		,	new Unary(
-				( c, canvas ) => ( canvas._.fill(), canvas )
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fill( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'fill'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeStyle = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeStyle = Eval( c, _ )._, canvas ), '' )
 			,	'strokeStyle'
 			)
-		,	new Unary(
-				( c, canvas ) => ( canvas._.stroke(), canvas )
-			,	'stroke'
-			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineCap = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineCap = Eval( c, _ )._, canvas ), '' )
 			,	'lineCap'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineJoin = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineJoin = Eval( c, _ )._, canvas ), '' )
 			,	'lineJoin'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineWidth = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineWidth = Eval( c, _ )._, canvas ), '' )
 			,	'lineWidth'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.setLineDash( _._.map( _ => _._ ) ), canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.setLineDash( Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'lineDash'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineDashOffset = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.lineDashOffset = Eval( c, _ )._, canvas ), '' )
 			,	'lineDashOffset'
 			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.miterLimit = _._, canvas ), '' )
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.miterLimit = Eval( c, _ )._, canvas ), '' )
 			,	'miterLimit'
 			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.stroke( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'stroke'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeRect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'strokeRect'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillRect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'fillRect'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.font = Eval( c, _ )._, canvas ), '' )
+			,	'font'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.textAlign = Eval( c, _ )._, canvas ), '' )
+			,	'textAlign'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.textBaseline = Eval( c, _ )._, canvas ), '' )
+			,	'textBaseline'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.direction = Eval( c, _ )._, canvas ), '' )
+			,	'direction'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeText( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'strokeText'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillText( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'fillText'
+			)
+		,	new Unary(
+				( c, canvas ) => new List( canvas._.getLineDash().map( _ => new Numeric( _ ) ) )
+			,	'getLineDash'
+			)
+		,	new Unary(
+				( c, canvas ) => {
+					const $ = canvas._.getTransform()
+					return new List( [ new Numeric( $.a ), new Numeric( $.b ), new Numeric( $.c ), new Numeric( $.d ), new Numeric( $.e ), new Numeric( $.f ) ] )
+				}
+			,	'getTransform'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.clip( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'clip'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.clearRect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
+			,	'clearRect'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.filter = Eval( c, _ )._, canvas ), '' )
+			,	'filter'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.shadowColor = Eval( c, _ )._, canvas ), '' )
+			,	'shadowColor'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.shadowBlur = Eval( c, _ )._, canvas ), '' )
+			,	'shadowBlur'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.shadowOffsetX = Eval( c, _ )._, canvas ), '' )
+			,	'shadowOffsetX'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.shadowOffsetY = Eval( c, _ )._, canvas ), '' )
+			,	'shadowOffsetY'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.globalAlpha = Eval( c, _ )._, canvas ), '' )
+			,	'globalAlpha'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.globalCompositeOperation = Eval( c, _ )._, canvas ), '' )
+			,	'globalCompositeOperation'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.imageSmoothingEnabled = _IsT( Eval( c, _ ) ), canvas ), '' )
+			,	'imageSmoothingEnabled'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.imageSmoothingQuality = Eval( c, _ )._, canvas ), '' )
+			,	'imageSmoothingQuality'
+			)
+//		GRADIENT
+		,	new Prefix(	//	ctx:createConicGradient[ startAngle x y ]
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.createConicGradient( ...Eval( c, _ )._.map( _ => _._ ) ) ), '' )
+			,	'createConicGradient'
+			)
+		,	new Prefix(	//	ctx:createLinearGradient[ x0 y0 x1 y1 ]
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.createLinearGradient( ...Eval( c, _ )._.map( _ => _._ ) ) ), '' )
+			,	'createLinearGradient'
+			)
+		,	new Prefix(	//	ctx:createRadialGradient[ x0 y0 r0 x1 y1 r1 ]
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.createRadialGradient( ...Eval( c, _ )._.map( _ => _._ ) ) ), '' )
+			,	'createRadialGradient'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, gradient ) => ( gradient._.addColorStop( ...Eval( c, _ )._.map( _ => _._ ) ), gradient ), '' )
+			,	'addColorStop'
+			)
+//		PointIn
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => canvas._.isPointInPath( ...Eval( c, _ )._.map( _ => _._ ) ) ? T : Nil, '' )
+			,	'isPointInPath'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => canvas._.isPointInStroke( ...Eval( c, _ )._.map( _ => _._ ) ) ? T : Nil, '' )
+			,	'isPointInStroke'
+			)
+
+//	TODO	image, path, gradient
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
 		,	{	π	: new Numeric( Math.PI )
