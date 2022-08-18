@@ -1,4 +1,4 @@
 git checkout firebase
 git merge main
-sh dep.sh
+firebase deploy
 git checkout main
