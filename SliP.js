@@ -1,4 +1,7 @@
 const
+LogBack = _ => ( console.log( _ ), _ )
+
+const
 stack = []
 
 class
@@ -880,6 +883,7 @@ NewContext = () => new Context(
 				( c, _ ) => new Literal( _._[ 0 ]._.toString( _._[ 1 ]._ ) )
 			,	'string'
 			)
+//	MATH EXTENSION
 		,	new Prefix(
 				( c, _ ) => new Numeric( Math.abs( Eval( c, _ )._ ) )
 			,	'abs'
@@ -1016,7 +1020,22 @@ NewContext = () => new Context(
 				}
 			,	'matrix'
 			)
-//	GRAPHIC EXTENSIONS
+//	ARRAY EXTENSION
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, array ) => new Numeric( array._[ Eval( c, _ )._ ] ) )
+			,	'get'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary(
+					( c, array ) => {
+						const [ offset, value ] = Eval( c, _ )._.map( _ => _._ )
+						array._[ offset ] = value
+						return array
+					}
+				)
+			,	'set'
+			)
+//	GRAPHIC EXTENSIONS	( WEB ONLY )
 //		CANVAS
 		,	new Unary(
 				( c, _ ) => {
@@ -1054,8 +1073,16 @@ NewContext = () => new Context(
 			,	'scale'
 			)
 		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.rotate( Eval( c, _ )._ ), canvas ), '' )
+			,	'rotate'
+			)
+		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.setTransform( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
 			,	'transform'
+			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.resetTransform(), canvas )
+			,	'resetTransform'
 			)
 		,	new Unary(
 				( c, canvas ) => ( canvas._.beginPath(), canvas )
@@ -1101,9 +1128,13 @@ NewContext = () => new Context(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fillStyle = Eval( c, _ )._, canvas ), '' )
 			,	'fillStyle'
 			)
+		,	new Unary(
+				( c, canvas ) => ( canvas._.fill(), canvas )
+			,	'fill'
+			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.fill( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
-			,	'fill'
+			,	'fillWith'
 			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeStyle = Eval( c, _ )._, canvas ), '' )
@@ -1133,9 +1164,12 @@ NewContext = () => new Context(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.miterLimit = Eval( c, _ )._, canvas ), '' )
 			,	'miterLimit'
 			)
+		,	new Unary( ( c, canvas ) => ( canvas._.stroke(), canvas )
+			,	'stroke'
+			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.stroke( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
-			,	'stroke'
+			,	'strokeWith'
 			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.strokeRect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
@@ -1170,19 +1204,12 @@ NewContext = () => new Context(
 			,	'fillText'
 			)
 		,	new Unary(
-				( c, canvas ) => new List( canvas._.getLineDash().map( _ => new Numeric( _ ) ) )
-			,	'getLineDash'
-			)
-		,	new Unary(
-				( c, canvas ) => {
-					const $ = canvas._.getTransform()
-					return new List( [ new Numeric( $.a ), new Numeric( $.b ), new Numeric( $.c ), new Numeric( $.d ), new Numeric( $.e ), new Numeric( $.f ) ] )
-				}
-			,	'getTransform'
+				( c, canvas ) => ( canvas._.clip(), canvas )
+			,	'clip'
 			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.clip( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
-			,	'clip'
+			,	'clipWith'
 			)
 		,	new Prefix(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.clearRect( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ), '' )
@@ -1224,6 +1251,66 @@ NewContext = () => new Context(
 				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.imageSmoothingQuality = Eval( c, _ )._, canvas ), '' )
 			,	'imageSmoothingQuality'
 			)
+//	NON CANVAS VALUE
+		,	new Unary(
+				( c, canvas ) => new List( canvas._.getLineDash().map( _ => new Numeric( _ ) ) )
+			,	'getLineDash'
+			)
+		,	new Unary(
+				( c, canvas ) => {
+					const $ = canvas._.getTransform()
+					return new List( [ new Numeric( $.a ), new Numeric( $.b ), new Numeric( $.c ), new Numeric( $.d ), new Numeric( $.e ), new Numeric( $.f ) ] )
+				}
+			,	'getTransform'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary(
+					( c, canvas ) => {
+						const textMetrics = canvas._.measureText( Eval( c, _ )._ )
+						return new Dict(
+							Object.keys( textMetrics.constructor.prototype ).reduce(
+								( $, _ ) => ( $[ _ ] = new Numeric( textMetrics[ _ ] ), $ )
+							,	{}
+							)
+						)
+					}
+				)
+			,	'measureText'
+			)
+//		PATH
+		,	new Primitive(
+				( c, canvas ) => new SliP( new Path2D() )
+			,	'path2D'
+			)
+		,	new Prefix(
+				( c, _ ) => new SliP( new Path2D( ...Eval( c, _ )._.map( _ => _._ ) ) )
+			,	'path2DWith'
+			)
+//		IMAGE
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.createImageData( ...Eval( c, _ )._.map( _ => _._ ) ) ) )
+			,	'createImageData'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.getImageData( ...Eval( c, _ )._.map( _ => _._ ) ) ) )
+			,	'getImageData'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.putImageData( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) )
+			,	'putImageData'
+			)
+		,	new Unary(
+				( c, image ) => new Numeric( image._.width )
+			,	'imageDataWidth'
+			)
+		,	new Unary(
+				( c, image ) => new Numeric( image._.height )
+			,	'imageDataHeight'
+			)
+		,	new Unary(
+				( c, image ) => new SliP( image._.data )
+			,	'imageDataArray'
+			)
 //		GRADIENT
 		,	new Prefix(	//	ctx:createConicGradient[ startAngle x y ]
 				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.createConicGradient( ...Eval( c, _ )._.map( _ => _._ ) ) ), '' )
@@ -1251,7 +1338,7 @@ NewContext = () => new Context(
 			,	'isPointInStroke'
 			)
 
-//	TODO	image, path, gradient
+//	TODO	element
 		].reduce(
 			( $, _ ) => ( $[ _.label ] = _, $ )
 		,	{	π	: new Numeric( Math.PI )

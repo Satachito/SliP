@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang=zxx>
-<title>SliP, the monster calculator.</title>
+<title>SliP, the awesome calculator.</title>
 <style>
 canvas {
 ;	cursor					: move
@@ -86,7 +86,7 @@ textarea {
 </style>
 
 <header style="display: grid; grid-template-columns: auto 1fr auto">
-	SliP, the monster calculator.
+	SliP, the awesome calculator.
 	<div></div>
 	<a href=Tutorial.html target=_blank>Tutorial</a>
 </header>
@@ -336,8 +336,8 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 				const start = $._
 				const _ = Read( $ )
 				if ( !_ ) break
-				INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ) )
-				AppendDIV( Eval( c, _ ).string() )
+				INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ).style.color = 'grey' )
+				AppendPRE( Eval( c, _ ).string() )
 			} catch ( ex ) {
 				TreatEX( ex )
 			}
@@ -354,7 +354,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 				const $ = ( index < 0 ? _ : _.substring( 0, index ) ).trim()
 				if ( $.length ) {
 					try {
-						AppendDIV( Eval( c, Sugared( $ ) ).string() )
+						AppendPRE( Eval( c, Sugared( $ ) ).string() )
 					} catch ( ex ) {
 						TreatEX( ex )
 					}
@@ -418,7 +418,6 @@ AppendPRE = text => {
 	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
 	$.textContent = text
 	$.style.width = '100%'
-	$.style.color = 'grey'
 	$.style.margin = '6px 0 2px 0'
 	return $
 }

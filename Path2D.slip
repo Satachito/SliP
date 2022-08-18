@@ -1,0 +1,57 @@
+
+(	[ 300 300 ]:canvas:fillWith{ 
+		(	path2D
+			:moveTo[ 100 100 ]
+			:lineTo[ 200 100 ]
+			:lineTo[ 200 200 ]
+			:lineTo[ 100 200 ]
+		)
+	}
+)
+
+(	[ 300 300 ]:canvas:strokeWith{ 
+		(	path2D
+			:moveTo[ 100 100 ]
+			:lineTo[ 200 100 ]
+			:lineTo[ 200 200 ]
+			:lineTo[ 100 200 ]
+			:closePath
+		)
+	}
+)
+
+'path = path2D:moveTo[ 100 100 ]:lineTo[ 200 100 ]:lineTo[ 200 200 ]:lineTo[ 100 200 ]
+[ 300 300 ]:canvas:fillWith{ path }
+'path = path2DWith { `M10 10 h 80 v 80 h -80 Z` }
+[ 300 300 ]:canvas:strokeWith { path }
+'p2d = path2DWith { path }
+[ 300 300 ]:canvas:strokeWith { p2d }
+
+{	( 'CANVAS = [ 300 300 ]:canvas:moveTo[ 0 0 ]:lineTo[ 100 0 ]:lineTo[ 50 300 ]:fill )
+	( 'I = CANVAS:getImageData [ 50 0 50 300 ] )
+	( I:imageWidth:. )
+	( I:imageHeight:. )
+	( CANVAS:putImageData{ I 100 0 }:putImageData{ I 150 0 }:putImageData{ I 200 0 }:putImageData{ I 250 0 } )
+}
+
+
+{	( 'CANVAS = [ 300 300 ]:canvas )
+	( 'I = CANVAS:createImageData[ 100 100 ] )
+	(	I:imageDataArray
+		:set [  0 190 ]:set [  1 0 ]:set [  2 210 ]:set [  3 255 ]
+		:set [  4 190 ]:set [  5 0 ]:set [  6 210 ]:set [  7 255 ]
+		:set [  8 190 ]:set [  9 0 ]:set [ 10 210 ]:set [ 11 255 ]
+		:set [ 12 190 ]:set [ 13 0 ]:set [ 14 210 ]:set [ 15 255 ]
+	)
+	( CANVAS:putImageData{ I 100 100 } )
+	( I:imageDataArray:get 0:. )
+}
+
+
+
+
+
+	( ( IMAGE_DATA:length ÷ 4 ):forEach '( @:. )
+
+
+
