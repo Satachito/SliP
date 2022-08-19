@@ -1,0 +1,82 @@
+
+<canvas id=CANVAS width=300 height=300 style="border: 1px solid green"></canvas><br>
+<br>
+<input type=button id=CURVE		value="Koch Curve"		>
+<input type=button id=SNOWFLAKE	value="Koch Snowflake"	>
+
+<script type=module>
+
+const
+c2d = CANVAS.getContext( '2d' )
+
+const
+Koch = _ => _ < 3
+?	(	c2d.lineTo( _, 0 )
+	,	c2d.translate( _, 0 )
+	)
+:	(	Koch( _ / 3 )
+	,	c2d.rotate( Math.PI / 3 )
+	,	Koch( _ / 3 )
+	,	c2d.rotate( - Math.PI * 2 / 3 )
+	,	Koch( _ / 3 )
+	,	c2d.rotate( Math.PI / 3 )
+	,	Koch( _ / 3 )
+	)
+
+CURVE.onclick = ev => (
+	c2d.clearRect( 0, 0, CANVAS.width, CANVAS.height )
+,	c2d.save()
+,	c2d.beginPath()
+,	c2d.translate( 0, CANVAS.height / 2 )
+,	c2d.moveTo( 0, 0 )
+,	Koch( CANVAS.width )
+,	c2d.stroke()
+,	c2d.restore()
+)
+
+SNOWFLAKE.onclick = ev => {
+	c2d.clearRect( 0, 0, CANVAS.width, CANVAS.height )
+	c2d.save()
+	const _ = CANVAS.width / 2 * Math.sqrt( 3 )	//	Length of the side of an equilateral triangle inscribed in a circle
+	c2d.beginPath()
+	c2d.translate( CANVAS.width / 2, 0 )
+	c2d.moveTo( 0, 0 )
+	c2d.rotate(  Math.PI * 2 / 3 )
+	Koch( _ )
+	c2d.rotate( -Math.PI * 2 / 3 )
+	Koch( _ )
+	c2d.rotate( -Math.PI * 2 / 3 )
+	Koch( _ )
+	c2d.stroke()
+	c2d.restore()
+}
+
+
+
+/*
+//	Koch curve
+( 'WH = 300 )
+( 'c2d = { WH WH }:canvas:beginPath:translate{ 0 ( WH ÷ 2 ) }:moveTo[ 0 0 ] )
+(	'Koch = '(
+		(	@ < 3 ?
+			[	( c2d:lineTo{ @ 0 }:translate{ @ 0 } )
+				(	{	( ( @ ÷ 3 ):Koch:rotate( π ÷ 3 ) )
+						( ( @ ÷ 3 ):Koch:rotate( -π × 2 ÷ 3 ) )
+						( ( @ ÷ 3 ):Koch:rotate( π ÷ 3 ) )
+						( ( @ ÷ 3 ):Koch )
+					}:$
+				)
+			]
+		)
+	)
+)
+( WH:Koch:stroke )
+
+( 'L = WH ÷ 2 × sqrt( 3 ) )	//	Length of the side of an equilateral triangle inscribed in a circle
+( 'c2d = { WH WH }:canvas:beginPath:translate{ ( WH ÷ 2 ) 0 }:moveTo[ 0 0 ]:rotate( π × 2 ÷ 3 ) )
+{	( L:Koch:rotate( -π × 2 ÷ 3 ) )
+	( L:Koch:rotate( -π × 2 ÷ 3 ) )
+	( L:Koch:stroke )
+}
+*/
+</script>
