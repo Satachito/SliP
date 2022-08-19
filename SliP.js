@@ -24,7 +24,12 @@ Numeric extends SliP {
 		switch ( this._ ) {
 		case  Infinity	: return '∞'
 		case -Infinity	: return '-∞'
-		default			: return '' + this._
+		default			:
+			{	const _ = Math.round( this._ )
+				return Math.abs( _ - this._ ) < Number( '1e-' + ROUND_PRECISION.value )
+				?	_
+				:	this._
+			}
 		}
 	}
 }
