@@ -1,6 +1,7 @@
 git checkout firebase
 git merge main
 cp *.js public/.
+cp *.slip public/.
 cp *.html public/.
 cp *.png public/.
 cp -r jp-split public/.

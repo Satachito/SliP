@@ -400,9 +400,11 @@ SOURCE.onkeydown = ev => {
 const
 SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
 PROGRAM_MODE.onchange = SyncProgrammingKeys
-LOAD_SAMPLE.onclick = () => import( PROGRAM_MODE.checked ? './Samples.js' : './Samples.sugared.js' ).then(
+LOAD_SAMPLE.onclick = () => fetch( PROGRAM_MODE.checked ? './Samples.slip' : './Samples.sugared.slip' ).then(
+	_ => _.text()
+).then(
 	_ => (
-		SOURCE.value = _.default
+		SOURCE.value = _
 	,	Calculate()
 	)
 )

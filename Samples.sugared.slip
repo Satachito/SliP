@@ -1,4 +1,4 @@
-export default `//
+//
 //	Samples for normal mode
 //
 
@@ -70,7 +70,7 @@ a b
 
 ""
 "ABC"
-"A\\tB\\"C"
+"A\tB\"C"
 "ABC" + "DEF"
 
 //	 Memory
@@ -154,9 +154,9 @@ a + b
 [ "10000" 16 ] : int
 
 //	 byJSON, toJSON
-\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON
-\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON:'C
-\`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }\`:byJSON:toJSON
+`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON
+`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'C
+`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:toJSON
 
 //	 Matrix
 [ 1 2 3 ] · [ 1 2 3 ]
@@ -422,23 +422,23 @@ trunc(-0.123)
 !'{ ( 'a = 3 ) a }
 !'{ ( 'a = 3 ) a }:0
 
-\`{"a":3,"b":2}\`:byJSON§'( a b ) 
+`{"a":3,"b":2}`:byJSON§'( a b ) 
 //	6
 
-\`{"a":3,"b":2}\`:byJSON:toJSON
-//	\`{"a":3,"b":2}\`
+`{"a":3,"b":2}`:byJSON:toJSON
+//	`{"a":3,"b":2}`
 
 "[ 1, 2, 3 ]":byJSON:toJSON
-//	\`[1,2,3]\`
+//	`[1,2,3]`
 
 "null":byJSON:toJSON
-//	\`null\`
+//	`null`
 
-\`"string"\`: byJSON:toJSON
-//	\`"string"\`
+`"string"`: byJSON:toJSON
+//	`"string"`
 
-\`1\`: byJSON:toJSON
-//	\`1\`
+`1`: byJSON:toJSON
+//	`1`
 
 '{ 1 2 3 }:toJSON
 //	{ 1 2 3 } can not be converted to JSON
@@ -505,4 +505,4 @@ trunc(-0.123)
 2 >= 3
 
 "a", [ "b" "c" ]
-`
+
