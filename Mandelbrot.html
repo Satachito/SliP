@@ -1,0 +1,267 @@
+<style>
+body {
+;	margin				: 0
+;	color				: white
+;	overflow			: scroll
+}
+canvas {
+;	position			: absolute
+}
+nav {
+;	position			: fixed
+;	left				: 20px
+;	top					: 20px
+;	background-color	: #0008
+;	padding				: 8px
+;	transition			: all 0.3s ease-in-out
+;	opacity				: 0.3
+;	cursor				: move
+;	font-family			: monospace
+}
+nav:hover {
+;	opacity				: 1
+}
+footer {
+;	position			: fixed
+;	left				: 0
+;	right				: 0
+;	bottom				: 0
+;	padding				: 8px
+;	background-color	: #4444
+;	opacity				: 0.5
+;	cursor				: move
+;	font-family			: fantasy
+}
+a {
+;	color				: white
+}
+input, select {
+;	color				: white
+;	font-family			: inherit
+;	background-color	: #0000
+;	text-align			: right
+;	border				: 1px solid grey
+}
+input	{
+;	width				: 64px
+}
+select	{
+;	width				: 128px	
+;	margin-left			: 16px
+}
+input[ type=button ] {
+;	width				: 40%
+;	text-align			: center
+;	background-color	: #4444
+;	margin				: 5%
+}
+.lr {
+;	display				: flex
+;	justify-content		: space-between
+;	align-items			: center
+;	height				: 28px
+}
+</style>
+
+<canvas id=CANVAS></canvas>
+<canvas id=TRACK></canvas>
+<nav id=NAV>
+	<div class=lr><label>Number of iterations</label>	<input	id=NUM_I value=500>											</div>
+	<div class=lr><label>Real</label>					<span><input id=R_MIN value=-2  >~<input id=R_MAX value=1  ></span>	</div>
+	<div class=lr><label>Imaginary</label>				<span><input id=I_MIN value=-1.3>~<input id=I_MAX value=1.3></span>	</div>
+	<div class=lr><label>Color maps</label>				<select	id=COLOR_MAPS></select>										</div>
+	<br>
+	<div class=lr>
+		<input type=button id=RESET		value=Reset		>
+		<input type=button id=DRAW		value=Draw		>
+		<input type=button id=DOWNLOAD	value=Download	>
+	</div>
+	<hr>
+	<label id=ELAPPSED></label>
+</nav>
+<footer class=lr>
+	<div>Copywrite 2022 SliP LLC, Tokyo. Thank you for enjyoing this site.</div>
+	<a href=https://slip.828.tokyo>Visit our awesome calculator site: http://slip.828.tokyo</a>
+</footer>
+
+<script type=module>
+
+const	_R_MIN	= R_MIN.value
+const	_R_MAX	= R_MAX.value
+const	_I_MIN	= I_MIN.value
+const	_I_MAX	= I_MAX.value
+const	_NUM_I	= NUM_I.value
+
+const
+c2d = CANVAS.getContext( '2d' )
+
+//	https://www.peko-step.com/html/hsl.html
+const
+RGB_HUE = _ => {							// 0 <= _ < 1
+	_ *= 6									// 0 <= _ < 6
+	const i = Math.floor( _ )				// 0, 1, 2, 3, 4, 5
+	const p = Math.floor( ( _ - i ) * 256 )	// 0 <= p <= 255
+	const q = 255 - p						// 255 >= q >= 0
+	switch ( i ) {		
+	case 0: return [ 255, p, 0 ]
+	case 1: return [ q, 255, 0 ]
+	case 2: return [ 0, 255, p ]
+	case 3: return [ 0, q, 255 ]
+	case 4: return [ p, 0, 255 ]
+	case 5: return [ 255, 0, q ]
+	}
+}
+
+const
+BiasedGray1 = _ => {
+	const $ = Math.floor( _ * 512 )
+	return $ > 255 ? 255 : $
+}
+
+const
+BiasedGray2 = _ => 128 + Math.floor( _ * 128 )
+
+const
+BiasedGray3 = _ => Math.floor( Math.sqrt( _ ) * 256 )
+
+const
+ColorMaps = {
+	'hue'			: ( array, _, $ ) => [ array[ _ ], array[ _ + 1 ], array[ _ + 2 ] ] = RGB_HUE( $ )
+,	'hue2'			: ( array, _, $ ) => [ array[ _ ], array[ _ + 1 ], array[ _ + 2 ] ] = RGB_HUE( $ * 10 / 12 + 1 / 12 )
+,	'gray'			: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = Math.floor( $ * 256 )
+,	'biasedGray1'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray1( $ )
+,	'biasedGray2'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray2( $ )
+,	'biasedGray3'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray3( $ )
+,	'binary'		: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = 255
+}
+
+Object.keys( ColorMaps ).forEach( 
+	_ => {
+		const $ = document.createElement( 'option' )
+		$.textContent = $.value = _
+		COLOR_MAPS.appendChild( $ )
+	}
+)
+//COLOR_MAPS.children[ 1 ].selected = true
+
+const
+Square = _ => _ * _
+
+const
+Mandelbrot = () => {
+
+	const	rMin	= Number( R_MIN.value )
+	const	rMax	= Number( R_MAX.value )
+	const	iMin	= Number( I_MIN.value )
+	const	iMax	= Number( I_MAX.value )
+	const	numI	= Number( NUM_I.value )
+
+	const	Put		= ColorMaps[ COLOR_MAPS.value ]
+
+	const	w		= document.body.clientWidth
+	const	h		= document.body.clientHeight
+	const	$		= c2d.createImageData( w, h )
+	const	array	= $.data
+	let		index	= 0
+
+	const	rBias	= ( rMax - rMin ) / w
+	const	iBias	= ( iMax - iMin ) / h
+	for ( let y = 0; y < h; y++ ) {
+		const I = iMin + iBias * y
+		for ( let x = 0; x < w; x++ ) {
+			const R = rMin + rBias * x
+			let r = R
+			let i = I
+			let _ = 1
+			while ( _ < numI ) {
+				const r2 = r * r
+				const i2 = i * i
+				if ( r2 + i2 > 2 ) {
+					Put( array, index, _ / numI )
+					break
+				}
+				[ r, i ] = [
+					R + r2 - i2
+				,	I + 2 * r * i
+				]
+				++_
+			}
+			array[ index + 3 ] = 0xFF
+			index += 4
+		}
+	}
+	return $
+}
+
+RESET.onclick = () => (
+	R_MIN.value = _R_MIN
+,	R_MAX.value = _R_MAX
+,	I_MIN.value = _I_MIN
+,	I_MAX.value = _I_MAX
+,	NUM_I.value = _NUM_I
+,	DRAW.click()
+)
+
+DRAW.onclick = () => {
+	const sTime = performance.now()
+
+	const _ = Mandelbrot()
+
+	const elappsed = performance.now() - sTime
+	const numPixels = CANVAS.width * CANVAS.height
+	ELAPPSED.textContent = ' Elappsed: ' + Math.round( elappsed ) + 'ms ' + Math.round( numPixels / elappsed ) + 'Kpix/sec'
+
+	CANVAS.width	= TRACK.width	= _.width
+	CANVAS.height	= TRACK.height	= _.height
+	c2d.putImageData( _, 0, 0 )
+
+	DOWNLOAD.href = CANVAS.toDataURL()
+}
+
+TRACK.onmousedown = md => md.button === 0 && (
+	TRACK.onmousemove = mm => {
+		const _ = TRACK.getContext( '2d' )
+		_.clearRect( 0, 0, TRACK.width, TRACK.height )
+		_.strokeStyle = 'white'
+		_.strokeRect( md.offsetX, md.offsetY, mm.offsetX - md.offsetX, mm.offsetY - md.offsetY )
+	}
+,	TRACK.onmouseleave = ml => (
+		TRACK.getContext( '2d' ).clearRect( 0, 0, TRACK.width, TRACK.height )
+	,	TRACK.onmousemove = TRACK.onmouseup = TRACK.onmouseleave = null
+	)
+,	TRACK.onmouseup = mu => {
+		TRACK.onmouseleave()
+
+		const	rMin	= Number( R_MIN.value )
+		const	rMax	= Number( R_MAX.value )
+		const	iMin	= Number( I_MIN.value )
+		const	iMax	= Number( I_MAX.value )
+		const	rBias	= ( rMax - rMin ) / TRACK.clientWidth
+		const	iBias	= ( iMax - iMin ) / TRACK.clientHeight
+		R_MIN.value = rMin + md.offsetX * rBias
+		I_MIN.value = iMin + md.offsetY * iBias
+		R_MAX.value = rMin + mu.offsetX * rBias
+		I_MAX.value = iMin + mu.offsetY * iBias
+		DRAW.click()
+	}
+)
+
+NAV.onmousedown = md => {
+	const org = NAV.getBoundingClientRect()
+	NAV.onmousemove = mm => (
+		NAV.style.left	= org.left	+ mm.clientX - md.clientX + 'px'
+	,	NAV.style.top	= org.top	+ mm.clientY - md.clientY + 'px'
+	)
+	NAV.onmouseup = () => NAV.onmousemove = NAV.onmouseup = null
+}
+
+DOWNLOAD.onclick = ev => {
+	const a = document.createElement( 'a' )
+	a.href = CANVAS.toDataURL()
+	a.download = '_.png'
+	a.click()
+}
+
+window.onload = () => DRAW.click()
+
+</script>

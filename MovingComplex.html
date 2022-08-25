@@ -1,0 +1,81 @@
+<canvas id=CANVAS style="border: 1px solid black"></canvas><br>
+<label># of iterate</label><input id=NUM_ITERATE value=64><br>
+<label>Density</label><input id=DENSE value=256><br>
+<input id=LANDINGS type=button value=Landings><br>
+
+<script type=module>
+
+onload = () => {
+	const dense	= Number( DENSE.value )
+	CANVAS.width = dense * 3 + 1
+	CANVAS.height = dense * 2 + 1
+}
+
+const
+c2d = CANVAS.getContext( '2d' )
+
+CANVAS.onclick = ev => {
+	const N			= Number( NUM_ITERATE.value )
+	const dense		= Number( DENSE.value )
+	CANVAS.width	= dense * 3 + 1
+	CANVAS.height	= dense * 2 + 1
+	const
+	DrawPIX = ( r, i ) => {
+		const x = Math.floor( ( r + 2 ) * dense )
+		const y = Math.floor( ( i + 1 ) * dense )
+		c2d.strokeRect( x - 2, y - 2, 5, 5 )
+		c2d.fillRect( x, y, 1, 1 )
+	}
+	const R = -2 + ev.offsetX / dense
+	const I = -1 + ev.offsetY / dense
+	const Draw = ( n, r, i ) => (
+		DrawPIX( r, i )
+	,	n < N
+		?	r * r + i * i > 8
+			?	alert( 'Deverged at: ' + n )
+			:	setTimeout(
+					() => Draw( n + 1, r * r - i * i + R, 2 * r * i + I )
+				,	10
+				)
+		: 	console.log( 'Converged' )
+	)
+
+	c2d.clearRect( 0, 0, CANVAS.width, CANVAS.height )
+	setTimeout(
+		() => Draw( 0, R, I )
+	,	0
+	)
+}
+
+LANDINGS.onclick = ev => {
+	const N			= Number( NUM_ITERATE.value )
+	const dense		= Number( DENSE.value )
+	CANVAS.width	= dense * 3 + 1
+	CANVAS.height	= dense * 2 + 1
+	c2d.clearRect( 0, 0, CANVAS.width, CANVAS.height )
+	for ( let x = 0; x < CANVAS.width; x++ ) {
+		const R = -2 + x / dense
+		for ( let y = 0; y < CANVAS.height; y++ ) {
+			const I = -1 + y / dense
+			let r = R
+			let i = I
+			let	_ = 0
+			while ( _ < N ) {
+				if ( r * r + i * i > 8 ) break
+				[ r, i ] = [
+					R + r * r - i * i
+				,	I + 2 * r * i
+				]
+				_++
+			}
+			_ === N && c2d.fillRect(
+				Math.round( ( r + 2 ) * dense )
+			,	Math.round( ( i + 1 ) * dense )
+			,	1
+			,	1
+			)
+		}
+	}
+}
+
+</script>
