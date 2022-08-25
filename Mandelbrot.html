@@ -176,7 +176,7 @@ Mandelbrot = () => {
 			while ( _ < numI ) {
 				const r2 = r * r
 				const i2 = i * i
-				if ( r2 + i2 > 2 ) {
+				if ( r2 + i2 > 4 ) {	//	2 * 2
 					Put( array, index, _ / numI )
 					break
 				}
