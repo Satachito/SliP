@@ -210,7 +210,10 @@ program = gl.createProgram()
 					,	min.y + ( max.y - min.y ) * gl_FragCoord.y / resolution.y
 					)
 				);
-				gl_FragColor = vec4( float( i ) / float( iterations ), 0.0, 0.0, 1.0 );
+				gl_FragColor = i == 0
+				?	vec4( 0.0, 0.0, 0.0, 1.0 )
+				:	Color( float( i ) / float( iterations ) )
+				;
 			}
 		`
 	,	gl.FRAGMENT_SHADER
