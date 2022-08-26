@@ -208,8 +208,9 @@ DRAW.onclick = () => {
 	const _ = Mandelbrot()
 
 	const elappsed = performance.now() - sTime
-	const numPixels = CANVAS.width * CANVAS.height
-	ELAPPSED.textContent = ' Elappsed: ' + Math.round( elappsed ) + 'ms ' + Math.round( numPixels / elappsed ) + 'Kpix/sec'
+	ELAPPSED.textContent = ' Elappsed: '
+	+	Math.round( elappsed ) + 'ms '
+	+	Math.round( CANVAS.width * CANVAS.height / elappsed ) + 'Kpix/sec'
 
 	CANVAS.width	= TRACK.width	= _.width
 	CANVAS.height	= TRACK.height	= _.height
