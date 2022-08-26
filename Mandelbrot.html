@@ -52,7 +52,6 @@ select	{
 ;	margin-left			: 16px
 }
 input[ type=button ] {
-;	width				: 64px
 ;	text-align			: center
 ;	background-color	: #4444
 ;	margin				: 5px
@@ -70,18 +69,22 @@ input[ type=range ] {
 </style>
 
 <canvas id=CANVAS></canvas>
-<canvas id=TRACK></canvas>
+<canvas id=TRACK tabindex=1></canvas>
 <nav id=NAV>
 	<div class=lr><label>Iterations</label>	<input	id=NUM_I type=range min=2 max=1000 value=500 step=1>		</div>
+	<div class=lr><label>Color maps</label>	<select	id=COLOR_MAPS></select>										</div>
+	<hr>
 	<div class=lr><label>Real</label>		<span><input id=R_MIN value=-2  >~<input id=R_MAX value=1  ></span>	</div>
 	<div class=lr><label>Imaginary</label>	<span><input id=I_MIN value=-1.3>~<input id=I_MAX value=1.3></span>	</div>
-	<div class=lr><label>Color maps</label>	<select	id=COLOR_MAPS></select>										</div>
-	<br>
+	<input type=button id=DRAW value=Draw style="width: 100%">
+	<hr>
 	<div class=lr>
-		<input type=button id=RESET		value=Reset		>
-		<input type=button id=DRAW		value=Draw		>
-		<input type=button id=DOWNLOAD	value=Download	>
+		<input type=button style="width: 40%" id=RESET		value=Reset		>
+		<input type=button style="width: 40%; visibility: hidden" id=DOWNLOAD	value=Download	>
 	</div>
+	<hr>
+	Press ↑,↓,←,→ and space key to move image<br>
+	Press + and - key to zoom in/out<br>
 </nav>
 <footer class=lr>
 	<div>Copywrite 2022 SliP LLC, Tokyo. Thank you for enjyoing this site.</div>
@@ -95,6 +98,9 @@ input[ type=range ] {
 ,	'red'
 ,	'green'
 ,	'blue'
+,	'yellow'
+,	'magenta'
+,	'cyan'
 ].forEach( 
 	( $, _ ) => {
 		const option = document.createElement( 'option' )
@@ -192,6 +198,12 @@ program = gl.createProgram()
 			Green	( float _ ) { return vec4( 0.0, _, 0.0, 1.0 ); }
 			vec4
 			Blue	( float _ ) { return vec4( 0.0, 0.0, _, 1.0 ); }
+			vec4
+			Yellow	( float _ ) { return vec4( _, _, 0.0, 1.0 ); }
+			vec4
+			Magenta	( float _ ) { return vec4( _, 0.0, _, 1.0 ); }
+			vec4
+			Cyan	( float _ ) { return vec4( 0.0, _, _, 1.0 ); }
 
 			vec4
 			Color( float _ ) {
@@ -200,6 +212,9 @@ program = gl.createProgram()
 				if ( colorMapIndex == 2 ) return Red( _ );
 				if ( colorMapIndex == 3 ) return Green( _ );
 				if ( colorMapIndex == 4 ) return Blue( _ );
+				if ( colorMapIndex == 5 ) return Yellow( _ );
+				if ( colorMapIndex == 6 ) return Magenta( _ );
+				if ( colorMapIndex == 7 ) return Cyan( _ );
 			}
 
 			void
@@ -256,9 +271,129 @@ DRAW.onclick = () => {
 	TRACK.height	= CANVAS.height	= document.body.clientHeight
 	Draw()
 	DOWNLOAD.href = CANVAS.toDataURL()
+	TRACK.focus()
 }
 
 NUM_I.oninput = () => DRAW.onclick()
+
+let
+spaceKeyPressed = false
+
+TRACK.onkeyup = ev => {
+	switch ( ev.key ) {
+	case ' ':
+		spaceKeyPressed = false
+		break
+	}
+}
+
+TRACK.onkeydown = ev => {
+	switch ( ev.key ) {
+	case ' ':
+		spaceKeyPressed = true
+		break
+	case '+':
+		{	const rMin = Number( R_MIN.value )
+			const rMax = Number( R_MAX.value )
+			const iMin = Number( I_MIN.value )
+			const iMax = Number( I_MAX.value )
+			const r = ( rMin + rMax ) / 2
+			const rRange = ( rMax - rMin ) / 4
+			R_MIN.value = r - rRange
+			R_MAX.value = r + rRange
+			const i = ( iMin + iMax ) / 2
+			const iRange = ( iMax - iMin ) / 4
+			I_MIN.value = i - iRange
+			I_MAX.value = i + iRange
+			DRAW.click()
+		}
+		break
+	case '-':
+		{	const rMin = Number( R_MIN.value )
+			const rMax = Number( R_MAX.value )
+			const iMin = Number( I_MIN.value )
+			const iMax = Number( I_MAX.value )
+			const r = ( rMin + rMax ) / 2
+			const rRange = ( rMax - rMin )
+			R_MIN.value = r - rRange
+			R_MAX.value = r + rRange
+			const i = ( iMin + iMax ) / 2
+			const iRange = ( iMax - iMin )
+			I_MIN.value = i - iRange
+			I_MAX.value = i + iRange
+			DRAW.click()
+		}
+		break
+	case 'ArrowUp':
+		{	const iMin = Number( I_MIN.value )
+			const iMax = Number( I_MAX.value )
+			const _ = ( iMax - iMin ) / 10 
+			I_MIN.value = iMin - _
+			I_MAX.value = iMax - _
+			DRAW.click()
+		}
+		break
+	case 'ArrowDown':
+		{	const iMin = Number( I_MIN.value )
+			const iMax = Number( I_MAX.value )
+			const _ = ( iMax - iMin ) / 10 
+			I_MIN.value = iMin + _
+			I_MAX.value = iMax + _
+			DRAW.click()
+		}
+		break
+	case 'ArrowLeft':
+		{	const rMin = Number( R_MIN.value )
+			const rMax = Number( R_MAX.value )
+			const _ = ( rMax - rMin ) / 10 
+			R_MIN.value = rMin + _
+			R_MAX.value = rMax + _
+			DRAW.click()
+		}
+		break
+	case 'ArrowRight':
+		{	const rMin = Number( R_MIN.value )
+			const rMax = Number( R_MAX.value )
+			const _ = ( rMax - rMin ) / 10 
+			R_MIN.value = rMin - _
+			R_MAX.value = rMax - _
+			DRAW.click()
+		}
+		break
+	case 'r':
+	case 'R':
+		RESET.click()
+		break
+	}
+}
+
+let
+lastMouse
+
+TRACK.addEventListener(
+	'mousemove'
+,	ev => {
+		if ( spaceKeyPressed && lastMouse ) {
+
+			{	const rMin = Number( R_MIN.value )
+				const rMax = Number( R_MAX.value )
+				const _ = ( ev.clientX - lastMouse.clientX ) * ( rMax - rMin ) / CANVAS.width
+				R_MIN.value = rMin - _
+				R_MAX.value = rMax - _
+			}
+
+			{	const iMin = Number( I_MIN.value )
+				const iMax = Number( I_MAX.value )
+				const _ = ( ev.clientY - lastMouse.clientY ) * ( iMax - iMin ) / CANVAS.height
+				I_MIN.value = iMin + _
+				I_MAX.value = iMax + _
+			}
+
+			Draw()
+		}
+		lastMouse = ev
+	}
+)
 
 TRACK.onmousedown = md => (
 	TRACK.onmousemove = mm => {
@@ -268,14 +403,13 @@ TRACK.onmousedown = md => (
 		_.strokeRect( md.offsetX, md.offsetY, mm.offsetX - md.offsetX, mm.offsetY - md.offsetY )
 	}
 ,	TRACK.onmouseleave = ml => (
-		TRACK.getContext( '2d' ).clearRect( 0, 0, TRACK.width, TRACK.height )
-	,	TRACK.onmousemove = TRACK.onmouseup = TRACK.onmouseleave = null
+		TRACK.onmousemove = TRACK.onmouseup = TRACK.onmouseleave = null
+	,	TRACK.getContext( '2d' ).clearRect( 0, 0, TRACK.width, TRACK.height )
 	)
 ,	TRACK.onmouseup = mu => {
 		TRACK.onmouseleave()
 
-		if ( md.offsetX === mu.offsetX && md.offsetY === mu.offsetY ) {
-		} else {
+		if ( md.offsetX !== mu.offsetX || md.offsetY !== mu.offsetY ) {
 			const	rMin	= Number( R_MIN.value )
 			const	rMax	= Number( R_MAX.value )
 			const	iMin	= Number( I_MIN.value )
@@ -301,7 +435,11 @@ DOWNLOAD.onclick = ev => {
 	a.href = CANVAS.toDataURL()
 	a.download = '_.png'
 	a.click()
+//	TRACK.focus()
 }
+
+COLOR_MAPS.onchange = Draw
+R_MIN.onblur = Draw
 
 const	_R_MIN	= R_MIN.value
 const	_R_MAX	= R_MAX.value
@@ -315,8 +453,12 @@ RESET.onclick = () => (
 ,	I_MAX.value = _I_MAX
 ,	NUM_I.value = _NUM_I
 ,	DRAW.click()
+,	TRACK.focus()
 )
 
-window.onload = () => DRAW.click()
+window.onload = () => (
+	DRAW.click()
+,	TRACK.focus()
+)
 
 </script>
