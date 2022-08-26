@@ -1,3 +1,5 @@
+<title>MandelbrotSet by WebGL</title>
+
 <style>
 body {
 ;	margin				: 0
@@ -50,10 +52,14 @@ select	{
 ;	margin-left			: 16px
 }
 input[ type=button ] {
-;	width				: 40%
+;	width				: 64px
 ;	text-align			: center
 ;	background-color	: #4444
-;	margin				: 5%
+;	margin				: 5px
+}
+input[ type=range ] {
+;	width				: 256px
+;	margin-left			: 5%
 }
 .lr {
 ;	display				: flex
@@ -66,18 +72,16 @@ input[ type=button ] {
 <canvas id=CANVAS></canvas>
 <canvas id=TRACK></canvas>
 <nav id=NAV>
-	<div class=lr><label>Number of iterations</label>	<input	id=NUM_I value=500>											</div>
-	<div class=lr><label>Real</label>					<span><input id=R_MIN value=-2  >~<input id=R_MAX value=1  ></span>	</div>
-	<div class=lr><label>Imaginary</label>				<span><input id=I_MIN value=-1.3>~<input id=I_MAX value=1.3></span>	</div>
-	<div class=lr><label>Color maps</label>				<select	id=COLOR_MAPS></select>										</div>
+	<div class=lr><label>Iterations</label>	<input	id=NUM_I type=range min=2 max=1000 value=500 step=1>		</div>
+	<div class=lr><label>Real</label>		<span><input id=R_MIN value=-2  >~<input id=R_MAX value=1  ></span>	</div>
+	<div class=lr><label>Imaginary</label>	<span><input id=I_MIN value=-1.3>~<input id=I_MAX value=1.3></span>	</div>
+	<div class=lr><label>Color maps</label>	<select	id=COLOR_MAPS></select>										</div>
 	<br>
 	<div class=lr>
 		<input type=button id=RESET		value=Reset		>
 		<input type=button id=DRAW		value=Draw		>
 		<input type=button id=DOWNLOAD	value=Download	>
 	</div>
-	<hr>
-	<label id=ELAPPSED></label>
 </nav>
 <footer class=lr>
 	<div>Copywrite 2022 SliP LLC, Tokyo. Thank you for enjyoing this site.</div>
@@ -86,140 +90,174 @@ input[ type=button ] {
 
 <script type=module>
 
-const	_R_MIN	= R_MIN.value
-const	_R_MAX	= R_MAX.value
-const	_I_MIN	= I_MIN.value
-const	_I_MAX	= I_MAX.value
-const	_NUM_I	= NUM_I.value
-
-const
-c2d = CANVAS.getContext( '2d' )
-
-//	https://www.peko-step.com/html/hsl.html
-const
-RGB_HUE = _ => {							// 0 <= _ < 1
-	_ *= 6									// 0 <= _ < 6
-	const i = Math.floor( _ )				// 0, 1, 2, 3, 4, 5
-	const p = Math.floor( ( _ - i ) * 256 )	// 0 <= p <= 255
-	const q = 255 - p						// 255 >= q >= 0
-	switch ( i ) {		
-	case 0: return [ 255, p, 0 ]
-	case 1: return [ q, 255, 0 ]
-	case 2: return [ 0, 255, p ]
-	case 3: return [ 0, q, 255 ]
-	case 4: return [ p, 0, 255 ]
-	case 5: return [ 255, 0, q ]
-	}
-}
-
-const
-BiasedGray1 = _ => {
-	const $ = Math.floor( _ * 512 )
-	return $ > 255 ? 255 : $
-}
-
-const
-BiasedGray2 = _ => 128 + Math.floor( _ * 128 )
-
-const
-BiasedGray3 = _ => Math.floor( Math.sqrt( _ ) * 256 )
-
-const
-ColorMaps = {
-	'hue'			: ( array, _, $ ) => [ array[ _ ], array[ _ + 1 ], array[ _ + 2 ] ] = RGB_HUE( $ )
-,	'hue2'			: ( array, _, $ ) => [ array[ _ ], array[ _ + 1 ], array[ _ + 2 ] ] = RGB_HUE( $ * 10 / 12 + 1 / 12 )
-,	'gray'			: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = Math.floor( $ * 256 )
-,	'biasedGray1'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray1( $ )
-,	'biasedGray2'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray2( $ )
-,	'biasedGray3'	: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = BiasedGray3( $ )
-,	'binary'		: ( array, _, $ ) => array[ _ ] = array[ _ + 1 ] = array[ _ + 2 ] = 255
-}
-
-Object.keys( ColorMaps ).forEach( 
-	_ => {
-		const $ = document.createElement( 'option' )
-		$.textContent = $.value = _
-		COLOR_MAPS.appendChild( $ )
+[	'hue'
+,	'gray'
+,	'red'
+,	'green'
+,	'blue'
+].forEach( 
+	( $, _ ) => {
+		const option = document.createElement( 'option' )
+		option.textContent = $
+		option.value = _
+		COLOR_MAPS.appendChild( option )
 	}
 )
-//COLOR_MAPS.children[ 1 ].selected = true
 
 const
-Square = _ => _ * _
+gl = CANVAS.getContext( 'webgl' )
 
 const
-Mandelbrot = () => {
+buffer = gl.createBuffer();
+{	gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
+	gl.bufferData(
+		gl.ARRAY_BUFFER
+	,	new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] )
+	,	gl.STATIC_DRAW
+	)
+}
 
-	const	rMin	= Number( R_MIN.value )
-	const	rMax	= Number( R_MAX.value )
-	const	iMin	= Number( I_MIN.value )
-	const	iMax	= Number( I_MAX.value )
-	const	numI	= Number( NUM_I.value )
-
-	const	Put		= ColorMaps[ COLOR_MAPS.value ]
-
-	const	w		= document.body.clientWidth
-	const	h		= document.body.clientHeight
-	const	$		= c2d.createImageData( w, h )
-	const	array	= $.data
-	let		index	= 0
-
-	const	rBias	= ( rMax - rMin ) / w
-	const	iBias	= ( iMax - iMin ) / h
-	for ( let y = 0; y < h; y++ ) {
-		const I = iMin + iBias * y
-		for ( let x = 0; x < w; x++ ) {
-			const R = rMin + rBias * x
-			let r = R
-			let i = I
-			let _ = 1
-			while ( _ < numI ) {
-				const r2 = r * r
-				const i2 = i * i
-				if ( r2 + i2 > 4 ) {	//	2 * 2
-					Put( array, index, _ / numI )
-					break
-				}
-				[ r, i ] = [
-					R + r2 - i2
-				,	I + 2 * r * i
-				]
-				++_
+const
+program = gl.createProgram()
+{	const
+	Shader = ( src, type ) => {
+		var $ = gl.createShader( type )
+		gl.shaderSource( $, src )
+		gl.compileShader( $ )
+		if ( !gl.getShaderParameter( $, gl.COMPILE_STATUS ) ) throw gl.getShaderInfoLog( $ )
+		gl.attachShader( program, $ )
+		gl.deleteShader( $ )
+	}
+	Shader(
+		`
+			attribute vec3 position;
+			void
+			main() {
+				gl_Position = vec4( position, 1.0 );
 			}
-			array[ index + 3 ] = 0xFF
-			index += 4
-		}
-	}
-	return $
+		`
+	,	gl.VERTEX_SHADER
+	)
+	Shader(
+		`
+			precision highp float;
+			precision highp int;
+
+			uniform vec2	min;
+			uniform vec2	max;
+
+			uniform vec2	resolution;
+			uniform int		iterations;
+
+			uniform int		colorMapIndex;
+
+			int
+			Mandelbrot( vec2 c ) {
+				vec2 z = c;
+				for( int i = 1; i < 1000; ++i ) {
+					if ( i >= iterations ) break;
+
+					vec2 z2 = z * z;
+					if ( z2.x + z2.y > 4.0 ) return i;
+					
+					z = vec2(
+						( z2.x - z2.y )
+					,	( z.y * z.x * 2.0 )
+					) + c; 
+				//	TODO: COMPARE ELAPPSED
+				//	z.y = ( z.y * z.x * 2.0 ) + c.y; 
+				//	z.x = ( z2.x - z2.y ) + c.x; 
+				}
+				return 0;
+			}
+
+			vec4
+			RGB_Hue( float _ ) {						// 0 <= _ < 1
+				int		i = int( floor( _ * 6.0 ) );	// 0, 1, 2, 3, 4, 5
+				float	p = _ - float( i );				// 0 <= p <= 1
+				float	q = 1.0 - p;					// 1 >= q >= 0
+				if ( i == 0 ) return vec4( 1.0, p, 0, 1.0 );
+				if ( i == 1 ) return vec4( q, 1.0, 0, 1.0 );
+				if ( i == 2 ) return vec4( 0, 1.0, p, 1.0 );
+				if ( i == 3 ) return vec4( 0, q, 1.0, 1.0 );
+				if ( i == 4 ) return vec4( p, 0, 1.0, 1.0 );
+				if ( i == 5 ) return vec4( 1.0, 0, q, 1.0 );
+			}
+
+			vec4
+			Gray	( float _ ) { return vec4( _, _, _, 1.0 ); }
+			vec4
+			Red		( float _ ) { return vec4( _, 0.0, 0.0, 1.0 ); }
+			vec4
+			Green	( float _ ) { return vec4( 0.0, _, 0.0, 1.0 ); }
+			vec4
+			Blue	( float _ ) { return vec4( 0.0, 0.0, _, 1.0 ); }
+
+			vec4
+			Color( float _ ) {
+				if ( colorMapIndex == 0 ) return RGB_Hue( _ );
+				if ( colorMapIndex == 1 ) return Gray( _ );
+				if ( colorMapIndex == 2 ) return Red( _ );
+				if ( colorMapIndex == 3 ) return Green( _ );
+				if ( colorMapIndex == 4 ) return Blue( _ );
+			}
+
+			void
+			main( void ) {
+				int i = Mandelbrot(
+					vec2(
+						min.x + ( max.x - min.x ) * gl_FragCoord.x / resolution.x
+					,	min.y + ( max.y - min.y ) * gl_FragCoord.y / resolution.y
+					)
+				);
+				gl_FragColor = vec4( float( i ) / float( iterations ), 0.0, 0.0, 1.0 );
+			}
+		`
+	,	gl.FRAGMENT_SHADER
+	)
+	gl.linkProgram( program )
+	if ( !gl.getProgramParameter( program, gl.LINK_STATUS ) ) throw gl.getError()
 }
 
-RESET.onclick = () => (
-	R_MIN.value = _R_MIN
-,	R_MAX.value = _R_MAX
-,	I_MIN.value = _I_MIN
-,	I_MAX.value = _I_MAX
-,	NUM_I.value = _NUM_I
-,	DRAW.click()
-)
+const minLocation			= gl.getUniformLocation( program, 'min'				)
+const maxLocation			= gl.getUniformLocation( program, 'max'				)
+const resolutionLocation	= gl.getUniformLocation( program, 'resolution'		)
+const iterationLocation		= gl.getUniformLocation( program, 'iterations'		)
+const colorMapIndexLocation	= gl.getUniformLocation( program, 'colorMapIndex'	)
+
+const
+Draw = () => {
+	gl.viewport( 0, 0, CANVAS.width, CANVAS.height )
+
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT )
+
+	gl.useProgram( program )
+
+	gl.uniform2f( minLocation			, Number( R_MIN.value ), Number( I_MIN.value ) )
+	gl.uniform2f( maxLocation			, Number( R_MAX.value ), Number( I_MAX.value ) )
+	gl.uniform2f( resolutionLocation	, CANVAS.width, CANVAS.height )
+	gl.uniform1i( iterationLocation		, Number( NUM_I.value ) )
+	gl.uniform1i( colorMapIndexLocation	, Number( COLOR_MAPS.value ) )
+
+	let
+	vertex_position
+	gl.vertexAttribPointer		( vertex_position, 2, gl.FLOAT, false, 0, 0 )
+
+	gl.enableVertexAttribArray	( vertex_position )
+	gl.drawArrays				( gl.TRIANGLES, 0, 6 )
+	gl.disableVertexAttribArray	( vertex_position )
+}
 
 DRAW.onclick = () => {
-	const sTime = performance.now()
-
-	const _ = Mandelbrot()
-
-	const elappsed = performance.now() - sTime
-	ELAPPSED.textContent = ' Elappsed: '
-	+	Math.round( elappsed ) + 'ms '
-	+	Math.round( CANVAS.width * CANVAS.height / elappsed ) + 'Kpix/sec'
-
-	CANVAS.width	= TRACK.width	= _.width
-	CANVAS.height	= TRACK.height	= _.height
-	c2d.putImageData( _, 0, 0 )
-
+	TRACK.width		= CANVAS.width	= document.body.clientWidth
+	TRACK.height	= CANVAS.height	= document.body.clientHeight
+	Draw()
 	DOWNLOAD.href = CANVAS.toDataURL()
 }
 
-TRACK.onmousedown = md => md.button === 0 && (
+NUM_I.oninput = () => DRAW.onclick()
+
+TRACK.onmousedown = md => (
 	TRACK.onmousemove = mm => {
 		const _ = TRACK.getContext( '2d' )
 		_.clearRect( 0, 0, TRACK.width, TRACK.height )
@@ -233,28 +271,27 @@ TRACK.onmousedown = md => md.button === 0 && (
 ,	TRACK.onmouseup = mu => {
 		TRACK.onmouseleave()
 
-		const	rMin	= Number( R_MIN.value )
-		const	rMax	= Number( R_MAX.value )
-		const	iMin	= Number( I_MIN.value )
-		const	iMax	= Number( I_MAX.value )
-		const	rBias	= ( rMax - rMin ) / TRACK.clientWidth
-		const	iBias	= ( iMax - iMin ) / TRACK.clientHeight
-		R_MIN.value = rMin + md.offsetX * rBias
-		I_MIN.value = iMin + md.offsetY * iBias
-		R_MAX.value = rMin + mu.offsetX * rBias
-		I_MAX.value = iMin + mu.offsetY * iBias
-		DRAW.click()
+		if ( md.offsetX === mu.offsetX && md.offsetY === mu.offsetY ) {
+		} else {
+			const	rMin	= Number( R_MIN.value )
+			const	rMax	= Number( R_MAX.value )
+			const	iMin	= Number( I_MIN.value )
+			const	iMax	= Number( I_MAX.value )
+			const	rBias	= ( rMax - rMin ) / TRACK.clientWidth
+			const	iBias	= ( iMax - iMin ) / TRACK.clientHeight
+
+			const	[ xMin, xMax ] = md.offsetX < mu.offsetX ? [ md.offsetX, mu.offsetX ] : [ mu.offsetX, md.offsetX ]
+			const	dY = CANVAS.height - 1 - md.offsetY
+			const	uY = CANVAS.height - 1 - mu.offsetY
+			const	[ yMin, yMax ] = dY < dY ? [ dY, uY ] : [ uY, dY ]
+			R_MIN.value = rMin + xMin * rBias
+			I_MIN.value = iMin + yMin * iBias
+			R_MAX.value = rMin + xMax * rBias
+			I_MAX.value = iMin + yMax * iBias
+			DRAW.click()
+		}
 	}
 )
-
-NAV.onmousedown = md => {
-	const org = NAV.getBoundingClientRect()
-	NAV.onmousemove = mm => (
-		NAV.style.left	= org.left	+ mm.clientX - md.clientX + 'px'
-	,	NAV.style.top	= org.top	+ mm.clientY - md.clientY + 'px'
-	)
-	NAV.onmouseup = () => NAV.onmousemove = NAV.onmouseup = null
-}
 
 DOWNLOAD.onclick = ev => {
 	const a = document.createElement( 'a' )
@@ -262,6 +299,20 @@ DOWNLOAD.onclick = ev => {
 	a.download = '_.png'
 	a.click()
 }
+
+const	_R_MIN	= R_MIN.value
+const	_R_MAX	= R_MAX.value
+const	_I_MIN	= I_MIN.value
+const	_I_MAX	= I_MAX.value
+const	_NUM_I	= NUM_I.value
+RESET.onclick = () => (
+	R_MIN.value = _R_MIN
+,	R_MAX.value = _R_MAX
+,	I_MIN.value = _I_MIN
+,	I_MAX.value = _I_MAX
+,	NUM_I.value = _NUM_I
+,	DRAW.click()
+)
 
 window.onload = () => DRAW.click()
 
