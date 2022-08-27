@@ -113,7 +113,7 @@ textarea {
 	<input type=button class="di big-key" value=(>
 	<input type=button class="di big-key" value=)>
 	<input type=button class="di big-key" value=%>
-	<input type=button class="   big-key" value=C	id=CLEAR	><br>
+	<input type=button class="   big-key" value=←	id=DELETE	><br>
 	<br>
 	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
 	<br>
@@ -365,11 +365,14 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	}
 }
 
-CLEAR		.onclick = () => (
-	RemoveCanvas()
-,	SOURCE.value = ''
-,	SOURCE.focus()
-)
+DELETE		.onclick = () => {
+	let $ = SOURCE.selectionStart
+	SOURCE.value = $ && $ === SOURCE.selectionEnd
+	?	SOURCE.value.substring( 0, --$ ) + SOURCE.value.substring( SOURCE.selectionEnd )
+	:	SOURCE.value.substring( 0, $ ) + SOURCE.value.substring( SOURCE.selectionEnd )
+ 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ )
+ 	SOURCE.focus()
+}
 
 const
 InsertToSOURCE = _ => {
