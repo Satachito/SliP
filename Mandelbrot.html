@@ -80,7 +80,7 @@ input[ type=range ] {
 	<hr>
 	<div class=lr>
 		<input type=button style="width: 40%" id=RESET		value=Reset		>
-		<input type=button style="width: 40%; visibility: hidden" id=DOWNLOAD	value=Download	>
+		<input type=button style="width: 40%" id=DOWNLOAD	value=Download	>
 	</div>
 	<hr>
 	Press ↑,↓,←,→ and space key + mouse to move image<br>
@@ -111,7 +111,7 @@ input[ type=range ] {
 )
 
 const
-gl = CANVAS.getContext( 'webgl' )
+gl = CANVAS.getContext( 'webgl', { preserveDrawingBuffer: true } )
 
 const
 buffer = gl.createBuffer();
@@ -435,7 +435,7 @@ DOWNLOAD.onclick = ev => {
 	a.href = CANVAS.toDataURL()
 	a.download = '_.png'
 	a.click()
-//	TRACK.focus()
+	TRACK.focus()
 }
 
 COLOR_MAPS.onchange = Draw
