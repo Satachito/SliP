@@ -129,7 +129,7 @@ const
 _EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
-		throw `No operand`
+		throw `Syntax error(No operand)`
 	case  1:
 		return Eval( c, _[ 0 ] )
 	default:
@@ -871,7 +871,7 @@ JObject_SliP = _ => {
 const
 NEval = ( c, _ ) => {
 	const $ = Eval( c, _ )
-	if ( $.constructor !== Number ) throw [ 'Not a number:' + $.string() ]
+	if ( $.constructor !== Numeric ) throw [ 'Not a number:' + $.string() ]
 	if ( Number.isNaN( $._ ) ) throw [ 'Is NaN' ]
 	return $
 }

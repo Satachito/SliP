@@ -277,6 +277,7 @@ textarea {
 	When CALCULATE<br>
 	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Programming mode	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×			</label><br>
+	<label for=CONV_NUM			><input type=checkbox id=CONV_NUM		checked	> Convert numeric	</label><br>
 	<br>
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
@@ -295,6 +296,112 @@ textarea {
 
 const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
+
+const
+startCodes = [
+	0x30
+,	0x0660
+,	0x06F0
+,	0x07C0
+,	0x0966
+,	0x09E6
+,	0x0A66
+,	0x0AE6
+,	0x0B66
+,	0x0BE6
+,	0x0C66
+,	0x0CE6
+,	0x0D66
+,	0x0DE6
+,	0x0E50
+,	0x0ED0
+,	0x0F20
+,	0x1040
+,	0x1090
+,	0x17E0
+,	0x1810
+,	0x1946
+,	0x19D0
+,	0x1A80
+,	0x1A90
+,	0x1B50
+,	0x1BB0
+,	0x1C40
+,	0x1C50
+,	0xA620
+,	0xA8D0
+,	0xA900
+,	0xA9D0
+,	0xA9F0
+,	0xAA50
+,	0xABF0
+,	0xFF10
+,	0x104A0
+,	0x11066
+,	0x110F0
+,	0x11136
+,	0x111D0
+,	0x112F0
+,	0x114D0
+,	0x11650
+,	0x116C0
+,	0x11730
+,	0x118E0
+,	0x16A60
+,	0x16B50
+,	0x1D7CE
+,	0x1D7D8
+,	0x1D7E2
+,	0x1D7EC
+,	0x1D7F6
+]
+
+const
+digitREs = [
+	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 0 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 1 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 2 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 3 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 4 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 5 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 6 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 7 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 8 ) ) + ']' )
+,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 9 ) ) + ']' )
+]
+
+const
+digitREsG = digitREs.map( _ => RegExp( _, 'g' ) )
+
+const
+ReplaceDigits = _ => (
+	_ = _.replace( digitREs[ 0 ], '0' )
+,	_ = _.replace( digitREs[ 1 ], '1' )
+,	_ = _.replace( digitREs[ 2 ], '2' )
+,	_ = _.replace( digitREs[ 3 ], '3' )
+,	_ = _.replace( digitREs[ 4 ], '4' )
+,	_ = _.replace( digitREs[ 5 ], '5' )
+,	_ = _.replace( digitREs[ 6 ], '6' )
+,	_ = _.replace( digitREs[ 7 ], '7' )
+,	_ = _.replace( digitREs[ 8 ], '8' )
+,	_ = _.replace( digitREs[ 9 ], '9' )
+,	_
+)
+const
+ReplaceAllDigits = _ => (
+	_ = _.replaceAll( digitREsG[ 0 ], '0' )
+,	_ = _.replaceAll( digitREsG[ 1 ], '1' )
+,	_ = _.replaceAll( digitREsG[ 2 ], '2' )
+,	_ = _.replaceAll( digitREsG[ 3 ], '3' )
+,	_ = _.replaceAll( digitREsG[ 4 ], '4' )
+,	_ = _.replaceAll( digitREsG[ 5 ], '5' )
+,	_ = _.replaceAll( digitREsG[ 6 ], '6' )
+,	_ = _.replaceAll( digitREsG[ 7 ], '7' )
+,	_ = _.replaceAll( digitREsG[ 8 ], '8' )
+,	_ = _.replaceAll( digitREsG[ 9 ], '9' )
+,	_
+)
+
 const
 Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
@@ -306,6 +413,8 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	let source = SOURCE.value
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
+
+	CONV_NUM.checked && ( source = ReplaceAllDigits( source ) )
 
 	if ( PROGRAM_MODE.checked ) {
 		const deleted = []
