@@ -278,6 +278,7 @@ textarea {
 	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Programming mode	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×			</label><br>
 	<label for=CONV_NUM			><input type=checkbox id=CONV_NUM		checked	> Convert numeric	</label><br>
+	<label for=CONV_PAREN		><input type=checkbox id=CONV_PAREN		checked	> Convert ([{}])	</label><br>
 	<br>
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
@@ -403,6 +404,17 @@ ReplaceAllDigits = _ => (
 )
 
 const
+ReplaceAllParenthesis = _ => (
+	_ = _.replaceAll( /[(⁽₍﴾﹙（]/g, '(' )
+,	_ = _.replaceAll( /[)⁾₎﴿﹚）]/g, ')' )
+,	_ = _.replaceAll( /[\[［]/g, '[' )
+,	_ = _.replaceAll( /[\]］]/g, ']' )
+,	_ = _.replaceAll( /[{﹛｛]/g, '{' )
+,	_ = _.replaceAll( /[}﹜｝]/g, '}' )
+,	_
+)
+
+const
 Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	RemoveCanvas()
@@ -415,6 +427,8 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 
 	CONV_NUM.checked && ( source = ReplaceAllDigits( source ) )
+	CONV_PAREN.checked && ( source = ReplaceAllParenthesis( source ) )
+console.log( source )
 
 	if ( PROGRAM_MODE.checked ) {
 		const deleted = []
