@@ -868,6 +868,14 @@ JObject_SliP = _ => {
 	throw _.string() + ' can not be converted to JSON'
 }
 
+const
+NEval = ( c, _ ) => {
+	const $ = Eval( c, _ )
+	if ( $.constructor !== Number ) throw [ 'Not a number:' + $.string() ]
+	if ( Number.isNaN( $._ ) ) throw [ 'Is NaN' ]
+	return $
+}
+
 export const
 NewContext = () => new Context(
 	{}
@@ -890,87 +898,87 @@ NewContext = () => new Context(
 			)
 //	MATH EXTENSION
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.abs( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.abs( NEval( c, _ )._ ) )
 			,	'abs'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.acos( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.acos( NEval( c, _ )._ ) )
 			,	'acos'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.acosh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.acosh( NEval( c, _ )._ ) )
 			,	'acosh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.asin( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.asin( NEval( c, _ )._ ) )
 			,	'asin'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.asinh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.asinh( NEval( c, _ )._ ) )
 			,	'asinh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.atan( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.atan( NEval( c, _ )._ ) )
 			,	'atan'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.atanh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.atanh( NEval( c, _ )._ ) )
 			,	'atanh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.atan2( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) )
+				( c, _ ) => new Numeric( Math.atan2( NEval( c, _._[ 0 ] )._, NEval( c, _._[ 1 ] )._ ) )
 			,	'atan2'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.cbrt( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.cbrt( NEval( c, _ )._ ) )
 			,	'cbrt'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.ceil( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.ceil( NEval( c, _ )._ ) )
 			,	'ceil'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.cos( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.cos( NEval( c, _ )._ ) )
 			,	'cos'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.cosh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.cosh( NEval( c, _ )._ ) )
 			,	'cosh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.exp( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.exp( NEval( c, _ )._ ) )
 			,	'exp'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.floor( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.floor( NEval( c, _ )._ ) )
 			,	'floor'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.hypot( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.hypot( ...Eval( c, _ )._.map( _ => NEval( c, _ )._ ) ) )
 			,	'hypot'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.log( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.log( NEval( c, _ )._ ) )
 			,	'log'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.log10( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.log10( NEval( c, _ )._ ) )
 			,	'log10'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.log2( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.log2( NEval( c, _ )._ ) )
 			,	'log2'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.max( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.max( ...Eval( c, _ )._.map( _ => NEval( c, _ )._ ) ) )
 			,	'max'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.min( ...Eval( c, _ )._.map( _ => Eval( c, _ )._ ) ) )
+				( c, _ ) => new Numeric( Math.min( ...Eval( c, _ )._.map( _ => NEval( c, _ )._ ) ) )
 			,	'min'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.pow( Eval( c, _._[ 0 ] )._, Eval( c, _._[ 1 ] )._ ) )
+				( c, _ ) => new Numeric( Math.pow( NEval( c, _._[ 0 ] )._, NEval( c, _._[ 1 ] )._ ) )
 			,	'pow'
 			)
 		,	new Primitive(
@@ -978,35 +986,35 @@ NewContext = () => new Context(
 			,	'random'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.round( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.round( NEval( c, _ )._ ) )
 			,	'round'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sign( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.sign( NEval( c, _ )._ ) )
 			,	'sign'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sin( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.sin( NEval( c, _ )._ ) )
 			,	'sin'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sinh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.sinh( NEval( c, _ )._ ) )
 			,	'sinh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.sqrt( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.sqrt( NEval( c, _ )._ ) )
 			,	'sqrt'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.tan( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.tan( NEval( c, _ )._ ) )
 			,	'tan'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.tanh( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.tanh( NEval( c, _ )._ ) )
 			,	'tanh'
 			)
 		,	new Prefix(
-				( c, _ ) => new Numeric( Math.trunc( Eval( c, _ )._ ) )
+				( c, _ ) => new Numeric( Math.trunc( NEval( c, _ )._ ) )
 			,	'trunc'
 			)
 		,	new Unary(
