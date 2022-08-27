@@ -432,7 +432,7 @@ TreatEX = ex => (
 	:	AppendDIV( ex ).style.color = 'red'
 )
 
-import { NewContext, StringReader, Read, Eval, Sugared } from './SliP.js'
+import { NewContext, StringReader, Read, Eval, Sugared } from './NPM/SliP.js'
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
