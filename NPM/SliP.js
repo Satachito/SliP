@@ -870,9 +870,10 @@ JObject_SliP = _ => {
 
 const
 NEval = ( c, _ ) => {
+	if ( _ === void 0 ) throw [ 'Insufficient argument:' ]
 	const $ = Eval( c, _ )
 	if ( $.constructor !== Numeric ) throw [ 'Not a number:' + $.string() ]
-	if ( Number.isNaN( $._ ) ) throw [ 'Is NaN' ]
+	if ( Number.isNaN( $._ ) ) throw [ 'Argument is NaN' ]
 	return $
 }
 
