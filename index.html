@@ -282,7 +282,7 @@ textarea {
 	<br>
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
-	<label>Round to int threshold:</label><br><label>1e-</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
+	<label>Round precision:</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
 	<br>
 	<input type=button value="Load sample" id=LOAD_SAMPLE><br>
 </aside>
@@ -299,7 +299,7 @@ const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
 
 const
-startCodes = [
+code0sBMP = [
 	0x30
 ,	0x0660
 ,	0x06F0
@@ -337,73 +337,85 @@ startCodes = [
 ,	0xAA50
 ,	0xABF0
 ,	0xFF10
-/*
-,	0x104A0
+]
+const
+singleLists = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ].map( $ => code0sBMP.map( _ => _ + $ ) )
+
+const
+code0sSMP = [
+	0x104A0
+,	0x10D30
 ,	0x11066
 ,	0x110F0
 ,	0x11136
 ,	0x111D0
 ,	0x112F0
+,	0x11450
 ,	0x114D0
 ,	0x11650
 ,	0x116C0
 ,	0x11730
 ,	0x118E0
+,	0x11950
+,	0x11C50
+,	0x11D50
+,	0x11DA0
 ,	0x16A60
+,	0x16AC0
 ,	0x16B50
 ,	0x1D7CE
 ,	0x1D7D8
 ,	0x1D7E2
 ,	0x1D7EC
 ,	0x1D7F6
-*/
+,	0x1E140
+,	0x1E2F0
+,	0x1E950
+,	0x1FBF0
 ]
 
 const
-digitREs = [
-	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 0 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 1 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 2 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 3 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 4 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 5 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 6 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 7 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 8 ) ) + ']' )
-,	RegExp( '[' + String.fromCodePoint( ...startCodes.map( _ => _ + 9 ) ) + ']' )
-]
+code0s = [ ...code0sBMP, ...code0sSMP ]
 
 const
-digitREsG = digitREs.map( _ => RegExp( _, 'g' ) )
+surrogatePair = _ => [ ( 0xd800 | _ >> 10 ) - 0x40, 0xdc00 | ( _ & 0x3ff ) ]
 
 const
-ReplaceDigits = _ => (
-	_ = _.replace( digitREs[ 0 ], '0' )
-,	_ = _.replace( digitREs[ 1 ], '1' )
-,	_ = _.replace( digitREs[ 2 ], '2' )
-,	_ = _.replace( digitREs[ 3 ], '3' )
-,	_ = _.replace( digitREs[ 4 ], '4' )
-,	_ = _.replace( digitREs[ 5 ], '5' )
-,	_ = _.replace( digitREs[ 6 ], '6' )
-,	_ = _.replace( digitREs[ 7 ], '7' )
-,	_ = _.replace( digitREs[ 8 ], '8' )
-,	_ = _.replace( digitREs[ 9 ], '9' )
-,	_
-)
+surrogatePairLists = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ].map( $ => code0sSMP.map( _ => surrogatePair( _ + $ ) ) )
+
 const
-ReplaceAllDigits = _ => (
-	_ = _.replaceAll( digitREsG[ 0 ], '0' )
-,	_ = _.replaceAll( digitREsG[ 1 ], '1' )
-,	_ = _.replaceAll( digitREsG[ 2 ], '2' )
-,	_ = _.replaceAll( digitREsG[ 3 ], '3' )
-,	_ = _.replaceAll( digitREsG[ 4 ], '4' )
-,	_ = _.replaceAll( digitREsG[ 5 ], '5' )
-,	_ = _.replaceAll( digitREsG[ 6 ], '6' )
-,	_ = _.replaceAll( digitREsG[ 7 ], '7' )
-,	_ = _.replaceAll( digitREsG[ 8 ], '8' )
-,	_ = _.replaceAll( digitREsG[ 9 ], '9' )
-,	_
-)
+surrogateHs = Array.from( new Set( surrogatePairLists[ 0 ].map( _ => _[ 0 ] ) ) )
+
+const
+ReplaceNumeral = _ => {
+
+	const charCodes = Array.from( { length: _.length } ).map( ( $, i ) => _.charCodeAt( i ) )
+	{	let	_ = charCodes.length
+		while ( _-- ) {
+			const $ = charCodes[ _ ]
+			singleLists.forEach(
+				( singleList, i ) => singleList.includes( $ ) && charCodes.splice( _, 1, 0x30 + i )
+			)
+		}
+	}
+
+	{	let	_ = charCodes.length - 1
+		while ( _-- ) {
+			const $0 = charCodes[ _ ]
+			if ( !surrogateHs.includes( $0 ) ) continue
+			const $1 = charCodes[ _ + 1 ]
+			surrogatePairLists.forEach(
+				( surrogatePairList, i ) => surrogatePairList.some(
+					_ => _[ 0 ] === $0 && _[ 1 ] === $1
+				) && charCodes.splice( _, 2, 0x30 + i )
+			)
+		}
+	}
+
+	return String.fromCharCode( ...charCodes )
+}
+
+
 
 const
 ReplaceAllParenthesis = _ => (
@@ -428,7 +440,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	let source = SOURCE.value
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 
-	CONV_NUM.checked && ( source = ReplaceAllDigits( source ) )
+	CONV_NUM.checked && ( source = ReplaceNumeral( source ) )
 	CONV_PAREN.checked && ( source = ReplaceAllParenthesis( source ) )
 console.log( source )
 

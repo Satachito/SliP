@@ -18,6 +18,32 @@ SliP {
 	string() { return `${this._}` }
 }
 
+const
+Round = _ => {
+	if ( _ === 1 ) return 1
+	if ( _ < 1 ) {
+		const coef	= Math.pow( 10, ROUND_PRECISION.value )
+		const $		= Math.round( _ * coef ) / coef
+		console.log( _, $ )
+		return $
+	} else {
+		const coef = Math.pow( 10, ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) ) )
+		console.log(
+			_
+		,	Math.log10( _ )
+		,	Math.ceil( Math.log10( _ ) )
+		,	ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) )
+		,	Math.pow( 10, ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) ) )
+		,	coef
+		,	Math.round( _ * coef )
+		,	Math.round( _ * coef ) / coef
+		)
+		const $ = Math.round( _ * coef ) / coef
+		console.log( _, $ )
+		return $
+	}
+}
+
 class
 Numeric extends SliP {
 	string() {
@@ -25,11 +51,10 @@ Numeric extends SliP {
 		case  Infinity	: return '∞'
 		case -Infinity	: return '-∞'
 		default			:
-			{	const _ = Math.round( this._ )
-				return Math.abs( _ - this._ ) < Number( '1e-' + ROUND_PRECISION.value )
-				?	_
-				:	this._
-			}
+		//	return this._
+			return this._ === 0
+			?	0
+			:	this._ < 0 ? - Round( - this._ ) : Round( this._ )
 		}
 	}
 }
