@@ -1,7 +1,7 @@
 git checkout firebase
 git merge main
 
-cp -r NPM public/.
+cp -r SliP public/.
 cp *.slip public/.
 cp *.html public/.
 cp *.png public/.
