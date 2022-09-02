@@ -442,7 +442,6 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	CONV_NUM.checked && ( source = ReplaceNumeral( source ) )
 	CONV_PAREN.checked && ( source = ReplaceAllParenthesis( source ) )
-console.log( source )
 
 	if ( PROGRAM_MODE.checked ) {
 		const deleted = []
@@ -572,7 +571,7 @@ TreatEX = ex => (
 	:	AppendDIV( ex ).style.color = 'red'
 )
 
-import { NewContext, StringReader, Read, Eval, Sugared } from './NPM/SliP.js'
+import { NewContext, StringReader, Read, Eval, Sugared } from './SliP/_.js'
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )

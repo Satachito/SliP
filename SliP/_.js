@@ -21,26 +21,38 @@ SliP {
 const
 Round = _ => {
 	if ( _ === 1 ) return 1
+	const
+	roundPrecision = (
+		() => {
+			try {
+				return Number( ROUND_PRECISION.value )
+			} catch {
+				return 15
+			}
+		}
+	)()
 	if ( _ < 1 ) {
-		const coef	= Math.pow( 10, ROUND_PRECISION.value )
-		const $		= Math.round( _ * coef ) / coef
-		console.log( _, $ )
-		return $
+		const coef	= Math.pow( 10, roundPrecision )
+		return Math.round( _ * coef ) / coef
+	//	const $		= Math.round( _ * coef ) / coef
+	//	console.log( _, $ )
+	//	return $
 	} else {
-		const coef = Math.pow( 10, ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) ) )
-		console.log(
-			_
-		,	Math.log10( _ )
-		,	Math.ceil( Math.log10( _ ) )
-		,	ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) )
-		,	Math.pow( 10, ROUND_PRECISION.value - Math.ceil( Math.log10( _ ) ) )
-		,	coef
-		,	Math.round( _ * coef )
-		,	Math.round( _ * coef ) / coef
-		)
-		const $ = Math.round( _ * coef ) / coef
-		console.log( _, $ )
-		return $
+		const coef = Math.pow( 10, roundPrecision - Math.ceil( Math.log10( _ ) ) )
+		return Math.round( _ * coef ) / coef
+	//	console.log(
+	//		_
+	//	,	Math.log10( _ )
+	//	,	Math.ceil( Math.log10( _ ) )
+	//	,	roundPrecision - Math.ceil( Math.log10( _ ) )
+	//	,	Math.pow( 10, roundPrecision - Math.ceil( Math.log10( _ ) ) )
+	//	,	coef
+	//	,	Math.round( _ * coef )
+	//	,	Math.round( _ * coef ) / coef
+	//	)
+	//	const $ = Math.round( _ * coef ) / coef
+	//	console.log( _, $ )
+	//	return $
 	}
 }
 

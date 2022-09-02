@@ -1,0 +1,21 @@
+{
+  "name": "@satachito/slip",
+  "version": "1.0.0",
+  "description": "SliP, the computer language.",
+  "main": "_.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satachito/SliP.git"
+  },  
+  "keywords": [
+    "SliP",
+	"Language"
+  ],  
+  "author": "Satoru Ogura <satoru.ogura@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satachito/SliP/issues"
+  },  
+  "homepage": "https://slip.828.tokyo/"
+,	"type"	: "module"
+}
