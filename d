@@ -6,6 +6,7 @@ cp *.slip public/.
 cp *.html public/.
 cp *.png public/.
 cp -r jp-split public/.
+cp -r ReplaceNumeral public/.
 
 firebase deploy
 
