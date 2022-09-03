@@ -4,6 +4,3 @@
 [submodule "ReplaceNumeral"]
 	path = ReplaceNumeral
 	url = https://github.com/Satachito/ReplaceNumeral.git
-[submodule "Formula"]
-	path = Formula
-	url = https://github.com/Satachito/jp-formula.git
