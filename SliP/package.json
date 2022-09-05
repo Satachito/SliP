@@ -1,6 +1,6 @@
 {
   "name": "@satachito/slip",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "SliP, the computer language.",
   "main": "_.js",
   "repository": {
