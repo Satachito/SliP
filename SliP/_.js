@@ -1118,6 +1118,7 @@ NewContext = () => new Context(
 				}
 			,	'canvas'
 			)
+//	GL
 		,	new Unary(
 				( c, canvas ) => new SliP( canvas._.createProgram() )
 			,	'createProgram'
@@ -1199,7 +1200,6 @@ NewContext = () => new Context(
 						case gl.DELETE_STATUS:
 						case gl.LINK_STATUS:
 						case gl.VALIDATE_STATUS:
-console.log( v, v ? T : Nil )
 							return v ? T : Nil
 						case gl.ATTACHED_SHADERS:
 						case gl.ACTIVE_ATTRIBUTES:
@@ -1207,7 +1207,6 @@ console.log( v, v ? T : Nil )
 						case gl.TRANSFORM_FEEDBACK_BUFFER_MODE:
 						case gl.TRANSFORM_FEEDBACK_VARYINGS:
 						case gl.ACTIVE_UNIFORM_BLOCKS:
-console.log( v )
 							return new Numeric( v )
 						default:
 							throw 'eh?'
@@ -1216,70 +1215,112 @@ console.log( v )
 				)
 			,	'getProgramParameter'
 			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.LINK_STATUS )
-			,	'LINK_STATUS'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.VALIDATE_STATUS )
-			,	'VALIDATE_STATUS'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.ATTACHED_SHADERS )
-			,	'ATTACHED_SHADERS'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.ACTIVE_ATTRIBUTES )
-			,	'ACTIVE_ATTRIBUTES'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.ACTIVE_UNIFORMS )
-			,	'ACTIVE_UNIFORMS'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.TRANSFORM_FEEDBACK_BUFFER_MODE )
-			,	'TRANSFORM_FEEDBACK_BUFFER_MODE'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.TRANSFORM_FEEDBACK_VARYINGS )
-			,	'TRANSFORM_FEEDBACK_VARYINGS'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.ACTIVE_UNIFORM_BLOCKS )
-			,	'ACTIVE_UNIFORM_BLOCKS'
-			)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.LINK_STATUS						), 'LINK_STATUS'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.VALIDATE_STATUS					), 'VALIDATE_STATUS'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.ATTACHED_SHADERS					), 'ATTACHED_SHADERS'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.ACTIVE_ATTRIBUTES					), 'ACTIVE_ATTRIBUTES'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.ACTIVE_UNIFORMS					), 'ACTIVE_UNIFORMS'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.TRANSFORM_FEEDBACK_BUFFER_MODE	), 'TRANSFORM_FEEDBACK_BUFFER_MODE'	)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.TRANSFORM_FEEDBACK_VARYINGS		), 'TRANSFORM_FEEDBACK_VARYINGS'	)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.ACTIVE_UNIFORM_BLOCKS				), 'ACTIVE_UNIFORM_BLOCKS'			)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.BYTE								), 'BYTE'							)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.SHORT								), 'SHORT'							)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.UNSIGNED_BYTE						), 'UNSIGNED_BYTE'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.UNSIGNED_SHORT					), 'UNSIGNED_SHORT'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.FLOAT								), 'FLOAT'							)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.HALF_FLOAT						), 'HALF_FLOAT'						)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.ARRAY_BUFFER						), 'ARRAY_BUFFER'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.STATIC_DRAW						), 'STATIC_DRAW'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.COLOR_BUFFER_BIT					), 'COLOR_BUFFER_BIT'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.DEPTH_BUFFER_BIT					), 'DEPTH_BUFFER_BIT'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.STENCIL_BUFFER_BIT				), 'STENCIL_BUFFER_BIT'				)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.POINTS							), 'POINTS'							)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.LINE_STRIP						), 'LINE_STRIP'						)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.LINE_LOOP							), 'LINE_LOOP'						)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.LINES								), 'LINES'							)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.TRIANGLE_STRIP					), 'TRIANGLE_STRIP'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.TRIANGLE_FAN						), 'TRIANGLE_FAN'					)
+		,	new Unary( ( c, canvas ) => new Numeric( canvas._.TRIANGLES							), 'TRIANGLES'						)
 		,	new Unary(
 				( c, canvas ) => new SliP( canvas._.getError() )
 			,	'getError'
 			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.BYTE )
-			,	'BYTE'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.SHORT )
-			,	'SHORT'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.UNSIGNED_BYTE )
-			,	'UNSIGNED_BYTE'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.UNSIGNED_SHORT )
-			,	'UNSIGNED_SHORT'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.FLOAT )
-			,	'FLOAT'
-			)
-		,	new Unary(
-				( c, canvas ) => new SliP( canvas._.HALF_FLOAT )
-			,	'HALF_FLOAT'
-			)
 		,	new Prefix(
-				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.vertexAttribPointer( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) )
+				( c, _ ) => new Unary(
+					( c, canvas ) => {
+						const evaled = Eval( c, _ )._
+						const $ = evaled.map( _ => _._ )
+						$[ 3 ] = _IsT( evaled[ 3 ] ) ? true : false
+						canvas._.vertexAttribPointer( ...$ )
+						return canvas
+					}
+				)
 			,	'vertexAttribPointer'
 			)
+		,	new Unary(
+				( c, canvas ) => new SliP( canvas._.createBuffer() )
+			,	'createBuffer'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.bindBuffer( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) )
+			,	'bindBuffer'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary(
+					( c, canvas ) => {
+						const $ = Eval( c, _ )._.map( _ => _._ )
+						$[ 1 ] = $[ 1 ].map( _ => _._ )
+						canvas._.bufferData( ...$ )
+						return canvas
+					}
+				)
+			,	'bufferData'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.viewport( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) )
+			,	'viewport'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.clear( Eval( c, _ )._ ), canvas ) )
+			,	'clear'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.useProgram( Eval( c, _ )._ ), canvas ) )
+			,	'useProgram'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => new SliP( canvas._.getUniformLocation( ...Eval( c, _ )._.map( _ => _._ ) ) ) )
+			,	'getUniformLocation'
+			)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform1f	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform1f'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform1i	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform1i'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform2f	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform2f'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform2i	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform2i'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform3f	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform3f'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform3i	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform3i'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform4f	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform4f'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform4i	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform4i'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform1fv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform1fv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform1iv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform1iv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform2fv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform2fv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform2iv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform2iv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform3fv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform3fv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform3iv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform3iv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform4fv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform4fv'	)
+		,	new Prefix( ( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.uniform4iv	( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) ), 'uniform4iv'	)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.enableVertexAttribArray( Eval( c, _ )._ ), canvas ) )
+			,	'enableVertexAttribArray'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.drawArrays( ...Eval( c, _ )._.map( _ => _._ ) ), canvas ) )
+			,	'drawArrays'
+			)
+		,	new Prefix(
+				( c, _ ) => new Unary( ( c, canvas ) => ( canvas._.disableVertexAttribArray( Eval( c, _ )._ ), canvas ) )
+			,	'disableVertexAttribArray'
+			)
+//	2D
 		,	new Unary(
 				( c, canvas ) => ( canvas._.save(), canvas )
 			,	'save'

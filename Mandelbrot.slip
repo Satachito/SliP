@@ -7,7 +7,7 @@
 				( 'shader = gl:createShader type )
 				( gl:shaderSource{ shader src } )
 				( gl:compileShader shader )
-				( ¬( gl:getShaderParameter{ shader ( gl:COMPILE_STATUS ) } ) ¿ '( gl:getShaderInfoLog shader ) )
+				( ¬( gl:getShaderParameter{ shader ( gl:COMPILE_STATUS ) } ) ¿ '( ¡ ( gl:getShaderInfoLog shader ) ) )
 				( gl:attachShader{ program shader } )
 				( gl:deleteShader shader  )
 			}:2
@@ -114,25 +114,23 @@
 	( gl:linkProgram program )
 	( ¬( gl:getProgramParameter{ program ( gl:LINK_STATUS ) } ) ¿ '( ¡ ( gl:getError ) ) )
 
-	( 'vertex_position = gl:vertexAttribPointer{ 2 ( gl:FLOAT ) [] 0 0 } )
-
 	(	gl:bindBuffer{
 			( gl:ARRAY_BUFFER )
 			( gl:createBuffer )
 		}:bufferData{
 			( gl:ARRAY_BUFFER )
-			[ ( -1 ) ( -1 ) 1 ( -1 ) ( -1 ) 1 1 ( -1 ) 1 1 ( -1 ) 1 ]
+			{ ( -1 ) ( -1 ) 1 ( -1 ) ( -1 ) 1 1 ( -1 ) 1 1 ( -1 ) 1 }
 			( gl:STATIC_DRAW )
 		}:viewport{
 			0 0 WH WH
-		}:clear{
-			( gl:COLOR_BUFFER_BIT | gl:DEPTH_BUFFER_BIT )
-		}:useProgram{
+		}:clear(
+			gl:COLOR_BUFFER_BIT | gl:DEPTH_BUFFER_BIT
+		):useProgram(
 			program
-		}:uniform2f{
+		):uniform2f{
 			( gl:getUniformLocation{ program `min`			}	)
-			-2
-			-1
+			( -2 )
+			( -1 )
 		}:uniform2f{
 			( gl:getUniformLocation{ program `max`			}	)
 			1	
@@ -147,14 +145,21 @@
 		}:uniform1i{
 			( gl:getUniformLocation{ program `colorMapIndex`}	)
 			0
-		}:enableVertexAttribArray{
-			vertex_position
-		}:drawArrays{
+		}:vertexAttribPointer{
+			0
+			2
+			( gl:FLOAT )
+			[]
+			0
+			0
+		}:enableVertexAttribArray(
+			0
+		):drawArrays{
 			{ gl.TRIANGLES }
 			0
 			6
-		}:disableVertexAttribArray{
-			vertex_position
-		}
+		}:disableVertexAttribArray(
+			0
+		)
 	)
 }
