@@ -7,3 +7,4 @@ _.html
 *.swp
 .firebase/
 public/
+firebase-debug.log
