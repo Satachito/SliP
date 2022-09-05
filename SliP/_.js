@@ -1,7 +1,4 @@
 const
-LogBack = _ => ( console.log( _ ), _ )
-
-const
 stack = []
 
 class
