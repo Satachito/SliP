@@ -1,0 +1,160 @@
+{	( 'WH = 1000 )
+	( 'gl = { WH WH 100 100 `webgl` }:canvas )
+	( 'program = gl:createProgram )
+	( 'AttachShader = '(
+			{	( 'src	= @:0 )
+				( 'type	= @:1 )
+				( 'shader = gl:createShader type )
+				( gl:shaderSource{ shader src } )
+				( gl:compileShader shader )
+				( ¬( gl:getShaderParameter{ shader ( gl:COMPILE_STATUS ) } ) ¿ '( gl:getShaderInfoLog shader ) )
+				( gl:attachShader{ program shader } )
+				( gl:deleteShader shader  )
+			}:2
+		)
+	)
+	(	{	`	attribute vec3 position;
+				void
+				main() {
+					gl_Position = vec4( position, 1.0 );
+				}
+			`
+		 	( gl:VERTEX_SHADER )
+		}:AttachShader
+	)
+	(	{	`	precision highp float;
+				precision highp int;
+
+				uniform vec2	min;
+				uniform vec2	max;
+
+				uniform vec2	resolution;
+				uniform int		iterations;
+
+				uniform int		colorMapIndex;
+
+				int
+				Mandelbrot( vec2 c ) {
+					vec2 z = c;
+					for( int i = 1; i < 1000; ++i ) {
+						if ( i >= iterations ) break;
+
+						vec2 z2 = z * z;
+						if ( z2.x + z2.y > 4.0 ) return i;
+						
+						z = vec2(
+							z2.x - z2.y
+						,	z.y * z.x * 2.0
+						) + c; 
+					//	TODO: COMPARE ELAPPSED
+					//	z.y = ( z.y * z.x * 2.0 ) + c.y; 
+					//	z.x = ( z2.x - z2.y ) + c.x; 
+					}
+					return 0;
+				}
+
+				vec4
+				RGB_Hue( float _ ) {						// 0 <= _ < 1
+					int		i = int( floor( _ * 6.0 ) );	// 0, 1, 2, 3, 4, 5
+					float	p = _ - float( i );				// 0 <= p <= 1
+					float	q = 1.0 - p;					// 1 >= q >= 0
+					if ( i == 0 ) return vec4( 1.0, p, 0, 1.0 );
+					if ( i == 1 ) return vec4( q, 1.0, 0, 1.0 );
+					if ( i == 2 ) return vec4( 0, 1.0, p, 1.0 );
+					if ( i == 3 ) return vec4( 0, q, 1.0, 1.0 );
+					if ( i == 4 ) return vec4( p, 0, 1.0, 1.0 );
+					if ( i == 5 ) return vec4( 1.0, 0, q, 1.0 );
+				}
+
+				vec4
+				Gray	( float _ ) { return vec4( _, _, _, 1.0 ); }
+				vec4
+				Red		( float _ ) { return vec4( _, 0.0, 0.0, 1.0 ); }
+				vec4
+				Green	( float _ ) { return vec4( 0.0, _, 0.0, 1.0 ); }
+				vec4
+				Blue	( float _ ) { return vec4( 0.0, 0.0, _, 1.0 ); }
+				vec4
+				Yellow	( float _ ) { return vec4( _, _, 0.0, 1.0 ); }
+				vec4
+				Magenta	( float _ ) { return vec4( _, 0.0, _, 1.0 ); }
+				vec4
+				Cyan	( float _ ) { return vec4( 0.0, _, _, 1.0 ); }
+
+				vec4
+				Color( float _ ) {
+					if ( colorMapIndex == 0 ) return RGB_Hue( _ );
+					if ( colorMapIndex == 1 ) return Gray( _ );
+					if ( colorMapIndex == 2 ) return Red( _ );
+					if ( colorMapIndex == 3 ) return Green( _ );
+					if ( colorMapIndex == 4 ) return Blue( _ );
+					if ( colorMapIndex == 5 ) return Yellow( _ );
+					if ( colorMapIndex == 6 ) return Magenta( _ );
+					if ( colorMapIndex == 7 ) return Cyan( _ );
+				}
+
+				void
+				main( void ) {
+					int i = Mandelbrot(
+						vec2(
+							min.x + ( max.x - min.x ) * gl_FragCoord.x / resolution.x
+						,	min.y + ( max.y - min.y ) * gl_FragCoord.y / resolution.y
+						)
+					);
+					gl_FragColor = i == 0
+					?	vec4( 0.0, 0.0, 0.0, 1.0 )
+					:	Color( float( i ) / float( iterations ) )
+					;
+				}
+			`
+		 	( gl:FRAGMENT_SHADER )
+		}:AttachShader
+	)
+
+	( gl:linkProgram program )
+	( ¬( gl:getProgramParameter{ program ( gl:LINK_STATUS ) } ) ¿ '( ¡ ( gl:getError ) ) )
+
+	( 'vertex_position = gl:vertexAttribPointer{ 2 ( gl:FLOAT ) [] 0 0 } )
+
+	(	gl:bindBuffer{
+			( gl:ARRAY_BUFFER )
+			( gl:createBuffer )
+		}:bufferData{
+			( gl:ARRAY_BUFFER )
+			[ ( -1 ) ( -1 ) 1 ( -1 ) ( -1 ) 1 1 ( -1 ) 1 1 ( -1 ) 1 ]
+			( gl:STATIC_DRAW )
+		}:viewport{
+			0 0 WH WH
+		}:clear{
+			( gl:COLOR_BUFFER_BIT | gl:DEPTH_BUFFER_BIT )
+		}:useProgram{
+			program
+		}:uniform2f{
+			( gl:getUniformLocation{ program `min`			}	)
+			-2
+			-1
+		}:uniform2f{
+			( gl:getUniformLocation{ program `max`			}	)
+			1	
+			1
+		}:uniform2f{
+			( gl:getUniformLocation{ program `resolution`	}	)
+			WH
+			WH
+		}:uniform1i{
+			( gl:getUniformLocation{ program `iterations`	}	)
+			100
+		}:uniform1i{
+			( gl:getUniformLocation{ program `colorMapIndex`}	)
+			0
+		}:enableVertexAttribArray{
+			vertex_position
+		}:drawArrays{
+			{ gl.TRIANGLES }
+			0
+			6
+		}:disableVertexAttribArray{
+			vertex_position
+		}
+	)
+}
