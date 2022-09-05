@@ -166,7 +166,7 @@ const
 _EvalSentence = ( c, _ ) => {
 	switch ( _.length ) {
 	case  0:
-		throw `Syntax error(No operand)`
+		throw 'No operands'
 	case  1:
 		return Eval( c, _[ 0 ] )
 	default:
@@ -177,21 +177,11 @@ _EvalSentence = ( c, _ ) => {
 				_ => _[ 1 ].priority >= $[ 1 ].priority && ( $ = _ )
 			)
 			const [ index, infix ] = $
-			try {
-				return infix._(
-					c
-				,	_EvalSentence( c, _.slice( 0, index ) )
-				,	_EvalSentence( c, _.slice( index + 1 ) )
-				)
-			} catch ( ex ) {
-				let $ = `Evaluating: ${ new _List( _ ).string() }`
-				if ( Array.isArray( ex ) ) {
-					ex.push( $ )
-					throw ex
-				} else {
-					throw [ ex, $ ]
-				}
-			}
+			return infix._(
+				c
+			,	_EvalSentence( c, _.slice( 0, index ) )
+			,	_EvalSentence( c, _.slice( index + 1 ) )
+			)
 		} else {
 			let index = _.length - 1
 			_ = _.slice()
@@ -204,34 +194,43 @@ _EvalSentence = ( c, _ ) => {
 			const
 			$ = _.map( _ => Eval( c, _ ) )
 			if ( $.every( _ => _ instanceof Numeric ) ) return new Numeric( $.reduce( ( $, _ ) => $ * _._, 1 ) )
-			throw `Syntax error: ${ new _List( _ ).string() }`
 		}
 		break
 	}
+	throw 'Syntax error'
 }
 
 export const
 Eval = ( c, _ ) => {
-	switch ( _.constructor.name ) {
-	case 'Name':
-		while ( c ) {
-			const $ = c.dict[ _._ ]
-			if ( $ !== void 0 ) return $ instanceof Primitive ? $._( c ) : $
-			c = c.next
-		}
-		throw `Undefined:${_._}`
-	case 'Primitive':
-		return _._( c )
-	case 'Parallel':
-		return new List( _._.map( _ => Eval( c, _ ) ) )
-	case 'Procedure':
-		{	c = new Context( {}, c )
+	try {
+		switch ( _.constructor.name ) {
+		case 'Name':
+			while ( c ) {
+				const $ = c.dict[ _._ ]
+				if ( $ !== void 0 ) return $ instanceof Primitive ? $._( c ) : $
+				c = c.next
+			}
+			throw 'Undefined'
+		case 'Primitive':
+			return _._( c )
+		case 'Parallel':
 			return new List( _._.map( _ => Eval( c, _ ) ) )
+		case 'Procedure':
+			{	c = new Context( {}, c )
+				return new List( _._.map( _ => Eval( c, _ ) ) )
+			}
+		case 'Sentence':
+			return _EvalSentence( c, _._ )
+		default:
+			return _
 		}
-	case 'Sentence':
-		return _EvalSentence( c, _._ )
-	default:
-		return _
+	} catch ( ex ) {
+		let $ = 'Evaluating: ' + _.string()
+		if ( Array.isArray( ex ) ) {
+			ex.push( $ )
+			throw ex
+		}
+		throw [ ex, $ ]
 	}
 }
 
@@ -273,13 +272,13 @@ Plus = ( c, l, r ) => {
 	if ( l instanceof Parallel	&& r instanceof Parallel	) return new Parallel	( [ ...l._, ...r._ ] )
 	if ( l instanceof Procedure	&& r instanceof Procedure	) return new Procedure	( [ ...l._, ...r._ ] )
 	if ( l instanceof Sentence	&& r instanceof Sentence	) return new Sentence	( [ ...l._, ...r._ ] )
-	throw `${l.string()}+${r.string()}`
+	throw 'Illegal type combination'
 }
 
 const
 Minus = ( c, l, r ) => {
 	if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ - r._ )
-	throw `${l.string()}-${r.string()}`
+	throw 'Illegal type combination'
 }
 
 const
@@ -311,7 +310,7 @@ Builtins = [
 		( c, _ ) => {
 			const v = Eval( c, _ )
 			if ( v instanceof Numeric ) return new Numeric( ~v._ )
-			throw `~${_.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'~'
 	)
@@ -331,7 +330,7 @@ Builtins = [
 		( c, _ ) => {
 			if ( _ instanceof _List		) return new Numeric( _._.length )
 			if ( _ instanceof Literal	) return new Numeric( _._.length )
-			throw `#${_.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'#'
 	)
@@ -346,15 +345,16 @@ Builtins = [
 				case 'Procedure': return new Procedure	( _._.slice( 1 ) )
 				}
 			}
-			throw `*${_.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'*'
 	)
 ,	new Unary(
 		( c, _ ) => {
+			if ( ! ( _ instanceof _List ) ) throw 'Illegal operand type'
 			const length = _._.length
-			if ( _ instanceof _List && length ) return _._[ length - 1 ]
-			throw `$${_.string()}`
+			if ( !length ) throw 'No elements' 
+			return _._[ length - 1 ]
 		}
 	,	'$'
 	)
@@ -386,7 +386,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Name ) return c.dict[ l._ ] = r
-			throw `${l.string()}=${r.string()}`
+			throw 'Only name can be assigned.'
 		}
 	,	'='
 	,	90
@@ -394,7 +394,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( r instanceof List && r._.length == 2 ) return Eval( c, r._[ _IsT( l ) ? 0 : 1 ] )
-			throw `${l.string()}?${r.string()}`
+			throw 'Right operand must be two element List.'
 		}
 	,	'?'
 	,	80
@@ -422,7 +422,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( r instanceof _List ) return r._.filter( _ => _EQ( _, l ) ).length ? T : Nil
-			throw `${l.string()}∈${r.string()}()`
+			throw 'Right operand must be List'
 		}
 	,	'∈'
 	,	60
@@ -430,7 +430,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof _List ) return l._.filter( _ => _EQ( _, r ) ).length ? T : Nil
-			throw `${l.string()}∋${r.string()}`
+			throw 'Left operand must be List'
 		}
 	,	'∋'
 	,	60
@@ -448,7 +448,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ < r._ ? T : Nil
-			throw `${l.string()}<${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'<'
 	,	60
@@ -456,7 +456,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ > r._ ? T : Nil
-			throw `${l.string()}>${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'>'
 	,	60
@@ -464,7 +464,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ <= r._ ? T : Nil
-			throw `${l.string()}<=${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'<='
 	,	60
@@ -472,7 +472,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return l._ >= r._ ? T : Nil
-			throw `${l.string()}>=${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'>='
 	,	60
@@ -489,7 +489,7 @@ Builtins = [
 				default				: throw 'internal error'
 				}
 			}
-			throw `${l.string()},${r.string()}`
+			throw 'Right operand must be List'
 		}
 	,	','
 	,	50
@@ -497,7 +497,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ & r._ )
-			throw `${l.string()}&${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'&'
 	,	40
@@ -505,7 +505,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ | r._ )
-			throw `${l.string()}|${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'|'
 	,	40
@@ -513,7 +513,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ ^ r._ )
-			throw `${l.string()}^${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'^'
 	,	40
@@ -541,7 +541,7 @@ Builtins = [
 					?	[ r.matrix, r._.length / r.matrix ]
 					:	[ r._.length / -r.matrix, -r.matrix ]
 				:	[ r._.length, 1 ]
-				if ( numColL !== numRowR ) throw `${l.string()}·${r.string()}`
+				if ( numColL !== numRowR ) throw 'Matrix size error'
 				if ( numRowL === 1 && numColR === 1 ) {
 					let $ = 0
 					for ( let _ = 0; _ < numColL; _++ ) $ += l._[ _ ]._ * r._[ _ ]._
@@ -561,7 +561,7 @@ Builtins = [
 					return v
 				}
 			}
-			throw `${l.string()}·${r.string()}`
+			throw 'Operands must be List'
 		}
 	,	'·'
 	,	20
@@ -569,7 +569,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ * r._ )
-			throw `${l.string()}*${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'×'
 	,	20
@@ -577,7 +577,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ / r._ )
-			throw `${l.string()}÷${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'÷'
 	,	20
@@ -585,7 +585,7 @@ Builtins = [
 ,	new Infix(
 		( c, l, r ) => {
 			if ( l instanceof Numeric && r instanceof Numeric ) return new Numeric( l._ % r._ )
-			throw `${l.string()}%${r.string()}`
+			throw 'Illegal operand type'
 		}
 	,	'%'
 	,	20
@@ -594,13 +594,13 @@ Builtins = [
 		( c, l, r ) => {
 			switch ( r.constructor.name ) {
 			case 'Numeric'	:
-				{	if ( ! l instanceof _List ) throw `${l.string()}:${r.string()}`
+				{	if ( ! ( l instanceof _List ) ) throw 'Left operand must be List'
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
 			case 'Name'		:
 			case 'Literal'	:
-				{	if ( ! l instanceof Dict ) throw `${l.string()}:${r.string()}`
+				{	if ( ! ( l instanceof Dict ) ) throw 'Left operand must be Dict'
 					let v = l._[ r._ ]
 					return v ? v : Nil
 				}
@@ -907,10 +907,10 @@ JObject_SliP = _ => {
 
 const
 NEval = ( c, _ ) => {
-	if ( _ === void 0 ) throw [ 'Insufficient argument:' ]
+	if ( _ === void 0 ) throw 'Insufficient argument'
 	const $ = Eval( c, _ )
-	if ( $.constructor !== Numeric ) throw [ 'Not a number:' + $.string() ]
-	if ( Number.isNaN( $._ ) ) throw [ 'Argument is NaN' ]
+	if ( $.constructor !== Numeric ) throw 'Not a number'
+	if ( Number.isNaN( $._ ) ) throw 'Argument is NaN'
 	return $
 }
 
