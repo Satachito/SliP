@@ -1,0 +1,20 @@
+{
+  "name": "@satachito/jp-split",
+  "version": "1.0.7",
+  "description": "Split view WebComponents",
+  "main": "jp-split.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satachito/jp-split.git"
+  },
+  "keywords": [
+    "SplitView",
+    "WebComponents"
+  ],
+  "author": "Satoru Ogura <satoru.ogura@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satachito/jp-split/issues"
+  },
+  "homepage": "https://github.com/Satachito/jp-split#readme"
+}

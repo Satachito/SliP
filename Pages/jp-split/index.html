@@ -1,0 +1,147 @@
+<br>
+---------------- BarH
+<style>
+textarea {
+;	resize			: none
+}
+#BarH {
+;	height			: 200px
+}
+#BarH > div {
+;	background		: grey
+;	cursor			: col-resize
+}
+</style>
+<jp-split-h id=BarH grid-template="1fr 4px 1fr">
+	<textarea></textarea>
+	<div></div>
+	<textarea></textarea>
+</jp-split-h>
+
+<br>
+---------------- BarV
+<style>
+#BarV {
+;	height			: 200px
+}
+#BarV > div {
+;	background		: grey
+;	cursor			: row-resize
+}
+</style>
+<jp-split-v id=BarV grid-template="1fr 4px 1fr">
+	<textarea></textarea>
+	<div></div>
+	<textarea></textarea>
+</jp-split-v>
+
+<br>
+---------------- BulletH
+<style>
+#BulletH {
+;	height			: 200px
+}
+#BulletH > div {
+;	display			: flex
+;	justify-content	: center
+;	align-items		: center
+;	cursor			: col-resize
+}
+</style>
+<jp-split-h id=BulletH grid-template="1fr 8px 1fr">
+	<textarea></textarea>
+	<div>∙</div>
+	<textarea></textarea>
+</jp-split-h>
+
+<br>
+---------------- BulletV
+<style>
+#BulletV {
+;	height			: 200px
+}
+#BulletV > div {
+;	display			: flex
+;	justify-content	: center
+;	align-items		: center
+;	cursor			: row-resize
+}
+</style>
+<jp-split-v id=BulletV grid-template="1fr 8px 1fr">
+	<textarea></textarea>
+	<div>∙</div>
+	<textarea></textarea>
+</jp-split-v>
+
+<br>
+---------------- CombiHV
+<style>
+#CombiHV {
+;	height			: 200px
+}
+#CombiHV > div {
+;	background		: grey
+;	cursor			: col-resize
+}
+#CombiHV .v-gutter {
+;	display			: flex
+;	justify-content	: center
+;	align-items		: center
+;	cursor			: row-resize
+}
+</style>
+<jp-split-h id=CombiHV grid-template="1fr 4px 1fr">
+	<jp-split-v grid-template="1fr 4px 1fr">
+		<textarea></textarea>
+		<div class=v-gutter>∙</div>
+		<textarea></textarea>
+	</jp-split-v>
+	<div></div>
+	<jp-split-v grid-template="1fr 4px 1fr">
+		<textarea></textarea>
+		<div class=v-gutter>∙</div>
+		<textarea></textarea>
+	</jp-split-v>
+</jp-split-h>
+
+<br>
+---------------- CombiVH
+<style>
+#CombiVH {
+;	height			: 200px
+}
+#CombiVH > div {
+;	background		: grey
+;	cursor			: row-resize
+}
+#CombiVH .h-gutter {
+;	display			: flex
+;	justify-content	: center
+;	align-items		: center
+;	cursor			: col-resize
+}
+</style>
+<jp-split-v id=CombiVH grid-template="1fr 4px 1fr">
+	<jp-split-h grid-template="1fr 4px 1fr">
+		<textarea></textarea>
+		<div class=h-gutter>∙</div>
+		<textarea></textarea>
+	</jp-split-h>
+	<div></div>
+	<jp-split-h grid-template="1fr 4px 1fr">
+		<textarea></textarea>
+		<div class=h-gutter>∙</div>
+		<textarea></textarea>
+	</jp-split-h>
+</jp-split-v>
+
+
+--------------------------------------------------------------------
+
+<script>
+Array.from( document.getElementsByTagName( 'textarea' ) ).forEach(
+	$ => $.textContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+)
+</script>
+<script src=./jp-split.js></script>
+
