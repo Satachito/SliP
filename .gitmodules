@@ -1,6 +1,6 @@
 [submodule "jp-split"]
-	path = jp-split
+	path = Pages/jp-split
 	url = https://github.com/Satachito/jp-split.git
 [submodule "ReplaceNumeral"]
-	path = ReplaceNumeral
+	path = Pages/ReplaceNumeral
 	url = https://github.com/Satachito/ReplaceNumeral.git
