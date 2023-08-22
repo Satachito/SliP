@@ -6,6 +6,9 @@
 using namespace std;
 int
 main( int argc, const char* argv[] ) {
+#ifdef	DEBUG
+	TEST_SliP();
+#endif
 	chdir( "/Users/s/Desktop/SliP/Samples" );
 	try {
 		auto _ = GetFileContent( "_.slip" );

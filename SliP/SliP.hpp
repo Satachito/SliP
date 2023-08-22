@@ -31,3 +31,7 @@ Interpret( SliP*, string const&, void (*)( string const& ) );
 //#pragma GCC visibility push(default)
 //#pragma GCC visibility pop
 
+#ifdef	DEBUG
+void
+TEST_SliP();
+#endif

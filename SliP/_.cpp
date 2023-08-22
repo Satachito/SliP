@@ -2,215 +2,351 @@
 
 #include	"SliP.hpp"
 
+pair<UI8, UI8>
+Mul( UI8 p, UI8 q ) {
+
+	UI8 pL = p & 0xFFFFFFFF;
+	UI8 pH = p >> 32;
+	UI8 qL = q & 0xFFFFFFFF;
+	UI8 qH = q >> 32;
+
+	UI8 L_L = pL * qL;
+	UI8 L_H = pL * qH;
+	UI8 H_L = pH * qL;
+	UI8 H_H = pH * qH;
+
+	UI8 L = L_L + ( L_H << 32 ) + ( H_L << 32 );
+	UI8 C = L < L_L ? 1 : 0;
+
+	return {
+		H_H + ( L_H >> 32 ) + ( H_L >> 32 ) + C
+	,	L
+	};
+}
+pair<UI8, UI8>
+Mul( UI8 p, UI4 q ) {
+
+	UI8 $ = ( p & 0xFFFFFFFF ) * q;
+	
+	UI8 $H = $ >> 32;
+	
+	UI8 L_L = pL * qL;
+	UI8 L_H = pL * qH;
+	UI8 H_L = pH * qL;
+	UI8 H_H = pH * qH;
+
+	UI8 L = L_L + ( L_H << 32 ) + ( H_L << 32 );
+	UI8 C = L < L_L ? 1 : 0;
+
+	return {
+		H_H + ( L_H >> 32 ) + ( H_L >> 32 ) + C
+	,	L
+	};
+/*
+	FF*F
+	E10
+	 E1
+ */
+}
+
+enum {
+	ILLEGAL_RADIX = 1
+};
+struct
+SliPException {
+	int		code;
+	string	supp;
+	SliPException( int code, string const& supp )
+	:	code( code )
+	,	supp( supp ) {
+	}
+};
+
 inline vector< UI8 >
 MakeBigInteger( string const& _, UI8 radix ) {
+
+	if ( radix > 36 ) throw SliPException( ILLEGAL_RADIX, to_string( radix ) );
+
 	auto
-	ToUI8 = []( UI1 _ ) {
+	ToDigit = [ & ]( UTF32 _ ) -> UI1 {
 		switch ( _ ) {
 		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
 			return _ - '0';
 		case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+		case 'g': case 'h': case 'i': case 'j': case 'k': case 'l': case 'm': case 'n': case 'o': case 'p':
+		case 'q': case 'r': case 's': case 't': case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
 			return _ - 'a' + 10;
 		case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+		case 'G': case 'H': case 'I': case 'J': case 'K': case 'L': case 'M': case 'N': case 'O': case 'P':
+		case 'Q': case 'R': case 'S': case 'T': case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
 			return _ - 'A' + 10;
 		}
-		throw "eh?: Input must be sanitalized.";
+		return radix;
 	};
 
 	UnicodeReader ur( _ );
-	vector< UI8 >	$;
-	UI8	a = 0;
-	try {
-		while ( true ) {
-			auto preA = a;
-			a += ToUI8( ur.Get() ) * radix;
-			if ( a < preA ) {
-				UI8	_ = 0;
-				while ( _ < $.size() ) if ( ++$[ _++ ] ) break;
-				if ( _ == $.size() ) $.emplace_back( 1 );
-			}
+	vector< UI8 > $;
+	UI8	A = 0;
+	while ( ur.Avail() ) {
+		auto c = ur.Get();
+		auto _ = ToDigit( c );	//	UI1
+		if ( _ >= radix ) break;
+		auto preA = A;
+		A *= radix;
+cerr << hex << A << ':';
+		A += _;
+cerr << hex << A << endl;
+		if ( A < preA ) {
+			UI8	_ = 0;
+			while ( _ < $.size() ) if ( ++$[ _++ ] ) break;
+			if ( _ == $.size() ) $.emplace_back( 1 );
 		}
-	} catch ( ... ) {
-		$.insert( $.begin(), a );
 	}
+	$.insert( $.begin(), A );
 	return $;
 }
+inline void
+TEST_MakeBigInteger() {
+	auto $ = MakeBigInteger( "1ffffffffffffffff", 16 );
+	A( $.size() == 2 );
+	A( $[ 0 ] == 0xffffffffffffffff );
+	A( $[ 1 ] == 1 );
+}
+
 inline string
-BigHexString( vector< UI8 > const& _ ) {
+HexString( vector< UI8 > const& _ ) {
 	string $ = "0x";
 	for ( auto& _: _ ) $ += EncodeHex( _ );
 	return $;
 }
-//inline vector< UI8 >
-//BigRemainder( vector< UI8 > const& _, UI8 divisor ) {
-//	return vector< UI8 >{ 0 };
-//}
-//inline string
-//BigDecString ( vector< UI8 > const& _, UI8 radix ) {
-//	string $;
-//	auto buffer = _;
-//	while ( buffer.size() ) {
-//		$.insert( $.begin(),  '0' + BigDiv( buffer, 10 )[ 0 ];
-//	}
-//	return $;
-//}
 
-#define		LITERAL_BIT			0x08
-
-#define		_STRING				0x00
-#define		STRING_0			( _STRING	+ 0 + LITERAL_BIT )
-#define		STRING_1			( _STRING	+ 1 + LITERAL_BIT )
-#define		STRING_2			( _STRING	+ 2 + LITERAL_BIT )
-#define		STRING_3			( _STRING	+ 3 + LITERAL_BIT )
-#define		STRING_4			( _STRING	+ 4 + LITERAL_BIT )
-#define		STRING				( _STRING	+ 7 + LITERAL_BIT )
-
-#define		_NUMERIC			0x10
-#define		DOUBLE				( _NUMERIC	+ 0 + LITERAL_BIT )
-#define		INT_64				( _NUMERIC	+ 1 + LITERAL_BIT )
-#define		POSITIVE_BIGINT		( _NUMERIC	+ 2 + LITERAL_BIT )
-#define		NEGATIVE_BIGINT		( _NUMERIC	+ 3 + LITERAL_BIT )
-
-#define		_CHAR				0x20
-#define		UNICODE				( _CHAR		+ 0 + LITERAL_BIT )
-#define		ASCII				( _CHAR		+ 1 + LITERAL_BIT )
-
-#define		_MATRIX				0x30
-#define		MATRIX_SINGLE		( _MATRIX	+ 0 + LITERAL_BIT )
-#define		MATRIX_DOUBLE		( _MATRIX	+ 1 + LITERAL_BIT )
-
-#define		_DICT				0x40
-#define		STRING_KEY_DICT		( _DICT		+ 0 + LITERAL_BIT )
-
-#define		_LIST				0x50
-#define		LIST_LITERAL		( _LIST		+ 0 + LITERAL_BIT )
-#define		LIST_PARALLEL		( _LIST		+ 1 )
-#define		LIST_PROCEDURE		( _LIST		+ 2 )
-#define		LIST_SENTENCE		( _LIST		+ 3 )
-
-#define		_NAME				0x60
-#define		NAME_1				( _NAME		+ 1 )
-#define		NAME_2				( _NAME		+ 2 )
-#define		NAME_3				( _NAME		+ 3 )
-#define		NAME_4				( _NAME		+ 4 )
-#define		NAME				( _NAME		+ 7 )
-
-#define		_FUNCTION			0x70
-#define		FUNCTION_PRIMITIVE	( _FUNCTION	+ 0 )
-#define		FUNCTION_PREFIX		( _FUNCTION	+ 1 )
-#define		FUNCTION_UNARY		( _FUNCTION	+ 2 )
-#define		FUNCTION_INFIX		( _FUNCTION	+ 3 )
-
-template	< typename T >	T*	//	//	//	//	//	//	//	//	CONSTRUCTIVE
-Clone( T const* _, UI8 size ) {
-	auto $ = new T[ size ];
-	while ( size-- ) $[ size ] = _[ size ];
+inline double
+Double( vector< UI8 > const& _ ) {
+	auto $ = 0.0;
+	for ( auto const& _: _ ) {
+		$ *= 0x100000000;
+		$ *= 0x100000000;
+		$ += double( _ );
+	}
 	return $;
 }
 
-template	< typename T >	T*	//	//	//	//	//	//	//	//	CONSTRUCTIVE
-CloneData( vector< T > const& _ ) {
-	return Clone( _.data(), _.size() );
+inline vector< UI8 >
+Add( vector< UI8 > const& p, vector< UI8 > const& q ) {
+	vector< UI8 >	$;
+	return $;
 }
+
+inline vector< UI8 >
+Sub( vector< UI8 > const& p, vector< UI8 > const& q ) {
+	vector< UI8 >	$;
+	return $;
+}
+
+int
+GLE( vector< UI8 > const& p, vector< UI8 > const& q ) {
+	return 0;
+}
+
+#define		LITERAL_BIT			0x80
+
+#define		_STRING				0x00
+#define		STRING				UI1( _STRING	+ 0 + LITERAL_BIT )	//	80
+
+#define		_NUMERIC			0x10
+#define		ZERO				UI1( _NUMERIC	+ 0 + LITERAL_BIT )	//	90
+#define		POSITIVE			UI1( _NUMERIC	+ 1 + LITERAL_BIT )	//	91
+#define		NEGATIVE			UI1( _NUMERIC	+ 2 + LITERAL_BIT )	//	92
+#define		DOUBLE				UI1( _NUMERIC	+ 3 + LITERAL_BIT )	//	93
+
+#define		_CHAR				0x20
+#define		UNICODE				UI1( _CHAR		+ 0 + LITERAL_BIT )	//	a0
+
+#define		_MATRIX				0x30
+#define		MATRIX_FLOAT		UI1( _MATRIX	+ 0 + LITERAL_BIT )	//	b0
+
+#define		_DICT				0x40
+#define		STRING_KEY_DICT		UI1( _DICT		+ 0 + LITERAL_BIT )	//	c0
+
+#define		_LIST				0x50
+#define		LIST_LITERAL		UI1( _LIST		+ 0 + LITERAL_BIT )	//	d0
+#define		LIST_PARALLEL		UI1( _LIST		+ 1 )				//	51
+#define		LIST_PROCEDURE		UI1( _LIST		+ 2 )				//	52
+#define		LIST_SENTENCE		UI1( _LIST		+ 3 )				//	53
+
+#define		_NAME				0x60
+#define		NAME				UI1( _NAME		+ 0 )				//	60
+
+#define		_FUNCTION			0x70
+#define		FUNCTION_PRIMITIVE	UI1( _FUNCTION	+ 0 )				//	70
+#define		FUNCTION_PREFIX		UI1( _FUNCTION	+ 1 )				//	71
+#define		FUNCTION_UNARY		UI1( _FUNCTION	+ 2 )				//	72
+#define		FUNCTION_INFIX		UI1( _FUNCTION	+ 3 )				//	73
 
 static	int	counter = 0;
 
-void
-Delete( Object* );
+struct
+Matrix : vector< double > {
+	UI8		nRows;
+	UI8		nCols;
+	Matrix( UI8 nRows, UI8 nCols )
+	:	vector< double >( nRows * nCols )
+	,	nRows( nRows )
+	,	nCols( nCols ) {
+	}
+};
+
+typedef Object* (*Primitive	)( SliP* );
+typedef Object* (*PreUna	)( SliP*, Object* );	//	Prefix, Unary
+typedef Object* (*Infix		)( SliP*, Object*, Object* );
+
+struct
+Function {
+	string	label;
+	union {
+		Primitive	primitive;
+		PreUna		preuna;
+		Infix		infix;
+	};
+	UI1	priority;
+	
+	Function( string const& label, Primitive _ )
+	:	label( label )
+	,	primitive( _ ) {
+	}
+	Function( string const& label, PreUna _ )
+	:	label( label )
+	,	preuna( _ ) {
+	}
+	Function( string const& label, Infix _, UI8 priority )
+	:	label( label )
+	,	infix( _ )
+	,	priority( priority ) {
+	}
+};
 
 struct
 Object {
 
-	UI1			_;
+	union {
+		double					d;
+		UTF32					u;
 
-	struct
-	TwoUI4 {
-		UI4 _1;
-		UI4 _2;
-		TwoUI4();
-		TwoUI4( UI4 _1, UI4 _2 ) : _1( _1 ), _2( _2 ) {}
+		vector< UTF32 >*		pStrName;	//	Shared: String, Name
+		vector< UI8 >*			pBigInt;
+		Matrix*					pMatrix;
+
+		map< string, Object* >*	pDict;
+
+		Function*				pFunction;
+
+		vector< Object* >*		pList;
 	};
-	union
-	TheUnion1 {
-		double	d;
-		long	i;
-		TwoUI4	u;
-		char	l_p[ 8 ];	//	Label and Priority
-		TheUnion1() 						{}
-		TheUnion1( double	_ )				: d( _ ) {}
-		TheUnion1( long		_ )				: i( _ ) {}
-		TheUnion1( UI4 _1, UI4 _2 = 0 )		: u( _1, _2 ) {}
-		TheUnion1( char const* _ )			{ A( strlen( _ ) < 7 ); strcpy( l_p, _ ); }
-		TheUnion1( char const* _, UI1 $ )	{ A( strlen( _ ) < 7 ); strcpy( l_p, _ ); l_p[ 7 ] = $; }
-		
-	}			_1;
-	union
-	TheUnion2 {
-		TwoUI4					u;
-		Object**				pObjectP;
-		UTF32*					pUTF32;
-		UI8*					pUI8;
-		float*					pSingle;
-		double*					pDouble;
-		map< string, Object* >*	pMap;
-		void*					p;
-		TheUnion2( void* _ = 0 )		: p( _ ) {}
-		TheUnion2( UI4 _1, UI4 _2 = 0 )	: u( _1, _2 ) {}
 
-	}			_2;
+	UI1	_;
 
-#ifdef DEBUG
-	Object( Object const& $ ) { throw "eh?"; }
-#endif
-	Object( UI1 _ )									: _( _ )								{ counter++; }
-	Object( UI1 _, double	d )						: _( _ ), _1( d )						{ counter++; }
-	Object( UI1 _, long		i )						: _( _ ), _1( i )						{ counter++; }
-	Object( UI1 _, UI4 u1 )							: _( _ ), _1( u1 )						{ counter++; }
-	Object( UI1 _, UI4 u1, UI4 u2 )					: _( _ ), _1( u1, u2 )					{ counter++; }
-	Object( UI1 _, UI4 u1, UI4 u2, UI4 u3 )			: _( _ ), _1( u1, u2 )	, _2( u3 )		{ counter++; }
-	Object( UI1 _, UI4 u1, UI4 u2, UI4 u3, UI4 u4 )	: _( _ ), _1( u1, u2 )	, _2( u3, u4 )	{ counter++; }
-	Object( UI1 _, UI4 u1, UI4 u2, void* p )		: _( _ ), _1( u1, u2 )	, _2( p )		{ counter++; }
-	Object( UI1 _, long i, void* p )				: _( _ ), _1( i )		, _2( p )		{ counter++; }
-	Object( UI1 _, void* p )						: _( _ ), _1()			, _2( p )		{ counter++; }
-	Object(
-		UI1 _
-	,	Object*( *f )( SliP* )
-	,	char const* label
-	) : _( _ ), _1( label ), _2( (void*)f )													{ counter++; }
-	Object(
-		UI1 _
-	,	Object*( *f )( SliP*, Object* )
-	,	char const* label
-	) : _( _ ), _1( label ), _2( (void*)f )													{ counter++; }
-	Object(
-		UI1 _
-	,	Object*( *f )( SliP*, Object*, Object* )
-	,	char const* label
-	,	UI1 priority
-	) : _( _ ), _1( label, priority ), _2( (void*)f )										{ counter++; }
 	~
 	Object() {
-		--counter;
-		switch ( _ ) {
-		case POSITIVE_BIGINT	:
-		case NEGATIVE_BIGINT	: delete[]	UI8P()		; break;
+								--counter;
+		switch ( _ & 0x7000 ) {
 		case STRING				:
-		case NAME				: delete[]	UTF32P()	; break;
-		case MATRIX_SINGLE		: delete[]	SingleP()	; break;
-		case MATRIX_DOUBLE		: delete[]	DoubleP()	; break;
-		case STRING_KEY_DICT	: delete	MapP()		; break;
+		case NAME				: delete pStrName	; break;
+
+		case POSITIVE			:
+		case NEGATIVE			: delete pBigInt	; break;
+
+		case MATRIX_FLOAT		: delete pMatrix	; break;
+
+		case STRING_KEY_DICT	: delete pDict		; break;
+
+		case FUNCTION_PRIMITIVE	:
+		case FUNCTION_PREFIX	:
+		case FUNCTION_UNARY		:
+		case FUNCTION_INFIX		: delete pFunction	; break;
+
 		case LIST_LITERAL		:
 		case LIST_PARALLEL		:
 		case LIST_PROCEDURE		:
 		case LIST_SENTENCE		:
-			{	auto _ = Integer();
-				auto $ = ObjectPP();
-				while ( _-- ) Delete( $[ _ ] );
-				delete[] $;
-			}
+			for ( auto const _: *pList ) delete _;
+			delete pList;
 			break;
 		}
 	}
+
+#ifdef DEBUG
+	Object( Object const& $ )	{ throw "eh?"; }
+#endif
+	Object()
+	:	_( ZERO )				{ counter++; }
+	
+	Object( long	_ ) {
+								counter++;
+		switch ( Sign( _ ) ) {
+		case -1:
+			this->_ = NEGATIVE;
+			pBigInt = new vector< UI8 >{ UI8( ~_ + 1 ) };
+			break;
+		case 1:
+			this->_ = POSITIVE;
+			pBigInt = new vector< UI8 >{ UI8( _ ) };
+			break;
+		default:
+			this->_ = ZERO;
+			break;
+		}
+	}
+	Object( double	_ )
+	:	_( DOUBLE )				{ counter++; d = _; }
+	Object( UTF32	_ )
+	:	_( UNICODE )			{ counter++; u = _; }
+	
+	Object( UI1 _, UI8 size )
+	:	_( _ ) {
+		switch ( _ ) {
+		case NAME				:
+		case STRING				: counter++; pStrName	= new vector< UTF32 >( size );
+			break;
+
+		case POSITIVE			:
+		case NEGATIVE			: counter++; pBigInt	= new vector< UI8 >( size );
+			break;
+
+		case LIST_LITERAL		:
+		case LIST_PARALLEL		:
+		case LIST_PROCEDURE		:
+		case LIST_SENTENCE		: counter++; pList		= new vector< Object* >( size );
+			break;
+		}
+	}
+
+	Object( UI8 nRows, UI8 nCols )						//	Matrix
+	:	_( MATRIX_FLOAT )		{ counter++; pMatrix	= new Matrix( nRows, nCols );
+	}
+
+	Object( UI1 _, const vector< Object* >& $ )			//	List
+	:	_( _ )					{ counter++; pList		= new vector< Object* >( $ ); }
+
+	Object( UI1 _, const vector< UI8 >& $ )				//	BigInt
+	:	_( _ )					{ counter++; pBigInt	= new vector< UI8 >( $ ); }
+
+	Object( UI1 _, const vector< UTF32 >& $ )			//	String, Name
+	:	_( _ )					{ counter++; pStrName	= new vector< UTF32 >( $ ); }
+
+	Object( UI1 _, const map< string, Object* >& $ )	//	Dict
+	:	_( _ )					{ counter++; pDict		= new map< string, Object* >( $ ); }
+
+	Object( UI1 _, const Function& $ )					//	Function
+	:	_( _ )					{ counter++; pFunction	= new Function( $ ); }
+
+	Object( Primitive f, const char* label )
+	:	_( FUNCTION_PRIMITIVE )	{ counter++; pFunction	=  new Function( label, f ); }
+	
+	Object( UI1 _, PreUna f, const char* label )
+	:	_( _ )					{ counter++; pFunction	=  new Function( label, f ); }
+	
+	Object( Infix f, const char* label, UI1 priority )
+	:	_( FUNCTION_INFIX )		{ counter++; pFunction	=  new Function( label, f, priority ); }
 
 	bool
 	IsLiteral	() { return _ & LITERAL_BIT				; }
@@ -233,55 +369,21 @@ Object {
 	IsFunction	() { return ( _ & 0xf0 ) == _FUNCTION	; }
 
 	double
-	Double		() { return _1.d; }
-	long
-	Integer		() { return _1.i; }
-	UI4
-	UI4_1		() { return _1.u._1; }
-	UI4
-	UI4_2		() { return _1.u._2; }
-	UI4
-	UI4_3		() { return _2.u._1; }
-	UI4
-	UI4_4		() { return _2.u._2; }
-	string
-	Label		() { return string( _1.l_p ); }
-	UI8
-	Priority	() { return _1.l_p[ 7 ]; }
-	Object**
-	ObjectPP	() { return _2.pObjectP; }
-	UTF32*
-	UTF32P		() { return _2.pUTF32; }
-	UI8*
-	UI8P		() { return _2.pUI8; }
-	float*
-	SingleP		() { return _2.pSingle; }
-	double*
-	DoubleP		() { return _2.pDouble; }
-	map< string, Object* >*
-	MapP		() { return _2.pMap; }
-	void*
-	P			() { return _2.p; }
-
-	double
-	Number() {
+	Double() {
 		switch ( _ ) {
-		case DOUBLE:	return Double();
-		case INT_64:	return Integer();
-	//	TODO:
-	//	case POSITIVE_BIGINT	: return ;
-	//	case NEGATIVE_BIGINT	: return ;
+		case ZERO		: return 0;
+		case DOUBLE		: return d;
+		case POSITIVE	: return ::Double( *pBigInt );
+		case NEGATIVE	: return -::Double( *pBigInt );
 		}
 		throw "Not a number";
 	}
 	string
 	GenericListString() {
-		auto size = Integer();
-		auto head = ObjectPP();
 		string $;
-		for ( UI8 _ = 0; _ < size; _++ ) {
+		for ( auto const& _: *pList ) {
 			$ += ' ';
-			$ += *head[ _ ];
+			$ += *_;
 		}
 		return $ + ' ';
 	}
@@ -289,10 +391,10 @@ Object {
 	operator
 	string() {
 		switch ( _ ) {
-		case INT_64:
-			return to_string( Integer() );
+		case ZERO:
+			return "0";
 		case DOUBLE:
-			{	auto _ = Double();
+			{	auto _ = d;
 				return _ == ( 1.0 / 0.0 )
 				?	"∞"
 				:	_ == -( 1.0 / 0.0 )
@@ -300,47 +402,29 @@ Object {
 					:	EncodeDouble( _ )
 				;
 			}
-		case POSITIVE_BIGINT:
-			return string( "POSITIVE BIGINT, # of usigned long:" ) + to_string( Integer() );
-		case NEGATIVE_BIGINT:
-			return string( "NEGATIVE BIGINT, # of usigned long:" ) + to_string( Integer() );
+		case POSITIVE:
+			return pBigInt->size() == 1
+			?	to_string( (*pBigInt)[ 0 ] )
+			:	string( "POSITIVE BIGINT, # of usigned long:" ) + to_string( pBigInt->size() );
+		case NEGATIVE:
+			return pBigInt->size() == 1
+			?	"-" + to_string( (*pBigInt)[ 0 ] )
+			:	string( "NEGATIVE BIGINT, # of usigned long:" ) + to_string( pBigInt->size() );
+			
 		case UNICODE:
-			return UTF8( UI4_1() );
-
-		case STRING_0:
-			return "\"\"";
-		case STRING_1:
-			return '"' + UTF8( UI4_1() ) + '"';
-		case STRING_2:
-			return '"' + UTF8( UI4_1() ) + UTF8( UI4_2() ) + '"';
-		case STRING_3:
-			return '"' + UTF8( UI4_1() ) + UTF8( UI4_2() ) + UTF8( UI4_3() ) + '"';
-		case STRING_4:
-			return '"' + UTF8( UI4_1() ) + UTF8( UI4_2() ) + UTF8( UI4_3() ) + UTF8( UI4_4() ) + '"';
+			return UTF8( u );
 		case STRING:
-			{	auto _ = UTF32P();
-				auto size = Integer();
-				return '"' + UTF8( vector< UTF32 >( _, _ + size ) ) + '"';
-			}
-		case NAME_1:
-			return UTF8( UI4_1() );
-		case NAME_2:
-			return UTF8( UI4_1() ) + UTF8( UI4_2() );
-		case NAME_3:
-			return UTF8( UI4_1() ) + UTF8( UI4_2() ) + UTF8( UI4_3() );
-		case NAME_4:
-			return UTF8( UI4_1() ) + UTF8( UI4_2() ) + UTF8( UI4_3() ) + UTF8( UI4_4() );
+			return '"' + UTF8( *pStrName ) + '"';
 		case NAME:
-			{	auto _ = UTF32P();
-				auto size = Integer();
-				return UTF8( vector< UTF32 >( _, _ + size ) );
-			}
+			return UTF8( *pStrName );
+
 		case FUNCTION_PRIMITIVE:
 		case FUNCTION_PREFIX:
 		case FUNCTION_UNARY:
+			return pFunction->label;
 		case FUNCTION_INFIX:
-			return Label();
-//			return Label() + '(' + to_string( Priority() ) + ')';
+			return pFunction->label + '(' + to_string( pFunction->priority ) + ')';
+
 		case LIST_LITERAL:
 			return '[' + GenericListString() + ']';
 		case LIST_PARALLEL:
@@ -350,32 +434,15 @@ Object {
 		case LIST_SENTENCE:
 			return '(' + GenericListString() + ')';
 
-		case MATRIX_SINGLE:
-			{	string ${ "⟨" };
-				auto _ = Integer();
-				auto nR = _ >> 32;
-				auto nC = _ & 0xffffffff;
-				for ( UI8 _R = 0; _R < nR; _R++ ) {
-					auto _ = _R * nC;
-					for ( UI8 _C = 0; _C < nC; _C++ ) {
-						$ += '\t';
-						$ += SingleP()[ _ + _C ];
-					}
-					$ += '\n';
-				}
-				return $ + "⟩";
-			}
-
-		case MATRIX_DOUBLE:
+		case MATRIX_FLOAT:
 			{	string ${ "⟪" };
-				auto _ = Integer();
-				auto nR = _ >> 32;
-				auto nC = _ & 0xffffffff;
-				for ( UI8 _R = 0; _R < nR; _R++ ) {
-					auto _ = _R * nC;
-					for ( UI8 _C = 0; _C < nC; _C++ ) {
+				auto nRs = pMatrix->nRows;
+				auto nCs = pMatrix->nCols;
+				for ( UI8 _R = 0; _R < nRs; _R++ ) {
+					auto _ = _R * nCs;
+					for ( UI8 _C = 0; _C < nCs; _C++ ) {
 						$ += '\t';
-						$ += DoubleP()[ _ + _C ];
+						$ += (*pMatrix)[ _ + _C ];
 					}
 					$ += '\n';
 				}
@@ -384,7 +451,7 @@ Object {
 
 		case STRING_KEY_DICT:
 			{	string ${ "⟦" };
-				for ( auto& _: *MapP() ) {
+				for ( auto& _: *pDict ) {
 					$ += '\t';
 					$ += _.first + '\t' + (string)*_.second + "\n";
 				}
@@ -396,7 +463,6 @@ Object {
 	}
 };
 
-
 Object*
 Eval( SliP* s, Object* _ ) {
 	return _;
@@ -404,157 +470,82 @@ Eval( SliP* s, Object* _ ) {
 
 bool
 IsT( Object* _ ) {
-	return !_->IsList() || _->Integer();
+	return !_->IsList() || _->pList->size();
 }
 
 Object*
-MakeString( vector< UTF32 > const& $ ) {
-	switch ( $.size() ) {
-	case 0	: return new Object( STRING_0 );
-	case 1	: return new Object( STRING_1	, $[ 0 ] );
-	case 2	: return new Object( STRING_2	, $[ 0 ], $[ 1 ] );
-	case 3	: return new Object( STRING_3	, $[ 0 ], $[ 1 ], $[ 2 ] );
-	case 4	: return new Object( STRING_4	, $[ 0 ], $[ 1 ], $[ 2 ], $[ 3 ] );
-	default	: return new Object( STRING		, $.size(), CloneData( $ ) );
-	}
-}
-
-typedef Object* (*Primitive	)( SliP* );
-typedef Object* (*Prefix	)( SliP*, Object* );
-typedef Object* (*Unary		)( SliP*, Object* );
-typedef Object* (*Infix		)( SliP*, Object*, Object* );
-
-Object*
-Plus( SliP* s, Object* l, Object* r ) {
-	if ( l->_ == INT_64	) {
+Plus( SliP* s, Object* l, Object* r ) {	//	TODO: WIP
+	switch ( l->_ ) {
+	case ZERO:
+		return new Object( *r );
+	case DOUBLE:
 		switch( r->_ ) {
-		case INT_64: return new Object( INT_64, l->Integer() + r->Integer() );	//	TODO: Overflow
-		case DOUBLE: return new Object( DOUBLE, l->Integer() + r->Double() );
-		//	TODO: BIGINT
+		case ZERO		: return new Object( *l );
+		case DOUBLE		: return new Object( l->d + r->d );
+		case POSITIVE	: return new Object( l->d + Double( *r->pBigInt ) );
+		case NEGATIVE	: return new Object( l->d - Double( *r->pBigInt ) );
 		}
-	} else if ( l->_ == DOUBLE	) {
+		break;
+	case POSITIVE:
 		switch( r->_ ) {
-		case INT_64: return new Object( INT_64, l->Double() + r->Integer() );
-		case DOUBLE: return new Object( DOUBLE, l->Double() + r->Double() );
-		//	TODO: BIGINT
-		}
-	} else if ( l->IsString() && r->IsString() ) {
-		UI8 lSize = l->_ & 3;
-		if ( lSize == 7 ) lSize = l->Integer();
-		UI8 rSize = r->_ & 3;
-		if ( rSize == 7 ) rSize = r->Integer();
-		auto size = lSize + rSize;
-		auto $ = vector< UTF32 >( size );
-		switch ( lSize ) {
-		case 0:
-			break;
-		case 4:	$[ 3 ] = l->UI4_4();
-		case 3:	$[ 2 ] = l->UI4_3();
-		case 2:	$[ 1 ] = l->UI4_2();
-		case 1:	$[ 0 ] = l->UI4_1();
-			break;
-		default:
-			{	auto dP = l->DoubleP();
-				for ( UI8 _ = 0; _ < lSize; _++ ) $[ _ ] = dP[ _ ];
+		case ZERO		: return new Object( *l );
+		case DOUBLE		: return new Object( Double( *l->pBigInt ) + r->d );
+		case POSITIVE	: return new Object( POSITIVE, Add( *l->pBigInt, *r->pBigInt ) );
+		case NEGATIVE	: {
+				auto _ = GLE( *l->pBigInt, *r->pBigInt );
+				return _ == 0
+				?	new Object()
+				:	_ > 0	//	Left is bigger
+					?	new Object( POSITIVE, Sub( *l->pBigInt, *r->pBigInt ) )
+					:	new Object( NEGATIVE, Sub( *r->pBigInt, *l->pBigInt ) )
+				;
 			}
 		}
-		switch ( rSize ) {
-		case 0:
-			break;
-		case 4:	$[ lSize + 3 ] = r->UI4_4();
-		case 3:	$[ lSize + 2 ] = r->UI4_3();
-		case 2:	$[ lSize + 1 ] = r->UI4_2();
-		case 1:	$[ lSize + 0 ] = r->UI4_1();
-			break;
-		default:
-			{	auto dP = r->DoubleP();
-				for ( UI8 _ = 0; _ < lSize; _++ ) $[ lSize + _ ] = dP[ _ ];
+		break;
+	case NEGATIVE:
+		switch( r->_ ) {
+		case ZERO		: return new Object( *l );
+		case DOUBLE		: return new Object( -Double( *l->pBigInt ) + r->d );
+		case NEGATIVE	: return new Object( NEGATIVE, Add( *l->pBigInt, *r->pBigInt ) );
+		case POSITIVE	: {
+				auto _ = GLE( *l->pBigInt, *r->pBigInt );
+				return _ == 0
+				?	new Object()
+				:	_ > 0	//	Left is bigger
+					?	new Object( NEGATIVE, Sub( *l->pBigInt, *r->pBigInt ) )
+					:	new Object( POSITIVE, Sub( *r->pBigInt, *l->pBigInt ) )
+				;
 			}
 		}
-		return MakeString( $ );
-	} else if ( l->_ == r->_ && l->IsList() && r->IsList() ) {
-		auto lSize = l->Integer();
-		auto rSize = r->Integer();
-		auto size = lSize + rSize;
-		auto $ = new Object*[ size ];
-		for ( UI8 _ = 0; _ < lSize; _++ ) $[ _ ] = l->ObjectPP()[ _ ];
-		for ( UI8 _ = 0; _ < rSize; _++ ) $[ lSize + _ ] = r->ObjectPP()[ _ ];
-		return new Object( l->_, size, $ );
+		break;
+	default:
+		if ( l->IsString() && r->IsString() ) {
+			UI8 lSize = l->pStrName->size();
+			UI8 rSize = r->pStrName->size();
+			auto size = lSize + rSize;
+			auto $ = new Object( STRING, size );
+			auto& ref = *$->pStrName;
+			for ( UI8 _ = 0; _ < lSize; _++ ) ref[ _ ] = (*l->pStrName)[ _ ];
+			for ( UI8 _ = 0; _ < rSize; _++ ) ref[ lSize + _ ] = (*r->pStrName)[ _ ];
+			return $;
+		} else if ( l->_ == r->_ && l->IsList() && r->IsList() ) {
+			auto lSize = l->pList->size();
+			auto rSize = r->pList->size();
+			auto size = lSize + rSize;
+			auto $ = new Object( l->_, size );
+			auto& ref = *$->pList;
+			for ( UI8 _ = 0; _ < lSize; _++ ) ref[ _ ] = (*l->pList)[ _ ];
+			for ( UI8 _ = 0; _ < rSize; _++ ) ref[ lSize + _ ] = (*r->pList)[ _ ];
+			return $;
+		}
 	}
 	throw "Illegal type combination";
 }
 
-//#define		_STRING				0x00
-//#define		STRING_0			( _STRING	+ 0 + LITERAL_BIT )
-//#define		STRING_1			( _STRING	+ 1 + LITERAL_BIT )
-//#define		STRING_2			( _STRING	+ 2 + LITERAL_BIT )
-//#define		STRING_3			( _STRING	+ 3 + LITERAL_BIT )
-//#define		STRING_4			( _STRING	+ 4 + LITERAL_BIT )
-//#define		STRING				( _STRING	+ 7 + LITERAL_BIT )
-//
-//#define		_NUMERIC			0x10
-//#define		DOUBLE				( _NUMERIC	+ 0 + LITERAL_BIT )
-//#define		INT_64				( _NUMERIC	+ 1 + LITERAL_BIT )
-//#define		POSITIVE_BIGINT		( _NUMERIC	+ 2 + LITERAL_BIT )
-//#define		NEGATIVE_BIGINT		( _NUMERIC	+ 3 + LITERAL_BIT )
-//
-//#define		_CHAR				0x20
-//#define		UNICODE				( _CHAR		+ 0 + LITERAL_BIT )
-//#define		ASCII				( _CHAR		+ 1 + LITERAL_BIT )
-//
-//#define		_MATRIX				0x30
-//#define		MATRIX_SINGLE		( _MATRIX	+ 0 + LITERAL_BIT )
-//#define		MATRIX_DOUBLE		( _MATRIX	+ 1 + LITERAL_BIT )
-//
-//#define		_DICT				0x40
-//#define		STRING_KEY_DICT		( _DICT		+ 0 + LITERAL_BIT )
-//
-//#define		_LIST				0x50
-//#define		LIST_LITERAL		( _LIST		+ 0 + LITERAL_BIT )
-//#define		LIST_PARALLEL		( _LIST		+ 1 )
-//#define		LIST_PROCEDURE		( _LIST		+ 2 )
-//#define		LIST_SENTENCE		( _LIST		+ 3 )
-//
-//#define		_NAME				0x60
-//#define		NAME_1				( _NAME		+ 1 )
-//#define		NAME_2				( _NAME		+ 2 )
-//#define		NAME_3				( _NAME		+ 3 )
-//#define		NAME_4				( _NAME		+ 4 )
-//#define		NAME				( _NAME		+ 7 )
-//
-//#define		_FUNCTION			0x70
-//#define		FUNCTION_PRIMITIVE	( _FUNCTION	+ 0 )
-//#define		FUNCTION_PREFIX		( _FUNCTION	+ 1 )
-//#define		FUNCTION_UNARY		( _FUNCTION	+ 2 )
-//#define		FUNCTION_INFIX		( _FUNCTION	+ 3 )
 bool
 EQ( Object* p, Object* q ) {
 	if ( p->IsNumeric() ) {
-		switch ( p->_ ) {
-		case DOUBLE:
-			switch ( q->_ ) {
-			case DOUBLE: return p->Double() == q->Double();
-			case INT_64: return p->Double() == q->Integer();
-			}
-			return false;
-		case INT_64:
-			switch ( q->_ ) {
-			case DOUBLE: return p->Integer() == q->Double();
-			case INT_64: return p->Integer() == q->Integer();
-			}
-			return false;
-		case POSITIVE_BIGINT:
-		case NEGATIVE_BIGINT:
-			{	if ( p->_ != q->_ ) return false;
-				auto _ = p->Integer();
-				if ( _ != q->Integer() ) return false;
-				auto pP = p->UI8P();
-				auto pQ = q->UI8P();
-				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
-				return true;
-			}
-		}
-		throw "eh?";
+		return p->Double() == q->Double();
 	} else {
 		if ( p->_ != q->_ ) return false;
 
@@ -564,63 +555,46 @@ EQ( Object* p, Object* q ) {
 		case FUNCTION_PREFIX:
 		case FUNCTION_UNARY:
 		case FUNCTION_INFIX:
-			return p->P() == q->P();
+			return p->pFunction == q->pFunction;
 
 		case LIST_LITERAL:
 		case LIST_PARALLEL:
 		case LIST_PROCEDURE:
 		case LIST_SENTENCE:
-			{	auto _ = p->Integer();
-				if ( _ != q->Integer() ) return false;
-				auto pP = p->ObjectPP();
-				auto pQ = q->ObjectPP();
-				while ( _-- ) if ( !EQ( pP[ _ ], pQ[ _ ] ) ) return false;
+			{	auto _ = p->pList->size();
+				if ( _ != q->pList->size() ) return false;
+				auto pP = p->pList;
+				auto pQ = q->pList;
+				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
 				return true;
 			}
-		case STRING_0:	return true;
-		case UNICODE:
-		case ASCII:
-		case NAME_1:
-		case STRING_1:	return p->UI4_1() == q->UI4_1();
-		case NAME_2:
-		case STRING_2:	return p->UI4_1() == q->UI4_1() && p->UI4_2() == q->UI4_2();
-		case NAME_3:
-		case STRING_3:	return p->UI4_1() == q->UI4_1() && p->UI4_2() == q->UI4_2() && p->UI4_3() == q->UI4_3();
-		case NAME_4:
-		case STRING_4:	return p->UI4_1() == q->UI4_1() && p->UI4_2() == q->UI4_2() && p->UI4_3() == q->UI4_3() && p->UI4_4() == q->UI4_4();
 		case NAME:
 		case STRING:
-			{	auto _ = p->Integer();
-				if ( _ != q->Integer() ) return false;
-				auto pP = p->UTF32P();
-				auto pQ = q->UTF32P();
+			{	auto _ = p->pStrName->size();
+				if ( _ != q->pStrName->size() ) return false;
+				auto pP = p->pStrName;
+				auto pQ = q->pStrName;
+				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
+				return true;
+			}
+		case MATRIX_FLOAT:
+			{	if ( p->pMatrix->nRows != q->pMatrix->nRows ) return false;
+				if ( p->pMatrix->nCols != q->pMatrix->nCols ) return false;
+				auto _ = p->pMatrix->size();
+				if ( _ != q->pMatrix->size() ) return false;
+				auto pP = p->pMatrix;
+				auto pQ = q->pMatrix;
 				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
 				return true;
 			}
 		case STRING_KEY_DICT:
-			{	if ( p->MapP()->size() != q->MapP()->size() ) return false;
-				for ( auto& _: *p->MapP() ) {
-					auto map = q->MapP();
+			{	if ( p->pDict->size() != q->pDict->size() ) return false;
+				for ( auto& _: *p->pDict ) {
+					auto map = q->pDict;
 					auto $ = map->find( _.first );
 					if ( $ == map->end() ) return false;
 					if ( !EQ( _.second, $->second ) ) return false;
 				}
-				return true;
-			}
-		case MATRIX_SINGLE:
-			{	auto _ = p->Integer();
-				if ( _ != q->Integer() ) return false;
-				auto pP = p->SingleP();
-				auto pQ = q->SingleP();
-				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
-				return true;
-			}
-		case MATRIX_DOUBLE:
-			{	auto _ = p->Integer();
-				if ( _ != q->Integer() ) return false;
-				auto pP = p->DoubleP();
-				auto pQ = q->DoubleP();
-				while ( _-- ) if ( pP[ _ ] != pQ[ _ ] ) return false;
 				return true;
 			}
 		}
@@ -716,9 +690,9 @@ ReadHex( UnicodeReader& r, UTF32 first ) {
 	//	TODO: Delete leading 0
 	auto _ = $.str();
 	if ( _.size() > 16 ) {	//	BigInt
-		return new Object( INT_64, stol( _, 0, 16 ) );	//	TODO: BigInt
+		return new Object( stol( _, 0, 16 ) );	//	TODO: BigInt
 	} else {
-		return new Object( INT_64, stol( _, 0, 16 ) );
+		return new Object( stol( _, 0, 16 ) );
 	}
 }
 Object*
@@ -739,9 +713,9 @@ ReadOctal( UnicodeReader& r, UTF32 first ) {
 	//	TODO: Delete leading 0
 	auto _ = $.str();
 	if ( _.size() > 16 ) {	//	BigInt
-		return new Object( INT_64, stol( _, 0, 8 ) );	//	TODO: BigInt
+		return new Object( stol( _, 0, 8 ) );	//	TODO: BigInt
 	} else {
-		return new Object( INT_64, stol( _, 0, 8 ) );
+		return new Object( stol( _, 0, 8 ) );
 	}
 }
 Object*
@@ -791,15 +765,10 @@ ReadDecimal( UnicodeReader& r, UTF32 first ) {
 	case 'e': throw "Number format error:(Trailing e)";
 	case 'E': throw "Number format error:(Trailing E)";
 	}
-	if ( readE || readDot ) return new Object( DOUBLE, stod( _ ) );
-	try {
-		auto $ = stoul( _ );
-		if ( $ > numeric_limits< long >::max() ) return new Object( POSITIVE_BIGINT, Clone( &$, 1 ) );
-		return new Object( INT_64, long( $ ) );
-	} catch ( ... ) {
-		auto $ = MakeBigInteger( _, 10 );
-		return new Object( POSITIVE_BIGINT, $.size(), CloneData( $ ) );
-	}
+	return readE || readDot
+	?	new Object( stod( _ ) )
+	:	new Object( POSITIVE, MakeBigInteger( _, 10 ) )
+	;
 }
 
 Object*
@@ -821,7 +790,7 @@ ReadNumber( UnicodeReader& r, UTF32 first ) {
 			default:
 				if ( IsCharacter( second ) ) throw "Decimal number format error";
 				r.UnGet( second );
-				return new Object( INT_64, 0L );
+				return new Object();
 			}
 		}
 		break;
@@ -833,34 +802,34 @@ ReadNumber( UnicodeReader& r, UTF32 first ) {
 
 Object*
 ReadList( UnicodeReader& r, UTF32 terminator, UI8 _, UI8 level ) {
-	vector< Object* >	$;
+	auto $ = new Object( _, 0 );
 	Object*
 	Read( UnicodeReader&, UTF32, UI8 );
-	for ( Object* _; ( _ = Read( r, terminator, level + 1 ) ); ) $.emplace_back( _ );
-	return new Object( _, $.size(), CloneData( $ ) );
+	for ( Object* _; ( _ = Read( r, terminator, level + 1 ) ); ) $->pList->emplace_back( _ );
+	return $;
 }
 
 Object*
 ReadString( UnicodeReader& r, UTF32 terminator ) {
+	auto $ = new Object( STRING, 0 );
 	auto escaping = false;
-	vector< UTF32 > $;
 	while ( r.Avail() ) {
 		auto _ = r.Get();
 		if ( escaping ) {
 			escaping = false;
 			switch ( _ ) {
-			case '0': $.emplace_back( '\0'	); break;
-			case 'f': $.emplace_back( '\f'	); break;
-			case 'n': $.emplace_back( '\n'	); break;
-			case 'r': $.emplace_back( '\r'	); break;
-			case 't': $.emplace_back( '\t'	); break;
-			case 'v': $.emplace_back( '\v'	); break;
-			default	: $.emplace_back( _		); break;
+			case '0': $->pStrName->emplace_back( '\0'	); break;
+			case 'f': $->pStrName->emplace_back( '\f'	); break;
+			case 'n': $->pStrName->emplace_back( '\n'	); break;
+			case 'r': $->pStrName->emplace_back( '\r'	); break;
+			case 't': $->pStrName->emplace_back( '\t'	); break;
+			case 'v': $->pStrName->emplace_back( '\v'	); break;
+			default	: $->pStrName->emplace_back( _		); break;
 			}
 		} else {
-			if ( _ == terminator ) return MakeString( $ );
+			if ( _ == terminator ) return $;
 			if ( _ == '\\' )	escaping = true;
-			else				$.emplace_back( _ );
+			else				$->pStrName->emplace_back( _ );
 		}
 	}
 	throw "Unterminated string: ";	//	UC  + $
@@ -868,23 +837,26 @@ ReadString( UnicodeReader& r, UTF32 terminator ) {
 
 Object*
 ReadName( UnicodeReader& r, UTF32 first ) {
-	if ( IsMathSymbol( first ) ) return new Object( NAME_1, first );
-	vector< UTF32 > $;
+	auto $ = new Object( NAME, 0 );
+	if ( IsMathSymbol( first ) ) {
+		$->pStrName->emplace_back( first );
+		return $;
+	}
 	auto escaping = first == '\\';
-	if ( !escaping ) $.emplace_back( first );
+	if ( !escaping ) $->pStrName->emplace_back( first );
 	
 	while ( r.Avail() ) {
 		auto _ = r.Get();
 		if ( escaping ) {
 			escaping = false;
 			switch ( _ ) {
-			case '0': $.emplace_back( '\0' ); break;
-			case 'f': $.emplace_back( '\f' ); break;
-			case 'n': $.emplace_back( '\n' ); break;
-			case 'r': $.emplace_back( '\r' ); break;
-			case 't': $.emplace_back( '\t' ); break;
-			case 'v': $.emplace_back( '\v' ); break;
-			default	: $.emplace_back( _	)	; break;
+			case '0': $->pStrName->emplace_back( '\0' ); break;
+			case 'f': $->pStrName->emplace_back( '\f' ); break;
+			case 'n': $->pStrName->emplace_back( '\n' ); break;
+			case 'r': $->pStrName->emplace_back( '\r' ); break;
+			case 't': $->pStrName->emplace_back( '\t' ); break;
+			case 'v': $->pStrName->emplace_back( '\v' ); break;
+			default	: $->pStrName->emplace_back( _	)	; break;
 			}
 		} else {
 			if ( _ == '\\' ) escaping = true;
@@ -892,18 +864,10 @@ ReadName( UnicodeReader& r, UTF32 first ) {
 				r.UnGet( _ );
 				break;
 			}
-			else $.emplace_back( _ );
+			else $->pStrName->emplace_back( _ );
 		}
 	}
-
-	switch ( $.size() ) {
-	case 0	: throw "eh?";
-	case 1	: return new Object( NAME_1	, $[ 0 ] );
-	case 2	: return new Object( NAME_2	, $[ 0 ], $[ 1 ] );
-	case 3	: return new Object( NAME_3	, $[ 0 ], $[ 1 ], $[ 2 ] );
-	case 4	: return new Object( NAME_4	, $[ 0 ], $[ 1 ], $[ 2 ], $[ 3 ] );
-	default	: return new Object( NAME	, $.size(), CloneData( $ ) );
-	}
+	return $;
 }
 
 vector< UTF32 >
@@ -918,13 +882,12 @@ Object*
 NiL = new Object( LIST_LITERAL, 0L );
 
 Object*
-T = new Object( STRING_1, (UI4)'T' );
+T = new Object( 0L );
 
 vector< Object* >
 builtins {
 	new Object(
-		FUNCTION_PRIMITIVE
-	,	[]( SliP* s ) {
+		[]( SliP* s ) {
 			if ( s->stack.empty() ) throw "Stack empty";
 			auto $ = s->stack.back();
 			s->stack.pop_back();
@@ -933,22 +896,19 @@ builtins {
 	,	"@"
 	)
 ,	new Object(
-		FUNCTION_PRIMITIVE
-	,	[]( SliP* s ) {
+		[]( SliP* s ) {
 			return new Object(
 				LIST_LITERAL
-			,	s->stack.size()
-			,	CloneData( s->stack )
+			,	s->stack
 			);
 		}
 	,	"@@"
 	)
 ,	new Object(
-		FUNCTION_PRIMITIVE
-	,	[]( SliP* s ) {
+		[]( SliP* s ) {
 			return new Object(
 				STRING_KEY_DICT
-			,	new map< string, Object* >( *s->context->mapP )
+			,	*s->context->mapP
 			);
 		}
 	,	"¤"
@@ -967,24 +927,20 @@ builtins {
 		}
 	,	"¡"
 	)
-,	new Object(
+,	new Object(	//	TODO: WIP
 		FUNCTION_PREFIX
 	,	[]( SliP* s, Object* _ ) {
 			auto $ = Eval( s, _ );
 			switch ( $->_ ) {
-			case INT_64:
-				return new Object( INT_64, (long)~$->Integer() );
-			case POSITIVE_BIGINT:
+			case POSITIVE:
 				return new Object(
-					POSITIVE_BIGINT
-				,	$->Integer()
-				,	Clone( $->UI8P(), $->Integer() )
+					NEGATIVE
+				,	*$->pBigInt
 				);
-			case NEGATIVE_BIGINT:
+			case NEGATIVE:
 				return new Object(
-					NEGATIVE_BIGINT
-				,	$->Integer()
-				,	Clone( $->UI8P(), $->Integer() )
+					POSITIVE
+				,	*$->pBigInt
 				);
 			}
 			throw "Illegal operand type";
@@ -995,7 +951,7 @@ builtins {
 		FUNCTION_PREFIX
 	,	[]( SliP* s, Object* _ ) {
 			auto $ = Eval( s, _ );
-			return $->IsList() && $->Integer() == 0 ? T : NiL;
+			return $->IsList() && $->pList->size() == 0 ? T : NiL;
 		}
 	,	"¬"
 	)
@@ -1009,16 +965,16 @@ builtins {
 ,	new Object(
 		FUNCTION_PREFIX
 	,	[]( SliP* s, Object* _ ) {
-			return MakeString( UTF32s( (string)*_ ) );
+			return new Object( STRING, UTF32s( (string)*_ ) );
 		}
 	,	"¶"
 	)
 ,	new Object(
 		FUNCTION_UNARY
 	,	[]( SliP* s, Object* _ ) {
-			if ( _->IsList()	) return new Object( INT_64, _->Integer() );
-			if ( _->IsString()	) return new Object( INT_64, _->Integer() );
-			if ( _->IsName()	) return new Object( INT_64, _->Integer() );
+			if ( _->IsList()	) return new Object( (long)_->pList->size() );		//	TODO: Overflow
+			if ( _->IsString()	) return new Object( (long)_->pStrName->size() );
+			if ( _->IsName()	) return new Object( (long)_->pStrName->size() );
 			throw "Illegal operand type";
 		}
 	,	"#"
@@ -1027,9 +983,9 @@ builtins {
 		FUNCTION_UNARY
 	,	[]( SliP* s, Object* _ ) {
 			if ( !_->IsList() ) throw "Illegal operand type";
-			auto size = _->Integer();
+			auto size = _->pList->size();
 			if ( !size ) throw "No elements";
-			return new Object( _->_, size - 1, Clone( _->ObjectPP() + 1, size - 1 ) );
+			return new Object( _->_, vector< Object* >( _->pList->begin() + 1, _->pList->end() ) );
 		}
 	,	"*"
 	)
@@ -1037,9 +993,9 @@ builtins {
 		FUNCTION_UNARY
 	,	[]( SliP* s, Object* _ ) {
 			if ( !_->IsList() ) throw "Illegal operand type";
-			auto size = _->Integer();
+			auto size = _->pList->size();
 			if ( !size ) throw "No elements";
-			return _->ObjectPP()[ size - 1 ];
+			return (*_->pList)[ size - 1 ];
 		}
 	,	"$"
 	)
@@ -1060,18 +1016,16 @@ builtins {
 	,	"¦"
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !l->IsDict() ) throw "Apply dict to §";
-			s->context = new Context( l->MapP(), s->context );
+			s->context = new Context( new map< string, Object* >( *l->pDict ), s->context );
 			return Eval( s, r );
 		}
 	,	"§"
 	,	100
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !l->IsName() ) throw "Only name can be assigned.";
 			(*s->context->mapP)[ (string)*l ] = r;
 			return r;
@@ -1080,313 +1034,221 @@ builtins {
 	,	90
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( r->IsList() && r->Integer() == 2 ) return Eval( s, r->ObjectPP()[ IsT( l ) ? 0 : 1 ] );
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( r->IsList() && r->pList->size() == 2 ) return Eval( s, (*r->pList)[ IsT( l ) ? 0 : 1 ] );
 			throw "Right operand must be two element List.";
 		}
 	,	"?"
 	,	80
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return IsT( l ) ? Eval( s, r ) : NiL;
 		}
 	,	"¿"
 	,	80
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return IsT( l ) && IsT( r ) ? T : NiL;
 		}
 	,	"&&"
 	,	70
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return IsT( l ) || IsT( r ) ? T : NiL;
 		}
 	,	"||"
 	,	70
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return IsT( l ) ^ IsT( r ) ? T : NiL;
 		}
 	,	"^^"
 	,	70
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !r->IsList() ) throw "Right operand must be List";
-			auto $ = r->ObjectPP();
-			auto _ = r->Integer();
-			while ( _-- ) if ( $[ _ ] == l ) return T;
-			return NiL;
+			return Includes( *r->pList, l ) ? T : NiL;
 		}
 	,	"∈"
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !l->IsList() ) throw "Left operand must be List";
-			auto $ = l->ObjectPP();
-			auto _ = l->Integer();
-			while ( _-- ) if ( $[ _ ] == r ) return T;
-			return NiL;
+			return Includes( *l->pList, r ) ? T : NiL;
 		}
 	,	"∋"
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return EQ( l, r ) ? T : NiL;
 		}
 	,	"=="
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			return EQ( l, r ) ? NiL : T;
 		}
 	,	"<>"
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->IsNumeric() && r->IsNumeric() ) return l->Number() < r->Number() ? T : NiL;
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return l->Double() < r->Double() ? T : NiL;
 			return EQ( l, r ) ? NiL : T;
 		}
 	,	"<"
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->IsNumeric() && r->IsNumeric() ) return l->Number() > r->Number() ? T : NiL;
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return l->Double() > r->Double() ? T : NiL;
 			return EQ( l, r ) ? NiL : T;
 		}
 	,	">"
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->IsNumeric() && r->IsNumeric() ) return l->Number() <= r->Number() ? T : NiL;
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return l->Double() <= r->Double() ? T : NiL;
 			return EQ( l, r ) ? NiL : T;
 		}
 	,	"<="
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->IsNumeric() && r->IsNumeric() ) return l->Number() >= r->Number() ? T : NiL;
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return l->Double() >= r->Double() ? T : NiL;
 			return EQ( l, r ) ? NiL : T;
 		}
 	,	">="
 	,	60
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !r->IsList() ) throw "Right operand must be List";
-			auto _ = r->Integer();
-			auto $ = new Object*[ _ + 1 ];
-			while ( _-- ) $[ _ + 1 ] = r->ObjectPP()[ _ ];
-			return new Object(
-				r->_
-			,	r->Integer() + 1
-			,	$
-			);
+			auto _ = r->pList->size();
+			auto $ = new Object( r->_, _ + 1 );
+			while ( _-- ) (*$->pList)[ _ + 1 ] = (*r->pList)[ _ ];
+			return $;
 		}
 	,	","
 	,	50
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->_ == INT_64 && r->_ == INT_64 ) return new Object( INT_64, l->Integer() & r->Integer() );
-			throw "Illegal operand type";
+		[]( SliP* s, Object* l, Object* r ) {
+			return new Object();	//	TODO:	WIP
 		}
 	,	"&"
 	,	40
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->_ == INT_64 && r->_ == INT_64 ) return new Object( INT_64, l->Integer() | r->Integer() );
-			throw "Illegal operand type";
+		[]( SliP* s, Object* l, Object* r ) {
+			return new Object();	//	TODO:	WIP
 		}
 	,	"|"
 	,	40
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->_ == INT_64 && r->_ == INT_64 ) return new Object( INT_64, l->Integer() ^ r->Integer() );
-			throw "Illegal operand type";
+		[]( SliP* s, Object* l, Object* r ) {
+			return new Object();	//	TODO:	WIP
 		}
 	,	"^"
 	,	40
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( l->_ == INT_64 && r->_ == INT_64 ) return new Object( INT_64, l->Integer() % r->Integer() );
-			throw "Illegal operand type";
+		[]( SliP* s, Object* l, Object* r ) {
+			return new Object();	//	TODO:	WIP
 		}
 	,	"%"
 	,	30
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
+		[]( SliP* s, Object* l, Object* r ) {
 			if ( !l->IsMatrix() || !r->IsMatrix() ) throw "Operands must be Matrix";
-			auto nRL = l->UI4_1();
-			auto nCL = l->UI4_2();
-			auto nRR = r->UI4_1();
-			auto nCR = r->UI4_2();
+			auto nRL = l->pMatrix->nRows;
+			auto nCL = l->pMatrix->nCols;
+			auto nRR = r->pMatrix->nRows;
+			auto nCR = r->pMatrix->nCols;
 			if ( nCL != nRR ) throw "Matrix size error";
 			if ( nRL == 1 && nCR == 1 ) {
-				double $ = 0;
-				for ( UI4 _ = 0; _ < nCL; _++ ) $ += l->Double() * r->Double();
-				return new Object( DOUBLE, $ );
+				double Σ = 0;
+				for ( UI4 _ = 0; _ < nCL; _++ ) Σ += (*l->pMatrix)[ _ ] * (*r->pMatrix)[ _ ];
+				return new Object( DOUBLE, Σ );
 			} else {
+				auto $ = new Object( nRL, nCR );
 				auto size = (UI8)nRL * (UI8)nCR;
-				auto $ = new double[ size ];
-				auto lP = l->DoubleP();
-				auto rP = r->DoubleP();
+				auto& L = *l->pMatrix;
+				auto& R = *r->pMatrix;
 				for ( UI4 row = 0; row < nRL; row++ ) {
 					auto cHead = row + nCR;
 					for ( UI4 col = 0; col < nCR; col++ ) {
 						auto Σ = 0;
-						for ( UI4 _ = 0; _ < nCL; _++ ) Σ += lP[ row * nCL + _ ] + rP[ col + _ * nCR ];
-						$[ cHead + col ] = Σ;
+						for ( UI4 _ = 0; _ < nCL; _++ ) Σ +=L[ row * nCL + _ ] + R[ col + _ * nCR ];
+						(*$->pMatrix)[ cHead + col ] = Σ;
 					}
 				}
-				if ( l->_ == MATRIX_SINGLE && r->_ == MATRIX_SINGLE ) {
-					auto singles = new float[ size ];
-					for ( UI8 _ = 0; _ < size; _++ ) singles[ _ ] = $[ _ ];
-					return new Object( MATRIX_SINGLE, nRL, nCR, singles );
-				} else {
-					return new Object( MATRIX_DOUBLE, nRL, nCR, $ );
-				}
+				return $;
 			}
 		}
 	,	"·"
 	,	30
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	Plus
+		Plus
 	,	"+"
 	,	30
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			switch ( l->_ ) {
-			case INT_64:
-				switch ( r->_ ) {
-				case INT_64:
-					return new Object( INT_64, l->Integer() - r->Integer() );
-				case DOUBLE:
-					return new Object( DOUBLE, l->Integer() - r->Double() );
-				}
-				break;
-			case DOUBLE:
-				switch ( r->_ ) {
-				case INT_64:
-					return new Object( DOUBLE, l->Double() - r->Integer() );
-				case DOUBLE:
-					return new Object( DOUBLE, l->Double() - r->Double() );
-				}
-				break;
-			}
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return new Object( DOUBLE, l->Double() - r->Double() );
 			throw "Illegal operand type";
 		}
 	,	"-"
 	,	30
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			switch ( l->_ ) {
-			case INT_64:
-				switch ( r->_ ) {
-				case INT_64:
-					return new Object( INT_64, l->Integer() * r->Integer() );	//	TODO: Overflow
-				case DOUBLE:
-					return new Object( DOUBLE, l->Integer() / r->Double() );
-				}
-				break;
-			case DOUBLE:
-				switch ( r->_ ) {
-				case INT_64:
-					return new Object( DOUBLE, l->Double() / r->Integer() );
-				case DOUBLE:
-					return new Object( DOUBLE, l->Double() / r->Double() );
-				}
-				break;
-			}
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return new Object( DOUBLE, l->Double() * r->Double() );
 			throw "Illegal operand type";
 		}
 	,	"×"
 	,	20
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			switch ( l->_ ) {
-			case INT_64:
-				switch ( r->_ ) {
-				case INT_64:
-					{	auto iL = l->Integer();
-						auto iR = r->Integer();
-						return iL % iR == 0
-						?	new Object( INT_64, iL / iR )
-						:	new Object( DOUBLE, (double)iL / (double)iR );
-						;
-					}
-				case DOUBLE:
-					return new Object( DOUBLE, l->Integer() / r->Double() );
-				}
-				break;
-			case DOUBLE:
-				switch ( r->_ ) {
-				case INT_64:
-					return new Object( DOUBLE, l->Double() / r->Integer() );
-				case DOUBLE:
-					return new Object( DOUBLE, l->Double() / r->Double() );
-				}
-				break;
-			}
+		[]( SliP* s, Object* l, Object* r ) {
+			if ( l->IsNumeric() && r->IsNumeric() ) return new Object( DOUBLE, l->Double() / r->Double() );
 			throw "Illegal operand type";
 		}
 	,	"÷"
 	,	20
 	)
 ,	new Object(
-		FUNCTION_INFIX
-	,	[]( SliP* s, Object* l, Object* r ) {
-			if ( r->_ == INT_64 ) {
-				if ( l->IsList() ) return l->ObjectPP()[ r->Integer() ];
-				throw "Left operand must be List";
-			} else if ( r->IsString() ) {
-				if ( l->IsDict() ) return (*l->MapP())[ (string)*r ];
-				throw "Left operand must be Dict";
-			} else if ( r->_ == FUNCTION_UNARY ) {
-				return ((Unary)r->P())( s, l );
+		[]( SliP* s, Object* l, Object* r ) {
+			switch ( r->_ ) {
+			case ZERO:
+				if ( l->IsList() ) return (*l->pList)[ 0 ];
+				break;
+			case POSITIVE:
+				if ( l->IsList() ) return (*l->pList)[ (*r->pBigInt)[ 0 ] ];
+				break;
+			case NEGATIVE:
+				if ( l->IsList() ) {	//	TODO: WIP
+					return (*l->pList)[ (*r->pBigInt)[ 0 ] ];
+				}
+				break;
+			case FUNCTION_UNARY:
+				return r->pFunction->preuna( s, l );
+			default:
+				if ( l->IsDict() ) return (*l->pDict)[ (string)*r ];
+				break;
 			}
 			s->stack.emplace_back( l );
 			auto $ = Eval( s, r );
@@ -1408,7 +1270,7 @@ Delete( Object* _ ) {
 map< string, Object* >
 builtinDict = [](){
 	map< string, Object* >	$;
-	for ( auto const& _: builtins ) $[ _->Label() ] = _;
+	for ( auto const& _: builtins ) $[ _->pFunction->label ] = _;
 counter -= $.size() + 2;
 	return $;
 }();
@@ -1461,7 +1323,7 @@ void
 Interpret( SliP* s, string const& source, void (*f)( string const& ) ) {
 
 	cerr << "SliP ver0.0 Object size: " << sizeof( Object ) << endl;
-	if ( sizeof( Object ) != 24 ) throw "Object size must be 24";
+	if ( sizeof( Object ) != 16 ) throw "Object size must be 24";
 	UnicodeReader r( source );
 
 	UI8	READ_START = 0;
@@ -1472,35 +1334,33 @@ Check = [ & ]( Object* _ ) {
 	auto result = string( *_ );
 	if ( Shrink( Unescape( source ) ) != Shrink( result ) ) cerr
 		<< ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl
-		<< source << endl
-		<< result << endl
-		<< Shrink( Shrink( source ) ) << endl
+		<< Shrink( Unescape( source ) ) << endl
 		<< Shrink( result ) << endl
 		<< "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl
 	;
 };
+	Object*	_;
 	try {
-
-		READ_START = r.index;
-		auto _ = Read( r );
+		do {
+			try	{
+				READ_START = r.index;
+				_ = Read( r );
 Check( _ );
-
-		while ( _ ) {
-			_ = Eval( s, _ );
-			f( (string)*_ );
-			Delete( _ );
-			
-			READ_START = r.index;
-			_ = Read( r );
-Check( _ );
-		}
-	} catch ( string const* _ ) {
-		cerr << _ << endl;
-		cerr << "While reading: " << UTF8( vector< UTF32 >( r._.begin() + READ_START, r._.end() ) ) << endl;
-		throw;
+				_ = Eval( s, _ );
+				f( (string)*_ );
+				Delete( _ );
+			} catch ( string const& _ ) {
+				cerr << _ << endl;
+				cerr << "While reading: " << UTF8( vector< UTF32 >( r._.begin() + READ_START, r._.end() ) ) << endl;
+			} catch ( char const* _ ) {
+				cerr << _ << endl;
+				cerr << "While reading: " << UTF8( vector< UTF32 >( r._.begin() + READ_START, r._.end() ) ) << endl;
+			}
+			cerr << endl;
+		} while ( _ );
 	} catch ( int _ ) {
+		cerr << "Encounter EOD, counter: " << counter << endl;
 	}
-	cerr << "counter: " << counter << endl;
 }
 /*
 ,   '!'     //  21  Eval
@@ -1567,3 +1427,8 @@ Check( _ );
 //	||	70	Logical		'a = [ 2 ] || T			a = T
 //	?	80	IfElse
 //	=	90	Define
+
+void
+TEST_SliP() {
+	TEST_MakeBigInteger();
+}
