@@ -4,3 +4,6 @@
 [submodule "ReplaceNumeral"]
 	path = ReplaceNumeral
 	url = https://github.com/Satachito/ReplaceNumeral.git
+[submodule "WASM+C++/src/utfcpp"]
+	path = WASM+C++/src/utfcpp
+	url = https://github.com/nemtrif/utfcpp.git
