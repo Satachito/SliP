@@ -30,6 +30,8 @@ emcc "$CPP_FILE" \
     -s EXPORT_ES6=1 \
     -s ENVIRONMENT="web" \
     --bind \
+	-Wno-character-conversion \
+	-std=c++23 \
     -g # デバッグ情報を含める（開発用）
 
 echo "Compilation complete! Check the '$OUTPUT_DIR' directory."
