@@ -5,7 +5,7 @@ OUTPUT_DIR="public"
 mkdir -p "$OUTPUT_DIR"
 
 # C++ ソースファイル
-CPP_FILE="src/main.cpp"
+CPP_FILE="src/WASM.cpp"
 
 # 出力ファイル名 (WASMとJSグルーコード)
 OUTPUT_NAME="SliP"
