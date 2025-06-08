@@ -1,10 +1,5 @@
 #include "SliP.hpp"
 
-shared_ptr< SliP >
-ReadEvalPrint( const string& _ ) {
-	return Print( Eval( make_shared< Context >(), Read( _ ) ) );
-}
-
 int
 main() {
 	ReadEvalPrint(

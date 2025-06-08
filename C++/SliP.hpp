@@ -1,10 +1,10 @@
 #include	"SAT.hpp"
 
-int
-nSliPs = 0;
-
 struct
 SliP {
+	static	inline	int
+	nSliPs = 0;
+
 	SliP() {
 //		cout << '+' << ':' << ++nSliPs << endl;
 	}
@@ -18,19 +18,18 @@ SliP {
 	REP() const { return "SliP"; }
 };
 
-vector< shared_ptr< SliP > >
+static	inline	vector< shared_ptr< SliP > >
 Stack;
 
 struct
 Context {
-	unordered_map< string, shared_ptr< SliP > >	dict;
 	shared_ptr< Context >						next;
+	unordered_map< string, shared_ptr< SliP > >	dict;
 	Context(
-		unordered_map< string, shared_ptr< SliP > > dict = unordered_map< string, shared_ptr< SliP > >{}
-	,	shared_ptr< Context > next = 0
-	)
-	:	dict( dict )
-	,	next( next ) {
+		shared_ptr< Context > next = 0
+	,	unordered_map< string, shared_ptr< SliP > > dict = unordered_map< string, shared_ptr< SliP > >{}
+	) :	next( next )
+	,	dict( dict ) {
 	}
 };
 
@@ -286,10 +285,12 @@ List : SliP {
 	List( const vector< shared_ptr< SliP > >& $ ) :	$( $ ) {}
 
 	virtual string
-	REP() const override { return ListString( "[", "]" ); }
+	REP() const override { return ListString( U'[', U']' ); }
 
 	string
-	ListString( string O, string C ) const {
+	ListString( char32_t o, char32_t c ) const {
+		auto O = string_char32( o );
+		auto C = string_char32( c );
 		if( $.size() == 0 ) return O + C;
 		string	_ = O + ' ' + $[ 0 ]->REP();
 		for ( size_t i = 1; i < $.size(); i++ ) {
@@ -310,7 +311,7 @@ Matrix : List {
 	}
 
 	string
-	REP() const override { return ListString( "[", "]" ); }
+	REP() const override { return ListString( U'⟨', U'⟩' ); }
 
 	uint64_t
 	NumRows() {
@@ -337,7 +338,7 @@ Sentence : List {
 	Sentence( const vector< shared_ptr< SliP > >& $ ) : List( $ ) {}
 
 	string
-	REP() const override { return ListString( "(", ")" ); }
+	REP() const override { return ListString( U'(', U')' ); }
 };
 
 struct
@@ -345,7 +346,7 @@ Procedure : List {
 	Procedure( const vector< shared_ptr< SliP > >& $ ) : List( $ ) {}
 
 	string
-	REP() const override { return ListString( "{", "}" ); }
+	REP() const override { return ListString( U'{', U'}' ); }
 };
 
 struct
@@ -353,7 +354,7 @@ Parallel : List {
 	Parallel( const vector< shared_ptr< SliP > >& $ ) : List( $ ) {}
 
 	string
-	REP() const override { return ListString( "«", "»" ); }
+	REP() const override { return ListString( U'«', U'»' ); }
 };
 
 ////////////////////////////////////////////////////////////////
@@ -362,10 +363,9 @@ _Compare( shared_ptr< SliP > l, shared_ptr< SliP > r ) {
 	return 0;
 }
 ////////////////////////////////////////////////////////////////
-inline shared_ptr< SliP >
-Eval( shared_ptr< Context > C, shared_ptr< SliP > _ ) {
-	return _;
-}
+
+shared_ptr< SliP >
+Eval( shared_ptr< Context > C, shared_ptr< SliP > _ );
 
 inline bool
 IsNil( shared_ptr< SliP > _ ) {
@@ -380,10 +380,10 @@ IsT( shared_ptr< SliP > _ ) {
 	return !IsNil( _ );
 }
 
-shared_ptr< SliP >
+static shared_ptr< SliP >
 T = make_shared< SliP >();
 
-shared_ptr< SliP >
+static shared_ptr< SliP >
 Nil = make_shared< List >( vector< shared_ptr< SliP > >{} );
 
 ////////////////////////////////////////////////////////////////
@@ -418,20 +418,20 @@ IsBreaking( char32_t _ ) {
 
 const vector<char32_t>
 SoloChars = {
-	u'Α'	,u'Β'	,u'Γ'	,u'Δ'	,u'Ε'	,u'Ζ'	,u'Η'	,u'Θ'	,u'Ι'	,u'Κ'	,u'Λ'	,u'Μ'
-,	u'Ν'	,u'Ξ'	,u'Ο'	,u'Π'	,u'Ρ'	,u'Σ'	,u'Τ'	,u'Υ'	,u'Φ'	,u'Χ'	,u'Ψ'	,u'Ω'
-,	u'α'	,u'β'	,u'γ'	,u'δ'	,u'ε'	,u'ζ'	,u'η'	,u'θ'	,u'ι'	,u'κ'	,u'λ'	,u'μ'
-,	u'ν'	,u'ξ'	,u'ο'	,u'π'	,u'ρ'	,u'σ'	,u'τ'	,u'υ'	,u'φ'	,u'χ'	,u'ψ'	,u'ω'
-,	u'ς'	//	Σの語尾系
+	U'Α'	,U'Β'	,U'Γ'	,U'Δ'	,U'Ε'	,U'Ζ'	,U'Η'	,U'Θ'	,U'Ι'	,U'Κ'	,U'Λ'	,U'Μ'
+,	U'Ν'	,U'Ξ'	,U'Ο'	,U'Π'	,U'Ρ'	,U'Σ'	,U'Τ'	,U'Υ'	,U'Φ'	,U'Χ'	,U'Ψ'	,U'Ω'
+,	U'α'	,U'β'	,U'γ'	,U'δ'	,U'ε'	,U'ζ'	,U'η'	,U'θ'	,U'ι'	,U'κ'	,U'λ'	,U'μ'
+,	U'ν'	,U'ξ'	,U'ο'	,U'π'	,U'ρ'	,U'σ'	,U'τ'	,U'υ'	,U'φ'	,U'χ'	,U'ψ'	,U'ω'
+,	U'ς'	//	Σの語尾系
 ,	U'𝑒'	//	U'\U0001D452'
-,	u'∞'
+,	U'∞'
 };
 
 const vector<char32_t>
 BreakingChars = {
-	u'!'	,u'"'	,u'#'	,u'$'	,u'%'	,u'&'	,u'\\'	,u'('	,u')'	,u'*'	,u'+'	,u','	,u'-'	,u'.'	,u'/'	,u':'	,u';'
-,	u'<'	,u'='	,u'>'	,u'?'	,u'@'	,u'['	,u']'	,u'^'	,u'`'	,u'{'	,u'|'	,u'}'	,u'~'	,u'¡'	,u'¤'	,u'¦'	,u'§'
-,	u'«'	,u'¬'	,u'±'	,u'µ'	,u'¶'	,u'·'	,u'»'	,u'¿'	,u'×'	,u'÷'	,u'∈'	,u'∋'	,u'⊂'	,u'⊃'	,u'∩'	,u'∪'	,u'∅'
+	U'!'	,U'"'	,U'#'	,U'$'	,U'%'	,U'&'	,U'\\'	,U'('	,U')'	,U'*'	,U'+'	,U','	,U'-'	,U'.'	,U'/'	,U':'	,U';'
+,	U'<'	,U'='	,U'>'	,U'?'	,U'@'	,U'['	,U']'	,U'^'	,U'`'	,U'{'	,U'|'	,U'}'	,U'~'	,U'¡'	,U'¤'	,U'¦'	,U'§'
+,	U'«'	,U'¬'	,U'±'	,U'µ'	,U'¶'	,U'·'	,U'»'	,U'¿'	,U'×'	,U'÷'	,U'∈'	,U'∋'	,U'⊂'	,U'⊃'	,U'∩'	,U'∪'	,U'∅'
 };
 
 
@@ -439,7 +439,7 @@ const vector< shared_ptr< Function > >
 Builtins = {
 	make_shared< Primitive >(
 		[]( shared_ptr< Context > ) -> shared_ptr< SliP > {
-			if( Stack.empty() ) throw runtime_error( "Stack underflow" );
+			if ( Stack.empty() ) throw runtime_error( "Stack underflow" );
 			auto $ = Stack.back();
 			Stack.pop_back();
 			return $;
@@ -495,7 +495,7 @@ Builtins = {
 			auto literal = Cast< Literal >( _ );
 			return literal
 			?	literal
-			:	make_shared< Literal >( _->REP() , u'`' )
+			:	make_shared< Literal >( _->REP() , U'`' )
 			;
 		}
 	,	"¶"		//	Convert to literal
@@ -564,7 +564,7 @@ Builtins = {
 ,	make_shared< Infix >(
 		[]( shared_ptr< Context > C, shared_ptr< SliP > l, shared_ptr< SliP > r ) -> shared_ptr< SliP > {
 			if( auto dict = Cast< Dict >( l ) ) {
-				return Eval( make_shared< Context >( dict->$, C ), r );
+				return Eval( make_shared< Context >( C, dict->$ ), r );
 			}
 			throw runtime_error( "Left must be dict." );
 		}
@@ -741,7 +741,7 @@ Builtins = {
 				if( L && R ) return make_shared< Float		>( L->Double() + R->Double() );
 			}
 			{	auto L = Cast< Literal	>( l ), R = Cast< Literal	>( r );
-				if( L && R ) return make_shared< Literal	>( L->$ + R->$, u'`' );
+				if( L && R ) return make_shared< Literal	>( L->$ + R->$, U'`' );
 			}
 			{	auto L = Cast< List		>( l ), R = Cast< List		>( r );
 				if( L && R ) {
@@ -886,28 +886,8 @@ iReader {
 	virtual	void		Backward()	= 0;
 };
 
-struct
-StringReader : iReader {
-	string	$;
-	size_t	_ = 0;
-
-	StringReader( const string& $ ) : $( $ ) {}
-
-	bool		Avail()		{ return _ < $.length(); }
-	char32_t	Read()		{ return $[ _++ ]; }
-	char32_t	Peek()		{ return $[ _ ]; }
-	void		Forward()	{ _++; }
-	void		Backward()	{ --_; }
-};
-
 inline shared_ptr< SliP >
 Read( iReader& R, char32_t terminator );
-
-inline shared_ptr< SliP >
-Read( const string& _ ) {
-	StringReader R( _ );
-	return Read( R, -1 );
-}
 
 inline vector< shared_ptr< SliP > >
 ReadList( iReader& _, char32_t close ) {
@@ -922,7 +902,7 @@ CreateName( iReader& R, char32_t initial ) {
 	if( contains( SoloChars, initial ) ) return make_shared< Name >( string_char32s( vector< char32_t >{ initial } ) );
 
 	auto
-	escaped = initial == u'\\';
+	escaped = initial == U'\\';
 
 	vector< char32_t >
 	$;
@@ -935,12 +915,12 @@ CreateName( iReader& R, char32_t initial ) {
 			R.Forward();
 			escaped = false;
 			switch ( _ ) {
-			case u'0'	: $.emplace_back( '\0'	); break;
-			case u'f'	: $.emplace_back( '\f'	); break;
-			case u'n'	: $.emplace_back( '\n'	); break;
-			case u'r'	: $.emplace_back( '\r'	); break;
-			case u't'	: $.emplace_back( '\t'	); break;
-			case u'v'	: $.emplace_back( '\v'	); break;
+			case U'0'	: $.emplace_back( '\0'	); break;
+			case U'f'	: $.emplace_back( '\f'	); break;
+			case U'n'	: $.emplace_back( '\n'	); break;
+			case U'r'	: $.emplace_back( '\r'	); break;
+			case U't'	: $.emplace_back( '\t'	); break;
+			case U'v'	: $.emplace_back( '\v'	); break;
 			default		: $.emplace_back( _		); break;
 			}
 		} else {
@@ -963,12 +943,12 @@ CreateLiteral( iReader& R, char32_t terminator ) {
 		if( escaped ) {
 			escaped = false;
 			switch ( _ ) {
-			case u'0'	: $.emplace_back( '\0'	); break;
-			case u'f'	: $.emplace_back( '\f'	); break;
-			case u'n'	: $.emplace_back( '\n'	); break;
-			case u'r'	: $.emplace_back( '\r'	); break;
-			case u't'	: $.emplace_back( '\t'	); break;
-			case u'v'	: $.emplace_back( '\v'	); break;
+			case U'0'	: $.emplace_back( '\0'	); break;
+			case U'f'	: $.emplace_back( '\f'	); break;
+			case U'n'	: $.emplace_back( '\n'	); break;
+			case U'r'	: $.emplace_back( '\r'	); break;
+			case U't'	: $.emplace_back( '\t'	); break;
+			case U'v'	: $.emplace_back( '\v'	); break;
 			default		: $.emplace_back( _		); break;
 			}
 		} else {
@@ -1007,16 +987,18 @@ Read( iReader& R, char32_t terminator ) {
 			else			return make_shared<Bits		>( stoi( string_char32s( $ ) ) );
 		}
 		switch ( _ ) {
-		case u']'	:
-		case u'}'	:
-		case u')'	:
-		case u'»'	: throw runtime_error( "Detect close parenthesis" );
-		case u'['	: return make_shared< Matrix	>( ReadList( R, u']' ) );
-		case u'('	: return make_shared< Sentence	>( ReadList( R, u')' ) );
-		case u'{'	: return make_shared< Procedure	>( ReadList( R, u'}' ) );
-		case u'«'	: return make_shared< Parallel	>( ReadList( R, u'»' ) );
-		case u'"'	: return CreateLiteral( R, _ );
-		case u'`'	: return CreateLiteral( R, _ );
+		case U']'	:
+		case U'⟩'	:
+		case U'}'	:
+		case U')'	:
+		case U'»'	: throw runtime_error( "Detect close parenthesis" );
+		case U'['	: return make_shared< List		>( ReadList( R, U']' ) );
+		case U'⟨'	: return make_shared< Matrix	>( ReadList( R, U'⟩' ) );
+		case U'('	: return make_shared< Sentence	>( ReadList( R, U')' ) );
+		case U'{'	: return make_shared< Procedure	>( ReadList( R, U'}' ) );
+		case U'«'	: return make_shared< Parallel	>( ReadList( R, U'»' ) );
+		case U'"'	: return CreateLiteral( R, _ );
+		case U'`'	: return CreateLiteral( R, _ );
 		default		:
 			auto label0 = string_char32s( vector< char32_t >{ _ } );
 			auto it0 = find_if( Builtins.begin(), Builtins.end(), [ & ]( shared_ptr< Function > _ ){ return _->label == label0; } );
@@ -1033,9 +1015,26 @@ Read( iReader& R, char32_t terminator ) {
 	return 0;
 }
 
-inline shared_ptr< SliP >
-Print( shared_ptr< SliP > _ ) {
-	cout << _->REP() << endl;
-	return _;
+////////////////////////////////////////////////////////////////
+
+struct
+StringReader : iReader {
+	string	$;
+	size_t	_ = 0;
+
+	StringReader( const string& $ ) : $( $ ) {}
+
+	bool		Avail()		{ return _ < $.length(); }
+	char32_t	Read()		{ return $[ _++ ]; }
+	char32_t	Peek()		{ return $[ _ ]; }
+	void		Forward()	{ _++; }
+	void		Backward()	{ --_; }
+};
+
+inline void
+ReadEvalPrint( const string& _ ) {
+	StringReader	R( _ );
+	auto			C = make_shared< Context >();
+	while( auto _ = Read( R, -1 ) ) cout << Eval( C, _ )->REP() << endl;
 }
 
