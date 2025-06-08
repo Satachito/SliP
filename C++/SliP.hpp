@@ -36,13 +36,31 @@ contains( const Range& range, const T& value ) {
 
 ////////////////////////////////////////////////////////////////
 
-#include "utfcpp/source/utf8.h"
-using namespace utf8;
+string
+string_char32s( const vector< char32_t >& char32s ) {
 
-inline string
-string_char32s( const vector< char32_t >& _ ) {
 	string $;
-	utf32to8( _.begin(), _.end(), back_inserter( $ ) );
+
+	for( char32_t _ : char32s ) {
+		if ( _ <= 0x7F ) {				// 1バイト (ASCII)
+			$ += static_cast<char>( _ );
+		} else if ( _ <= 0x7FF ) {		// 2バイト
+			$ += static_cast<char>( 0b11000000 | ( _ >> 6) );
+			$ += static_cast<char>( 0b10000000 | ( _ & 0b00111111 ) );
+		} else if ( _ <= 0xFFFF ) {		// 3バイト
+			$ += static_cast<char>( 0b11100000 | ( _ >> 12 ) );
+			$ += static_cast<char>( 0b10000000 | ( ( _ >> 6 ) & 0b00111111 ) );
+			$ += static_cast<char>( 0b10000000 | ( _ & 0b00111111 ) );
+		} else if ( _ <= 0x10FFFF ) {	// 4バイト
+			$ += static_cast<char>( 0b11110000 | ( _ >> 18 ) );
+			$ += static_cast<char>( 0b10000000 | ( ( _ >> 12 ) & 0b00111111 ) );
+			$ += static_cast<char>( 0b10000000 | ( ( _ >> 6 ) & 0b00111111 ) );
+			$ += static_cast<char>( 0b10000000 | ( _ & 0b00111111 ) );
+		} else {
+			$ += '?';
+		}
+	}
+
 	return $;
 }
 
@@ -58,12 +76,12 @@ nSliPs = 0;
 struct
 SliP {
 	SliP() {
-		cout << '+' << ':' << ++nSliPs << endl;
+//		cout << '+' << ':' << ++nSliPs << endl;
 	}
 
 	virtual	~
 	SliP() {
-		cout << '-' << ':' << --nSliPs << endl;
+//		cout << '-' << ':' << --nSliPs << endl;
 	}
 
 	virtual string
@@ -1059,10 +1077,10 @@ Read( iReader& R, char32_t terminator ) {
 			else			return make_shared<Bits		>( stoi( string_char32s( $ ) ) );
 		}
 		switch ( _ ) {
-/*[*/	case u']'	:
-/*{*/	case u'}'	:
-/*(*/	case u')'	:
-/*«*/	case u'»'	: throw runtime_error( "Detect close parenthesis" );
+		case u']'	:
+		case u'}'	:
+		case u')'	:
+		case u'»'	: throw runtime_error( "Detect close parenthesis" );
 		case u'['	: return make_shared< Matrix	>( ReadList( R, u']' ) );
 		case u'('	: return make_shared< Sentence	>( ReadList( R, u')' ) );
 		case u'{'	: return make_shared< Procedure	>( ReadList( R, u'}' ) );
