@@ -1,54 +1,52 @@
 #include	"SliP.hpp"
 
-inline shared_ptr< SliP >
-EvalSentence( shared_ptr< Context > C, const vector< shared_ptr< SliP > >& _ ) {
+SP< SliP >
+EvalSentence( SP< Context > C, const vector< SP< SliP > >& _ ) {
 
-	if( _.size() == 0 ) return Nil;
+	if( _.size() == 0 ) throw runtime_error( "Syntax Error: No infix operand or null sentence" );
 	if( _.size() == 1 ) return Eval( C, _[ 0 ] );
 
 	auto
 	infixEntries = ::filter(
 		mapWithIndex(
 			_
-		, 	[]( auto $, auto index ){ return tuple( $, index ); }
+		, 	[]( auto $, auto index ){ return tuple( Cast< Infix >( $ ), index ); }
 		)
 	,	[]( auto _ ){
-			return Cast< Infix >( get< 0 >( _ ) );
+			return get< 0 >( _ );
 		}
 	);
 	if( infixEntries.size() ) {
 		auto $ = infixEntries[ 0 ];
 		for( auto _ = 1; _ < infixEntries.size(); _++ ) {
 			auto entry = infixEntries[ _ ];
-			if ( get< 0 >entry->priority >= get< 0 >$->priority ) $ = entry;
+			if ( get< 0 >( entry )->priority >= get< 0 >( $ )->priority ) $ = entry;
 		}
-		auto [ infix, index ] = $
+		auto [ infix, index ] = $;
 		return infix->$(
 			C
-		,	EvalSentence( C, SliceTo( _, index ) )
-		,	EvalSentence( C, SliceFrom( _, index + 1 ) )
-		)
-		)
+		,	EvalSentence( C, sliceTo( _, index ) )
+		,	EvalSentence( C, sliceFrom( _, index + 1 ) )
+		);
 	} else {
-/*
-		let index = _.length - 1
-		_ = _.slice()
-		while ( index-- ) {
-			let $ = _[ index ]
-			$ instanceof Prefix || ( $ = Eval( c, $ ) )
-			$ instanceof Prefix && _.splice( index, 2, $._( c, _[ index + 1 ] ) )
+		auto index = _.size() - 1;
+		if(	Cast< Prefix >( _[ index ] ) ) throw runtime_error( "Syntax Error: No prefix operand" );
+		SP< SliP > $ = Eval( C, _[ index ] );
+		while( --index ) {
+			auto slip = _[ index ];
+			if( auto prefix = Cast< Prefix >( slip ) ) {
+				$ = prefix->$( C, $ );
+			} else {
+				$ = Eval( C, _[ index ] );
+			}
 		}
-		if ( _.length === 1 ) return _[ 0 ]
-		const
-		$ = _.map( _ => Eval( c, _ ) )
-		if ( $.every( _ => _ instanceof Numeric ) ) return new Numeric( $.reduce( ( $, _ ) => $ * _._, 1 ) )
-*/
+		return $;
 	}
 	throw runtime_error( "Syntax error" );
 }
 
-inline shared_ptr< SliP >
-Eval( shared_ptr< Context > C, shared_ptr< SliP > _ ) {
+SP< SliP >
+Eval( SP< Context > C, SP< SliP > _ ) {
 	if(	auto name = Cast< Name >( _ ) ) {
 		while( C ) {
 			if ( C->dict.contains( name->$ ) ) return C->dict[ name->$ ];
@@ -57,7 +55,7 @@ Eval( shared_ptr< Context > C, shared_ptr< SliP > _ ) {
 		throw runtime_error( "Undefined" );
 	}
 	if( auto primitive = Cast< Primitive >( _ ) ) return primitive->$( C );
-	if( auto parallel = Cast< Parallel >( _ ) ) return make_shared< List >(
+	if( auto parallel = Cast< Parallel >( _ ) ) return MS< List >(
 		map(
 			parallel->$
 		,	[ & ]( auto _ ){ return Eval( C, _ ); }
@@ -65,8 +63,8 @@ Eval( shared_ptr< Context > C, shared_ptr< SliP > _ ) {
 	);
 	if( auto procedure = Cast< Procedure >( _ ) ) {
 		auto
-		newC = make_shared< Context >( C );
-		return make_shared< List >(
+		newC = MS< Context >( C );
+		return MS< List >(
 			map(
 				procedure->$
 			,	[ & ]( auto _ ){ return Eval( C, _ ); }
