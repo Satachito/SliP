@@ -1,4 +1,4 @@
-#include	"JP/CPP/JP.h"
+#include	"JP/JP_CPP/JP.h"
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
