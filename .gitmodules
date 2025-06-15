@@ -1,9 +1,12 @@
-[submodule "jp-split"]
-	path = jp-split
-	url = https://github.com/Satachito/jp-split.git
-[submodule "ReplaceNumeral"]
-	path = ReplaceNumeral
-	url = https://github.com/Satachito/ReplaceNumeral.git
-[submodule "WASM+C++/src/utfcpp"]
-	path = WASM+C++/src/utfcpp
-	url = https://github.com/nemtrif/utfcpp.git
+[submodule "Web/jp-split"]
+	path = Web/jp-split
+	url = git@github.com:Satachito/jp-split.git
+[submodule "Web/ReplaceNumeral"]
+	path = Web/ReplaceNumeral
+	url = git@github.com:Satachito/ReplaceNumeral.git
+[submodule "Swift/JP"]
+	path = Swift/JP
+	url = git@github.com:Satachito/JP.git
+[submodule "C++/JP"]
+	path = C++/JP
+	url = git@github.com:Satachito/JP.git

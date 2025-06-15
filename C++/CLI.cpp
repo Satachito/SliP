@@ -1,7 +1,7 @@
 #include "SliP.hpp"
 
-int
-main() {
+void
+Main() {
 	ReadEvalPrint(
 		string(
 			istreambuf_iterator<char>( cin )
@@ -9,4 +9,11 @@ main() {
 		)
 	);
 }
+
+
+int
+main( int argc, char* argv[] ) {
+	Main();
+}
+
 

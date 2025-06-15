@@ -1,9 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-#rm ./a.out
-#echo "Compiling CLI..."
-#c++ -std=c++23 CLI.cpp Read.cpp Eval.cpp
-
+rm ./a.out
+echo "Compiling CLI..."
+c++ -std=c++23 CLI.cpp Read.cpp Eval.cpp
 
 echo "Compiling to WebAssembly..."
 # Emscripten を使ってコンパイル

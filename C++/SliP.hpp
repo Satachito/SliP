@@ -1,9 +1,11 @@
-#include	"SAT.hpp"
+#include	"JP/CPP/JP.h"
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
 #define	MS		make_shared
 
+////////////////////////////////////////////////////////////////
+#include	<numbers>
 ////////////////////////////////////////////////////////////////
 
 
@@ -25,9 +27,6 @@ SliP {
 	REPR() const { return "SliP"; }
 };
 
-static	inline	vector< SP< SliP > >
-Stack;
-
 struct
 Context {
 	SP< Context >						next;
@@ -39,6 +38,41 @@ Context {
 	,	dict( dict ) {
 	}
 };
+
+SP< SliP >
+Eval( const SP< Context >& C, const SP< SliP >& _ );
+
+static	inline	vector< SP< SliP > >
+theStack;
+static	inline	mutex
+stackMutex;
+
+inline	auto
+Push( SP< SliP > _ ) {
+	lock_guard< mutex >	lock( stackMutex );
+	theStack.push_back( _ );
+}
+inline	auto
+Pop() {
+	if ( theStack.empty() ) throw runtime_error( "Stack underflow" );
+	lock_guard< mutex >	lock( stackMutex );
+	auto $ = theStack.back();
+	theStack.pop_back();
+	return $;
+}
+inline	auto
+Stack() {
+	lock_guard< mutex >	lock( stackMutex );
+	return theStack;
+}
+inline	auto
+PushAndEval( SP< Context > C, SP< SliP > l, SP< SliP > r ) {
+	lock_guard< mutex >	lock( stackMutex );
+	theStack.push_back( l );
+	auto $ = Eval( C, r );
+	theStack.pop_back();
+	return $;
+}
 
 struct
 Numeric	: SliP {
@@ -53,13 +87,13 @@ Numeric	: SliP {
 
 	static	double
 	Dot( vector< SP< SliP > >& l, vector< SP< SliP > >& r ) {
-		auto size = l.size();
-		if(	size != r.size() ) throw runtime_error( "Numeric::Dot: vector size unmatch" );
+		auto index = l.size();
+		if(	index != r.size() ) throw runtime_error( "Numeric::Dot: vector size unmatch" );
 		double $ = 0;
-		while( size-- ) {
-			auto L = Cast< Numeric >( l[ size ] );
+		while( index-- ) {
+			auto L = Cast< Numeric >( l[ index ] );
 			if( !L ) throw runtime_error( "Numeric::Dot: lhs not a number" );
-			auto R = Cast< Numeric >( r[ size ] );
+			auto R = Cast< Numeric >( r[ index ] );
 			if( !R ) throw runtime_error( "Numeric::Dot: rhs not a number" );
 			$ += L->Double() * R->Double();
 		}
@@ -84,7 +118,7 @@ Negator : Numeric {
 	int64_t
 	Bits64() const override {
 		auto _ = $->Bits64();
-		if( _ == numeric_limits< int64_t >::min() ) throw runtime_error( "Negator::Bits64 failed" );
+		if( _ == numeric_limits< int64_t >::min() ) throw runtime_error( "Negator::Bits64 cannot change sign of int64_t::min()" );
 		return -_;
 	}
 
@@ -169,7 +203,7 @@ NumericConstants : Numeric {
 	double
 	Double() const override {
 		if( $ == "∞"		) return numeric_limits< double >::infinity();
-		if( $ == "𝑒"		) return numbers::e;
+		if( $ == "𝑒"			) return numbers::e;
 		if( $ == "π"		) return numbers::pi;
 		if( $ == "log2e"	) return numbers::log2e;
 		if( $ == "log10e"	) return numbers::log10e;
@@ -296,8 +330,8 @@ List : SliP {
 
 	string
 	ListString( char32_t o, char32_t c ) const {
-		auto O = string_char32( o );
-		auto C = string_char32( c );
+		const auto O = string_char32( o );
+		const auto C = string_char32( c );
 		if( $.size() == 0 ) return O + C;
 		string	_ = O + ' ' + $[ 0 ]->REPR();
 		for ( size_t i = 1; i < $.size(); i++ ) {
@@ -321,21 +355,21 @@ Matrix : List {
 	REPR() const override { return ListString( U'⟨', U'⟩' ); }
 
 	uint64_t
-	NumRows() {
+	NumRows() const {
 		return direction
 		?	direction > 0 ? direction : $.size() / -direction
 		:	0
 		;
 	}
 	uint64_t
-	NumCols() {
+	NumCols() const {
 		return direction
 		?	direction > 0 ? $.size() / direction : -direction
 		:	0
 		;
 	}
 	SP< SliP >
-	operator() ( size_t r, size_t c ) {
+	operator() ( size_t r, size_t c ) const {
 		return $[ r * NumCols() + c ];
 	}
 };
@@ -391,9 +425,6 @@ static SP< SliP >
 Nil = MS< List >( vector< SP< SliP > >{} );
 
 ////////////////////////////////////////////////////////////////
-
-SP< SliP >
-Eval( SP< Context > C, SP< SliP > _ );
 
 struct
 iReader {

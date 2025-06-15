@@ -1,7 +1,10 @@
 #include	"SliP.hpp"
 
+#include <unordered_set>
+#include <unordered_map>
+
 bool	//	Excluding NO-BREAK SPACE i.e. a0, feff
-IsBreaking( char32_t _ ) {
+IsBreakingSpace( char32_t _ ) {
 	if( _ <= 0x20 ) return true;
 	if( 0x7f <= _ && _ < 0xA0 ) return true;
 	switch ( _ ) {
@@ -28,7 +31,7 @@ IsBreaking( char32_t _ ) {
 	}
 }
 
-const vector<char32_t>
+const unordered_set<char32_t>
 SoloChars = {
 	U'Α'	,U'Β'	,U'Γ'	,U'Δ'	,U'Ε'	,U'Ζ'	,U'Η'	,U'Θ'	,U'Ι'	,U'Κ'	,U'Λ'	,U'Μ'
 ,	U'Ν'	,U'Ξ'	,U'Ο'	,U'Π'	,U'Ρ'	,U'Σ'	,U'Τ'	,U'Υ'	,U'Φ'	,U'Χ'	,U'Ψ'	,U'Ω'
@@ -39,7 +42,7 @@ SoloChars = {
 ,	U'∞'
 };
 
-const vector<char32_t>
+const unordered_set<char32_t>
 BreakingChars = {
 	U'!'	,U'"'	,U'#'	,U'$'	,U'%'	,U'&'	,U'\\'	,U'('	,U')'	,U'*'	,U'+'	,U','	,U'-'	,U'.'	,U'/'	,U':'	,U';'
 ,	U'<'	,U'='	,U'>'	,U'?'	,U'@'	,U'['	,U']'	,U'^'	,U'`'	,U'{'	,U'|'	,U'}'	,U'~'	,U'¡'	,U'¤'	,U'¦'	,U'§'
@@ -51,16 +54,13 @@ const vector< SP< Function > >
 Builtins = {
 	MS< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
-			if ( Stack.empty() ) throw runtime_error( "Stack underflow" );
-			auto $ = Stack.back();
-			Stack.pop_back();
-			return $;
+			return Pop();
 		}
 	,	"@"		//	Stack top
 	)
 ,	MS< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
-			return MS< List >( Stack );
+			return MS< List >( Stack() );
 		}
 	,	"@@"	//	Stack list
 	)
@@ -180,7 +180,7 @@ Builtins = {
 			}
 			throw runtime_error( "Left must be dict." );
 		}
-	,	"§"
+	,	"§"		//	Open new context with dict(l) then eval r
 	,	100
 	)
 ,	MS< Infix >(
@@ -190,7 +190,7 @@ Builtins = {
 			}
 			throw runtime_error( "Only name can be assigned." );
 		}
-	,	"="
+	,	"="		//	assign
 	,	90
 	)
 ,	MS< Infix >(
@@ -200,14 +200,14 @@ Builtins = {
 			}
 			throw runtime_error( "Right operand must be two element List." );
 		}
-	,	"?"
+	,	"?"		//	if else
 	,	80
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return IsT( l ) ? Eval( C, r ) : Nil;
 		}
-	,	"¿"
+	,	"¿"		//	if
 	,	80
 	)
 ,	MS< Infix >(
@@ -304,7 +304,7 @@ Builtins = {
 			}
 			throw runtime_error( "Right operand must be List" );
 		}
-	,	","
+	,	","		//	[ l, ...r ]
 	,	50
 	)
 ,	MS< Infix >(
@@ -342,8 +342,8 @@ Builtins = {
 			{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
 				if( L && R ) {
 					return (
-						R->$ > 0 && L->$ > numeric_limits<int64_t>::max() -  R->$
-					||	R->$ < 0 && L->$ < numeric_limits<int64_t>::min() -  R->$
+						( R->$ > 0 && L->$ > numeric_limits<int64_t>::max() - R->$ )
+					||	( R->$ < 0 && L->$ < numeric_limits<int64_t>::min() - R->$ )
 					) ?	(SP< Numeric >)MS< Float	>( L->Double() + R->Double() )
 					:	(SP< Numeric >)MS< Bits	>( L->$ + R->$ )
 					;
@@ -382,8 +382,8 @@ Builtins = {
 			{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
 				if( L && R ) {
 					return (
-						R->$ > 0 && L->$ < numeric_limits<int64_t>::max() +  R->$
-					||	R->$ < 0 && L->$ > numeric_limits<int64_t>::min() +  R->$
+						( R->$ > 0 && L->$ < numeric_limits<int64_t>::max() + R->$ )
+					||	( R->$ < 0 && L->$ > numeric_limits<int64_t>::min() + R->$ )
 					) ?	(SP< Numeric >)MS< Float	>( L->Double() - R->Double() )
 					:	(SP< Numeric >)MS< Bits	>( L->$ - R->$ )
 					;
@@ -479,12 +479,9 @@ Builtins = {
 				if ( R ) return R->$( C, l );
 			}
 
-			Stack.push_back( l );
-			auto $ = Eval( C, r );
-			Stack.pop_back();
-			return $;
+			return PushAndEval( C, l, r );
 		}
-	,	":"
+	,	":"		//	Apply
 	,	10
 	)
 };
@@ -527,7 +524,7 @@ CreateName( iReader& R, char32_t initial ) {
 			if( contains( SoloChars	, _ )		) break;
 			if( contains( BreakingChars, _ )	) break;
 			R.Forward();
-			if( IsBreaking( _ )					) break;
+			if( IsBreakingSpace( _ )			) break;
 			if( _ == '\\' )	escaped = true;
 			else $.push_back( _ );
 		}
@@ -564,8 +561,8 @@ SP< SliP >
 Read( iReader& R, char32_t terminator ) {
 	while ( R.Avail() ) {
 		auto _ = R.Read();
-		if( _ == terminator )	return 0;
-		if( IsBreaking( _ ) )	continue;
+		if( _ == terminator )		return 0;
+		if( IsBreakingSpace( _ ) )	continue;
 		if( IsDigit( _ ) )	{
 			vector< char32_t > ${ _ };
 			bool
