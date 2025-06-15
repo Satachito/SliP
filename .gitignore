@@ -1,6 +1,6 @@
-SliP.xcodeproj/project.xcworkspace/xcuserdata/sat.xcuserdatad/UserInterfaceState.xcuserstate
-SliP.xcodeproj/xcuserdata/sat.xcuserdatad/xcschemes/xcschememanagement.plist
-tmp/
+*.xcuserdata
+xcuserdata/
+tmp
 _*
 a.out
 *.swp
