@@ -1,4 +1,4 @@
-#include	"JP/JP_CPP/JP.h"
+#include	"../JP/JP_CPP/JP.h"
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
@@ -446,16 +446,9 @@ StringReader : iReader {
 	StringReader( const string& $ ) : $( $ ) {}
 
 	bool		Avail()		{ return _ < $.length(); }
-	char32_t	Read()		{ return $[ _++ ]; }
-	char32_t	Peek()		{ return $[ _ ]; }
+	char32_t	Read()		{ return static_cast<unsigned char>( $[ _++ ] ); }
+	char32_t	Peek()		{ return static_cast<unsigned char>( $[ _ ] ); }
 	void		Forward()	{ _++; }
 	void		Backward()	{ --_; }
 };
-
-inline void
-ReadEvalPrint( const string& _ ) {
-	StringReader	R( _ );
-	auto			C = MS< Context >();
-	while( auto _ = Read( R, -1 ) ) cout << Eval( C, _ )->REPR() << endl;
-}
 

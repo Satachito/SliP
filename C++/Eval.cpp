@@ -8,7 +8,7 @@ EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
 
 	const auto
 	infixEntries = ::filter(
-		mapWithIndex(
+		transformWithIndex(
 			_
 		, 	[]( auto $, auto index ){ return tuple( Cast< Infix >( $ ), index ); }
 		)
@@ -56,7 +56,7 @@ Eval( const SP< Context >& C, const SP< SliP >& _ ) {
 	}
 	if( const auto primitive = Cast< Primitive >( _ ) ) return primitive->$( C );
 	if( const auto parallel = Cast< Parallel >( _ ) ) return MS< List >(
-		map(
+		transform(
 			parallel->$
 		,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
 		)
@@ -65,7 +65,7 @@ Eval( const SP< Context >& C, const SP< SliP >& _ ) {
 		auto
 		newC = MS< Context >( C );
 		return MS< List >(
-			map(
+			transform(
 				procedure->$
 			,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
 			)

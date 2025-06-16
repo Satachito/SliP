@@ -7,6 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12D9D7042E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
+		12D9D7052E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
+		12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
+		12D9D7072E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
+		12D9D7082E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
+		12D9D70A2E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
+		12D9D70B2E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
+		12D9D70C2E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
+		12D9D70D2E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
+		12D9D70E2E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
+		12D9D70F2E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
+		12D9D7102E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
+		12D9D7112E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
+		12D9D7122E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
+		12D9D7132E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
+		12D9D7142E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
+		12D9D7162E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
+		12D9D7172E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
+		12D9D7182E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
+		12D9D7192E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
+		12D9D71A2E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
+		12D9D71B2E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
+		12D9D71C2E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
+		12D9D71D2E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
+		12D9D71E2E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
+		12D9D71F2E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
+		12D9D7202E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
+		12D9D7222E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
+		12D9D7232E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
+		12D9D7242E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
+		12D9D7252E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
+		12D9D7262E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
+		12D9D7272E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
 		12EE63952DFE7DD4002EBE1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63822DFE7DD4002EBE1E /* Assets.xcassets */; };
 		12EE63992DFE7DD4002EBE1E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63872DFE7DD4002EBE1E /* Main.storyboard */; };
 		12EE639D2DFE7DD4002EBE1E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63832DFE7DD4002EBE1E /* Info.plist */; };
@@ -14,7 +47,6 @@
 		12EE63AD2DFE7DD4002EBE1E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE634B2DFE7DD4002EBE1E /* main.swift */; };
 		12EE63B22DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
 		12EE63BB2DFE7DD4002EBE1E /* macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63852DFE7DD4002EBE1E /* macOS.swift */; };
-		12EE63BE2DFE7DD4002EBE1E /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63602DFE7DD4002EBE1E /* JP.swift */; };
 		12EE63C52DFE7DD4002EBE1E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12EE638C2DFE7DD4002EBE1E /* Main.storyboard */; };
 		12EE63CD2DFE7DD4002EBE1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63892DFE7DD4002EBE1E /* Assets.xcassets */; };
 		12EE63D72DFE7DD4002EBE1E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 12EE638A2DFE7DD4002EBE1E /* Info.plist */; };
@@ -22,7 +54,6 @@
 		12EE63DA2DFE7DD4002EBE1E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE634B2DFE7DD4002EBE1E /* main.swift */; };
 		12EE63DF2DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
 		12EE63E62DFE7DD4002EBE1E /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE638E2DFE7DD4002EBE1E /* OSX.swift */; };
-		12EE63EB2DFE7DD4002EBE1E /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63602DFE7DD4002EBE1E /* JP.swift */; };
 		12EE64452DFE7F99002EBE1E /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64392DFE7F99002EBE1E /* Read.cpp */; };
 		12EE644B2DFE7F99002EBE1E /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64382DFE7F99002EBE1E /* Eval.cpp */; };
 		12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64372DFE7F99002EBE1E /* CLI.cpp */; };
@@ -74,20 +105,31 @@
 
 /* Begin PBXFileReference section */
 		12ABD01A2DF8FAF800E20C13 /* SwiftCUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftCUI; sourceTree = BUILT_PRODUCTS_DIR; };
+		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
+		12D9D6E82E00A186006EAD54 /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
+		12D9D6E92E00A186006EAD54 /* JPBigInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPBigInt.h; sourceTree = "<group>"; };
+		12D9D6EA2E00A186006EAD54 /* JPFloat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPFloat.h; sourceTree = "<group>"; };
+		12D9D6EB2E00A186006EAD54 /* JPHEVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPHEVC.h; sourceTree = "<group>"; };
+		12D9D6EC2E00A186006EAD54 /* JPMatrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPMatrix.h; sourceTree = "<group>"; };
+		12D9D6ED2E00A186006EAD54 /* JPMP4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPMP4.h; sourceTree = "<group>"; };
+		12D9D6EE2E00A186006EAD54 /* JPNeural.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPNeural.h; sourceTree = "<group>"; };
+		12D9D6EF2E00A186006EAD54 /* JPVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVector.h; sourceTree = "<group>"; };
+		12D9D6F02E00A186006EAD54 /* JPVideo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVideo.h; sourceTree = "<group>"; };
+		12D9D6F12E00A186006EAD54 /* Test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test.cpp; sourceTree = "<group>"; };
+		12D9D6F72E00A1A4006EAD54 /* JP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP.swift; sourceTree = "<group>"; };
+		12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_iOS.swift; sourceTree = "<group>"; };
+		12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_macOS.swift; sourceTree = "<group>"; };
+		12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPBigInteger.swift; sourceTree = "<group>"; };
+		12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPCrypto.swift; sourceTree = "<group>"; };
+		12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPGraphics.swift; sourceTree = "<group>"; };
+		12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPInspectable.swift; sourceTree = "<group>"; };
+		12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPMatrix.swift; sourceTree = "<group>"; };
+		12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPMetal.swift; sourceTree = "<group>"; };
+		12D9D7002E00A1A4006EAD54 /* JPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPSession.swift; sourceTree = "<group>"; };
+		12D9D7012E00A1A4006EAD54 /* JPVector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPVector.swift; sourceTree = "<group>"; };
+		12D9D7022E00A1A4006EAD54 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		12EE62B82DFE71BB002EBE1E /* CLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CLI; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE634B2DFE7DD4002EBE1E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		12EE63602DFE7DD4002EBE1E /* JP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP.swift; sourceTree = "<group>"; };
-		12EE63612DFE7DD4002EBE1E /* JP_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_iOS.swift; sourceTree = "<group>"; };
-		12EE63622DFE7DD4002EBE1E /* JP_macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_macOS.swift; sourceTree = "<group>"; };
-		12EE63632DFE7DD4002EBE1E /* JPBigInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPBigInteger.swift; sourceTree = "<group>"; };
-		12EE63642DFE7DD4002EBE1E /* JPCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPCrypto.swift; sourceTree = "<group>"; };
-		12EE63652DFE7DD4002EBE1E /* JPGraphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPGraphics.swift; sourceTree = "<group>"; };
-		12EE63662DFE7DD4002EBE1E /* JPInspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPInspectable.swift; sourceTree = "<group>"; };
-		12EE63672DFE7DD4002EBE1E /* JPMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPMatrix.swift; sourceTree = "<group>"; };
-		12EE63682DFE7DD4002EBE1E /* JPMetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPMetal.swift; sourceTree = "<group>"; };
-		12EE63692DFE7DD4002EBE1E /* JPSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPSession.swift; sourceTree = "<group>"; };
-		12EE636A2DFE7DD4002EBE1E /* JPVector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPVector.swift; sourceTree = "<group>"; };
-		12EE636B2DFE7DD4002EBE1E /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		12EE63822DFE7DD4002EBE1E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		12EE63832DFE7DD4002EBE1E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		12EE63842DFE7DD4002EBE1E /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
@@ -100,16 +142,6 @@
 		12EE638E2DFE7DD4002EBE1E /* OSX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSX.swift; sourceTree = "<group>"; };
 		12EE63902DFE7DD4002EBE1E /* SliP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = "<group>"; };
 		12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
-		12EE64022DFE7F99002EBE1E /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
-		12EE64032DFE7F99002EBE1E /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
-		12EE64042DFE7F99002EBE1E /* JPBigInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPBigInt.h; sourceTree = "<group>"; };
-		12EE64052DFE7F99002EBE1E /* JPFloat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPFloat.h; sourceTree = "<group>"; };
-		12EE64062DFE7F99002EBE1E /* JPHEVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPHEVC.h; sourceTree = "<group>"; };
-		12EE64072DFE7F99002EBE1E /* JPMatrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPMatrix.h; sourceTree = "<group>"; };
-		12EE64082DFE7F99002EBE1E /* JPMP4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPMP4.h; sourceTree = "<group>"; };
-		12EE64092DFE7F99002EBE1E /* JPNeural.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPNeural.h; sourceTree = "<group>"; };
-		12EE640A2DFE7F99002EBE1E /* JPVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVector.h; sourceTree = "<group>"; };
-		12EE640B2DFE7F99002EBE1E /* JPVideo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVideo.h; sourceTree = "<group>"; };
 		12EE64372DFE7F99002EBE1E /* CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CLI.cpp; sourceTree = "<group>"; };
 		12EE64382DFE7F99002EBE1E /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
 		12EE64392DFE7F99002EBE1E /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
@@ -205,39 +237,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		12D9D6F22E00A186006EAD54 /* JP_CPP */ = {
+			isa = PBXGroup;
+			children = (
+				12D9D6E72E00A186006EAD54 /* JP.h */,
+				12D9D6E82E00A186006EAD54 /* JPAAC.h */,
+				12D9D6E92E00A186006EAD54 /* JPBigInt.h */,
+				12D9D6EA2E00A186006EAD54 /* JPFloat.h */,
+				12D9D6EB2E00A186006EAD54 /* JPHEVC.h */,
+				12D9D6EC2E00A186006EAD54 /* JPMatrix.h */,
+				12D9D6ED2E00A186006EAD54 /* JPMP4.h */,
+				12D9D6EE2E00A186006EAD54 /* JPNeural.h */,
+				12D9D6EF2E00A186006EAD54 /* JPVector.h */,
+				12D9D6F02E00A186006EAD54 /* JPVideo.h */,
+				12D9D6F12E00A186006EAD54 /* Test.cpp */,
+			);
+			name = JP_CPP;
+			path = JP/JP_CPP;
+			sourceTree = SOURCE_ROOT;
+		};
+		12D9D7032E00A1A4006EAD54 /* JP_Swift */ = {
+			isa = PBXGroup;
+			children = (
+				12D9D6F72E00A1A4006EAD54 /* JP.swift */,
+				12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */,
+				12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */,
+				12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */,
+				12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */,
+				12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */,
+				12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */,
+				12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */,
+				12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */,
+				12D9D7002E00A1A4006EAD54 /* JPSession.swift */,
+				12D9D7012E00A1A4006EAD54 /* JPVector.swift */,
+				12D9D7022E00A1A4006EAD54 /* Test.swift */,
+			);
+			name = JP_Swift;
+			path = JP/JP_Swift;
+			sourceTree = SOURCE_ROOT;
+		};
 		12EE634C2DFE7DD4002EBE1E /* CUI */ = {
 			isa = PBXGroup;
 			children = (
 				12EE634B2DFE7DD4002EBE1E /* main.swift */,
 			);
 			path = CUI;
-			sourceTree = "<group>";
-		};
-		12EE636C2DFE7DD4002EBE1E /* JP_Swift */ = {
-			isa = PBXGroup;
-			children = (
-				12EE63602DFE7DD4002EBE1E /* JP.swift */,
-				12EE63612DFE7DD4002EBE1E /* JP_iOS.swift */,
-				12EE63622DFE7DD4002EBE1E /* JP_macOS.swift */,
-				12EE63632DFE7DD4002EBE1E /* JPBigInteger.swift */,
-				12EE63642DFE7DD4002EBE1E /* JPCrypto.swift */,
-				12EE63652DFE7DD4002EBE1E /* JPGraphics.swift */,
-				12EE63662DFE7DD4002EBE1E /* JPInspectable.swift */,
-				12EE63672DFE7DD4002EBE1E /* JPMatrix.swift */,
-				12EE63682DFE7DD4002EBE1E /* JPMetal.swift */,
-				12EE63692DFE7DD4002EBE1E /* JPSession.swift */,
-				12EE636A2DFE7DD4002EBE1E /* JPVector.swift */,
-				12EE636B2DFE7DD4002EBE1E /* Test.swift */,
-			);
-			path = JP_Swift;
-			sourceTree = "<group>";
-		};
-		12EE63812DFE7DD4002EBE1E /* JP */ = {
-			isa = PBXGroup;
-			children = (
-				12EE636C2DFE7DD4002EBE1E /* JP_Swift */,
-			);
-			path = JP;
 			sourceTree = "<group>";
 		};
 		12EE63882DFE7DD4002EBE1E /* macOS */ = {
@@ -267,8 +311,8 @@
 		12EE63922DFE7DD4002EBE1E /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				12D9D7032E00A1A4006EAD54 /* JP_Swift */,
 				12EE634C2DFE7DD4002EBE1E /* CUI */,
-				12EE63812DFE7DD4002EBE1E /* JP */,
 				12EE63882DFE7DD4002EBE1E /* macOS */,
 				12EE638F2DFE7DD4002EBE1E /* OSX */,
 				12EE63902DFE7DD4002EBE1E /* SliP.swift */,
@@ -277,35 +321,10 @@
 			path = Swift;
 			sourceTree = "<group>";
 		};
-		12EE640D2DFE7F99002EBE1E /* JP_CPP */ = {
-			isa = PBXGroup;
-			children = (
-				12EE64022DFE7F99002EBE1E /* JP.h */,
-				12EE64032DFE7F99002EBE1E /* JPAAC.h */,
-				12EE64042DFE7F99002EBE1E /* JPBigInt.h */,
-				12EE64052DFE7F99002EBE1E /* JPFloat.h */,
-				12EE64062DFE7F99002EBE1E /* JPHEVC.h */,
-				12EE64072DFE7F99002EBE1E /* JPMatrix.h */,
-				12EE64082DFE7F99002EBE1E /* JPMP4.h */,
-				12EE64092DFE7F99002EBE1E /* JPNeural.h */,
-				12EE640A2DFE7F99002EBE1E /* JPVector.h */,
-				12EE640B2DFE7F99002EBE1E /* JPVideo.h */,
-			);
-			path = JP_CPP;
-			sourceTree = "<group>";
-		};
-		12EE642F2DFE7F99002EBE1E /* JP */ = {
-			isa = PBXGroup;
-			children = (
-				12EE640D2DFE7F99002EBE1E /* JP_CPP */,
-			);
-			path = JP;
-			sourceTree = "<group>";
-		};
 		12EE643C2DFE7F99002EBE1E /* C++ */ = {
 			isa = PBXGroup;
 			children = (
-				12EE642F2DFE7F99002EBE1E /* JP */,
+				12D9D6F22E00A186006EAD54 /* JP_CPP */,
 				12EE64372DFE7F99002EBE1E /* CLI.cpp */,
 				12EE64382DFE7F99002EBE1E /* Eval.cpp */,
 				12EE64392DFE7F99002EBE1E /* Read.cpp */,
@@ -594,6 +613,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12D9D7102E00A1A4006EAD54 /* JPBigInteger.swift in Sources */,
+				12D9D7112E00A1A4006EAD54 /* JPVector.swift in Sources */,
+				12D9D7122E00A1A4006EAD54 /* JP.swift in Sources */,
+				12D9D7132E00A1A4006EAD54 /* JP_macOS.swift in Sources */,
+				12D9D7142E00A1A4006EAD54 /* JPMetal.swift in Sources */,
+				12D9D7162E00A1A4006EAD54 /* JPInspectable.swift in Sources */,
+				12D9D7172E00A1A4006EAD54 /* JPGraphics.swift in Sources */,
+				12D9D7182E00A1A4006EAD54 /* JPMatrix.swift in Sources */,
+				12D9D7192E00A1A4006EAD54 /* JP_iOS.swift in Sources */,
+				12D9D71A2E00A1A4006EAD54 /* JPCrypto.swift in Sources */,
+				12D9D71B2E00A1A4006EAD54 /* JPSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,7 +672,17 @@
 				12EE63AD2DFE7DD4002EBE1E /* main.swift in Sources */,
 				12EE63B22DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */,
 				12EE63BB2DFE7DD4002EBE1E /* macOS.swift in Sources */,
-				12EE63BE2DFE7DD4002EBE1E /* JP.swift in Sources */,
+				12D9D7042E00A1A4006EAD54 /* JPBigInteger.swift in Sources */,
+				12D9D7052E00A1A4006EAD54 /* JPVector.swift in Sources */,
+				12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */,
+				12D9D7072E00A1A4006EAD54 /* JP_macOS.swift in Sources */,
+				12D9D7082E00A1A4006EAD54 /* JPMetal.swift in Sources */,
+				12D9D70A2E00A1A4006EAD54 /* JPInspectable.swift in Sources */,
+				12D9D70B2E00A1A4006EAD54 /* JPGraphics.swift in Sources */,
+				12D9D70C2E00A1A4006EAD54 /* JPMatrix.swift in Sources */,
+				12D9D70D2E00A1A4006EAD54 /* JP_iOS.swift in Sources */,
+				12D9D70E2E00A1A4006EAD54 /* JPCrypto.swift in Sources */,
+				12D9D70F2E00A1A4006EAD54 /* JPSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,7 +694,17 @@
 				12EE63DA2DFE7DD4002EBE1E /* main.swift in Sources */,
 				12EE63DF2DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */,
 				12EE63E62DFE7DD4002EBE1E /* OSX.swift in Sources */,
-				12EE63EB2DFE7DD4002EBE1E /* JP.swift in Sources */,
+				12D9D71C2E00A1A4006EAD54 /* JPBigInteger.swift in Sources */,
+				12D9D71D2E00A1A4006EAD54 /* JPVector.swift in Sources */,
+				12D9D71E2E00A1A4006EAD54 /* JP.swift in Sources */,
+				12D9D71F2E00A1A4006EAD54 /* JP_macOS.swift in Sources */,
+				12D9D7202E00A1A4006EAD54 /* JPMetal.swift in Sources */,
+				12D9D7222E00A1A4006EAD54 /* JPInspectable.swift in Sources */,
+				12D9D7232E00A1A4006EAD54 /* JPGraphics.swift in Sources */,
+				12D9D7242E00A1A4006EAD54 /* JPMatrix.swift in Sources */,
+				12D9D7252E00A1A4006EAD54 /* JP_iOS.swift in Sources */,
+				12D9D7262E00A1A4006EAD54 /* JPCrypto.swift in Sources */,
+				12D9D7272E00A1A4006EAD54 /* JPSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

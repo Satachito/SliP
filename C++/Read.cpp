@@ -1,8 +1,5 @@
 #include	"SliP.hpp"
 
-#include <unordered_set>
-#include <unordered_map>
-
 bool	//	Excluding NO-BREAK SPACE i.e. a0, feff
 IsBreakingSpace( char32_t _ ) {
 	if( _ <= 0x20 ) return true;
@@ -38,7 +35,7 @@ SoloChars = {
 ,	U'α'	,U'β'	,U'γ'	,U'δ'	,U'ε'	,U'ζ'	,U'η'	,U'θ'	,U'ι'	,U'κ'	,U'λ'	,U'μ'
 ,	U'ν'	,U'ξ'	,U'ο'	,U'π'	,U'ρ'	,U'σ'	,U'τ'	,U'υ'	,U'φ'	,U'χ'	,U'ψ'	,U'ω'
 ,	U'ς'	//	Σの語尾系
-,	U'𝑒'	//	U'\U0001D452'
+,	U'𝑒'		//	U'\U0001D452'
 ,	U'∞'
 };
 
