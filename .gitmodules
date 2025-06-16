@@ -4,3 +4,6 @@
 [submodule "Web/ReplaceNumeral"]
 	path = Web/ReplaceNumeral
 	url = git@github.com:Satachito/ReplaceNumeral.git
+[submodule "JP"]
+	path = JP
+	url = git@github.com:Satachito/JP.git
