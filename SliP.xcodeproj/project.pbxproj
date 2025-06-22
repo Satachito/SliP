@@ -54,14 +54,10 @@
 		12EE63DA2DFE7DD4002EBE1E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE634B2DFE7DD4002EBE1E /* main.swift */; };
 		12EE63DF2DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
 		12EE63E62DFE7DD4002EBE1E /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE638E2DFE7DD4002EBE1E /* OSX.swift */; };
-		12EE64452DFE7F99002EBE1E /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64392DFE7F99002EBE1E /* Read.cpp */; };
 		12EE644B2DFE7F99002EBE1E /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64382DFE7F99002EBE1E /* Eval.cpp */; };
 		12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64372DFE7F99002EBE1E /* CLI.cpp */; };
-		12EE64942DFE8642002EBE1E /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64392DFE7F99002EBE1E /* Read.cpp */; };
 		12EE64952DFE8642002EBE1E /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64382DFE7F99002EBE1E /* Eval.cpp */; };
 		12EE64962DFE8642002EBE1E /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64382DFE7F99002EBE1E /* Eval.cpp */; };
-		12EE64972DFE8642002EBE1E /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64392DFE7F99002EBE1E /* Read.cpp */; };
-		12EE64982DFE8642002EBE1E /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64392DFE7F99002EBE1E /* Read.cpp */; };
 		12EE64992DFE8642002EBE1E /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64382DFE7F99002EBE1E /* Eval.cpp */; };
 /* End PBXBuildFile section */
 
@@ -144,7 +140,6 @@
 		12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
 		12EE64372DFE7F99002EBE1E /* CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CLI.cpp; sourceTree = "<group>"; };
 		12EE64382DFE7F99002EBE1E /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
-		12EE64392DFE7F99002EBE1E /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
 		12EE643A2DFE7F99002EBE1E /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
 		12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUI-CPP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -327,7 +322,6 @@
 				12D9D6F22E00A186006EAD54 /* JP_CPP */,
 				12EE64372DFE7F99002EBE1E /* CLI.cpp */,
 				12EE64382DFE7F99002EBE1E /* Eval.cpp */,
-				12EE64392DFE7F99002EBE1E /* Read.cpp */,
 				12EE643A2DFE7F99002EBE1E /* SliP.hpp */,
 			);
 			path = "C++";
@@ -631,7 +625,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12EE64452DFE7F99002EBE1E /* Read.cpp in Sources */,
 				12EE644B2DFE7F99002EBE1E /* Eval.cpp in Sources */,
 				12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */,
 			);
@@ -641,7 +634,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12EE64942DFE8642002EBE1E /* Read.cpp in Sources */,
 				12EE64952DFE8642002EBE1E /* Eval.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -651,7 +643,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				12EE64962DFE8642002EBE1E /* Eval.cpp in Sources */,
-				12EE64972DFE8642002EBE1E /* Read.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -659,7 +650,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12EE64982DFE8642002EBE1E /* Read.cpp in Sources */,
 				12EE64992DFE8642002EBE1E /* Eval.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -781,7 +771,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -796,7 +786,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42D35TL6R9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -838,6 +828,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftUI-CPP/BH.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -872,6 +863,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPP";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SwiftUI-CPP/BH.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

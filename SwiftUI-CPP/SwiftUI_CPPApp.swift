@@ -12,7 +12,7 @@ import SwiftUI
 struct SwiftUI_CPPApp: App {
     var body: some Scene {
         DocumentGroup(newDocument: SwiftUI_CPPDocument()) { file in
-            ContentView(document: file.$document)
+			ContentView( document: file.$document, text: "" )
         }
     }
 }

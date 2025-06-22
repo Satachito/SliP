@@ -1,21 +1,36 @@
-//
-//  ContentView.swift
-//  SwiftUI-CPP
-//
-//  Created by Satoru Ogura on 2025/06/15.
-//  Copyright © 2025 Satoru Ogura. All rights reserved.
-//
-
 import SwiftUI
 
-struct ContentView: View {
-    @Binding var document: SwiftUI_CPPDocument
+struct
+ContentView: View {
 
-    var body: some View {
-        TextEditor(text: $document.text)
-    }
+	@Binding	var
+	document	: SwiftUI_CPPDocument
+
+	@State		var
+	text		: String
+
+	var
+	body: some View {
+		HStack {
+			TextEditor( text: $document.text ).autocorrectionDisabled( true )
+			Button( "→" ) {
+				var	count: UInt64 = 0;
+				let
+				reprs = Simple( document.text, &count )!
+				text = ""
+				for i in 0 ..< count {
+					if let repr = reprs[ Int( i ) ] {
+						print( String( cString: repr ) )
+						text += String( cString: repr ) + "\n"
+					}
+				}
+				FreeREPRs( reprs, count );
+			}
+			TextEditor( text: $text ).autocorrectionDisabled( true )
+		}
+	}
 }
 
 #Preview {
-    ContentView(document: .constant(SwiftUI_CPPDocument()))
+	ContentView( document: .constant( SwiftUI_CPPDocument()), text: "" )
 }

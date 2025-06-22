@@ -2,20 +2,22 @@
 
 SP< SliP >
 EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
-
 	if( _.size() == 0 ) throw runtime_error( "Syntax Error: No infix operand or null sentence" );
 	if( _.size() == 1 ) return Eval( C, _[ 0 ] );
 
-	const auto
-	infixEntries = ::filter(
-		transformWithIndex(
-			_
-		, 	[]( auto $, auto index ){ return tuple( Cast< Infix >( $ ), index ); }
+	auto
+	infixEntries = ranges::to< vector >(
+		filter(
+			zipIndex(
+				project(
+					_
+				,	[]( const SP< SliP >& _ ) { return Cast< Infix >( _ ); }
+				)
+			)
+		,	[]( const auto& _ ) { return _.first != 0; }	//	show bool inplicitly
 		)
-	,	[]( auto _ ){
-			return get< 0 >( _ );
-		}
 	);
+	
 	if( infixEntries.size() ) {
 		auto $ = infixEntries[ 0 ];
 		for( size_t _ = 1; _ < infixEntries.size(); _++ ) {
@@ -25,8 +27,8 @@ EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
 		const auto [ infix, index ] = $;
 		return infix->$(
 			C
-		,	EvalSentence( C, sliceTo( _, index ) )
-		,	EvalSentence( C, sliceFrom( _, index + 1 ) )
+		,	EvalSentence( C, ranges::to< vector >( take( _, index ) ) )
+		,	EvalSentence( C, ranges::to< vector >( drop( _, index + 1 ) ) )
 		);
 	} else {
 		auto index = _.size() - 1;
@@ -56,22 +58,25 @@ Eval( const SP< Context >& C, const SP< SliP >& _ ) {
 	}
 	if( const auto primitive = Cast< Primitive >( _ ) ) return primitive->$( C );
 	if( const auto parallel = Cast< Parallel >( _ ) ) return MS< List >(
-		transform(
-			parallel->$
-		,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+		ranges::to< vector >(
+			project(
+				parallel->$
+			,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+			)
 		)
 	);
 	if( const auto procedure = Cast< Procedure >( _ ) ) {
 		auto
 		newC = MS< Context >( C );
 		return MS< List >(
-			transform(
-				procedure->$
-			,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+			ranges::to< vector >(
+				project(
+					procedure->$
+				,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+				)
 			)
 		);
 	}
 	if( const auto sentence = Cast< Sentence >( _ ) ) return EvalSentence( C, sentence->$ );
 	return _;
 }
-

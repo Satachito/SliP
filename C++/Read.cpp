@@ -1,33 +1,5 @@
 #include	"SliP.hpp"
 
-bool	//	Excluding NO-BREAK SPACE i.e. a0, feff
-IsBreakingSpace( char32_t _ ) {
-	if( _ <= 0x20 ) return true;
-	if( 0x7f <= _ && _ < 0xA0 ) return true;
-	switch ( _ ) {
-	case 0x1680:
-	case 0x2000:
-	case 0x2001:
-	case 0x2002:
-	case 0x2003:
-	case 0x2004:
-	case 0x2005:
-	case 0x2006:
-	case 0x2007:
-	case 0x2008:
-	case 0x2009:
-	case 0x200A:
-	case 0x2028:
-	case 0x2029:
-	case 0x202F:
-	case 0x205F:
-	case 0x3000:
-		return true;
-	default:
-		return false;
-	}
-}
-
 const unordered_set<char32_t>
 SoloChars = {
 	U'Α'	,U'Β'	,U'Γ'	,U'Δ'	,U'Ε'	,U'Ζ'	,U'Η'	,U'Θ'	,U'Ι'	,U'Κ'	,U'Λ'	,U'Μ'
@@ -521,7 +493,7 @@ CreateName( iReader& R, char32_t initial ) {
 			if( contains( SoloChars	, _ )		) break;
 			if( contains( BreakingChars, _ )	) break;
 			R.Forward();
-			if( IsBreakingSpace( _ )			) break;
+			if( IsBreakingWhite( _ )			) break;
 			if( _ == '\\' )	escaped = true;
 			else $.push_back( _ );
 		}
@@ -559,7 +531,7 @@ Read( iReader& R, char32_t terminator ) {
 	while ( R.Avail() ) {
 		auto _ = R.Read();
 		if( _ == terminator )		return 0;
-		if( IsBreakingSpace( _ ) )	continue;
+		if( IsBreakingWhite( _ ) )	continue;
 		if( IsDigit( _ ) )	{
 			vector< char32_t > ${ _ };
 			bool

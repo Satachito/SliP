@@ -11,8 +11,8 @@
 
 struct
 SliP {
-	static	inline	int
-	nSliPs = 0;
+//	static	inline	int
+//	nSliPs = 0;
 
 	SliP() {
 //		cout << '+' << ':' << ++nSliPs << endl;
@@ -103,7 +103,7 @@ Numeric	: SliP {
 
 struct
 Negator : Numeric {
-	SP< Numeric >															$;
+	SP< Numeric >																	$;
 
 	Negator( SP< Numeric > $ ) : $( $ ) {}
 
@@ -231,7 +231,7 @@ Literal : SliP {
 
 struct
 Dict : SliP {
-	unordered_map< string, SP< SliP > >										$;
+	unordered_map< string, SP< SliP > >												$;
 
 	Dict( const unordered_map< string, SP< SliP > >& $ ) : $( $ ) {}
 
@@ -270,16 +270,16 @@ Function : SliP {
 };
 struct
 Primitive : Function {
-	function< SP< SliP >( SP< Context > ) >							$;
+	function< SP< SliP >( SP< Context > ) >											$;
 
 	Primitive(
-		function< SP< SliP >( SP< Context > ) >						$
+		function< SP< SliP >( SP< Context > ) > $
 	,	string label
 	) :	Function( label ), $( $ ) {}
 };
 struct
 Prefix : Function {
-	function< SP< SliP >( SP< Context >, SP< SliP > ) >		$;
+	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
 	Prefix(
 		function< SP< SliP >( SP< Context >, SP< SliP > ) > $
 	,	string label
@@ -287,7 +287,7 @@ Prefix : Function {
 };
 struct
 Unary : Function {
-	function< SP< SliP >( SP< Context >, SP< SliP > ) >		$;
+	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
 	Unary(
 		function< SP< SliP >( SP< Context >, SP< SliP > ) > $
 	,	string label
@@ -321,7 +321,7 @@ Infix : Function {
 
 struct
 List : SliP {
-	vector< SP< SliP > >													$;
+	vector< SP< SliP > >															$;
 
 	List( const vector< SP< SliP > >& $ ) :	$( $ ) {}
 
@@ -438,17 +438,54 @@ iReader {
 SP< SliP >
 Read( iReader& R, char32_t terminator );
 
+vector< SP< SliP > >
+ReadList( iReader& _, char32_t close );
+
 struct
 StringReader : iReader {
-	string	$;
-	size_t	_ = 0;
+	vector< char32_t >	$;
+	size_t				_ = 0;
 
-	StringReader( const string& $ ) : $( $ ) {}
+	StringReader( const string& $ ) : $( char32s_string( $ ) ) {}
 
-	bool		Avail()		{ return _ < $.length(); }
+	bool		Avail()		{ return _ < $.size(); }
 	char32_t	Read()		{ return static_cast<unsigned char>( $[ _++ ] ); }
 	char32_t	Peek()		{ return static_cast<unsigned char>( $[ _ ] ); }
 	void		Forward()	{ _++; }
 	void		Backward()	{ --_; }
 };
 
+template< ranges::range R > vector< string >
+EvalSliPs( R&& _ ) {
+	auto							C = MS< Context >();
+	return ranges::to< vector >(
+		project(
+			_
+		,	[ & ]( const SP< SliP >& slip ) {
+				return Eval( C, slip )->REPR();
+			}
+		)
+	);
+}
+
+inline vector< string >
+CoreSyntaxLoop( const string& _ ) {
+	StringReader					R( _ );
+	vector< SP< SliP > >			slips;
+	while( auto _ = Read( R, -1 ) ) slips.push_back( _ );
+
+	return EvalSliPs( slips );
+}
+
+inline vector< string >
+SugaredSyntaxLoop( const string& _ ) {
+	return EvalSliPs(
+		project(
+			Split( _ )
+		,	[ & ]( const string& line ) {
+				StringReader			R( line + ')' );
+				return MS< Sentence	>( ReadList( R, U')' ) );
+			}
+		)
+	);
+}
