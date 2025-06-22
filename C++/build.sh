@@ -16,7 +16,7 @@ echo "Compiling to WebAssembly..."
 # -s 'MALLOC="emmalloc"': メモリマネージャを指定（通常はデフォルトで良いが、明示的に）
 # --bind: emscripten::bind.h を使用することを示す
 emcc WASM.cpp Read.cpp Eval.cpp \
-    -o public/SliP.js \
+    -o ../Web/SliP.js \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MODULARIZE=1 \
     -s EXPORT_ES6=1 \
