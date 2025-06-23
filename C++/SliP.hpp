@@ -1,3 +1,9 @@
+#ifdef SLIP_ALREADY_INCLUDED
+#error "This header should be included once."
+#else
+#define SLIP_ALREADY_INCLUDED
+#endif
+
 #include	"../JP/JP_CPP/JP.h"
 
 #define	Cast	dynamic_pointer_cast
@@ -7,7 +13,6 @@
 ////////////////////////////////////////////////////////////////
 #include	<numbers>
 ////////////////////////////////////////////////////////////////
-
 
 struct
 SliP {
@@ -39,40 +44,41 @@ Context {
 	}
 };
 
-SP< SliP >
-Eval( const SP< Context >& C, const SP< SliP >& _ );
-
 static	inline	vector< SP< SliP > >
 theStack;
 static	inline	mutex
 stackMutex;
 
-inline	auto
+struct
+Pusher {
+	lock_guard< mutex >	lock;
+	Pusher( const SP< SliP >& _ ) : lock( stackMutex ) {
+		theStack.push_back( _ );
+	}
+	~
+	Pusher() {
+		theStack.pop_back();
+	}
+};
+
+inline	void
 Push( SP< SliP > _ ) {
 	lock_guard< mutex >	lock( stackMutex );
 	theStack.push_back( _ );
 }
-inline	auto
+inline	void
 Pop() {
-	if ( theStack.empty() ) throw runtime_error( "Stack underflow" );
 	lock_guard< mutex >	lock( stackMutex );
-	auto $ = theStack.back();
+	if ( theStack.empty() ) throw runtime_error( "Stack underflow" );
 	theStack.pop_back();
-	return $;
 }
-inline	auto
-Stack() {
+
+inline	vector< SP< SliP > >
+StackCopy() {
 	lock_guard< mutex >	lock( stackMutex );
 	return theStack;
 }
-inline	auto
-PushAndEval( SP< Context > C, SP< SliP > l, SP< SliP > r ) {
-	lock_guard< mutex >	lock( stackMutex );
-	theStack.push_back( l );
-	auto $ = Eval( C, r );
-	theStack.pop_back();
-	return $;
-}
+
 
 struct
 Numeric	: SliP {
@@ -418,28 +424,16 @@ IsT( SP< SliP > _ ) {
 	return !IsNil( _ );
 }
 
-static SP< SliP >
+inline static SP< SliP >
 T = MS< SliP >();
 
-static SP< SliP >
+inline static SP< SliP >
 Nil = MS< List >( vector< SP< SliP > >{} );
 
 ////////////////////////////////////////////////////////////////
-
-struct
-iReader {
-	virtual	bool		Avail()		= 0;
-	virtual	char32_t	Read()		= 0;
-	virtual	char32_t	Peek()		= 0;
-	virtual	void		Forward()	= 0;
-	virtual	void		Backward()	= 0;
-};
-
-SP< SliP >
-Read( iReader& R, char32_t terminator );
-
-vector< SP< SliP > >
-ReadList( iReader& _, char32_t close );
+#include	"Eval.hpp"
+#include	"Builtins.hpp"
+#include	"Read.hpp"
 
 struct
 StringReader : iReader {
