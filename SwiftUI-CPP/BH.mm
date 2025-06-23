@@ -17,18 +17,18 @@ Bridge( const vector< string >& reprs, size_t* oCount ) {
 }
 
 extern "C" char**
-BH_Simple( const char *input, size_t* oCount ) {
-	return Bridge( Simple( string( input ) ), oCount );
+BH_CoreSyntaxLoop( const char *input, size_t* oCount ) {
+	return Bridge( CoreSyntaxLoop( string( input ) ), oCount );
 }
 
 extern "C" char**
-BH_Sugared( const char *input, size_t* oCount ) {
-	return Bridge( Sugared( string( input ) ), oCount );
+BH_SugaredSyntaxLoop( const char *input, size_t* oCount ) {
+	return Bridge( SugaredSyntaxLoop( string( input ) ), oCount );
 
 }
 
 extern "C" void
-FreeREPRs( const char** reprs, size_t count ) {
+BH_FreeREPRs( char** reprs, size_t count ) {
 	for ( size_t _ = 0; _ < count; ++_ ) delete[] reprs[ _ ];
 	delete[] reprs;
 }

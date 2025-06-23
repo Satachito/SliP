@@ -16,7 +16,7 @@ ContentView: View {
 			Button( "→" ) {
 				var	count: UInt64 = 0;
 				let
-				reprs = Simple( document.text, &count )!
+				reprs = BH_CoreSyntaxLoop( document.text, &count )!
 				text = ""
 				for i in 0 ..< count {
 					if let repr = reprs[ Int( i ) ] {
@@ -24,7 +24,7 @@ ContentView: View {
 						text += String( cString: repr ) + "\n"
 					}
 				}
-				FreeREPRs( reprs, count );
+				BH_FreeREPRs( reprs, count );
 			}
 			TextEditor( text: $text ).autocorrectionDisabled( true )
 		}

@@ -1,7 +1,8 @@
 char**
-Simple( const char *input, unsigned long long* count );
-char**
-Sugared( const char *input, unsigned long long* count );
+BH_CoreSyntaxLoop( const char *input, unsigned long long* oCount );
 
-void**
-FreeREPRs( char** reprs, unsigned long long count );
+char**
+BH_SugaredSyntaxLoop( const char *input, unsigned long long* oCount );
+
+void
+BH_FreeREPRs( char** reprs, unsigned long long count );
