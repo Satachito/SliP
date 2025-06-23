@@ -187,8 +187,22 @@ Bits : Numeric {
 	}
 };
 
+inline static unordered_map< string, double >
+numericConstants = {
+	{ "∞"		, numeric_limits< double >::infinity()	}
+,	{ "𝑒"		, numbers::e							}
+,	{ "π"		, numbers::pi							}
+,	{ "log2e"	, numbers::log2e						}
+,	{ "log10e"	, numbers::log10e						}
+,	{ "ln2"		, numbers::ln2							}
+,	{ "ln10"	, numbers::ln10							}
+,	{ "γ"		, numbers::egamma						}
+,	{ "φ"		, numbers::phi							}
+};
+
 struct //	∞, 𝑒, π
 NumericConstants : Numeric {
+
 	string																			$;
 
 	NumericConstants( const string& $ ) : $( $ ) {}
@@ -208,16 +222,8 @@ NumericConstants : Numeric {
 
 	double
 	Double() const override {
-		if( $ == "∞"		) return numeric_limits< double >::infinity();
-		if( $ == "𝑒"			) return numbers::e;
-		if( $ == "π"		) return numbers::pi;
-		if( $ == "log2e"	) return numbers::log2e;
-		if( $ == "log10e"	) return numbers::log10e;
-		if( $ == "ln2"		) return numbers::ln2;
-		if( $ == "ln10"		) return numbers::ln10;
-		if( $ == "γ"		) return numbers::egamma;
-		if( $ == "φ"		) return numbers::phi;
-		throw runtime_error( "eh?" );
+		if( !numericConstants.count( $ ) ) throw runtime_error( "eh?" );
+		return numericConstants[ $ ];
 	}
 };
 
@@ -230,7 +236,7 @@ Literal : SliP {
 
 	string
 	REPR() const override {
-		auto _ = string_char32s( vector< char32_t >{ mark } );
+		auto _ = string_Us( vector< char32_t >{ mark } );
 		return _ + $ + _;
 	}
 };
@@ -336,8 +342,8 @@ List : SliP {
 
 	string
 	ListString( char32_t o, char32_t c ) const {
-		const auto O = string_char32( o );
-		const auto C = string_char32( c );
+		const auto O = string_U( o );
+		const auto C = string_U( c );
 		if( $.size() == 0 ) return O + C;
 		string	_ = O + ' ' + $[ 0 ]->REPR();
 		for ( size_t i = 1; i < $.size(); i++ ) {

@@ -44,7 +44,7 @@ ReadList( iReader& _, char32_t close ) {
 inline SP< Name >
 CreateName( iReader& R, char32_t initial ) {
 
-	if( contains( SoloChars, initial ) ) return MS< Name >( string_char32s( vector< char32_t >{ initial } ) );
+	if( contains( SoloChars, initial ) ) return MS< Name >( string_Us( vector< char32_t >{ initial } ) );
 
 	auto
 	escaped = initial == U'\\';
@@ -77,7 +77,7 @@ CreateName( iReader& R, char32_t initial ) {
 			else $.push_back( _ );
 		}
 	}
-	return MS<Name>( string_char32s( $ ) );
+	return MS<Name>( string_Us( $ ) );
 }
 inline SP< Literal >
 CreateLiteral( iReader& R, char32_t terminator ) {
@@ -97,12 +97,12 @@ CreateLiteral( iReader& R, char32_t terminator ) {
 			default		: $.push_back( _	); break;
 			}
 		} else {
-			if( _ == terminator ) return MS< Literal >( string_char32s( $ ), terminator );
+			if( _ == terminator ) return MS< Literal >( string_Us( $ ), terminator );
 			if( _ == '\\' )	escaped = true;
 			else $.push_back( _ );
 		}
 	}
-	throw runtime_error( "Unterminated string: " + string_char32s( $ ) );
+	throw runtime_error( "Unterminated string: " + string_Us( $ ) );
 }
 
 inline SP< SliP >
@@ -128,8 +128,8 @@ Read( iReader& R, char32_t terminator ) {
 				}
 				$.push_back( _ );
 			}
-			if( dotRead )	return MS<Float	>( stod( string_char32s( $ ) ) );
-			else			return MS<Bits		>( stoi( string_char32s( $ ) ) );
+			if( dotRead )	return MS<Float	>( stod( string_Us( $ ) ) );
+			else			return MS<Bits		>( stoi( string_Us( $ ) ) );
 		}
 		switch ( _ ) {
 		case U']'	:
@@ -145,10 +145,10 @@ Read( iReader& R, char32_t terminator ) {
 		case U'"'	: return CreateLiteral( R, _ );
 		case U'`'	: return CreateLiteral( R, _ );
 		default		:
-			auto label0 = string_char32s( vector< char32_t >{ _ } );
+			auto label0 = string_Us( vector< char32_t >{ _ } );
 			auto it0 = find_if( Builtins.begin(), Builtins.end(), [ & ]( SP< Function > _ ){ return _->label == label0; } );
 			if( it0 != Builtins.end() ) {
-				auto label = label0 + string_char32s( vector< char32_t >{ R.Peek() } );
+				auto label = label0 + string_Us( vector< char32_t >{ R.Peek() } );
 				auto it = find_if( Builtins.begin(), Builtins.end(), [ & ]( SP< Function > _ ){ return _->label == label; } );
 				if( it != Builtins.end() )	return *it;
 				else						return *it0;

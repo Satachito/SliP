@@ -139,6 +139,9 @@
 		12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUI-CPP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		12FBF9EC2E0A1B970015814E /* Eval.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Eval.hpp; sourceTree = "<group>"; };
+		12FBF9ED2E0A1B970015814E /* Read.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Read.hpp; sourceTree = "<group>"; };
+		12FBF9EE2E0A1BA20015814E /* Builtins.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Builtins.hpp; sourceTree = "<group>"; };
 		5EEE09412223C957001CFDEA /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1B520E0071400AD8172 /* OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -317,6 +320,9 @@
 				12D9D6F22E00A186006EAD54 /* JP_CPP */,
 				12EE64372DFE7F99002EBE1E /* CLI.cpp */,
 				12EE643A2DFE7F99002EBE1E /* SliP.hpp */,
+				12FBF9EC2E0A1B970015814E /* Eval.hpp */,
+				12FBF9ED2E0A1B970015814E /* Read.hpp */,
+				12FBF9EE2E0A1BA20015814E /* Builtins.hpp */,
 			);
 			path = "C++";
 			sourceTree = "<group>";
