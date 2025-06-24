@@ -446,7 +446,7 @@ StringReader : iReader {
 	vector< char32_t >	$;
 	size_t				_ = 0;
 
-	StringReader( const string& $ ) : $( char32s_string( $ ) ) {}
+	StringReader( const string& $ ) : $( Us_string( $ ) ) {}
 
 	bool		Avail()		{ return _ < $.size(); }
 	char32_t	Read()		{ return static_cast<unsigned char>( $[ _++ ] ); }
