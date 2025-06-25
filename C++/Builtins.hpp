@@ -444,3 +444,22 @@ Builtins = {
 	)
 };
 
+inline static auto
+prefixPlus = MS< Prefix >(
+	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
+		auto numeric = Cast< Numeric >( _ );
+		if( !numeric ) throw "Not numeric";
+		return _;
+	}
+	,	"+"
+);
+
+inline static auto
+prefixMinus = MS< Prefix >(
+	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
+		auto numeric = Cast< Numeric >( _ );
+		if( !numeric ) throw "Not numeric";
+		return numeric->Negate();
+	}
+	,	"-"
+);

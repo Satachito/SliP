@@ -5,10 +5,10 @@
 #endif
 
 inline SP< SliP >
-Eval( const SP< Context >& C, const SP< SliP >& _ );
+Eval( SP< Context > const& C, SP< SliP > const& _ );
 
 inline SP< SliP >
-EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
+EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 	if( _.size() == 0 ) throw runtime_error( "Syntax Error: No infix operand or null sentence" );
 	if( _.size() == 1 ) return Eval( C, _[ 0 ] );
 
@@ -18,10 +18,10 @@ EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
 			zipIndex(
 				project(
 					_
-				,	[]( const SP< SliP >& _ ) { return Cast< Infix >( _ ); }
+				,	[]( SP< SliP > const& _ ) { return Cast< Infix >( _ ); }
 				)
 			)
-		,	[]( const auto& _ ) { return _.first != 0; }	//	show bool inplicitly
+		,	[]( auto const& _ ) { return _.first != 0; }	//	show bool inplicitly
 		)
 	);
 	
@@ -54,7 +54,7 @@ EvalSentence( const SP< Context >& C, const vector< SP< SliP > >& _ ) {
 }
 
 inline SP< SliP >
-Eval( const SP< Context >& C, const SP< SliP >& _ ) {
+Eval( SP< Context > const& C, SP< SliP > const& _ ) {
 	if(	const auto name = Cast< Name >( _ ) ) {
 		SP< Context >	c = C;
 		while( c ) {
@@ -68,7 +68,7 @@ Eval( const SP< Context >& C, const SP< SliP >& _ ) {
 		ranges::to< vector >(
 			project(
 				parallel->$
-			,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+			,	[ & ]( auto const& _ ){ return Eval( C, _ ); }
 			)
 		)
 	);
@@ -79,7 +79,7 @@ Eval( const SP< Context >& C, const SP< SliP >& _ ) {
 			ranges::to< vector >(
 				project(
 					procedure->$
-				,	[ & ]( const auto& _ ){ return Eval( C, _ ); }
+				,	[ & ]( auto const& _ ){ return Eval( C, _ ); }
 				)
 			)
 		);

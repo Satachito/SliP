@@ -52,7 +52,7 @@ stackMutex;
 struct
 Pusher {
 	lock_guard< mutex >	lock;
-	Pusher( const SP< SliP >& _ ) : lock( stackMutex ) {
+	Pusher( SP< SliP > const& _ ) : lock( stackMutex ) {
 		theStack.push_back( _ );
 	}
 	~
@@ -92,7 +92,7 @@ Numeric	: SliP {
 	Double() const = 0;
 
 	static	double
-	Dot( vector< SP< SliP > >& l, vector< SP< SliP > >& r ) {
+	Dot( vector< SP< SliP > > const& l, vector< SP< SliP > > const& r ) {
 		auto index = l.size();
 		if(	index != r.size() ) throw runtime_error( "Numeric::Dot: vector size unmatch" );
 		double $ = 0;
@@ -104,33 +104,6 @@ Numeric	: SliP {
 			$ += L->Double() * R->Double();
 		}
 		return $;
-	}
-};
-
-struct
-Negator : Numeric {
-	SP< Numeric >																	$;
-
-	Negator( SP< Numeric > $ ) : $( $ ) {}
-
-	string
-	REPR() const override { return '-' + $->REPR(); }	//	TODO:かっこで囲む？
-
-	SP< Numeric >
-	Negate() const override {
-		return $;
-	}
-
-	int64_t
-	Bits64() const override {
-		auto _ = $->Bits64();
-		if( _ == numeric_limits< int64_t >::min() ) throw runtime_error( "Negator::Bits64 cannot change sign of int64_t::min()" );
-		return -_;
-	}
-
-	double
-	Double() const override {
-		return -$->Double();
 	}
 };
 
@@ -171,7 +144,7 @@ Bits : Numeric {
 	SP< Numeric >
 	Negate() const override {
 		return $ == numeric_limits< int64_t >::min()
-		?	(SP< Numeric >)MS< Negator >( MS< Bits >( $ ) )
+		?	(SP< Numeric >)MS< Float >( -(double)numeric_limits< int64_t >::min() )
 		:	(SP< Numeric >)MS< Bits >( -$ )
 		;
 	}
@@ -204,15 +177,19 @@ struct //	∞, 𝑒, π
 NumericConstants : Numeric {
 
 	string																			$;
+	bool																			negative;
 
-	NumericConstants( const string& $ ) : $( $ ) {}
+	NumericConstants( const string& $, bool negative = false )
+	:	$( $ )
+	,	negative( negative ) {
+	}
 
 	string
-	REPR() const override { return $; }
+	REPR() const override { return negative ? "-" + $ : $; }
 
 	SP< Numeric >
 	Negate() const override {
-		return MS< Negator >( MS< NumericConstants >( $ ) );
+		return MS< NumericConstants >( $, !negative );
 	}
 
 	int64_t
@@ -245,13 +222,13 @@ struct
 Dict : SliP {
 	unordered_map< string, SP< SliP > >												$;
 
-	Dict( const unordered_map< string, SP< SliP > >& $ ) : $( $ ) {}
+	Dict( unordered_map< string, SP< SliP > > const& $ ) : $( $ ) {}
 
 	string
 	REPR() const override {
 		string _ = "{";
 		bool first = true;
-		for ( const auto& [ K, V ] : $ ) {
+		for ( auto const& [ K, V ] : $ ) {
 			if( !first ) _ += ", ";
 			_ += "\"" + K + "\": " + V->REPR();
 			first = false;
@@ -283,7 +260,6 @@ Function : SliP {
 struct
 Primitive : Function {
 	function< SP< SliP >( SP< Context > ) >											$;
-
 	Primitive(
 		function< SP< SliP >( SP< Context > ) > $
 	,	string label
@@ -335,7 +311,7 @@ struct
 List : SliP {
 	vector< SP< SliP > >															$;
 
-	List( const vector< SP< SliP > >& $ ) :	$( $ ) {}
+	List( vector< SP< SliP > > const& $ ) :	$( $ ) {}
 
 	virtual string
 	REPR() const override { return ListString( U'[', U']' ); }
@@ -358,7 +334,7 @@ struct
 Matrix : List {
 	int																				direction;
 
-	Matrix( const vector< SP< SliP > >& $, int direction = 0 )
+	Matrix( vector< SP< SliP > > const& $, int direction = 0 )
 	:	List( $ )
 	,	direction( direction ) {
 	}
@@ -388,7 +364,7 @@ Matrix : List {
 
 struct
 Sentence : List {
-	Sentence( const vector< SP< SliP > >& $ ) : List( $ ) {}
+	Sentence( vector< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'(', U')' ); }
@@ -396,7 +372,7 @@ Sentence : List {
 
 struct
 Procedure : List {
-	Procedure( const vector< SP< SliP > >& $ ) : List( $ ) {}
+	Procedure( vector< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'{', U'}' ); }
@@ -404,7 +380,7 @@ Procedure : List {
 
 struct
 Parallel : List {
-	Parallel( const vector< SP< SliP > >& $ ) : List( $ ) {}
+	Parallel( vector< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'«', U'»' ); }
@@ -461,7 +437,7 @@ EvalSliPs( R&& _ ) {
 	return ranges::to< vector >(
 		project(
 			_
-		,	[ & ]( const SP< SliP >& slip ) {
+		,	[ & ]( SP< SliP > const& slip ) {
 				return Eval( C, slip )->REPR();
 			}
 		)
@@ -469,7 +445,7 @@ EvalSliPs( R&& _ ) {
 }
 
 inline vector< string >
-CoreSyntaxLoop( const string& _ ) {
+CoreSyntaxLoop( string const& _ ) {
 	StringReader					R( _ );
 	vector< SP< SliP > >			slips;
 	while( auto _ = Read( R, -1 ) ) slips.push_back( _ );
@@ -478,11 +454,11 @@ CoreSyntaxLoop( const string& _ ) {
 }
 
 inline vector< string >
-SugaredSyntaxLoop( const string& _ ) {
+SugaredSyntaxLoop( string const& _ ) {
 	return EvalSliPs(
 		project(
 			Split( _ )
-		,	[ & ]( const string& line ) {
+		,	[ & ]( string const& line ) {
 				StringReader			R( line + ')' );
 				return MS< Sentence	>( ReadList( R, U')' ) );
 			}

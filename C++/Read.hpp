@@ -37,7 +37,26 @@ Read( iReader& R, char32_t terminator );
 inline vector< SP< SliP > >
 ReadList( iReader& _, char32_t close ) {
 	vector< SP< SliP > > $;
-	while ( SP< SliP > slip = Read( _, close ) ) $.push_back( slip );
+
+	auto slip = Read( _, close );
+	$.push_back( slip );
+	auto infix = Cast< Infix >( slip );
+	while ( SP< SliP > draft = Read( _, close ) ) {
+		auto draftInfix = Cast< Infix >( draft );
+		if( infix && draftInfix ) {
+			if(	draftInfix->label == "+" ) {
+				$.push_back( prefixPlus );
+			} else if ( draftInfix->label == "-" ) {
+				$.push_back( prefixMinus );
+			} else {
+				throw runtime_error( "Syntax error: " + infix->label + ' ' + draftInfix->label );
+			}
+		} else {
+			$.push_back( draft );
+		}
+		slip = draft;
+		infix = draftInfix;
+	}
 	return $;
 }
 
@@ -137,13 +156,13 @@ Read( iReader& R, char32_t terminator ) {
 		case U'}'	:
 		case U')'	:
 		case U'»'	: throw runtime_error( "Detect close parenthesis" );
-		case U'['	: return MS< List		>( ReadList( R, U']' ) );
-		case U'⟨'	: return MS< Matrix		>( ReadList( R, U'⟩' ) );
-		case U'('	: return MS< Sentence	>( ReadList( R, U')' ) );
-		case U'{'	: return MS< Procedure	>( ReadList( R, U'}' ) );
-		case U'«'	: return MS< Parallel	>( ReadList( R, U'»' ) );
 		case U'"'	: return CreateLiteral( R, _ );
 		case U'`'	: return CreateLiteral( R, _ );
+		case U'['	: return MS< List		>( ReadList( R, U']' ) );
+		case U'⟨'	: return MS< Matrix		>( ReadList( R, U'⟩' ) );
+		case U'{'	: return MS< Procedure	>( ReadList( R, U'}' ) );
+		case U'«'	: return MS< Parallel	>( ReadList( R, U'»' ) );
+		case U'('	: return MS< Sentence	>( ReadList( R, U')' ) );
 		default		:
 			auto label0 = string_Us( vector< char32_t >{ _ } );
 			auto it0 = find_if( Builtins.begin(), Builtins.end(), [ & ]( SP< Function > _ ){ return _->label == label0; } );

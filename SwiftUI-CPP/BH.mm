@@ -1,7 +1,7 @@
 #include "SliP.hpp"
 
 char**
-Bridge( const vector< string >& reprs, size_t* oCount ) {
+Bridge( vector< string > const& reprs, size_t* oCount ) {
 
 	*oCount = reprs.size();
 
