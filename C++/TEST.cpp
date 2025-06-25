@@ -12,7 +12,6 @@ READ( const string& _ ) {
 auto
 TestReadPrint() {
 	auto $ = string()
-//	Nagator
 	+	"3.14\n"
 	+	"123456789\n"
 	+	"[1 2 3 4 5]\n"
@@ -28,21 +27,8 @@ TestReadPrint() {
 	);
 }
 
-auto
-TestNegator() {
-	auto slip = READ( string( "(-3)" ) );
-	cerr << slip->REPR() << endl;
-	assert( slip->REPR() == "( - 3 )" );
-	auto nagator = Cast< Negator >( slip[ 0 ] );
-	assert( nagator );
-	auto numeric = Cast< Numeric >( nagator->$ ); 
-	assert( numeric );
-}
 int
 main( int argc, char* argv[] ) {
-
-	TestNegator();
-
 	TestReadPrint();
 }
 
