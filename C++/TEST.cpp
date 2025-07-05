@@ -15,6 +15,7 @@ TestReadPrint() {
 	+	"3.14\n"
 	+	"123456789\n"
 	+	"[1 2 3 4 5]\n"
+	+	"ABCDEFG\n"
 	+	"\"ABCDEFG\"\n"
 	;
 

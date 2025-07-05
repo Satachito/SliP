@@ -56,6 +56,19 @@ ReadList( iReader& _, char32_t close ) {
 	return $;
 }
 
+inline void
+WhenEscaped( vector< char32_t >& $, char32_t _ ) {
+	switch ( _ ) {
+	case U'0'	: $.push_back( '\0'	); break;
+	case U'f'	: $.push_back( '\f'	); break;
+	case U'n'	: $.push_back( '\n'	); break;
+	case U'r'	: $.push_back( '\r'	); break;
+	case U't'	: $.push_back( '\t'	); break;
+	case U'v'	: $.push_back( '\v'	); break;
+	default		: $.push_back( _	); break;
+	}
+}
+
 inline SP< Name >
 CreateName( iReader& R, char32_t initial ) {
 
@@ -74,15 +87,7 @@ CreateName( iReader& R, char32_t initial ) {
 		if( escaped ) {
 			R.Forward();
 			escaped = false;
-			switch ( _ ) {
-			case U'0'	: $.push_back( '\0'	); break;
-			case U'f'	: $.push_back( '\f'	); break;
-			case U'n'	: $.push_back( '\n'	); break;
-			case U'r'	: $.push_back( '\r'	); break;
-			case U't'	: $.push_back( '\t'	); break;
-			case U'v'	: $.push_back( '\v'	); break;
-			default		: $.push_back( _	); break;
-			}
+			WhenEscaped( $, _ );
 		} else {
 			if( contains( SoloChars	, _ )		) break;
 			if( contains( BreakingChars, _ )	) break;
@@ -102,15 +107,7 @@ CreateLiteral( iReader& R, char32_t terminator ) {
 		auto _ = R.Read();
 		if( escaped ) {
 			escaped = false;
-			switch ( _ ) {
-			case U'0'	: $.push_back( '\0'	); break;
-			case U'f'	: $.push_back( '\f'	); break;
-			case U'n'	: $.push_back( '\n'	); break;
-			case U'r'	: $.push_back( '\r'	); break;
-			case U't'	: $.push_back( '\t'	); break;
-			case U'v'	: $.push_back( '\v'	); break;
-			default		: $.push_back( _	); break;
-			}
+			WhenEscaped( $, _ );
 		} else {
 			if( _ == terminator ) return MS< Literal >( string_Us( $ ), terminator );
 			if( _ == '\\' )	escaped = true;
@@ -144,7 +141,7 @@ Read( iReader& R, char32_t terminator ) {
 				$.push_back( _ );
 			}
 			if( dotRead )	return MS<Float	>( stod( string_Us( $ ) ) );
-			else			return MS<Bits		>( stoi( string_Us( $ ) ) );
+			else			return MS<Bits	>( stoi( string_Us( $ ) ) );
 		}
 		switch ( _ ) {
 		case U']'	:
@@ -174,4 +171,3 @@ Read( iReader& R, char32_t terminator ) {
 	}
 	return 0;
 }
-
