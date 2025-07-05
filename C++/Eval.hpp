@@ -17,7 +17,7 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 				,	[]( SP< SliP > const& _ ) { return Cast< Infix >( _ ); }
 				)
 			)
-		,	[]( auto const& _ ) { return _.first != 0; }	//	show bool inplicitly
+		,	[]( auto const& _ ) { return std::get<0>(_) != 0; }
 		)
 	);
 	
