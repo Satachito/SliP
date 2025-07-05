@@ -1,8 +1,4 @@
-#ifdef READ_ALREADY_INCLUDED
-#error "This header should be included once."
-#else
-#define READ_ALREADY_INCLUDED
-#endif
+#pragma once
 
 inline static unordered_set<char32_t>
 SoloChars = {

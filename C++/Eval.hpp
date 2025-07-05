@@ -1,8 +1,4 @@
-#ifdef EVAL_ALREADY_INCLUDED
-#error "This header should be included once."
-#else
-#define EVAL_ALREADY_INCLUDED
-#endif
+#pragma once
 
 inline SP< SliP >
 Eval( SP< Context > const& C, SP< SliP > const& _ );

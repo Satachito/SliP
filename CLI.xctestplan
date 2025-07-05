@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "6599F1AA-D43B-4C5A-A573-B5633F8FB619",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:SliP.xcodeproj",
+          "identifier" : "12EE62B72DFE71BB002EBE1E",
+          "name" : "CLI"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:SliP.xcodeproj",
+      "identifier" : "12EE62B72DFE71BB002EBE1E",
+      "name" : "CLI"
+    }
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}

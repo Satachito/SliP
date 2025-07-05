@@ -96,6 +96,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1233447F2E0CC5BB001764D8 /* CLI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CLI.xctestplan; sourceTree = "<group>"; };
 		12ABD01A2DF8FAF800E20C13 /* SwiftCUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftCUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
 		12D9D6E82E00A186006EAD54 /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
@@ -330,6 +331,7 @@
 		5EF4D18820E005F600AD8172 = {
 			isa = PBXGroup;
 			children = (
+				1233447F2E0CC5BB001764D8 /* CLI.xctestplan */,
 				12EE63922DFE7DD4002EBE1E /* Swift */,
 				12EE643C2DFE7F99002EBE1E /* C++ */,
 				12EE64662DFE85AE002EBE1E /* SwiftUI-CPP */,

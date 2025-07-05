@@ -1,8 +1,4 @@
-#ifdef BUILTINS_ALREADY_INCLUDED
-#error "This header should be included once."
-#else
-#define BUILTINS_ALREADY_INCLUDED
-#endif
+#pragma once
 
 inline static vector< SP< Function > >
 Builtins = {

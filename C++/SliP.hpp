@@ -1,8 +1,4 @@
-#ifdef SLIP_ALREADY_INCLUDED
-#error "This header should be included once."
-#else
-#define SLIP_ALREADY_INCLUDED
-#endif
+#pragma once
 
 #include	"../JP/JP_CPP/JP.h"
 
