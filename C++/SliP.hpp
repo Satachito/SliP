@@ -170,12 +170,12 @@ numericConstants = {
 };
 
 struct //	∞, 𝑒, π
-NumericConstants : Numeric {
+NumericConstant : Numeric {
 
 	string																			$;
 	bool																			negative;
 
-	NumericConstants( const string& $, bool negative = false )
+	NumericConstant( const string& $, bool negative = false )
 	:	$( $ )
 	,	negative( negative ) {
 	}
@@ -185,7 +185,7 @@ NumericConstants : Numeric {
 
 	SP< Numeric >
 	Negate() const override {
-		return MS< NumericConstants >( $, !negative );
+		return MS< NumericConstant >( $, !negative );
 	}
 
 	int64_t
@@ -421,8 +421,8 @@ StringReader : iReader {
 	StringReader( const string& $ ) : $( Us_string( $ ) ) {}
 
 	bool		Avail()		{ return _ < $.size(); }
-	char32_t	Read()		{ return static_cast<unsigned char>( $[ _++ ] ); }
-	char32_t	Peek()		{ return static_cast<unsigned char>( $[ _ ] ); }
+	char32_t	Read()		{ return $[ _++ ]; }
+	char32_t	Peek()		{ return $[ _ ]; }
 	void		Forward()	{ _++; }
 	void		Backward()	{ --_; }
 };

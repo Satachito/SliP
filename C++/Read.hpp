@@ -42,7 +42,7 @@ ReadList( iReader& _, char32_t close ) {
 		if( infix && draftInfix ) {
 			if(	draftInfix->label == "+" ) {
 				$.push_back( prefixPlus );
-			} else if ( draftInfix->label == "-" ) {
+			} else if( draftInfix->label == "-" ) {
 				$.push_back( prefixMinus );
 			} else {
 				throw runtime_error( "Syntax error: " + infix->label + ' ' + draftInfix->label );
@@ -69,36 +69,52 @@ WhenEscaped( vector< char32_t >& $, char32_t _ ) {
 	}
 }
 
-inline SP< Name >
-CreateName( iReader& R, char32_t initial ) {
+inline string
+ReadNameRaw( iReader& R, char32_t initial ) {
 
-	if( contains( SoloChars, initial ) ) return MS< Name >( string_Us( vector< char32_t >{ initial } ) );
-
-	auto
-	escaped = initial == U'\\';
+	if( contains( SoloChars, initial ) ) return string_Us( vector< char32_t >{ initial } );
 
 	vector< char32_t >
 	$;
 
-	if( !escaped ) $.push_back( initial );
+	auto
+	state = initial == U'\\'
+	?	1									//	Escaped
+	:	contains( BreakingChars, initial )
+		?	-1								//	Reading Breaker
+		:	0								//	No state
+	;
+
+	if( state != 1 ) $.push_back( initial );
 
 	while ( R.Avail() ) {
 		auto _ = R.Peek();
-		if( escaped ) {
+		if ( state == 1 ) {
 			R.Forward();
-			escaped = false;
 			WhenEscaped( $, _ );
-		} else {
-			if( contains( SoloChars	, _ )		) break;
-			if( contains( BreakingChars, _ )	) break;
+			state = 0;
+		} else if ( state == -1 ) {
+			if( !contains( BreakingChars, _ ) ) break;
 			R.Forward();
-			if( IsBreakingWhite( _ )			) break;
-			if( _ == '\\' )	escaped = true;
-			else $.push_back( _ );
+			$.push_back( _ );
+		} else {
+			if( contains( BreakingChars, _ ) ) break;
+			R.Forward();
+			if( IsBreakingWhite( _ ) ) break;
+			if( _ == '\\' )	{
+				state = 1;
+			} else {
+				$.push_back( _ );
+			}
 		}
 	}
-	return MS<Name>( string_Us( $ ) );
+
+	auto
+	name = string_Us( $ );
+	if( state == -1 && Builtins.find( name ) == Builtins.end() ) throw runtime_error( "No such operator: " + name );
+	return name;
 }
+
 inline SP< Literal >
 CreateLiteral( iReader& R, char32_t terminator ) {
 	auto				escaped = false;
@@ -157,15 +173,12 @@ Read( iReader& R, char32_t terminator ) {
 		case U'«'	: return MS< Parallel	>( ReadList( R, U'»' ) );
 		case U'('	: return MS< Sentence	>( ReadList( R, U')' ) );
 		default		:
-			auto label0 = string_Us( vector< char32_t >{ _ } );
-			auto it0 = find_if( Builtins.begin(), Builtins.end(), [ & ]( SP< Function > _ ){ return _->label == label0; } );
-			if( it0 != Builtins.end() ) {
-				auto label = label0 + string_Us( vector< char32_t >{ R.Peek() } );
-				auto it = find_if( Builtins.begin(), Builtins.end(), [ & ]( SP< Function > _ ){ return _->label == label; } );
-				if( it != Builtins.end() )	return *it;
-				else						return *it0;
-			} else {
-				return CreateName( R, _ );
+			{	auto name = ReadNameRaw( R, _ );
+				auto it = Builtins.find( name );
+				return it == Builtins.end()
+				?	MS< Name >( name )
+				:	it->second
+				;
 			}
 		}
 	}

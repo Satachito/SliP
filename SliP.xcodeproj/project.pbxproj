@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		128935442E19005E0036A00B /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 128935382E18FFF70036A00B /* TEST.cpp */; };
 		12D9D7042E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
 		12D9D7052E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
 		12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
@@ -75,6 +76,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1289353B2E19002C0036A00B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		12ABD0182DF8FAF800E20C13 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -97,6 +107,8 @@
 
 /* Begin PBXFileReference section */
 		1233447F2E0CC5BB001764D8 /* CLI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CLI.xctestplan; sourceTree = "<group>"; };
+		128935382E18FFF70036A00B /* TEST.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TEST.cpp; path = "C++/TEST.cpp"; sourceTree = SOURCE_ROOT; };
+		1289353D2E19002C0036A00B /* SliPTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SliPTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		12ABD01A2DF8FAF800E20C13 /* SwiftCUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftCUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
 		12D9D6E82E00A186006EAD54 /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
@@ -179,6 +191,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1289353A2E19002C0036A00B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		12ABD0172DF8FAF800E20C13 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -319,6 +338,7 @@
 			isa = PBXGroup;
 			children = (
 				12D9D6F22E00A186006EAD54 /* JP_CPP */,
+				128935382E18FFF70036A00B /* TEST.cpp */,
 				12EE64372DFE7F99002EBE1E /* CLI.cpp */,
 				12EE643A2DFE7F99002EBE1E /* SliP.hpp */,
 				12FBF9EC2E0A1B970015814E /* Eval.hpp */,
@@ -352,6 +372,7 @@
 				12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */,
 				12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */,
 				12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */,
+				1289353D2E19002C0036A00B /* SliPTests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -359,6 +380,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1289353C2E19002C0036A00B /* SliPTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 128935412E19002C0036A00B /* Build configuration list for PBXNativeTarget "SliPTests" */;
+			buildPhases = (
+				128935392E19002C0036A00B /* Sources */,
+				1289353A2E19002C0036A00B /* Frameworks */,
+				1289353B2E19002C0036A00B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SliPTests;
+			packageProductDependencies = (
+			);
+			productName = SliPTests;
+			productReference = 1289353D2E19002C0036A00B /* SliPTests */;
+			productType = "com.apple.product-type.tool";
+		};
 		12ABD0192DF8FAF800E20C13 /* SwiftCUI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 12ABD01E2DF8FAF800E20C13 /* Build configuration list for PBXNativeTarget "SwiftCUI" */;
@@ -510,6 +550,9 @@
 				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = "Satoru Ogura";
 				TargetAttributes = {
+					1289353C2E19002C0036A00B = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					12ABD0192DF8FAF800E20C13 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -556,6 +599,7 @@
 				12EE64642DFE85AE002EBE1E /* SwiftUI-CPP */,
 				12EE64772DFE85AF002EBE1E /* SwiftUI-CPPTests */,
 				12EE64812DFE85AF002EBE1E /* SwiftUI-CPPUITests */,
+				1289353C2E19002C0036A00B /* SliPTests */,
 			);
 		};
 /* End PBXProject section */
@@ -605,6 +649,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		128935392E19002C0036A00B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				128935442E19005E0036A00B /* TEST.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		12ABD0162DF8FAF800E20C13 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -731,6 +783,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		128935422E19002C0036A00B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 42D35TL6R9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		128935432E19002C0036A00B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 42D35TL6R9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		12ABD01F2DF8FAF800E20C13 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1147,6 +1231,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		128935412E19002C0036A00B /* Build configuration list for PBXNativeTarget "SliPTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				128935422E19002C0036A00B /* Debug */,
+				128935432E19002C0036A00B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		12ABD01E2DF8FAF800E20C13 /* Build configuration list for PBXNativeTarget "SwiftCUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

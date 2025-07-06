@@ -1,7 +1,24 @@
 #pragma once
 
-inline static vector< SP< Function > >
+inline static unordered_map< string, SP< SliP > >
 Builtins = {
+};
+
+inline static vector< SP< NumericConstant > >
+NumericConstants = {
+	MS< NumericConstant >( "∞" )
+,	MS< NumericConstant >( "𝑒" )
+,	MS< NumericConstant >( "π" )
+,	MS< NumericConstant >( "γ" )
+,	MS< NumericConstant >( "φ" )
+,	MS< NumericConstant >( "log2e" )
+,	MS< NumericConstant >( "log10e" )
+,	MS< NumericConstant >( "ln2" )
+,	MS< NumericConstant >( "ln10" )
+};
+
+inline static vector< SP< Function > >
+Functions = {
 	MS< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
 			auto $ = theStack.back();
@@ -166,21 +183,21 @@ Builtins = {
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return ( IsT( l ) && IsT( r ) ) ? T : Nil;
 		}
-	,	"&&"
+	,	"&&"	//	Logical and
 	,	70
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return ( IsT( l ) || IsT( r ) ) ? T: Nil;
 		}
-	,	"||"
+	,	"||"	//	Logical or
 	,	70
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return ( IsT( l ) ^ IsT( r ) ) ? T: Nil;
 		}
-	,	"^^"
+	,	"^^"	//	Logical exclusive or
 	,	70
 	)
 ,	MS< Infix >(
@@ -188,57 +205,57 @@ Builtins = {
 			if( auto list = Cast< List >( r ) ) return contains( list->$, l ) ? T : Nil;
 			throw runtime_error( "Right operand must be List" );
 		}
-	,	"∈"
+	,	"∈"		//	Member of
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			if( auto list = Cast< List >( l ) ) return contains( list->$, r ) ? T : Nil;
-			throw runtime_error( "Right operand must be List" );
+			throw runtime_error( "Left operand must be List" );
 		}
-	,	"∋"
+	,	"∋"		//	Includes
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) ? T : Nil;
 		}
-	,	"=="
+	,	"=="	//	Equal
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) ? Nil : T;
 		}
-	,	"<>"
+	,	"<>"	//	Not Equal
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) == -1 ? T : Nil;
 		}
-	,	"<"
+	,	"<"		//	Less than
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) == 1 ? T : Nil;
 		}
-	,	">"
+	,	">"		//	Greater than
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) != 1 ? T : Nil;
 		}
-	,	"<="
+	,	"<="	//	Less equal
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) != -1 ? T : Nil;
 		}
-	,	">="
+	,	">="	//	Greater equal
 	,	60
 	)
 ,	MS< Infix >(
@@ -266,7 +283,7 @@ Builtins = {
 			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() & rNumeric->Bits64() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"&"
+	,	"&"		//	And
 	,	40
 	)
 ,	MS< Infix >(
@@ -276,7 +293,7 @@ Builtins = {
 			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() | rNumeric->Bits64() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"|"
+	,	"|"		//	Or
 	,	40
 	)
 ,	MS< Infix >(
@@ -286,7 +303,7 @@ Builtins = {
 			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() ^ rNumeric->Bits64() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"^"
+	,	"^"		//	Exclusive or
 	,	40
 	)
 ,	MS< Infix >(
@@ -326,7 +343,7 @@ Builtins = {
 			}
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"+"
+	,	"+"		//	Plus
 	,	30
 	)
 ,	MS< Infix >(
@@ -346,7 +363,7 @@ Builtins = {
 			}
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"-"
+	,	"-"		//	Minus
 	,	30
 	)
 ,	MS< Infix >(
@@ -388,7 +405,7 @@ Builtins = {
 			if( L && R ) return MS< Float >( L->Double() * R->Double() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"×"
+	,	"×"		//	Multiple
 	,	20
 	)
 ,	MS< Infix >(
@@ -398,7 +415,7 @@ Builtins = {
 			if( L && R ) return MS< Float >( L->Double() / R->Double() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"÷"
+	,	"÷"		//	Div
 	,	20
 	)
 ,	MS< Infix >(
@@ -408,7 +425,7 @@ Builtins = {
 			if( L && R ) return MS< Bits >( L->Bits64() / R->Bits64() );
 			throw runtime_error( "Illegal operand type" );
 		}
-	,	"%"
+	,	"%"		//	Remainder
 	,	20
 	)
 ,	MS< Infix >(
@@ -459,3 +476,12 @@ prefixMinus = MS< Prefix >(
 	}
 	,	"-"
 );
+
+
+inline void
+BuildUp() {
+	for ( auto const& _: NumericConstants )	Builtins[ _->$ ] = _;
+	for ( auto const& _: Functions )		Builtins[ _->label ] = _;
+}
+
+
