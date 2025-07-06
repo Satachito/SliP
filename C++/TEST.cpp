@@ -15,7 +15,13 @@ auto
 TestRead( string const& _ ) {
 	auto
 	$ = READ( _ )->REPR();
+//	cerr << $ << endl;
 	A( $ == READ( $ )->REPR() );
+}
+
+template < ranges::range R > void
+TestReads( R const& _ ) {
+    ::apply( _, []( auto const& _ ) { TestRead( _ ); } );
 }
 
 auto
@@ -28,13 +34,42 @@ TestException( string const& _, string const& expected ) {
 }
 
 auto
-TestReads() {
+Test() {
+
+	A( Cast< Literal >( READ( "\"A\\0\"" ) )->$[ 1 ] == 0 );
+	A( Cast< Literal >( READ( "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
+	A( Cast< Literal >( READ( "\"A\\n\"" ) )->$[ 1 ] == U'\n' );
+	A( Cast< Literal >( READ( "\"A\\r\"" ) )->$[ 1 ] == U'\r' );
+	A( Cast< Literal >( READ( "\"A\\t\"" ) )->$[ 1 ] == U'\t' );
+	A( Cast< Literal >( READ( "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
+	A( Cast< Literal >( READ( "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
+	A( Cast< Literal >( READ( "\"A\\X\"" ) )->$[ 1 ] == U'X' );
+
+	TestException( "\\", "Invalid escape" );
+	TestRead( "[=]" );
+	TestRead( "[A=]" );
+	TestRead( "[AΩ]" );
+
+	TestRead( "[ - -1 ]" );
+	TestRead( "[ + -1 ]" );
+	TestRead( "[ - +1 ]" );
+	TestRead( "[ + +1 ]" );
+
+	A( READ( "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
+
+	A( READ( "" ) == 0 );
+
+	TestException( "[ 3 + = 5 ]", "Syntax error: + =" );
+
+
+	TestRead( "[ -1 ]" );
 
 	TestException( "]", "Detect close parenthesis" );
 	TestException( "⟩", "Detect close parenthesis" );
 	TestException( "}", "Detect close parenthesis" );
 	TestException( ")", "Detect close parenthesis" );
 	TestException( "»", "Detect close parenthesis" );
+	TestException( "`", "Unterminated string: " );
 
 	TestRead( "[A]" );
 
@@ -46,51 +81,30 @@ TestReads() {
 	TestRead( "{@1||2@}" );
 	TestRead( "(@1||2@)" );
 	TestRead( "«@1||2@»" );
+	TestRead( "⟨@1||2@⟩" );
 
 	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
-	for(
-		auto const& _: vector< string >{
-			"3.14"
-		,	"123456789"
-		,	"[1 2 3 4 5]"
-		,	"ABCDEFG"
-		,	"\"ABCDEFG\""
-		}
-	) TestRead( _ );
+	TestReads( GetLines() );
 
-	for(
-		auto const& _: project(
+	TestReads(
+		project(
 			Functions
 		,	[]( SP< Function > const& _ ){ return _->label; }
 		)
-	) TestRead( _ );
+	);
 
-	for(
-		auto const& _: project(
+	TestReads(
+		project(
 			NumericConstants
 		,	[]( SP< NumericConstant > const& _ ){ return _->$; }
 		)
-	) TestRead( _ );
-
-	for(
-		auto const& _: vector< string >{
-			"∞"
-		,	"𝑒"
-		,	"π"
-		,	"γ"
-		,	"φ"
-		,	"log2e"
-		,	"log10e"
-		,	"ln2"
-		,	"ln10"
-		}
-	) TestRead( _ );
+	);
 }
 
 int
 main( int argc, char* argv[] ) {
 	BuildUp();
-	TestReads();
+	Test();
 }
 

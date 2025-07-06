@@ -8,3 +8,4 @@ a.out
 .firebase/
 public/
 firebase-debug.log
+C++/coverage/

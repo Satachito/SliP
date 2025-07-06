@@ -1,30 +1,31 @@
+rm _
 
 # カバレッジ計測付きでビルド
-clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o test TEST.cpp
+clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp
 
 # プロファイル出力を指定して実行
-LLVM_PROFILE_FILE="test.profraw" ./test
+LLVM_PROFILE_FILE="_.profraw" ./_ < TEST.slip
 
 # .profraw を .profdata に変換
-llvm-profdata merge -sparse test.profraw -o test.profdata
+llvm-profdata merge -sparse _.profraw -o _.profdata
 
 # カバレッジレポート（テキスト）
-llvm-cov report ./test -instr-profile=test.profdata
+llvm-cov report ./_ -instr-profile=_.profdata
 
 # HTMLレポート出力
-llvm-cov show ./test -instr-profile=test.profdata -format=html -output-dir=.
+llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=.
 
 # HTMLをブラウザで開く
 open index.html
 
-# rm -f ./test *.profraw *.profdata index.html control.js style.css 
-# rm -rf coverage
+rm -f ./_ *.profraw *.profdata index.html control.js style.css 
+rm -rf coverage
 
 
 
-# rm ./test test-*
+# rm ./_ _-*
 # echo "Compiling TEST..."
-# c++ -fprofile-arcs -ftest-coverage -std=c++23 TEST.cpp -o test
+# c++ -fprofile-arcs -ftest-coverage -std=c++23 TEST.cpp
 # ./test
 # gcov TEST.cpp
 

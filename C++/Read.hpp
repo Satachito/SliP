@@ -57,7 +57,8 @@ OperatorChars = {
 
 inline static unordered_set<char32_t>
 BreakingChars = {
-	U'\''
+	U'\\'
+,	U'\''
 ,	U'"'
 ,	U'('
 ,	U')'
@@ -86,8 +87,19 @@ ReadList( iReader& _, char32_t close ) {
 	vector< SP< SliP > > $;
 
 	auto slip = Read( _, close );
-	$.push_back( slip );
 	auto infix = Cast< Infix >( slip );
+	if( infix ) {
+		if(	infix->label == "+" ) {
+			$.push_back( prefixPlus );
+		} else if( infix->label == "-" ) {
+			$.push_back( prefixMinus );
+		} else {
+			$.push_back( slip );
+		}
+	} else {
+		$.push_back( slip );
+	}
+
 	while ( SP< SliP > draft = Read( _, close ) ) {
 		auto draftInfix = Cast< Infix >( draft );
 		if( infix && draftInfix ) {
@@ -104,12 +116,20 @@ ReadList( iReader& _, char32_t close ) {
 		slip = draft;
 		infix = draftInfix;
 	}
+//	DEBUG
+//	for ( auto const& _: $ ) {
+//		auto prefix = Cast< Prefix >( _ );
+//		cout << ( prefix ? ( ':' + prefix->label + ':' ) : _->REPR() ) << ' ';
+//	}
+//	cout << endl;
+//
 	return $;
 }
 
 inline void
 WhenEscaped( vector< char32_t >& $, char32_t _ ) {
 	switch ( _ ) {
+	case U'\\'	: $.push_back( '\\'	); break;
 	case U'0'	: $.push_back( '\0'	); break;
 	case U'f'	: $.push_back( '\f'	); break;
 	case U'n'	: $.push_back( '\n'	); break;
@@ -126,23 +146,13 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 	if( contains( SoloChars, initial ) ) return string_Us( vector< char32_t >{ initial } );
 
 	vector< char32_t >
-	$;
+	${ initial };
 
 	auto
-	state = initial == U'\\'
-	?	1									//	Escaped
-	:	contains( OperatorChars, initial )
-		?	-1								//	Reading Breaker
-		:	0								//	No state
-	;
-
-	if( state != 1 ) $.push_back( initial );
+	readingOperator = contains( OperatorChars, initial );
 
 	while ( R.Avail() ) {
-		if ( state == 1 ) {
-			WhenEscaped( $, R.Read() );
-			state = 0;
-		} else if ( state == -1 ) {
+		if ( readingOperator ) {
 			if( !contains( OperatorChars, R.Peek() ) ) break;
 			$.push_back( R.Read() );
 		} else {
@@ -153,18 +163,10 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 			auto _ = R.Read();
 
 			if( IsBreakingWhite( _ ) ) break;
-			if( _ == '\\' )	{
-				state = 1;
-			} else {
-				$.push_back( _ );
-			}
+			$.push_back( _ );
 		}
 	}
-
-	auto
-	name = string_Us( $ );
-	if( state == -1 && Builtins.find( name ) == Builtins.end() ) throw runtime_error( "No such operator: " + name );
-	return name;
+	return string_Us( $ );
 }
 
 inline SP< Literal >
@@ -209,6 +211,7 @@ Read( iReader& R, char32_t terminator ) {
 			;
 		}
 		switch ( _ ) {
+		case U'\\'	: throw runtime_error( "Invalid escape" );
 		case U']'	:
 		case U'⟩'	:
 		case U'}'	:
