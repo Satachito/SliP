@@ -21,6 +21,12 @@ inline static vector< SP< Function > >
 Functions = {
 	MS< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
+			return Nil;
+		}
+	,	"∅"
+	)
+,	MS< Primitive >(
+		[]( SP< Context > ) -> SP< SliP > {
 			auto $ = theStack.back();
 			Pop();
 			return $;
@@ -121,7 +127,7 @@ Functions = {
 			cout << _->REPR() << endl;
 			return _;
 		}
-	,	"."		//	stdout
+	,	";"		//	stdout
 	)
 ,	MS< Unary >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
@@ -455,6 +461,15 @@ Functions = {
 	,	":"		//	Apply
 	,	10
 	)
+,	MS< Infix >(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			auto L = Cast< Dict >( l );
+			auto R = Cast< Name >( r );
+			return L->$[ R->$ ];
+		}
+	,	"."		//	Dict element
+	,	100
+	)
 };
 
 inline static auto
@@ -464,7 +479,7 @@ prefixPlus = MS< Prefix >(
 		if( !numeric ) throw "Not numeric";
 		return _;
 	}
-	,	"+"
+,	"+"
 );
 
 inline static auto
@@ -474,14 +489,12 @@ prefixMinus = MS< Prefix >(
 		if( !numeric ) throw "Not numeric";
 		return numeric->Negate();
 	}
-	,	"-"
+,	"-"
 );
 
 
 inline void
 BuildUp() {
-	for ( auto const& _: NumericConstants )	Builtins[ _->$ ] = _;
-	for ( auto const& _: Functions )		Builtins[ _->label ] = _;
+	for ( auto const& _: NumericConstants )	Builtins[ _->$ ]		= _;
+	for ( auto const& _: Functions )		Builtins[ _->label ]	= _;
 }
-
-

@@ -420,11 +420,9 @@ StringReader : iReader {
 
 	StringReader( const string& $ ) : $( Us_string( $ ) ) {}
 
-	bool		Avail()		{ return _ < $.size(); }
-	char32_t	Read()		{ return $[ _++ ]; }
-	char32_t	Peek()		{ return $[ _ ]; }
-	void		Forward()	{ _++; }
-	void		Backward()	{ --_; }
+	bool		Avail()		{ return _ < $.size()	; }
+	char32_t	Read()		{ return $[ _++ ]		; }
+	char32_t	Peek()		{ return $[ _ ]			; }
 };
 
 template< ranges::range R > vector< string >

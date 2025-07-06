@@ -12,13 +12,13 @@ llvm-profdata merge -sparse test.profraw -o test.profdata
 llvm-cov report ./test -instr-profile=test.profdata
 
 # HTMLレポート出力
-# llvm-cov show ./test -instr-profile=test.profdata -format=html -output-dir=.
+llvm-cov show ./test -instr-profile=test.profdata -format=html -output-dir=.
 
 # HTMLをブラウザで開く
-# open index.html
+open index.html
 
-rm -f ./test *.profraw *.profdata index.html control.js style.css 
-rm -rf coverage
+# rm -f ./test *.profraw *.profdata index.html control.js style.css 
+# rm -rf coverage
 
 
 

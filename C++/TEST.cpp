@@ -1,4 +1,7 @@
-#include	"SliP.hpp"
+#undef	DEBUG
+#define	DEBUG
+
+#include "SliP.hpp"
 
 #include <cassert>
 
@@ -12,86 +15,82 @@ auto
 TestRead( string const& _ ) {
 	auto
 	$ = READ( _ )->REPR();
-	cerr << $ << endl;
-	assert( $ == READ( $ )->REPR() );
+	A( $ == READ( $ )->REPR() );
 }
 
 auto
-Test() {
+TestException( string const& _, string const& expected ) {
+	try {
+		READ( _ );
+	} catch( exception const& e ) {
+		A( e.what() == expected );
+	}
+}
+
+auto
+TestReads() {
+
+	TestException( "]", "Detect close parenthesis" );
+	TestException( "⟩", "Detect close parenthesis" );
+	TestException( "}", "Detect close parenthesis" );
+	TestException( ")", "Detect close parenthesis" );
+	TestException( "»", "Detect close parenthesis" );
+
+	TestRead( "[A]" );
 
 	TestRead( "[1.23.45]" );
 
-	try {
-		READ( "!@¡" );
-	} catch( exception const& e ) {
-		cerr << e.what() << endl;
-	}
-	TestRead( "[@1@@2]" );
-	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞]" );
+	TestException( "!@¡", "No such operator: !@¡" );
 
-	auto $ = vector< string >{
-		"3.14"
-	,	"123456789"
-	,	"[1 2 3 4 5]"
-	,	"ABCDEFG"
-	,	"\"ABCDEFG\""
-	,	"∞"
-	,	"𝑒"
-	,	"π"
-	,	"γ"
-	,	"φ"
-	,	"log2e"
-	,	"log10e"
-	,	"ln2"
-	,	"ln10"
-	,	"@"		//	Stack top
-	,	"@@"	//	Stack list
-	,	"¤"		//	make Dict
-	,	"'"		//	Quote
-	,	"¡"		//	Throw
-	,	"!"		//	Eval
-	,	"~"		//	Bit not
-	,	"¬"		//	Logical not
-	,	"¶"		//	Convert to literal
-	,	"#"		//	Number of elements
-	,	"*"		//	CDR
-	,	"$"		//	Last element
-	,	"."		//	stdout
-	,	"¦"		//	stderr
-	,	"§"		//	Open new context with dict(l) then eval r
-	,	"="		//	assign
-	,	"?"		//	if else
-	,	"¿"		//	if
-	,	"&&"	//	Logical and
-	,	"||"	//	Logical or
-	,	"^^"	//	Logical exclusive or
-	,	"∈"		//	Member of
-	,	"∋"		//	Includes
-	,	"=="	//	Equal
-	,	"<>"	//	Not Equal
-	,	"<"		//	Less than
-	,	">"		//	Greater than
-	,	"<="	//	Less equal
-	,	">="	//	Greater equal
-	,	","		//	[ l, ...r ]
-	,	"&"		//	And
-	,	"|"		//	Or
-	,	"^"		//	Exclusive or
-	,	"+"		//	Plus
-	,	"-"		//	Minus
-	,	"·"		//	Dot product
-	,	"×"		//	Multiple
-	,	"÷"		//	Div
-	,	"%"		//	Remainder
-	,	":"		//	Apply
-	};
+	TestRead( "[@1||2@]" );
+	TestRead( "{@1||2@}" );
+	TestRead( "(@1||2@)" );
+	TestRead( "«@1||2@»" );
 
-	for( auto const& _: $ ) TestRead( _ );
+	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
+
+	for(
+		auto const& _: vector< string >{
+			"3.14"
+		,	"123456789"
+		,	"[1 2 3 4 5]"
+		,	"ABCDEFG"
+		,	"\"ABCDEFG\""
+		}
+	) TestRead( _ );
+
+	for(
+		auto const& _: project(
+			Functions
+		,	[]( SP< Function > const& _ ){ return _->label; }
+		)
+	) TestRead( _ );
+
+	for(
+		auto const& _: project(
+			NumericConstants
+		,	[]( SP< NumericConstant > const& _ ){ return _->$; }
+		)
+	) TestRead( _ );
+
+	for(
+		auto const& _: vector< string >{
+			"∞"
+		,	"𝑒"
+		,	"π"
+		,	"γ"
+		,	"φ"
+		,	"log2e"
+		,	"log10e"
+		,	"ln2"
+		,	"ln10"
+		}
+	) TestRead( _ );
 }
 
 int
 main( int argc, char* argv[] ) {
 	BuildUp();
-	Test();
+	TestReads();
 }
 

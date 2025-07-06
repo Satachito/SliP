@@ -2,20 +2,73 @@
 
 inline static unordered_set<char32_t>
 SoloChars = {
-	U'Α'	,U'Β'	,U'Γ'	,U'Δ'	,U'Ε'	,U'Ζ'	,U'Η'	,U'Θ'	,U'Ι'	,U'Κ'	,U'Λ'	,U'Μ'
-,	U'Ν'	,U'Ξ'	,U'Ο'	,U'Π'	,U'Ρ'	,U'Σ'	,U'Τ'	,U'Υ'	,U'Φ'	,U'Χ'	,U'Ψ'	,U'Ω'
-,	U'α'	,U'β'	,U'γ'	,U'δ'	,U'ε'	,U'ζ'	,U'η'	,U'θ'	,U'ι'	,U'κ'	,U'λ'	,U'μ'
-,	U'ν'	,U'ξ'	,U'ο'	,U'π'	,U'ρ'	,U'σ'	,U'τ'	,U'υ'	,U'φ'	,U'χ'	,U'ψ'	,U'ω'
+	U'Α',	U'Β',	U'Γ',	U'Δ',	U'Ε',	U'Ζ',	U'Η',	U'Θ',	U'Ι',	U'Κ',	U'Λ',	U'Μ',	U'Ν',	U'Ξ',	U'Ο',	U'Π',	U'Ρ',	U'Σ',	U'Τ',	U'Υ',	U'Φ',	U'Χ',	U'Ψ',	U'Ω'
+,	U'α',	U'β',	U'γ',	U'δ',	U'ε',	U'ζ',	U'η',	U'θ',	U'ι',	U'κ',	U'λ',	U'μ',	U'ν',	U'ξ',	U'ο',	U'π',	U'ρ',	U'σ',	U'τ',	U'υ',	U'φ',	U'χ',	U'ψ',	U'ω'
 ,	U'ς'	//	Σの語尾系
-,	U'𝑒'		//	U'\U0001D452'
+,	U'𝑒'	//	U'\U0001D452'
 ,	U'∞'
+,	U'∅'	//	空集合
+,	U'⊤'	//	Verum
+,	U'⊥'	//	Falsum
+};
+
+inline static unordered_set<char32_t>
+OperatorChars = {
+	U'!'
+,	U'#'
+,	U'$'
+,	U'%'
+,	U'&'
+,	U'*'
+,	U'+'
+,	U','
+,	U'-'
+,	U'.'
+,	U'/'
+,	U':'
+,	U';'
+,	U'<'
+,	U'='
+,	U'>'
+,	U'?'
+,	U'@'
+,	U'^'
+,	U'`'
+,	U'|'
+,	U'~'
+,	U'¡'
+,	U'¤'
+,	U'¦'
+,	U'§'
+,	U'¬'
+,	U'±'
+,	U'¶'
+,	U'·'
+,	U'¿'
+,	U'×'
+,	U'÷'
+,	U'∈'
+,	U'∋'
+,	U'⊂'
+,	U'⊃'
+,	U'∩'
+,	U'∪'
 };
 
 inline static unordered_set<char32_t>
 BreakingChars = {
-	U'!'	,U'"'	,U'#'	,U'$'	,U'%'	,U'&'	,U'\\'	,U'('	,U')'	,U'*'	,U'+'	,U','	,U'-'	,U'.'	,U'/'	,U':'	,U';'
-,	U'<'	,U'='	,U'>'	,U'?'	,U'@'	,U'['	,U']'	,U'^'	,U'`'	,U'{'	,U'|'	,U'}'	,U'~'	,U'¡'	,U'¤'	,U'¦'	,U'§'
-,	U'«'	,U'¬'	,U'±'	,U'µ'	,U'¶'	,U'·'	,U'»'	,U'¿'	,U'×'	,U'÷'	,U'∈'	,U'∋'	,U'⊂'	,U'⊃'	,U'∩'	,U'∪'	,U'∅'
+	U'\''
+,	U'"'
+,	U'('
+,	U')'
+,	U'['
+,	U']'
+,	U'{'
+,	U'}'
+,	U'⟨'
+,	U'⟩'
+,	U'«'
+,	U'»'
 };
 
 struct
@@ -23,8 +76,6 @@ iReader {
 	virtual	bool		Avail()		= 0;
 	virtual	char32_t	Read()		= 0;
 	virtual	char32_t	Peek()		= 0;
-	virtual	void		Forward()	= 0;
-	virtual	void		Backward()	= 0;
 };
 
 inline SP< SliP >
@@ -80,7 +131,7 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 	auto
 	state = initial == U'\\'
 	?	1									//	Escaped
-	:	contains( BreakingChars, initial )
+	:	contains( OperatorChars, initial )
 		?	-1								//	Reading Breaker
 		:	0								//	No state
 	;
@@ -88,18 +139,19 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 	if( state != 1 ) $.push_back( initial );
 
 	while ( R.Avail() ) {
-		auto _ = R.Peek();
 		if ( state == 1 ) {
-			R.Forward();
-			WhenEscaped( $, _ );
+			WhenEscaped( $, R.Read() );
 			state = 0;
 		} else if ( state == -1 ) {
-			if( !contains( BreakingChars, _ ) ) break;
-			R.Forward();
-			$.push_back( _ );
+			if( !contains( OperatorChars, R.Peek() ) ) break;
+			$.push_back( R.Read() );
 		} else {
-			if( contains( BreakingChars, _ ) ) break;
-			R.Forward();
+			if( contains( OperatorChars	, R.Peek() ) ) break;
+			if( contains( SoloChars		, R.Peek() ) ) break;
+			if( contains( BreakingChars	, R.Peek() ) ) break;
+
+			auto _ = R.Read();
+
 			if( IsBreakingWhite( _ ) ) break;
 			if( _ == '\\' )	{
 				state = 1;
@@ -117,7 +169,7 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 
 inline SP< Literal >
 CreateLiteral( iReader& R, char32_t terminator ) {
-	auto				escaped = false;
+	auto escaped = false;
 	vector< char32_t >	$;
 	while ( R.Avail() ) {
 		auto _ = R.Read();
@@ -139,25 +191,22 @@ Read( iReader& R, char32_t terminator ) {
 		auto _ = R.Read();
 		if( _ == terminator )		return 0;
 		if( IsBreakingWhite( _ ) )	continue;
-		if( IsDigit( _ ) )	{
+		if( IsDigit( _ ) ) {
 			vector< char32_t > ${ _ };
-			bool
-			dotRead = false;
+			auto dotRead = false;
 			while ( R.Avail() ) {
-				auto _ = R.Peek();
-				if( _ == '.' ) {
+				if( R.Peek() == U'.' ) {
 					if( dotRead ) break;
 					dotRead = true;
-					R.Forward();
-				} else if( IsDigit( _ ) ) {
-					R.Forward();
-				} else {
+				} else if( !IsDigit( R.Peek() ) ) {
 					break;
 				}
-				$.push_back( _ );
+				$.push_back( R.Read() );
 			}
-			if( dotRead )	return MS<Float	>( stod( string_Us( $ ) ) );
-			else			return MS<Bits	>( stoi( string_Us( $ ) ) );
+			return dotRead
+			?	Cast< SliP >( MS<Float	>( stof( string_Us( $ ) ) ) )
+			:	Cast< SliP >( MS<Bits	>( stoi( string_Us( $ ) ) ) )
+			;
 		}
 		switch ( _ ) {
 		case U']'	:
