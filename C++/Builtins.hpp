@@ -229,7 +229,7 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return ::contains(
+			return has(
 				Z( "Right operand must be List", Cast< List >( r ) )->$
 			,	l
 			) ? T : Nil;
@@ -239,7 +239,7 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return ::contains(
+			return has(
 				Z( "Left operand must be List", Cast< List >( l ) )->$
 			,	r
 			) ? T : Nil;

@@ -10,7 +10,7 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 
 	auto
 	infixEntries = ranges::to< vector >(
-		select(
+		filter(
 			zipIndex(
 				project(
 					_
