@@ -10,7 +10,7 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 
 	auto
 	infixEntries = ranges::to< vector >(
-		filter(
+		select(
 			zipIndex(
 				project(
 					_
@@ -20,7 +20,7 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 		,	[]( auto const& _ ) { return std::get<0>(_) != 0; }
 		)
 	);
-	
+
 	if( infixEntries.size() ) {
 		auto $ = infixEntries[ 0 ];
 		for( size_t _ = 1; _ < infixEntries.size(); _++ ) {
@@ -30,8 +30,8 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 		const auto [ infix, index ] = $;
 		return infix->$(
 			C
-		,	EvalSentence( C, ranges::to< vector >( take( _, index ) ) )
-		,	EvalSentence( C, ranges::to< vector >( drop( _, index + 1 ) ) )
+		,	EvalSentence( C, ranges::to< vector >( ::take( _, index ) ) )
+		,	EvalSentence( C, ranges::to< vector >( ::drop( _, index + 1 ) ) )
 		);
 	} else {
 		auto index = _.size() - 1;
@@ -57,7 +57,7 @@ Eval( SP< Context > const& C, SP< SliP > const& _ ) {
 			if ( c->dict.contains( name->$ ) ) return c->dict[ name->$ ];
 			c = c->next;
 		}
-		throw runtime_error( "Undefined" );
+		_Z( "Undefined name: " + name->$ );
 	}
 	if( const auto primitive = Cast< Primitive >( _ ) ) return primitive->$( C );
 	if( const auto parallel = Cast< Parallel >( _ ) ) return MS< List >(

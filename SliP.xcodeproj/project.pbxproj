@@ -120,7 +120,6 @@
 		12D9D6EE2E00A186006EAD54 /* JPNeural.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPNeural.h; sourceTree = "<group>"; };
 		12D9D6EF2E00A186006EAD54 /* JPVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVector.h; sourceTree = "<group>"; };
 		12D9D6F02E00A186006EAD54 /* JPVideo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPVideo.h; sourceTree = "<group>"; };
-		12D9D6F12E00A186006EAD54 /* Test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test.cpp; sourceTree = "<group>"; };
 		12D9D6F72E00A1A4006EAD54 /* JP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP.swift; sourceTree = "<group>"; };
 		12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_iOS.swift; sourceTree = "<group>"; };
 		12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JP_macOS.swift; sourceTree = "<group>"; };
@@ -263,7 +262,6 @@
 				12D9D6EE2E00A186006EAD54 /* JPNeural.h */,
 				12D9D6EF2E00A186006EAD54 /* JPVector.h */,
 				12D9D6F02E00A186006EAD54 /* JPVideo.h */,
-				12D9D6F12E00A186006EAD54 /* Test.cpp */,
 			);
 			name = JP_CPP;
 			path = JP/JP_CPP;

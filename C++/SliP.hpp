@@ -81,9 +81,6 @@ Numeric	: SliP {
 	virtual	SP< Numeric >
 	Negate() const = 0;
 
-	virtual	int64_t
-	Bits64() const = 0;
-
 	virtual	double
 	Double() const = 0;
 
@@ -117,11 +114,6 @@ Float : Numeric {
 		return MS< Float >( -$ );
 	}
 
-	int64_t
-	Bits64() const override {
-		throw runtime_error( "Float::Bits64 failed" );
-	}
-
 	double
 	Double() const override {
 		return $;
@@ -143,11 +135,6 @@ Bits : Numeric {
 		?	(SP< Numeric >)MS< Float >( -(double)numeric_limits< int64_t >::min() )
 		:	(SP< Numeric >)MS< Bits >( -$ )
 		;
-	}
-
-	int64_t
-	Bits64() const override {
-		return $;
 	}
 
 	double
@@ -186,11 +173,6 @@ NumericConstant : Numeric {
 	SP< Numeric >
 	Negate() const override {
 		return MS< NumericConstant >( $, !negative );
-	}
-
-	int64_t
-	Bits64() const override {
-		throw runtime_error( "Bits on NumericConstants" );
 	}
 
 	double
@@ -385,7 +367,16 @@ Parallel : List {
 ////////////////////////////////////////////////////////////////
 inline int
 _Compare( SP< SliP > l, SP< SliP > r ) {
-	return 0;
+	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+//		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
+		if( L && R ) {
+			auto v = L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
+			return v;
+		}
+	}
+	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+	Z( "Illegal operand type", L && R );
+	return L->Double() == R->Double() ? 0 : L->Double() < R->Double() ? -1 : 1;
 }
 ////////////////////////////////////////////////////////////////
 

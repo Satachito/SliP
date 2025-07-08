@@ -4,7 +4,7 @@ rm _
 clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp
 
 # プロファイル出力を指定して実行
-LLVM_PROFILE_FILE="_.profraw" ./_ < TEST.slip
+LLVM_PROFILE_FILE="_.profraw" ./_
 
 # .profraw を .profdata に変換
 llvm-profdata merge -sparse _.profraw -o _.profdata
@@ -18,8 +18,8 @@ llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=.
 # HTMLをブラウザで開く
 open index.html
 
-rm -f ./_ *.profraw *.profdata index.html control.js style.css 
-rm -rf coverage
+# rm -f _ *.profraw *.profdata index.html control.js style.css 
+# rm -rf coverage
 
 
 

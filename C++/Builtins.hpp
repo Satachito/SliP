@@ -1,8 +1,29 @@
 #pragma once
 
+#ifdef DEBUG
+template< typename T > bool
+ckd_add( T* $, T l, T r ) {
+	*$ = l + r;
+	return false;
+}
+template< typename T > bool
+ckd_sub( T* $, T l, T r ) {
+	*$ = l - r;
+	return false;
+}
+template< typename T > bool
+ckd_mul( T* $, T l, T r ) {
+	*$ = l * r;
+	return false;
+}
+#else
+#include <stdckdint.h>
+#endif
+
+
+
 inline static unordered_map< string, SP< SliP > >
-Builtins = {
-};
+Builtins;
 
 inline static vector< SP< NumericConstant > >
 NumericConstants = {
@@ -53,7 +74,7 @@ Functions = {
 	)
 ,	MS< Prefix >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-			throw runtime_error( _->REPR() );
+			_Z( _->REPR() );
 		}
 	,	"¡"		//	Throw
 	)
@@ -66,8 +87,8 @@ Functions = {
 ,	MS< Prefix >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			auto v = Eval( C, _ );
-			if( auto numeric = Cast< Numeric >( v ) ) return MS< Bits >( ~numeric->Bits64() );
-			throw runtime_error( "Illegal operand type" );
+			if( auto bits = Cast< Bits >( v ) ) return MS< Bits >( ~bits->$ );
+			_Z( "Illegal operand type" );
 		}
 	,	"~"		//	Bit not
 	)
@@ -91,7 +112,7 @@ Functions = {
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			if( auto list = Cast< List >( _ ) ) return MS< Bits >( list->$.size() );
 			if( auto literal = Cast< Literal >( _ ) ) return MS< Bits >( literal->$.length() );
-			throw runtime_error( "Illegal operand type" );
+			_Z( "Illegal operand type" );
 		}
 	,	"#"		//	Number of elements
 	)
@@ -107,18 +128,16 @@ Functions = {
 				if( Cast< Procedure	>( _ ) ) return MS< Procedure	>( $ );
 				return MS< List >( $ );
 			}
-			throw runtime_error( "Illegal operand type" );
+			_Z( "Illegal operand type" );
 		}
 	,	"*"		//	CDR
 	)
 ,	MS< Unary >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-			if( auto list = Cast< List >( _ ) ) {
-				auto size = list->$.size();
-				if( !size ) throw runtime_error( "Insufficient list" );
-				return list->$[ size - 1 ];
-			}
-			throw runtime_error( "Illegal operand type" );
+			auto list = Z( "Illegal operand type", Cast< List >( _ ) );
+			auto size = list->$.size();
+			Z( "Insufficient list", size );
+			return list->$[ size - 1 ];
 		}
 	,	"$"		//	Last element
 	)
@@ -150,30 +169,32 @@ Functions = {
 
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto dict = Cast< Dict >( l ) ) {
-				return Eval( MS< Context >( C, dict->$ ), r );
-			}
-			throw runtime_error( "Left must be dict." );
+			return Eval(
+				MS< Context >(
+					C
+				,	Z( "Left must be dict.", Cast< Dict >( l ) )->$
+				)
+			,	r
+			);
 		}
 	,	"§"		//	Open new context with dict(l) then eval r
 	,	100
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto name = Cast< Name >( l ) ) {
-				return C->dict[ name->$ ] = r;
-			}
-			throw runtime_error( "Only name can be assigned." );
+			return C->dict[
+				Z( "Only name can be assigned.", Cast< Name >( l ) )->$
+			] = r;
 		}
 	,	"="		//	assign
 	,	90
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto list = Cast< List >( r ) ) {
-				if( list->$.size() == 2 ) return Eval( C, list->$[ IsNil( l ) ? 1 : 0 ] );
-			}
-			throw runtime_error( "Right operand must be two element List." );
+			return Eval(
+				C
+			,	Z( "Right operand must be two element List.", Cast< List >( r ) )->$[ IsNil( l ) ? 1 : 0 ]
+			);
 		}
 	,	"?"		//	if else
 	,	80
@@ -208,16 +229,20 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto list = Cast< List >( r ) ) return contains( list->$, l ) ? T : Nil;
-			throw runtime_error( "Right operand must be List" );
+			return ::contains(
+				Z( "Right operand must be List", Cast< List >( r ) )->$
+			,	l
+			) ? T : Nil;
 		}
 	,	"∈"		//	Member of
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto list = Cast< List >( l ) ) return contains( list->$, r ) ? T : Nil;
-			throw runtime_error( "Left operand must be List" );
+			return ::contains(
+				Z( "Left operand must be List", Cast< List >( l ) )->$
+			,	r
+			) ? T : Nil;
 		}
 	,	"∋"		//	Includes
 	,	60
@@ -266,88 +291,77 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto list = Cast< List >( r ) ) {
-				vector< SP< SliP > > $;
-				$.reserve( list->$.size() + 1 );
-				$.push_back( l );
-				$.insert( $.end(), list->$.begin(), list->$.end() );
-				if( Cast< Matrix	>( r ) ) return MS< Matrix		>( $ );
-				if( Cast< Parallel	>( r ) ) return MS< Parallel	>( $ );
-				if( Cast< Sentence	>( r ) ) return MS< Sentence	>( $ );
-				if( Cast< Procedure	>( r ) ) return MS< Procedure	>( $ );
-				return MS< List >( $ );
-			}
-			throw runtime_error( "Right operand must be List" );
+			auto list = Z( "Right operand must be List", Cast< List >( r ) );
+			vector< SP< SliP > > $;
+			$.reserve( list->$.size() + 1 );
+			$.push_back( l );
+			$.insert( $.end(), list->$.begin(), list->$.end() );
+			if( Cast< Matrix	>( r ) ) return MS< Matrix		>( $ );
+			if( Cast< Parallel	>( r ) ) return MS< Parallel	>( $ );
+			if( Cast< Sentence	>( r ) ) return MS< Sentence	>( $ );
+			if( Cast< Procedure	>( r ) ) return MS< Procedure	>( $ );
+			return MS< List >( $ );
 		}
 	,	","		//	[ l, ...r ]
 	,	50
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto lNumeric = Cast< Numeric >( l );
-			auto rNumeric = Cast< Numeric >( r );
-			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() & rNumeric->Bits64() );
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Bits >( L->$ & R->$ );
 		}
 	,	"&"		//	And
 	,	40
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto lNumeric = Cast< Numeric >( l );
-			auto rNumeric = Cast< Numeric >( r );
-			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() | rNumeric->Bits64() );
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Bits >( L->$ | R->$ );
 		}
 	,	"|"		//	Or
 	,	40
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto lNumeric = Cast< Numeric >( l );
-			auto rNumeric = Cast< Numeric >( r );
-			if( lNumeric && rNumeric ) return MS< Bits >( lNumeric->Bits64() ^ rNumeric->Bits64() );
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Bits >( L->$ ^ R->$ );
 		}
 	,	"^"		//	Exclusive or
 	,	40
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
+			{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
 				if( L && R ) {
-					return (
-						( R->$ > 0 && L->$ > numeric_limits<int64_t>::max() - R->$ )
-					||	( R->$ < 0 && L->$ < numeric_limits<int64_t>::min() - R->$ )
-					) ?	(SP< Numeric >)MS< Float	>( L->Double() + R->Double() )
-					:	(SP< Numeric >)MS< Bits	>( L->$ + R->$ )
-					;
+					int64_t	$;
+					if( !ckd_add( &$, L->$, R->$ ) ) return MS< Bits >( $ );
 				}
 			}
-			{	auto L = Cast< Numeric	>( l ), R = Cast< Numeric	>( r );
-				if( L && R ) return MS< Float		>( L->Double() + R->Double() );
+			{	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+				if( L && R ) return MS< Float >( L->Double() + R->Double() );
 			}
-			{	auto L = Cast< Literal	>( l ), R = Cast< Literal	>( r );
-				if( L && R ) return MS< Literal	>( L->$ + R->$, U'`' );
+			{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
+				if( L && R ) return MS< Literal	>( L->$ + R->$, L->mark );
 			}
-			{	auto L = Cast< List		>( l ), R = Cast< List		>( r );
-				if( L && R ) {
-					{	auto L = Cast< Matrix		>( l ), R = Cast< Matrix	>( r );
-						if( L && R ) return MS< Matrix		>( L->$ + R->$ );
-					}
-					{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
-						if( L && R ) return MS< Sentence	>( L->$ + R->$ );
-					}
-					{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
-						if( L && R ) return MS< Procedure	>( L->$ + R->$ );
-					}
-					{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
-						if( L && R ) return MS< Parallel	>( L->$ + R->$ );
-					}
-					return MS< List >( L->$ + R->$ );
-				}
+			auto L = Cast< List >( l ), R = Cast< List >( r );
+			Z( "Illegal operand type", L && R );
+
+			{	auto L = Cast< Matrix		>( l ), R = Cast< Matrix	>( r );
+				if( L && R ) return MS< Matrix		>( L->$ + R->$ );
 			}
-			throw runtime_error( "Illegal operand type" );
+			{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
+				if( L && R ) return MS< Sentence	>( L->$ + R->$ );
+			}
+			{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
+				if( L && R ) return MS< Procedure	>( L->$ + R->$ );
+			}
+			{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
+				if( L && R ) return MS< Parallel	>( L->$ + R->$ );
+			}
+			return MS< List >( L->$ + R->$ );
 		}
 	,	"+"		//	Plus
 	,	30
@@ -356,80 +370,84 @@ Functions = {
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
 				if( L && R ) {
-					return (
-						( R->$ > 0 && L->$ < numeric_limits<int64_t>::max() + R->$ )
-					||	( R->$ < 0 && L->$ > numeric_limits<int64_t>::min() + R->$ )
-					) ?	(SP< Numeric >)MS< Float	>( L->Double() - R->Double() )
-					:	(SP< Numeric >)MS< Bits	>( L->$ - R->$ )
-					;
+					int64_t	$;
+					if( !ckd_sub( &$, L->$, R->$ ) ) return MS< Bits >( $ );
 				}
 			}
-			{	auto L = Cast< Numeric	>( l ), R = Cast< Numeric	>( r );
-				if( L && R ) return MS< Float		>( L->Double() + R->Double() );
-			}
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Numeric	>( l ), R = Cast< Numeric	>( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Float >( L->Double() - R->Double() );
 		}
 	,	"-"		//	Minus
 	,	30
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Cast< Matrix >( l );
-			auto R = Cast< Matrix >( r );
-			if( L && R ) {
-				auto nColsL = L->NumCols();
-				auto nRowsR = R->NumRows();
-				if( nColsL != nRowsR ) throw runtime_error( "DOT: Matrix size error" );
-				if(	nColsL == 0 ) return MS< Float >( Numeric::Dot( L->$, R->$ ) );	//	Vector·Vector
+			auto L = Cast< Matrix >( l ), R = Cast< Matrix >( r );
+			Z( "Illegal operand type", L && R );
+			auto nColsL = L->NumCols();
+			auto nRowsR = R->NumRows();
+			if( nColsL != nRowsR ) _Z( "DOT: Matrix size error" );
+			if(	nColsL == 0 ) return MS< Float >( Numeric::Dot( L->$, R->$ ) );	//	Vector·Vector
 
-				auto nRowsL = L->NumRows();
-				auto nColsR = R->NumCols();
+			auto nRowsL = L->NumRows();
+			auto nColsR = R->NumCols();
 
-				vector< SP< SliP > >	$( nRowsL * nColsR );
-				for ( size_t row = 0; row < nRowsL; row++ ) {
-					for ( size_t col = 0; col < nColsR; col++ ) {
-						double _ = 0.0;
-						for ( size_t k = 0; k < nColsL; k++ ) {
-							auto lN = Cast< Numeric >( (*L)( row, k ) );
-							auto rN = Cast< Numeric >( (*R)( k, col ) );
-							_ += lN->Double() * rN->Double();
-						}
-						$[ row * nColsR + col ] = MS< Float >( _ );
+			vector< SP< SliP > >	$( nRowsL * nColsR );
+			for ( size_t row = 0; row < nRowsL; row++ ) {
+				for ( size_t col = 0; col < nColsR; col++ ) {
+					double _ = 0.0;
+					for ( size_t k = 0; k < nColsL; k++ ) {
+						auto lN = Cast< Numeric >( (*L)( row, k ) );
+						auto rN = Cast< Numeric >( (*R)( k, col ) );
+						_ += lN->Double() * rN->Double();
 					}
+					$[ row * nColsR + col ] = MS< Float >( _ );
 				}
-				return MS< Matrix >( $, nRowsL );
 			}
-			throw runtime_error( "Operands must be Matrix" );
+			return MS< Matrix >( $, nRowsL );
 		}
 	,	"·"		//	Dot product
 	,	20
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Cast< Numeric >( l );
-			auto R = Cast< Numeric >( r );
-			if( L && R ) return MS< Float >( L->Double() * R->Double() );
-			throw runtime_error( "Illegal operand type" );
+			{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+				if( L && R ) {
+					int64_t	$;
+					if( !ckd_mul( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+				}
+			}
+			auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Float >( L->Double() * R->Double() );
 		}
 	,	"×"		//	Multiple
 	,	20
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Cast< Numeric >( l );
-			auto R = Cast< Numeric >( r );
-			if( L && R ) return MS< Float >( L->Double() / R->Double() );
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Float >( L->Double() / R->Double() );
 		}
 	,	"÷"		//	Div
 	,	20
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Cast< Numeric >( l );
-			auto R = Cast< Numeric >( r );
-			if( L && R ) return MS< Bits >( L->Bits64() / R->Bits64() );
-			throw runtime_error( "Illegal operand type" );
+			auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Bits >( L->$ / R->$ );
+		}
+	,	"/"		//	iDiv
+	,	20
+	)
+,	MS< Infix >(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			Z( "Illegal operand type", L && R );
+			return MS< Bits >( L->$ % R->$ );
 		}
 	,	"%"		//	Remainder
 	,	20
@@ -437,18 +455,10 @@ Functions = {
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			{	auto R = Cast< Bits >( r );
-				if ( R ) {
-					auto L = Cast< List >( l );
-					if ( !L ) throw runtime_error( "lhs must be List" );
-					return L->$.at( R->Bits64() );
-				}
+				if ( R ) return Z( "lhs must be List", Cast< List >( l ) )->$.at( R->$ );
 			}
 			{	auto R = Cast< Name >( r );
-				if ( R ) {
-					auto L = Cast< Dict >( l );
-					if ( !L ) throw runtime_error( "lhs must be List" );
-					return L->$.at( R->$ );
-				}
+				if ( R ) return Z( "lhs must be Dict", Cast< Dict >( l ) )->$.at( R->$ );
 			}
 			{	auto R = Cast< Unary >( r );
 				if ( R ) return R->$( C, l );
@@ -465,6 +475,7 @@ Functions = {
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			auto L = Cast< Dict >( l );
 			auto R = Cast< Name >( r );
+			Z( "Illegal operand type", L && R );
 			return L->$[ R->$ ];
 		}
 	,	"."		//	Dict element
@@ -475,9 +486,7 @@ Functions = {
 inline static auto
 prefixPlus = MS< Prefix >(
 	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-		auto numeric = Cast< Numeric >( _ );
-		if( !numeric ) throw "Not numeric";
-		return _;
+		return Z( "Not numeric", Cast< Numeric >( _ ) );
 	}
 ,	"+"
 );
@@ -485,9 +494,7 @@ prefixPlus = MS< Prefix >(
 inline static auto
 prefixMinus = MS< Prefix >(
 	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-		auto numeric = Cast< Numeric >( _ );
-		if( !numeric ) throw "Not numeric";
-		return numeric->Negate();
+		return Z( "Not numeric", Cast< Numeric >( _ ) )->Negate();
 	}
 ,	"-"
 );

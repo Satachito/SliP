@@ -143,22 +143,22 @@ WhenEscaped( vector< char32_t >& $, char32_t _ ) {
 inline string
 ReadNameRaw( iReader& R, char32_t initial ) {
 
-	if( contains( SoloChars, initial ) ) return string_Us( vector< char32_t >{ initial } );
+	if( ::contains( SoloChars, initial ) ) return string_Us( vector< char32_t >{ initial } );
 
 	vector< char32_t >
 	${ initial };
 
 	auto
-	readingOperator = contains( OperatorChars, initial );
+	readingOperator = ::contains( OperatorChars, initial );
 
 	while ( R.Avail() ) {
 		if ( readingOperator ) {
-			if( !contains( OperatorChars, R.Peek() ) ) break;
+			if( !::contains( OperatorChars	, R.Peek() ) ) break;
 			$.push_back( R.Read() );
 		} else {
-			if( contains( OperatorChars	, R.Peek() ) ) break;
-			if( contains( SoloChars		, R.Peek() ) ) break;
-			if( contains( BreakingChars	, R.Peek() ) ) break;
+			if( ::contains( OperatorChars	, R.Peek() ) ) break;
+			if( ::contains( SoloChars		, R.Peek() ) ) break;
+			if( ::contains( BreakingChars	, R.Peek() ) ) break;
 
 			auto _ = R.Read();
 
