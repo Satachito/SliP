@@ -5,8 +5,7 @@ Eval( SP< Context > const& C, SP< SliP > const& _ );
 
 inline SP< SliP >
 EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
-	if( _.size() == 0 ) throw runtime_error( "Syntax Error: No infix operand or null sentence" );
-	if( _.size() == 1 ) return Eval( C, _[ 0 ] );
+	if( _.size() == 0 ) return Nil;
 
 	auto
 	infixEntries = ranges::to< vector >(
@@ -34,16 +33,24 @@ EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
 		,	EvalSentence( C, ranges::to< vector >( ::drop( _, index + 1 ) ) )
 		);
 	} else {
-		auto index = _.size() - 1;
-		if(	Cast< Prefix >( _[ index ] ) ) throw runtime_error( "Syntax Error: No prefix operand" );
-		SP< SliP > $ = Eval( C, _[ index ] );
-		while( index-- ) {
-			auto slip = _[ index ];
-			if( auto prefix = Cast< Prefix >( slip ) ) {
-				$ = prefix->$( C, $ );
-			} else {
-				$ = Eval( C, slip );
+		SP< Numeric > $ = MS< Bits >( 1 );
+		auto I = size_t( 0 );
+		while( I < _.size() ) {
+			if( auto numeric = Cast< Numeric >( _[ I ] ) ) {
+				I++;
+				$ = Mul( $, numeric );
+				continue;
 			}
+			if( auto prefix = Cast< Prefix >( _[ I ] ) ) {
+				I++;
+				if( I == _.size() ) throw runtime_error( "Syntax Error: No operand for prefix: " + prefix->label );
+				if( auto numeric = Cast< Numeric >( prefix->$( C, _[ I++ ] ) ) ) {
+					I++;
+					$ = Mul( $, numeric );
+					continue;
+				}
+			}
+			throw runtime_error( "Syntax Error: no numeric value: " + _[ I++ ]->REPR() );
 		}
 		return $;
 	}

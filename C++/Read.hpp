@@ -87,6 +87,7 @@ ReadList( iReader& _, char32_t close ) {
 	vector< SP< SliP > > $;
 
 	auto slip = Read( _, close );
+	if( !slip ) return $;
 	auto infix = Cast< Infix >( slip );
 	if( infix ) {
 		if(	infix->label == "+" ) {

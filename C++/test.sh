@@ -1,4 +1,6 @@
 rm _
+rm -f _ *.profraw *.profdata index.html control.js style.css 
+rm -rf coverage
 
 # カバレッジ計測付きでビルド
 clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp

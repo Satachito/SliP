@@ -6,10 +6,6 @@
 #define	SP		shared_ptr
 #define	MS		make_shared
 
-////////////////////////////////////////////////////////////////
-#include	<numbers>
-////////////////////////////////////////////////////////////////
-
 struct
 SliP {
 //	static	inline	int
@@ -399,6 +395,18 @@ T = MS< SliP >();
 inline static SP< SliP >
 Nil = MS< List >( vector< SP< SliP > >{} );
 
+inline SP< Numeric >
+Mul( SP< SliP > l, SP< SliP > r ) {
+	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+		if( L && R ) {
+			int64_t	$;
+			if( !ckd_mul( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+		}
+	}
+	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+	Z( "Illegal operand type", L && R );
+	return MS< Float >( L->Double() * R->Double() );
+}
 ////////////////////////////////////////////////////////////////
 #include	"Eval.hpp"
 #include	"Builtins.hpp"

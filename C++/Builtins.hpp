@@ -1,27 +1,5 @@
 #pragma once
 
-#ifdef DEBUG
-template< typename T > bool
-ckd_add( T* $, T l, T r ) {
-	*$ = l + r;
-	return false;
-}
-template< typename T > bool
-ckd_sub( T* $, T l, T r ) {
-	*$ = l - r;
-	return false;
-}
-template< typename T > bool
-ckd_mul( T* $, T l, T r ) {
-	*$ = l * r;
-	return false;
-}
-#else
-#include <stdckdint.h>
-#endif
-
-
-
 inline static unordered_map< string, SP< SliP > >
 Builtins;
 
@@ -412,15 +390,7 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-				if( L && R ) {
-					int64_t	$;
-					if( !ckd_mul( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-				}
-			}
-			auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-			Z( "Illegal operand type", L && R );
-			return MS< Float >( L->Double() * R->Double() );
+			return Mul( l, r );
 		}
 	,	"×"		//	Multiple
 	,	20

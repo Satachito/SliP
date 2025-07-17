@@ -18,7 +18,7 @@ TestReads( R const& _ ) {
 }
 
 inline auto
-TestException( string const& _, string const& expected ) {
+TestReadException( string const& _, string const& expected ) {
 	try {
 		READ( _ );
 	} catch( exception const& e ) {
@@ -38,7 +38,7 @@ ReadTest() {
 	A( Cast< Literal >( READ( "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
 	A( Cast< Literal >( READ( "\"A\\X\"" ) )->$[ 1 ] == U'X' );
 
-	TestException( "\\", "Invalid escape" );
+	TestReadException( "\\", "Invalid escape" );
 
 	TestRead( "[=]" );
 	TestRead( "[A=]" );
@@ -53,23 +53,23 @@ ReadTest() {
 
 	A( READ( "" ) == 0 );
 
-	TestException( "[ 3 + = 5 ]", "Syntax error: + =" );
+	TestReadException( "[ 3 + = 5 ]", "Syntax error: + =" );
 
 
 	TestRead( "[ -1 ]" );
 
-	TestException( "]", "Detect close parenthesis" );
-	TestException( "⟩", "Detect close parenthesis" );
-	TestException( "}", "Detect close parenthesis" );
-	TestException( ")", "Detect close parenthesis" );
-	TestException( "»", "Detect close parenthesis" );
-	TestException( "`", "Unterminated string: " );
+	TestReadException( "]", "Detect close parenthesis" );
+	TestReadException( "⟩", "Detect close parenthesis" );
+	TestReadException( "}", "Detect close parenthesis" );
+	TestReadException( ")", "Detect close parenthesis" );
+	TestReadException( "»", "Detect close parenthesis" );
+	TestReadException( "`", "Unterminated string: " );
 
 	TestRead( "[A]" );
 
 	TestRead( "[1.23.45]" );
 
-	TestException( "!@¡", "No such operator: !@¡" );
+	TestReadException( "!@¡", "No such operator: !@¡" );
 
 	TestRead( "[@1||2@]" );
 	TestRead( "{@1||2@}" );
