@@ -11,14 +11,14 @@ SliP {
 //	static	inline	int
 //	nSliPs = 0;
 
-	SliP() {
+//	SliP() {
 //		cout << '+' << ':' << ++nSliPs << endl;
-	}
+//	}
 
-	virtual	~
-	SliP() {
+//	virtual	~
+//	SliP() {
 //		cout << '-' << ':' << --nSliPs << endl;
-	}
+//	}
 
 	virtual string
 	REPR() const { return "SliP"; }

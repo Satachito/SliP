@@ -1,92 +1,116 @@
 #pragma once
 
 inline SP< SliP >
-Eval( SP< Context > const& C, SP< SliP > const& _ );
+Eval( SP< Context > const&, SP< SliP > const& );
+
+inline auto
+EvalPrefix( SP< Context > const& C, vector< SP< SliP > > const& S ) {
+
+	if( auto _ = Cast< Prefix >( S.back() ) ) throw runtime_error( "Syntax Error: No operand for prefix: " + _->label );
+
+	vector< SP< SliP > >	$;
+
+	size_t		I = S.size() - 1;
+	SP< SliP >	prev = S[ I ];
+	while( I-- ) {
+		if( auto _ = Cast< Prefix >( S[ I ] ) ) {
+			$.insert( $.begin(), _->$( C, prev ) );
+			prev = nullptr;
+		} else {
+			if( prev ) $.insert( $.begin(), Eval( C, prev ) );
+			prev = S[ I ];
+		}
+	}
+	if( prev ) $.insert( $.begin(), Eval( C, prev ) );
+	return $;
+}
+
+inline	auto
+InfixI( vector< SP< SliP > > const& S ) {
+
+	pair< size_t, SP< Infix > >	$;
+
+	for( size_t I = 0; I < S.size(); I++ ) {
+		if( auto _ = Cast< Infix >( S[ I ] ) ) {
+			if( get< 0 >( $ ) ) {
+				if( _->priority > get< 1 >( $ )->priority ) {
+					$ = { I, _ };
+				}
+			} else {
+				$ = { I, _ };
+			}
+		}
+	}
+	return $;
+}
 
 inline SP< SliP >
-EvalSentence( SP< Context > const& C, vector< SP< SliP > > const& _ ) {
-	if( _.size() == 0 ) return Nil;
+EvalInfix( SP< Context > const& C, vector< SP< SliP > > const& S ) {
+//cerr << ':' << MS< Sentence >( S )->REPR() << ':' << endl;
 
-	auto
-	infixEntries = ranges::to< vector >(
-		filter(
-			zipIndex(
-				project(
-					_
-				,	[]( SP< SliP > const& _ ) { return Cast< Infix >( _ ); }
-				)
-			)
-		,	[]( auto const& _ ) { return std::get<0>(_) != 0; }
-		)
-	);
+	auto [ infixI, infix ] = InfixI( S );
 
-	if( infixEntries.size() ) {
-		auto $ = infixEntries[ 0 ];
-		for( size_t _ = 1; _ < infixEntries.size(); _++ ) {
-			auto entry = infixEntries[ _ ];
-			if ( get< 0 >( entry )->priority >= get< 0 >( $ )->priority ) $ = entry;
-		}
-		const auto [ infix, index ] = $;
+	if( infix ) {
+		if( infixI == 0 )				throw runtime_error( "Syntax Error: No left operand for infix operator: " + infix->label );
+		if( infixI == S.size() - 1 )	throw runtime_error( "Syntax Error: No right operand for infix operator: " + infix->label );
+
+//cerr << "Infix: " << infix->label << endl;
 		return infix->$(
 			C
-		,	EvalSentence( C, ranges::to< vector >( ::take( _, index ) ) )
-		,	EvalSentence( C, ranges::to< vector >( ::drop( _, index + 1 ) ) )
+		,	EvalInfix( C, ranges::to< vector >( ::take( S, infixI ) ) )
+		,	EvalInfix( C, ranges::to< vector >( ::drop( S, infixI + 1 ) ) )
 		);
 	} else {
+		if( S.size() == 1 ) return S[ 0 ];
 		SP< Numeric > $ = MS< Bits >( 1 );
-		auto I = size_t( 0 );
-		while( I < _.size() ) {
-			if( auto numeric = Cast< Numeric >( _[ I ] ) ) {
-				I++;
-				$ = Mul( $, numeric );
-				continue;
+		for( size_t I = 0; I < S.size(); I++ ) {
+			if( auto _ = Cast< Numeric >( S[ I ] ) ) {
+				$ = Mul( $, _ );
+			} else {
+				throw runtime_error( "Syntax Error: No numeric value: " + S[ I ]->REPR() );
 			}
-			if( auto prefix = Cast< Prefix >( _[ I ] ) ) {
-				I++;
-				if( I == _.size() ) throw runtime_error( "Syntax Error: No operand for prefix: " + prefix->label );
-				if( auto numeric = Cast< Numeric >( prefix->$( C, _[ I++ ] ) ) ) {
-					I++;
-					$ = Mul( $, numeric );
-					continue;
-				}
-			}
-			throw runtime_error( "Syntax Error: no numeric value: " + _[ I++ ]->REPR() );
 		}
 		return $;
 	}
 }
 
 inline SP< SliP >
-Eval( SP< Context > const& C, SP< SliP > const& _ ) {
-	if(	const auto name = Cast< Name >( _ ) ) {
+Eval( SP< Context > const& C, SP< SliP > const& S ) {
+	if(	const auto _ = Cast< Name >( S ) ) {
 		SP< Context >	c = C;
 		while( c ) {
-			if ( c->dict.contains( name->$ ) ) return c->dict[ name->$ ];
+			if ( c->dict.contains( _->$ ) ) return c->dict[ _->$ ];
 			c = c->next;
 		}
-		_Z( "Undefined name: " + name->$ );
+		_Z( "Undefined name: " + _->$ );
 	}
-	if( const auto primitive = Cast< Primitive >( _ ) ) return primitive->$( C );
-	if( const auto parallel = Cast< Parallel >( _ ) ) return MS< List >(
+	if( const auto _ = Cast< Primitive >( S ) ) return _->$( C );
+	if( const auto _ = Cast< Parallel >( S ) ) return MS< List >(
 		ranges::to< vector >(
 			project(
-				parallel->$
+				_->$
 			,	[ & ]( auto const& _ ){ return Eval( C, _ ); }
 			)
 		)
 	);
-	if( const auto procedure = Cast< Procedure >( _ ) ) {
+	if( const auto _ = Cast< Procedure >( S ) ) {
 		auto
 		newC = MS< Context >( C );
 		return MS< List >(
 			ranges::to< vector >(
 				project(
-					procedure->$
+					_->$
 				,	[ & ]( auto const& _ ){ return Eval( C, _ ); }
 				)
 			)
 		);
 	}
-	if( const auto sentence = Cast< Sentence >( _ ) ) return EvalSentence( C, sentence->$ );
-	return _;
+//	if( const auto _ = Cast< Sentence >( S ) ) return _->$.size() == 0 ? Nil : EvalInfix( C, EvalPrefix( C, _->$ ) );
+	if( const auto _ = Cast< Sentence >( S ) ) {
+//cerr << '>' << _->REPR() << endl;
+		auto $ = _->$.size() == 0 ? Nil : EvalInfix( C, EvalPrefix( C, _->$ ) );
+//cerr << $->REPR() << endl;
+		return $;
+	}
+	return S;
 }

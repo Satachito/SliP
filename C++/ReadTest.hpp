@@ -29,6 +29,7 @@ TestReadException( string const& _, string const& expected ) {
 inline auto
 ReadTest() {
 
+	TestRead( "1" );
 	A( Cast< Literal >( READ( "\"A\\0\"" ) )->$[ 1 ] == 0 );
 	A( Cast< Literal >( READ( "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
 	A( Cast< Literal >( READ( "\"A\\n\"" ) )->$[ 1 ] == U'\n' );
@@ -51,7 +52,7 @@ ReadTest() {
 
 	A( READ( "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
 
-	A( READ( "" ) == 0 );
+	A( READ( "" ) == nullptr );
 
 	TestReadException( "[ 3 + = 5 ]", "Syntax error: + =" );
 

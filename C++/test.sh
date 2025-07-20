@@ -1,4 +1,3 @@
-rm _
 rm -f _ *.profraw *.profdata index.html control.js style.css 
 rm -rf coverage
 
@@ -15,13 +14,15 @@ llvm-profdata merge -sparse _.profraw -o _.profdata
 llvm-cov report ./_ -instr-profile=_.profdata
 
 # HTMLレポート出力
-llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=.
+# llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=.
+# Branch 詳細つき　
+llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=. --show-branches=count
 
 # HTMLをブラウザで開く
 open index.html
 
-# rm -f _ *.profraw *.profdata index.html control.js style.css 
-# rm -rf coverage
+rm -f _ *.profraw *.profdata index.html control.js style.css 
+rm -rf coverage
 
 
 

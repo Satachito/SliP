@@ -10,43 +10,30 @@ SoloChars = {
 ,	U'∅'	//	空集合
 ,	U'⊤'	//	Verum
 ,	U'⊥'	//	Falsum
-};
 
-inline static unordered_set<char32_t>
-OperatorChars = {
-	U'!'
+,	U'!'
 ,	U'#'
 ,	U'$'
 ,	U'%'
-,	U'&'
+,	U'\''
 ,	U'*'
-,	U'+'
 ,	U','
-,	U'-'
 ,	U'.'
 ,	U'/'
 ,	U':'
 ,	U';'
-,	U'<'
-,	U'='
-,	U'>'
 ,	U'?'
-,	U'@'
-,	U'^'
 ,	U'`'
-,	U'|'
 ,	U'~'
 ,	U'¡'
 ,	U'¤'
 ,	U'¦'
 ,	U'§'
 ,	U'¬'
-,	U'±'
+,	U'±'	//	未定義
 ,	U'¶'
 ,	U'·'
 ,	U'¿'
-,	U'×'
-,	U'÷'
 ,	U'∈'
 ,	U'∋'
 ,	U'⊂'
@@ -56,9 +43,23 @@ OperatorChars = {
 };
 
 inline static unordered_set<char32_t>
+OperatorChars = {
+	U'&'
+,	U'|'
+,	U'^'
+,	U'+'
+,	U'-'
+,	U'×'
+,	U'÷'
+,	U'='
+,	U'<'
+,	U'>'
+,	U'@'
+};
+
+inline static unordered_set<char32_t>
 BreakingChars = {
 	U'\\'
-,	U'\''
 ,	U'"'
 ,	U'('
 ,	U')'
@@ -66,8 +67,8 @@ BreakingChars = {
 ,	U']'
 ,	U'{'
 ,	U'}'
-,	U'⟨'
-,	U'⟩'
+,	U'⟨'	//	27E8
+,	U'⟩'	//	27E9
 ,	U'«'
 ,	U'»'
 };
@@ -192,7 +193,7 @@ inline SP< SliP >
 Read( iReader& R, char32_t terminator ) {
 	while ( R.Avail() ) {
 		auto _ = R.Read();
-		if( _ == terminator )		return 0;
+		if( _ == terminator )		return nullptr;
 		if( IsBreakingWhite( _ ) )	continue;
 		if( IsDigit( _ ) ) {
 			vector< char32_t > ${ _ };
