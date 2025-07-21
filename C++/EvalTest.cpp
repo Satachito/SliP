@@ -29,14 +29,45 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 
 void
 EvalTest( SP< Context > C ) {
+
+	{	auto _ = MS< Bits >( numeric_limits< int64_t >::min() );
+		auto $ = Cast< Float >( _->Negate() );
+		A( $->$ == 9223372036854775808.0 );
+	}
+	{	auto _ = MS< NumericConstant >( "" );
+		try {
+			_->Double();
+		} catch ( exception const& e ) {
+			A( strcmp( e.what(), "eh?" ) == 0 );
+		}
+	}
+	TestEval< NumericConstant >( C, "∞"	, []( auto const& _ ){ return _->Double() == numeric_limits< double >::infinity(); } );
+	TestEval< NumericConstant >( C, "𝑒"	, []( auto const& _ ){ return _->Double() == numbers::e; } );
+	TestEval< NumericConstant >( C, "π"	, []( auto const& _ ){ return _->Double() == numbers::pi; } );
+	TestEval< NumericConstant >( C, "log2e"	, []( auto const& _ ){ return _->Double() == numbers::log2e; } );
+	TestEval< NumericConstant >( C, "log10e"	, []( auto const& _ ){ return _->Double() == numbers::log10e; } );
+	TestEval< NumericConstant >( C, "ln2"	, []( auto const& _ ){ return _->Double() == numbers::ln2; } );
+	TestEval< NumericConstant >( C, "ln10"	, []( auto const& _ ){ return _->Double() == numbers::ln10; } );
+	TestEval< NumericConstant >( C, "γ"	, []( auto const& _ ){ return _->Double() == numbers::egamma; } );
+	TestEval< NumericConstant >( C, "φ"	, []( auto const& _ ){ return _->Double() == numbers::phi; } );
+	TestEval< NumericConstant >( C, "(-π)"	, []( auto const& _ ){ return _->REPR() == "(-π)"; } );
+	TestEval< Bits >( C, "(-9223372036854775807)"	, []( auto const& _ ){ return _->$ == -9223372036854775807L;	} );
+	TestEval< Bits >( C, "9223372036854775807"		, []( auto const& _ ){ return _->$ == 9223372036854775807L;		} );
+	TestEval< Float >( C, "9223372036854775808"		, []( auto const& _ ){ return _->$ == 9223372036854775808.0;	} );
+	TestEval< Float >(C,  "(-9223372036854775808)"	, []( auto const& _ ){ return _->$ == -9223372036854775808.0;	} );
+
+	TestEval< Float >( C, "(+3.0)"			, []( auto const& _ ){ return _->$ == 3; } );
+	TestEval< Float >( C, "(-3.0)"			, []( auto const& _ ){ return _->$ == -3; } );
+
 	TestEval< Bits >( C, "( 3 × 4 + 2 )"	, []( auto const& _ ){ return _->$ == 14; } );
 
 	TestEvalException( C, "a"				, "Undefined name: a" );
 	Eval( C, READ( "('a=3)" ) );
+	Eval( C, READ( "('b=4)" ) );
 	TestEval< Bits >( C, "a"				, []( auto const& _ ){ return _->$ == 3; } );
 	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ return _->$ == 3; } );
 	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ return _->$ == -3; } );
-	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ return _->REPR() == "{\ta: 3\n}"; } );
+	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ return _->REPR() == "{\ta: 3\n,\tb: 4\n}"; } );
 
 	Eval( C, READ( "(3:;)" ) );
 //	TestEval< Bits >( C, "(3:@)"			, []( auto const& _ ){ return _->$ == 3; } );

@@ -2,6 +2,7 @@
 
 static auto
 READ( const string& _ ) {
+//	cerr << _ << endl;
 	StringReader R( _ );
 	return Read( R, -1 );
 };
@@ -10,13 +11,7 @@ static auto
 TestRead( string const& _ ) {
 	auto
 	$ = READ( _ )->REPR();
-//	cerr << $ << endl;
 	A( $ == READ( $ )->REPR() );
-}
-
-template < ranges::range R > void
-TestReads( R const& _ ) {
-    ::apply( _, []( auto const& _ ) { TestRead( _ ); } );
 }
 
 static auto
@@ -30,8 +25,18 @@ TestReadException( string const& _, string const& expected ) {
 
 void
 ReadTest() {
+	
+	A( READ( "" ) == nullptr );
 
-	TestRead( R"("	")" );
+	A( READ( "\"\\\\\"" )->REPR() == "\"\\\"" );
+	TestRead( R"("\a")" );
+	TestRead( R"("\0")" );
+	TestRead( R"("\f")" );
+	TestRead( R"("\n")" );
+	TestRead( R"("\r")" );
+	TestRead( R"("\t")" );
+	TestRead( R"("\v")" );
+//	TestRead( R"("\\\\")" );
 	TestRead( "1" );
 	A( Cast< Literal >( READ( "\"A\\0\"" ) )->$[ 1 ] == 0 );
 	A( Cast< Literal >( READ( "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
@@ -54,8 +59,6 @@ ReadTest() {
 	TestRead( "[ + +1 ]" );
 
 	A( READ( "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
-
-	A( READ( "" ) == nullptr );
 
 	TestReadException( "[ 3 + = 5 ]", "Syntax error: + =" );
 
@@ -84,18 +87,14 @@ ReadTest() {
 	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
 	extern V< SP< Function > >			Functions;
-	TestReads(
-		project(
-			Functions
-		,	[]( SP< Function > const& _ ){ return _->label; }
-		)
+	::apply(
+		Functions
+	,	[]( SP< Function > const& _ ) { TestRead( _->label ); }
 	);
 
 	extern V< SP< NumericConstant > >	NumericConstants;
-	TestReads(
-		project(
-			NumericConstants
-		,	[]( SP< NumericConstant > const& _ ){ return _->$; }
-		)
+	::apply(
+		NumericConstants
+	,	[]( SP< NumericConstant > const& _ ) { TestRead( _->$ ); }
 	);
 }

@@ -13,12 +13,18 @@ EvalTest( SP< Context > );
 
 extern void Build();
 
+void
+Test() {
+	A( MS< SliP >()->REPR() == "SliP" );
+}
+
 int
 main( int argc, char* argv[] ) {
 //	freopen( "TEST.slip", "r", stdin );
 	try {
 		Build();
 		
+		Test();
 
 		ReadTest();
 		auto

@@ -205,10 +205,12 @@ Read( iReader& R, char32_t terminator ) {
 				}
 				$.push_back( R.Read() );
 			}
-			return dotRead
-			?	Cast< SliP >( MS<Float	>( stof( string_Us( $ ) ) ) )
-			:	Cast< SliP >( MS<Bits	>( stoi( string_Us( $ ) ) ) )
-			;
+			if( dotRead ) return MS<Float >( stof( string_Us( $ ) ) );
+			try {
+				return MS<Bits	>( stol( string_Us( $ ) ) );
+			} catch( out_of_range const& ) {
+				return MS<Float >( stof( string_Us( $ ) ) );
+			}
 		}
 		switch ( _ ) {
 		case U'\\'	: _Z( "Invalid escape" );

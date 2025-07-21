@@ -59,8 +59,8 @@ Mul( SP< SliP > l, SP< SliP > r ) {
 			if( !ckd_mul( &$, L->$, R->$ ) ) return MS< Bits >( $ );
 		}
 	}
-	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-	Z( "Illegal operand type", L && R );
+	auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
+	auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
 	return MS< Float >( L->Double() * R->Double() );
 }
 
@@ -444,12 +444,24 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Cast< Matrix >( l ), R = Cast< Matrix >( r );
-			Z( "Illegal operand type", L && R );
+			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
+			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Matrix >( r ) );
 			auto nColsL = L->NumCols();
 			auto nRowsR = R->NumRows();
 			if( nColsL != nRowsR ) _Z( "DOT: Matrix size error" );
-			if(	nColsL == 0 ) return MS< Float >( Numeric::Dot( L->$, R->$ ) );	//	Vector·Vector
+			if(	nColsL == 0 ) {
+			/*
+				auto index = L->$.size();
+				if(	index != R->$.size() ) _Z( "Dot: matrix size unmatch" );
+				double $ = 0;
+				while( index-- ) {
+					auto L = Z( "Numeric::Dot: lhs not a number", Cast< Numeric >( l->$[ index ] ) );
+					auto R = Z( "Numeric::Dot: rhs not a number", Cast< Numeric >( r->$[ index ] ) );
+					$ += L->Double() * R->Double();
+				}
+			*/
+				return MS< Float >( 0 );
+			}
 
 			auto nRowsL = L->NumRows();
 			auto nColsR = R->NumCols();

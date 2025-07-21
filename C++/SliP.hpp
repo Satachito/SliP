@@ -45,19 +45,6 @@ Numeric	: SliP {
 
 	virtual	double
 	Double() const = 0;
-
-	static	double
-	Dot( V< SP< SliP > > const& l, V< SP< SliP > > const& r ) {
-		auto index = l.size();
-		if(	index != r.size() ) _Z( "Numeric::Dot: vector size unmatch" );
-		double $ = 0;
-		while( index-- ) {
-			auto L = Z( "Numeric::Dot: lhs not a number", Cast< Numeric >( l[ index ] ) );
-			auto R = Z( "Numeric::Dot: rhs not a number", Cast< Numeric >( r[ index ] ) );
-			$ += L->Double() * R->Double();
-		}
-		return $;
-	}
 };
 
 struct
@@ -115,7 +102,7 @@ NumericConstant : Numeric {
 	}
 
 	string
-	REPR() const override { return negative ? "-" + $ : $; }
+	REPR() const override { return negative ? "(-" + $ + ")" : $; }
 
 	SP< Numeric >
 	Negate() const override {
