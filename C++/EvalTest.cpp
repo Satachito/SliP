@@ -29,6 +29,8 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 
 void
 EvalTest( SP< Context > C ) {
+	TestEval< Bits >( C, "( 3 × 4 + 2 )"	, []( auto const& _ ){ return _->$ == 14; } );
+
 	TestEvalException( C, "a"				, "Undefined name: a" );
 	Eval( C, READ( "('a=3)" ) );
 	TestEval< Bits >( C, "a"				, []( auto const& _ ){ return _->$ == 3; } );
@@ -45,7 +47,6 @@ EvalTest( SP< Context > C ) {
 
 	TestEval< Bits >( C, "( 3 2 )"			, []( auto const& _ ){ return _->$ == 6; } );
 	TestEval< Bits >( C, "( 2 + 3 × 4 )"	, []( auto const& _ ){ return _->$ == 14; } );
-	TestEval< Bits >( C, "( 3 × 4 + 2 )"	, []( auto const& _ ){ return _->$ == 14; } );
 	
 	TestEvalException( C, "(`a` `b`)"		, "Syntax Error: No numeric value: `a`" );
 	TestEvalException( C, "(')"				, "Syntax Error: No operand for prefix: '" );

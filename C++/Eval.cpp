@@ -8,7 +8,7 @@ ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 	{	for( size_t _ = 0; _ < Ss.size(); _++ ) {
 			if( auto $ = Cast< Infix >( Ss[ _ ] ) ) {
 				if( infixI ) {
-					if( infix->priority > $->priority ) {
+					if( infix->priority < $->priority ) {
 						infixI = _;
 						infix = $;
 					}

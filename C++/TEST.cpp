@@ -18,10 +18,12 @@ main( int argc, char* argv[] ) {
 //	freopen( "TEST.slip", "r", stdin );
 	try {
 		Build();
+		
+
+		ReadTest();
 		auto
 		C = MS< Context >();
 		EvalTest( C );
-		ReadTest();
 		_Z( "TESTING ENDS" );
 	} catch ( const exception& e ) {
 		cerr << e.what() << endl;

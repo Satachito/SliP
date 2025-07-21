@@ -31,6 +31,7 @@ TestReadException( string const& _, string const& expected ) {
 void
 ReadTest() {
 
+	TestRead( R"("	")" );
 	TestRead( "1" );
 	A( Cast< Literal >( READ( "\"A\\0\"" ) )->$[ 1 ] == 0 );
 	A( Cast< Literal >( READ( "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
