@@ -56,6 +56,14 @@
 		12EE63DF2DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
 		12EE63E62DFE7DD4002EBE1E /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE638E2DFE7DD4002EBE1E /* OSX.swift */; };
 		12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64372DFE7F99002EBE1E /* CLI.cpp */; };
+		12FBD5412E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
+		12FBD5422E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
+		12FBD5442E2D033E00B178F7 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
+		12FBD5452E2D033E00B178F7 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
+		12FBD5472E2D071200B178F7 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
+		12FBD5482E2D071200B178F7 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
+		12FBD54D2E2DCE2000B178F7 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */; };
+		12FBD54F2E2DCE2800B178F7 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,13 +155,15 @@
 		12EE63902DFE7DD4002EBE1E /* SliP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = "<group>"; };
 		12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
 		12EE64372DFE7F99002EBE1E /* CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CLI.cpp; sourceTree = "<group>"; };
-		12EE643A2DFE7F99002EBE1E /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
 		12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUI-CPP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		12FBF9EC2E0A1B970015814E /* Eval.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Eval.hpp; sourceTree = "<group>"; };
-		12FBF9ED2E0A1B970015814E /* Read.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Read.hpp; sourceTree = "<group>"; };
-		12FBF9EE2E0A1BA20015814E /* Builtins.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Builtins.hpp; sourceTree = "<group>"; };
+		12FBD5402E2D028500B178F7 /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
+		12FBD5432E2D033E00B178F7 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
+		12FBD5462E2D071200B178F7 /* SliP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SliP.cpp; sourceTree = "<group>"; };
+		12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
+		12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EvalTest.cpp; sourceTree = "<group>"; };
+		12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReadTest.cpp; sourceTree = "<group>"; };
 		5EEE09412223C957001CFDEA /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1B520E0071400AD8172 /* OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -336,12 +346,14 @@
 			isa = PBXGroup;
 			children = (
 				12D9D6F22E00A186006EAD54 /* JP_CPP */,
-				128935382E18FFF70036A00B /* TEST.cpp */,
 				12EE64372DFE7F99002EBE1E /* CLI.cpp */,
-				12EE643A2DFE7F99002EBE1E /* SliP.hpp */,
-				12FBF9EC2E0A1B970015814E /* Eval.hpp */,
-				12FBF9ED2E0A1B970015814E /* Read.hpp */,
-				12FBF9EE2E0A1BA20015814E /* Builtins.hpp */,
+				12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */,
+				12FBD5462E2D071200B178F7 /* SliP.cpp */,
+				12FBD5432E2D033E00B178F7 /* Eval.cpp */,
+				12FBD5402E2D028500B178F7 /* Read.cpp */,
+				128935382E18FFF70036A00B /* TEST.cpp */,
+				12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */,
+				12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */,
 			);
 			path = "C++";
 			sourceTree = "<group>";
@@ -651,7 +663,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12FBD54D2E2DCE2000B178F7 /* EvalTest.cpp in Sources */,
+				12FBD5452E2D033E00B178F7 /* Eval.cpp in Sources */,
+				12FBD5472E2D071200B178F7 /* SliP.cpp in Sources */,
 				128935442E19005E0036A00B /* TEST.cpp in Sources */,
+				12FBD5422E2D028500B178F7 /* Read.cpp in Sources */,
+				12FBD54F2E2DCE2800B178F7 /* ReadTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -677,7 +694,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12FBD5442E2D033E00B178F7 /* Eval.cpp in Sources */,
+				12FBD5482E2D071200B178F7 /* SliP.cpp in Sources */,
 				12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */,
+				12FBD5412E2D028500B178F7 /* Read.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

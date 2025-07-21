@@ -1,6 +1,6 @@
-#pragma once
+#include "SliP.hpp"
 
-inline static unordered_set<char32_t>
+US<char32_t>
 SoloChars = {
 	U'Α',	U'Β',	U'Γ',	U'Δ',	U'Ε',	U'Ζ',	U'Η',	U'Θ',	U'Ι',	U'Κ',	U'Λ',	U'Μ',	U'Ν',	U'Ξ',	U'Ο',	U'Π',	U'Ρ',	U'Σ',	U'Τ',	U'Υ',	U'Φ',	U'Χ',	U'Ψ',	U'Ω'
 ,	U'α',	U'β',	U'γ',	U'δ',	U'ε',	U'ζ',	U'η',	U'θ',	U'ι',	U'κ',	U'λ',	U'μ',	U'ν',	U'ξ',	U'ο',	U'π',	U'ρ',	U'σ',	U'τ',	U'υ',	U'φ',	U'χ',	U'ψ',	U'ω'
@@ -42,7 +42,7 @@ SoloChars = {
 ,	U'∪'
 };
 
-inline static unordered_set<char32_t>
+US<char32_t>
 OperatorChars = {
 	U'&'
 ,	U'|'
@@ -57,7 +57,7 @@ OperatorChars = {
 ,	U'@'
 };
 
-inline static unordered_set<char32_t>
+US<char32_t>
 BreakingChars = {
 	U'\\'
 ,	U'"'
@@ -73,19 +73,14 @@ BreakingChars = {
 ,	U'»'
 };
 
-struct
-iReader {
-	virtual	bool		Avail()		= 0;
-	virtual	char32_t	Read()		= 0;
-	virtual	char32_t	Peek()		= 0;
-};
 
-inline SP< SliP >
-Read( iReader& R, char32_t terminator );
-
-inline vector< SP< SliP > >
+V< SP< SliP > >
 ReadList( iReader& _, char32_t close ) {
-	vector< SP< SliP > > $;
+
+	extern	SP< Prefix >	prefixPlus;
+	extern	SP< Prefix >	prefixMinus;
+
+	V< SP< SliP > > $;
 
 	auto slip = Read( _, close );
 	if( !slip ) return $;
@@ -110,7 +105,7 @@ ReadList( iReader& _, char32_t close ) {
 			} else if( draftInfix->label == "-" ) {
 				$.push_back( prefixMinus );
 			} else {
-				throw runtime_error( "Syntax error: " + infix->label + ' ' + draftInfix->label );
+				_Z( "Syntax error: " + infix->label + ' ' + draftInfix->label );
 			}
 		} else {
 			$.push_back( draft );
@@ -128,8 +123,8 @@ ReadList( iReader& _, char32_t close ) {
 	return $;
 }
 
-inline void
-WhenEscaped( vector< char32_t >& $, char32_t _ ) {
+void
+WhenEscaped( V< char32_t >& $, char32_t _ ) {
 	switch ( _ ) {
 	case U'\\'	: $.push_back( '\\'	); break;
 	case U'0'	: $.push_back( '\0'	); break;
@@ -142,12 +137,12 @@ WhenEscaped( vector< char32_t >& $, char32_t _ ) {
 	}
 }
 
-inline string
+string
 ReadNameRaw( iReader& R, char32_t initial ) {
 
-	if( has( SoloChars, initial ) ) return string_Us( vector< char32_t >{ initial } );
+	if( has( SoloChars, initial ) ) return string_Us( V< char32_t >{ initial } );
 
-	vector< char32_t >
+	V< char32_t >
 	${ initial };
 
 	auto
@@ -171,10 +166,10 @@ ReadNameRaw( iReader& R, char32_t initial ) {
 	return string_Us( $ );
 }
 
-inline SP< Literal >
+SP< Literal >
 CreateLiteral( iReader& R, char32_t terminator ) {
 	auto escaped = false;
-	vector< char32_t >	$;
+	V< char32_t >	$;
 	while ( R.Avail() ) {
 		auto _ = R.Read();
 		if( escaped ) {
@@ -186,17 +181,20 @@ CreateLiteral( iReader& R, char32_t terminator ) {
 			else $.push_back( _ );
 		}
 	}
-	throw runtime_error( "Unterminated string: " + string_Us( $ ) );
+	_Z( "Unterminated string: " + string_Us( $ ) );
 }
 
-inline SP< SliP >
+SP< SliP >
 Read( iReader& R, char32_t terminator ) {
+
+	extern	UM< string, SP< SliP > >	Builtins;
+
 	while ( R.Avail() ) {
 		auto _ = R.Read();
 		if( _ == terminator )		return nullptr;
 		if( IsBreakingWhite( _ ) )	continue;
 		if( IsDigit( _ ) ) {
-			vector< char32_t > ${ _ };
+			V< char32_t > ${ _ };
 			auto dotRead = false;
 			while ( R.Avail() ) {
 				if( R.Peek() == U'.' ) {
@@ -213,12 +211,12 @@ Read( iReader& R, char32_t terminator ) {
 			;
 		}
 		switch ( _ ) {
-		case U'\\'	: throw runtime_error( "Invalid escape" );
+		case U'\\'	: _Z( "Invalid escape" );
 		case U']'	:
 		case U'⟩'	:
 		case U'}'	:
 		case U')'	:
-		case U'»'	: throw runtime_error( "Detect close parenthesis" );
+		case U'»'	: _Z( "Detect close parenthesis" );
 		case U'"'	: return CreateLiteral( R, _ );
 		case U'`'	: return CreateLiteral( R, _ );
 		case U'['	: return MS< List		>( ReadList( R, U']' ) );

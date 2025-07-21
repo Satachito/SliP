@@ -2,7 +2,7 @@ rm -f _ *.profraw *.profdata index.html control.js style.css
 rm -rf coverage
 
 # カバレッジ計測付きでビルド
-clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp
+clang++ -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp Read.cpp Eval.cpp SliP.cpp EvalTest.cpp ReadTest.cpp
 
 # プロファイル出力を指定して実行
 LLVM_PROFILE_FILE="_.profraw" ./_
@@ -21,8 +21,8 @@ llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=. --show-br
 # HTMLをブラウザで開く
 open index.html
 
-rm -f _ *.profraw *.profdata index.html control.js style.css 
-rm -rf coverage
+# rm -f _ *.profraw *.profdata index.html control.js style.css 
+# rm -rf coverage
 
 
 

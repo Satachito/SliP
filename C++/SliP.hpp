@@ -1,13 +1,15 @@
-#pragma once
-
 #include	"../JP/JP_CPP/JP.h"
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
 #define	MS		make_shared
+#define	UM		unordered_map
+#define	US		unordered_set
+#define	V		vector
 
 struct
 SliP {
+
 //	static	inline	int
 //	nSliPs = 0;
 
@@ -26,51 +28,15 @@ SliP {
 
 struct
 Context {
-	SP< Context >						next;
-	unordered_map< string, SP< SliP > >	dict;
+	SP< Context >				next;
+	UM< string, SP< SliP > >	dict;
 	Context(
-		SP< Context > next = 0
-	,	unordered_map< string, SP< SliP > > dict = unordered_map< string, SP< SliP > >{}
+		SP< Context >				next = nullptr
+	,	UM< string, SP< SliP > >	dict = {}
 	) :	next( next )
 	,	dict( dict ) {
 	}
 };
-
-static	inline	vector< SP< SliP > >
-theStack;
-static	inline	mutex
-stackMutex;
-
-struct
-Pusher {
-	lock_guard< mutex >	lock;
-	Pusher( SP< SliP > const& _ ) : lock( stackMutex ) {
-		theStack.push_back( _ );
-	}
-	~
-	Pusher() {
-		theStack.pop_back();
-	}
-};
-
-inline	void
-Push( SP< SliP > _ ) {
-	lock_guard< mutex >	lock( stackMutex );
-	theStack.push_back( _ );
-}
-inline	void
-Pop() {
-	lock_guard< mutex >	lock( stackMutex );
-	if ( theStack.empty() ) throw runtime_error( "Stack underflow" );
-	theStack.pop_back();
-}
-
-inline	vector< SP< SliP > >
-StackCopy() {
-	lock_guard< mutex >	lock( stackMutex );
-	return theStack;
-}
-
 
 struct
 Numeric	: SliP {
@@ -81,15 +47,13 @@ Numeric	: SliP {
 	Double() const = 0;
 
 	static	double
-	Dot( vector< SP< SliP > > const& l, vector< SP< SliP > > const& r ) {
+	Dot( V< SP< SliP > > const& l, V< SP< SliP > > const& r ) {
 		auto index = l.size();
-		if(	index != r.size() ) throw runtime_error( "Numeric::Dot: vector size unmatch" );
+		if(	index != r.size() ) _Z( "Numeric::Dot: vector size unmatch" );
 		double $ = 0;
 		while( index-- ) {
-			auto L = Cast< Numeric >( l[ index ] );
-			if( !L ) throw runtime_error( "Numeric::Dot: lhs not a number" );
-			auto R = Cast< Numeric >( r[ index ] );
-			if( !R ) throw runtime_error( "Numeric::Dot: rhs not a number" );
+			auto L = Z( "Numeric::Dot: lhs not a number", Cast< Numeric >( l[ index ] ) );
+			auto R = Z( "Numeric::Dot: rhs not a number", Cast< Numeric >( r[ index ] ) );
 			$ += L->Double() * R->Double();
 		}
 		return $;
@@ -139,19 +103,6 @@ Bits : Numeric {
 	}
 };
 
-inline static unordered_map< string, double >
-numericConstants = {
-	{ "∞"		, numeric_limits< double >::infinity()	}
-,	{ "𝑒"		, numbers::e							}
-,	{ "π"		, numbers::pi							}
-,	{ "log2e"	, numbers::log2e						}
-,	{ "log10e"	, numbers::log10e						}
-,	{ "ln2"		, numbers::ln2							}
-,	{ "ln10"	, numbers::ln10							}
-,	{ "γ"		, numbers::egamma						}
-,	{ "φ"		, numbers::phi							}
-};
-
 struct //	∞, 𝑒, π
 NumericConstant : Numeric {
 
@@ -173,7 +124,19 @@ NumericConstant : Numeric {
 
 	double
 	Double() const override {
-		if( !numericConstants.count( $ ) ) throw runtime_error( "eh?" );
+		static UM< string, double >
+		numericConstants = {
+			{ "∞"		, numeric_limits< double >::infinity()	}
+		,	{ "𝑒"		, numbers::e							}
+		,	{ "π"		, numbers::pi							}
+		,	{ "log2e"	, numbers::log2e						}
+		,	{ "log10e"	, numbers::log10e						}
+		,	{ "ln2"		, numbers::ln2							}
+		,	{ "ln10"	, numbers::ln10							}
+		,	{ "γ"		, numbers::egamma						}
+		,	{ "φ"		, numbers::phi							}
+		};
+		if( !numericConstants.count( $ ) ) _Z( "eh?" );
 		return numericConstants[ $ ];
 	}
 };
@@ -187,24 +150,23 @@ Literal : SliP {
 
 	string
 	REPR() const override {
-		auto _ = string_Us( vector< char32_t >{ mark } );
+		auto _ = string_Us( V< char32_t >{ mark } );
 		return _ + $ + _;
 	}
 };
 
 struct
 Dict : SliP {
-	unordered_map< string, SP< SliP > >												$;
+	UM< string, SP< SliP > >														$;
 
-	Dict( unordered_map< string, SP< SliP > > const& $ ) : $( $ ) {}
+	Dict( UM< string, SP< SliP > > const& $ ) : $( $ ) {}
 
 	string
 	REPR() const override {
 		string _ = "{";
 		bool first = true;
 		for ( auto const& [ K, V ] : $ ) {
-			if( !first ) _ += ", ";
-			_ += "\"" + K + "\": " + V->REPR();
+			_ += ( first ? "\t" : ",\t" ) + K + ": " + V->REPR() + "\n";
 			first = false;
 		}
 		_ += "}";
@@ -274,18 +236,18 @@ Infix : Function {
 			,	SP< SliP >
 			,	SP< SliP >
 			)
-		> $
-	,	string label
-	,	int priority
+		>		$
+	,	string	label
+	,	int		priority
 	) : Function( label ), $( $ ), priority( priority ) {}
 };
 
 
 struct
 List : SliP {
-	vector< SP< SliP > >															$;
+	V< SP< SliP > >																	$;
 
-	List( vector< SP< SliP > > const& $ ) :	$( $ ) {}
+	List( V< SP< SliP > > const& $ ) :	$( $ ) {}
 
 	virtual string
 	REPR() const override { return ListString( U'[', U']' ); }
@@ -308,7 +270,7 @@ struct
 Matrix : List {
 	int																				direction;
 
-	Matrix( vector< SP< SliP > > const& $, int direction = 0 )
+	Matrix( V< SP< SliP > > const& $, int direction = 0 )
 	:	List( $ )
 	,	direction( direction ) {
 	}
@@ -338,7 +300,7 @@ Matrix : List {
 
 struct
 Sentence : List {
-	Sentence( vector< SP< SliP > > const& $ ) : List( $ ) {}
+	Sentence( V< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'(', U')' ); }
@@ -346,7 +308,7 @@ Sentence : List {
 
 struct
 Procedure : List {
-	Procedure( vector< SP< SliP > > const& $ ) : List( $ ) {}
+	Procedure( V< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'{', U'}' ); }
@@ -354,68 +316,23 @@ Procedure : List {
 
 struct
 Parallel : List {
-	Parallel( vector< SP< SliP > > const& $ ) : List( $ ) {}
+	Parallel( V< SP< SliP > > const& $ ) : List( $ ) {}
 
 	string
 	REPR() const override { return ListString( U'«', U'»' ); }
 };
 
-////////////////////////////////////////////////////////////////
-inline int
-_Compare( SP< SliP > l, SP< SliP > r ) {
-	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-//		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
-		if( L && R ) {
-			auto v = L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
-			return v;
-		}
-	}
-	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-	Z( "Illegal operand type", L && R );
-	return L->Double() == R->Double() ? 0 : L->Double() < R->Double() ? -1 : 1;
-}
-////////////////////////////////////////////////////////////////
-
-inline bool
-IsNil( SP< SliP > _ ) {
-	auto list = Cast< List >( _ );
-	return list
-	?	list->$.size() == 0
-	:	false
-	;
-}
-inline bool
-IsT( SP< SliP > _ ) {
-	return !IsNil( _ );
-}
-
-inline static SP< SliP >
-T = MS< SliP >();
-
-inline static SP< SliP >
-Nil = MS< List >( vector< SP< SliP > >{} );
-
-inline SP< Numeric >
-Mul( SP< SliP > l, SP< SliP > r ) {
-	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-		if( L && R ) {
-			int64_t	$;
-			if( !ckd_mul( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-		}
-	}
-	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-	Z( "Illegal operand type", L && R );
-	return MS< Float >( L->Double() * R->Double() );
-}
-////////////////////////////////////////////////////////////////
-#include	"Eval.hpp"
-#include	"Builtins.hpp"
-#include	"Read.hpp"
+struct
+iReader {
+	virtual	bool		Avail()		= 0;
+	virtual	char32_t	Read()		= 0;
+	virtual	char32_t	Peek()		= 0;
+};
 
 struct
 StringReader : iReader {
-	vector< char32_t >	$;
-	size_t				_ = 0;
+	V< char32_t >	$;
+	size_t			_ = 0;
 
 	StringReader( const string& $ ) : $( Us_string( $ ) ) {}
 
@@ -424,37 +341,9 @@ StringReader : iReader {
 	char32_t	Peek()		{ return $[ _ ]			; }
 };
 
-template< ranges::range R > vector< string >
-EvalSliPs( R&& _ ) {
-	auto							C = MS< Context >();
-	return ranges::to< vector >(
-		project(
-			_
-		,	[ & ]( SP< SliP > const& slip ) {
-				return Eval( C, slip )->REPR();
-			}
-		)
-	);
-}
+extern SP< SliP >
+Read( iReader&, char32_t );
 
-inline vector< string >
-CoreSyntaxLoop( string const& _ ) {
-	StringReader					R( _ );
-	vector< SP< SliP > >			slips;
-	while( auto _ = Read( R, -1 ) ) slips.push_back( _ );
+extern SP< SliP >
+Eval( SP< Context >, SP< SliP > );
 
-	return EvalSliPs( slips );
-}
-
-inline vector< string >
-SugaredSyntaxLoop( string const& _ ) {
-	return EvalSliPs(
-		project(
-			Split( _ )
-		,	[ & ]( string const& line ) {
-				StringReader			R( line + ')' );
-				return MS< Sentence	>( ReadList( R, U')' ) );
-			}
-		)
-	);
-}

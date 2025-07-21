@@ -1,10 +1,12 @@
-inline auto
+#include "SliP.hpp"
+
+static auto
 READ( const string& _ ) {
 	StringReader R( _ );
 	return Read( R, -1 );
 };
 
-inline auto
+static auto
 TestRead( string const& _ ) {
 	auto
 	$ = READ( _ )->REPR();
@@ -17,7 +19,7 @@ TestReads( R const& _ ) {
     ::apply( _, []( auto const& _ ) { TestRead( _ ); } );
 }
 
-inline auto
+static auto
 TestReadException( string const& _, string const& expected ) {
 	try {
 		READ( _ );
@@ -26,7 +28,7 @@ TestReadException( string const& _, string const& expected ) {
 	}
 }
 
-inline auto
+void
 ReadTest() {
 
 	TestRead( "1" );
@@ -80,6 +82,7 @@ ReadTest() {
 
 	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
+	extern V< SP< Function > >			Functions;
 	TestReads(
 		project(
 			Functions
@@ -87,6 +90,7 @@ ReadTest() {
 		)
 	);
 
+	extern V< SP< NumericConstant > >	NumericConstants;
 	TestReads(
 		project(
 			NumericConstants

@@ -16,6 +16,41 @@ Bridge( vector< string > const& reprs, size_t* oCount ) {
 	return $;
 }
 
+template< ranges::range R > vector< string >
+EvalSliPs( R&& _ ) {
+	auto							C = MS< Context >();
+	return ranges::to< vector >(
+		project(
+			_
+		,	[ & ]( SP< SliP > const& slip ) {
+				return Eval( C, slip )->REPR();
+			}
+		)
+	);
+}
+
+vector< string >
+CoreSyntaxLoop( string const& _ ) {
+	StringReader					R( _ );
+	vector< SP< SliP > >			slips;
+	while( auto _ = Read( R, -1 ) ) slips.push_back( _ );
+
+	return EvalSliPs( slips );
+}
+
+vector< string >
+SugaredSyntaxLoop( string const& _ ) {
+	return EvalSliPs(
+		project(
+			Split( _ )
+		,	[ & ]( string const& line ) {
+				StringReader			R( line + ')' );
+				return MS< Sentence	>( ReadList( R, U')' ) );
+			}
+		)
+	);
+}
+
 extern "C" char**
 BH_CoreSyntaxLoop( const char *input, size_t* oCount ) {
 	return Bridge( CoreSyntaxLoop( string( input ) ), oCount );

@@ -1,24 +1,20 @@
 #include "SliP.hpp"
 
 void
-ReadEvalPrint( const string& _ ) {
+Main() {
+	auto			_ = string(
+		istreambuf_iterator< char >( cin )
+	,	istreambuf_iterator< char >()
+	);
 	StringReader	R( _ );
 	auto			C = MS< Context >();
 	while( auto _ = Read( R, -1 ) ) cout << Eval( C, _ )->REPR() << endl;
 }
 
-void
-Main() {
-	ReadEvalPrint(
-		string(
-			istreambuf_iterator< char >( cin )
-		,	istreambuf_iterator< char >()
-		)
-	);
-}
+extern void Build();
 
 int
 main( int argc, char* argv[] ) {
-	BuildUp();
+	Build();
 	Main();
 }
