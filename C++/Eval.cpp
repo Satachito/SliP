@@ -80,26 +80,28 @@ Eval( SP< Context > C, SP< SliP > S ) {
 	}
 	if( const auto _ = Cast< Sentence >( S ) ) {
 		auto const& Ss = _->$;
-		
-//cerr << '>' << _->REPR() << endl;
 		extern	SP< SliP >		Nil;
 		if( Ss.size() == 0 ) return Nil;
+		
 		if( auto _ = Cast< Prefix >( Ss.back() ) ) _Z( "Syntax Error: No operand for prefix: " + _->label );
+		if( Ss.size() == 1 ) return Eval( C, Ss[ 0 ] );
 
 		V< SP< SliP > >	$;
-		{	size_t		I = Ss.size() - 1;
-			SP< SliP >	prev = Eval( C, Ss[ I ] );
+		{	size_t	I = Ss.size() - 1;
+			auto	next = Ss[ I ];
 			while( I-- ) {
 				if( auto _ = Cast< Prefix >( Ss[ I ] ) ) {
-					$.insert( $.begin(), _->$( C, prev ) );
-					prev = nullptr;
+					$.insert( $.begin(), _->$( C, next ) );
+					next = nullptr;
 				} else {
-					if( prev ) $.insert( $.begin(), prev );
-					prev = Ss[ I ];
+					if( next ) $.insert( $.begin(), next );
+					next = Ss[ I ];
 				}
 			}
-			if( prev ) $.insert( $.begin(), Eval( C, prev ) );
+			if( next ) $.insert( $.begin(), next );
 		}
+		if( $.size() == 1 ) return $[ 0 ];
+
 		return ApplyInfix( C, $ );
 	}
 	return S;

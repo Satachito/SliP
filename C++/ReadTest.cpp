@@ -26,6 +26,26 @@ TestReadException( string const& _, string const& expected ) {
 void
 ReadTest() {
 	
+	TestReadException( "⟨@⟩", "All elements of the matrix must be numeric." );
+	{	auto $ = Cast< Matrix >( READ( "⟨1 2 3 4 5 6⟩" ) );
+		A( $->NCols() == 0 );
+		A( $->NRows() == 0 );
+		$->nCols = 2;
+		A( $->NCols() == 2 );
+		A( $->NRows() == 3 );
+		$->nCols = -3;
+		A( $->NCols() == 3 );
+		A( $->NRows() == 2 );
+		A( Cast< Numeric >( $->operator()( 1, 2 ) )->Double() == 6 );
+	}
+	try {
+		MS< Matrix >( V< SP< SliP > >{}, numeric_limits< int64_t >::min() );
+	} catch( exception const& e ) {
+		A( e.what() == string( "nCols must not be numeric_limits< int64_t >::min()" ) );
+	}
+	A( READ( "⟨1 2 3 4 5 6⟩" )->REPR() == "TODO:MATRIX REPR()" );
+
+	A( READ( " [ ] " )->REPR() == "[]" );
 	A( READ( "" ) == nullptr );
 
 	A( READ( "\"\\\\\"" )->REPR() == "\"\\\"" );
@@ -82,14 +102,31 @@ ReadTest() {
 	TestRead( "{@1||2@}" );
 	TestRead( "(@1||2@)" );
 	TestRead( "«@1||2@»" );
-	TestRead( "⟨@1||2@⟩" );
 
 	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
-	extern V< SP< Function > >			Functions;
+	extern V< SP< Primitive	> >			Primitives;
 	::apply(
-		Functions
-	,	[]( SP< Function > const& _ ) { TestRead( _->label ); }
+		Primitives
+	,	[]( SP< Primitive	> const& _ ) { TestRead( _->label ); }
+	);
+
+	extern V< SP< Prefix	> >			Prefixes;
+	::apply(
+		Prefixes
+	,	[]( SP< Prefix		> const& _ ) { TestRead( _->label ); }
+	);
+
+	extern V< SP< Unary		> >			Unaries;
+	::apply(
+		Unaries
+	,	[]( SP< Unary		>	 const& _ ) { TestRead( _->label ); }
+	);
+
+	extern V< SP< Infix		> >			Infixes;
+	::apply(
+		Infixes
+	,	[]( SP< Infix		> const& _ ) { TestRead( _->label ); }
 	);
 
 	extern V< SP< NumericConstant > >	NumericConstants;

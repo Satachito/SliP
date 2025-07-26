@@ -1,6 +1,7 @@
 #include "SliP.hpp"
 
 extern bool				IsNil( SP< SliP > );
+extern bool				IsT( SP< SliP > );
 
 static auto
 READ( const string& _ ) {
@@ -10,19 +11,21 @@ READ( const string& _ ) {
 
 template< typename T, typename F > void
 TestEval( SP< Context > C, string const& _, F f ) {
+//cerr << _ << endl;
 	auto
 	$ = Cast< T >( Eval( C, READ( _ ) ) );
-//	cerr << $->REPR() << endl;
+//cerr << $->REPR() << endl;
 	A( f( $ ) );
 }
 
 static auto
 TestEvalException( SP< Context > C, string const& _, string const& expected ) {
+//cerr << _ << endl;
 	try {
 		Eval( C, READ( _ ) );
 		A( false );
 	} catch( exception const& e ) {
-//		cerr << e.what() << ':' << expected << endl;
+//cerr << e.what() << ':' << expected << endl;
 		A( e.what() == expected );
 	}
 }
@@ -30,6 +33,33 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 void
 EvalTest( SP< Context > C ) {
 
+	TestEval< SliP >( C, "( 1 == 2 )", []( auto const& _ ){ return IsNil( _ ); } );
+	TestEval< SliP >( C, "( 1 <> 2 )", []( auto const& _ ){ return IsT( _ ); } );
+	TestEval< SliP >( C, "( 1 < 2 )", []( auto const& _ ){ return IsT( _ ); } );
+	TestEval< SliP >( C, "( 1 > 2 )", []( auto const& _ ){ return IsNil( _ ); } );
+	TestEval< SliP >( C, "( 1 <= 2 )", []( auto const& _ ){ return IsT( _ ); } );
+	TestEval< SliP >( C, "( 1 >= 2 )", []( auto const& _ ){ return IsNil( _ ); } );
+	TestEval< Bits >( C, "( 1 | 2 )", []( auto const& _ ){ return _->$ == 3; } );
+	TestEval< Bits >( C, "( 1 & 2 )", []( auto const& _ ){ return _->$ == 0; } );
+	TestEval< Bits >( C, "( 1 ^ 3 )", []( auto const& _ ){ return _->$ == 2; } );
+
+	TestEvalException( C, "( π × `a` )", "Illegal operand type: `a`" );
+
+	TestEval< Float >(
+		C
+	,	"(9223372036854775807×9223372036854775807)"
+	,	[]( auto const& _ ){
+			cerr << _->Double() << ':' << endl;
+			return _->Double() == (double)9223372036854775807 * (double)9223372036854775807;
+		}
+	);
+	
+	TestEval< Float >( C, "(π×π)", []( auto const& _ ){ return _->Double() == numbers::pi * numbers::pi; } );
+
+	TestEvalException( C, "@"				, "Stack underflow" );
+
+	TestEval< Bits >( C, "(3:@)"			, []( auto const& _ ){ return _->$ == 3; } );
+	TestEval< List >( C, "(3:@@)"			, []( auto const& _ ){ return _->REPR() == "[ 3 ]"; } );
 	{	auto _ = MS< Bits >( numeric_limits< int64_t >::min() );
 		auto $ = Cast< Float >( _->Negate() );
 		A( $->$ == 9223372036854775808.0 );
@@ -69,10 +99,7 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ return _->$ == -3; } );
 	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ return _->REPR() == "{\ta: 3\n,\tb: 4\n}"; } );
 
-	Eval( C, READ( "(3:;)" ) );
-//	TestEval< Bits >( C, "(3:@)"			, []( auto const& _ ){ return _->$ == 3; } );
-//	TestEval< List >( C, "(3:@@)"			, []( auto const& _ ){ return _->REPR() == "[ 3 3 ]"; } );
-	TestEval< List >( C, "∅"				, []( auto const& _ ){ return IsNil( _ ); } );
+	TestEval< List >( C, "∅"					, []( auto const& _ ){ return IsNil( _ ); } );
 	TestEval< List >( C, "«0»"				, []( auto const& _ ){ return Cast< Bits >( _->$[ 0 ] )->$ == 0; } );
 	TestEval< List >( C, "{0}"				, []( auto const& _ ){ return Cast< Bits >( _->$[ 0 ] )->$ == 0; } );
 

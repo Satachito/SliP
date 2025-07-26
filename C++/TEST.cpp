@@ -24,12 +24,14 @@ main( int argc, char* argv[] ) {
 	try {
 		Build();
 		
-		Test();
-
-		ReadTest();
 		auto
 		C = MS< Context >();
 		EvalTest( C );
+
+		Test();
+
+		ReadTest();
+
 		_Z( "TESTING ENDS" );
 	} catch ( const exception& e ) {
 		cerr << e.what() << endl;

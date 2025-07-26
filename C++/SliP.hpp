@@ -184,7 +184,7 @@ struct
 Primitive : Function {
 	function< SP< SliP >( SP< Context > ) >											$;
 	Primitive(
-		function< SP< SliP >( SP< Context > ) > $
+		function< SP< SliP >( SP< Context > ) >							const& $
 	,	string label
 	) :	Function( label ), $( $ ) {}
 };
@@ -192,7 +192,7 @@ struct
 Prefix : Function {
 	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
 	Prefix(
-		function< SP< SliP >( SP< Context >, SP< SliP > ) > $
+		function< SP< SliP >( SP< Context >, SP< SliP > ) >				const& $
 	,	string label
 	) :	Function( label ), $( $ ) {}
 };
@@ -200,33 +200,72 @@ struct
 Unary : Function {
 	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
 	Unary(
-		function< SP< SliP >( SP< Context >, SP< SliP > ) > $
+		function< SP< SliP >( SP< Context >, SP< SliP > ) >				const& $
 	,	string label
 	) :	Function( label ), $( $ ) {}
 };
 
 struct
 Infix : Function {
-	function<
-		SP< SliP >(
-			SP< Context >
-		,	SP< SliP >
-		,	SP< SliP >
-		)
-	>																				$;
+	function< SP< SliP >( SP< Context >, SP< SliP >, SP< SliP > ) >					$;
 	int																				priority;
-
 	Infix(
-		function<
-			SP< SliP >(
-				SP< Context >
-			,	SP< SliP >
-			,	SP< SliP >
-			)
-		>		$
+		function< SP< SliP >( SP< Context >, SP< SliP >, SP< SliP > ) >	const&	$
 	,	string	label
 	,	int		priority
 	) : Function( label ), $( $ ), priority( priority ) {}
+};
+
+struct
+Matrix : SliP {
+	double*																			$;
+	int64_t																			nCols;
+	uint64_t																		size;
+
+	~
+	Matrix() {
+		delete[] $;
+	}
+	double*
+	new$( V< SP< SliP > > const& Ss ) {
+		auto $ = new double[ Ss.size() ];
+		for( size_t _ = 0; _ < Ss.size(); _++ ) {
+			if( auto numeric = Cast< Numeric >( Ss[ _ ] ) ) {
+				$[ _ ] = numeric->Double();
+			} else {
+				_Z( "All elements of the matrix must be numeric." );
+			}
+		}
+		return $;
+	}
+	Matrix( V< SP< SliP > > const& $, int64_t nCols = 0 )
+	:	$( new$( $ ) )
+	,	nCols( nCols )
+	,	size( $.size() ) {
+		if( nCols == numeric_limits< int64_t >::min() ) _Z( "nCols must not be numeric_limits< int64_t >::min()" );
+	}
+
+	string
+	REPR() const override { return "TODO:MATRIX REPR()"; }
+
+	uint64_t
+	NCols() const {
+		return nCols
+		?	uint64_t( nCols > 0 ? nCols : -nCols )
+		:	0
+		;
+	}
+	uint64_t
+	NRows() const {
+		return nCols
+		?	size / uint64_t( nCols > 0 ? nCols : -nCols )
+		:	0
+		;
+	}
+	SP< SliP >
+	operator() ( size_t r, size_t c ) const {
+		return MS< Float >( $[ r * NCols() + c ] );
+	}
 };
 
 
@@ -250,38 +289,6 @@ List : SliP {
 			_ += $[ i ]->REPR();
 		}
 		return _ + ' ' + C;
-	}
-};
-
-struct
-Matrix : List {
-	int																				direction;
-
-	Matrix( V< SP< SliP > > const& $, int direction = 0 )
-	:	List( $ )
-	,	direction( direction ) {
-	}
-
-	string
-	REPR() const override { return ListString( U'⟨', U'⟩' ); }
-
-	uint64_t
-	NumRows() const {
-		return direction
-		?	direction > 0 ? direction : $.size() / -direction
-		:	0
-		;
-	}
-	uint64_t
-	NumCols() const {
-		return direction
-		?	direction > 0 ? $.size() / direction : -direction
-		:	0
-		;
-	}
-	SP< SliP >
-	operator() ( size_t r, size_t c ) const {
-		return $[ r * NumCols() + c ];
 	}
 };
 

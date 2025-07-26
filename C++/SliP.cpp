@@ -8,28 +8,30 @@ theStack;
 mutex
 stackMutex;
 
-struct
-Pusher {
-	lock_guard< mutex >	lock;
-	Pusher( SP< SliP > _ ) : lock( stackMutex ) {
-		theStack.push_back( _ );
-	}
-	~
-	Pusher() {
-		theStack.pop_back();
-	}
-};
+//struct
+//Pusher {
+//	lock_guard< mutex >	lock;
+//	Pusher( SP< SliP > _ ) : lock( stackMutex ) {
+//		theStack.push_back( _ );
+//	}
+//	~
+//	Pusher() {
+//		theStack.pop_back();
+//	}
+//};
 
 void
 Push( SP< SliP > _ ) {
 	lock_guard< mutex >	lock( stackMutex );
 	theStack.push_back( _ );
 }
-void
+SP< SliP >
 Pop() {
-	lock_guard< mutex >	lock( stackMutex );
 	if ( theStack.empty() ) _Z( "Stack underflow" );
+	lock_guard< mutex >	lock( stackMutex );
+	auto $ = theStack.back();
 	theStack.pop_back();
+	return $;
 }
 
 V< SP< SliP > >
@@ -72,16 +74,16 @@ Nil = MS< List >( V< SP< SliP > >{} );
 
 auto
 prefixPlus = MS< Prefix >(
-	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-		return Z( "Not numeric", Cast< Numeric >( _ ) );
+	[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+		return Z( "Not numeric", Cast< Numeric >( Eval( C, _ ) ) );
 	}
 ,	"+"
 );
 
 auto
 prefixMinus = MS< Prefix >(
-	[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-		return Z( "Not numeric", Cast< Numeric >( _ ) )->Negate();
+	[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+		return Z( "Not numeric", Cast< Numeric >( Eval( C, _ ) ) )->Negate();
 	}
 ,	"-"
 );
@@ -89,24 +91,35 @@ prefixMinus = MS< Prefix >(
 static int
 _Compare( SP< SliP > l, SP< SliP > r ) {
 	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-//		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
-		if( L && R ) {
-			auto v = L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
-			return v;
-		}
+		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
 	}
-	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-	Z( "Illegal operand type", L && R );
+	auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
+	auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
 	return L->Double() == R->Double() ? 0 : L->Double() < R->Double() ? -1 : 1;
 }
 
-V< SP< Function > >
-Functions = {
+V< SP< Primitive > >
+Dummys = {
+	//	TODO: この原因不明のバグを何とかする。
+	MS< Primitive >(
+		[]( SP< Context > _ ) -> SP< SliP > { return MS< Literal >( "ここに", U'`' ); }
+	,	"ここに"
+	)
+,	MS< Primitive >(
+		[]( SP< Context > _ ) -> SP< SliP > { return MS< Literal >( "３つ何か登録しないと", U'`' ); }
+	,	"３つ何か登録しないと"
+	)
+,	MS< Primitive >(
+		[]( SP< Context > _ ) -> SP< SliP > { return MS< Literal >( "ラムダの位置が狂う（なんのバグか不明）", U'`' ); }
+	,	"ラムダの位置が狂う（なんのバグか不明）"
+	)
+};
+
+V< SP< Primitive > >
+Primitives = {
 	MS< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
-			auto $ = theStack.back();
-			Pop();
-			return $;
+			return Pop();
 		}
 	,	"@"		//	Stack top
 	)
@@ -128,7 +141,11 @@ Functions = {
 		}
 	,	"∅"
 	)
-,	MS< Prefix >(
+};
+
+V< SP< Prefix > >
+Prefixes = {
+	MS< Prefix >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			return _;
 		}
@@ -169,7 +186,11 @@ Functions = {
 		}
 	,	"¶"		//	Convert to literal
 	)
-,	MS< Unary >(
+};
+
+V< SP< Unary > >
+Unaries = {
+	MS< Unary >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			if( auto list = Cast< List >( _ ) ) return MS< Bits >( list->$.size() );
 			if( auto literal = Cast< Literal >( _ ) ) return MS< Bits >( literal->$.length() );
@@ -183,7 +204,6 @@ Functions = {
 				V< SP< SliP > > $;
 				$.reserve( list->$.size() - 1 );
 				$.insert( $.end(), list->$.begin() + 1, list->$.end() );
-				if( Cast< Matrix		>( _ ) ) return MS< Matrix		>( $ );
 				if( Cast< Parallel		>( _ ) ) return MS< Parallel	>( $ );
 				if( Cast< Sentence		>( _ ) ) return MS< Sentence	>( $ );
 				if( Cast< Procedure		>( _ ) ) return MS< Procedure	>( $ );
@@ -228,7 +248,11 @@ Functions = {
 //	?	80	IfElse
 //	=	90	Define
 
-,	MS< Infix >(
+};
+
+V< SP< Infix > >
+Infixes = {
+	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return Eval(
 				MS< Context >(
@@ -310,14 +334,14 @@ Functions = {
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return _Compare( l, r ) ? T : Nil;
+			return _Compare( l, r ) ? Nil : T;
 		}
 	,	"=="	//	Equal
 	,	60
 	)
 ,	MS< Infix >(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return _Compare( l, r ) ? Nil : T;
+			return _Compare( l, r ) ? T : Nil;
 		}
 	,	"<>"	//	Not Equal
 	,	60
@@ -357,7 +381,6 @@ Functions = {
 			$.reserve( list->$.size() + 1 );
 			$.push_back( l );
 			$.insert( $.end(), list->$.begin(), list->$.end() );
-			if( Cast< Matrix		>( r ) ) return MS< Matrix		>( $ );
 			if( Cast< Parallel		>( r ) ) return MS< Parallel	>( $ );
 			if( Cast< Sentence		>( r ) ) return MS< Sentence	>( $ );
 			if( Cast< Procedure		>( r ) ) return MS< Procedure	>( $ );
@@ -410,9 +433,6 @@ Functions = {
 			auto L = Cast< List >( l ), R = Cast< List >( r );
 			Z( "Illegal operand type", L && R );
 
-			{	auto L = Cast< Matrix		>( l ), R = Cast< Matrix	>( r );
-				if( L && R ) return MS< Matrix		>( L->$ + R->$ );
-			}
 			{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
 				if( L && R ) return MS< Sentence	>( L->$ + R->$ );
 			}
@@ -446,8 +466,8 @@ Functions = {
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
 			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Matrix >( r ) );
-			auto nColsL = L->NumCols();
-			auto nRowsR = R->NumRows();
+			auto nColsL = L->NCols();
+			auto nRowsR = R->NRows();
 			if( nColsL != nRowsR ) _Z( "DOT: Matrix size error" );
 			if(	nColsL == 0 ) {
 			/*
@@ -463,8 +483,8 @@ Functions = {
 				return MS< Float >( 0 );
 			}
 
-			auto nRowsL = L->NumRows();
-			auto nColsR = R->NumCols();
+			auto nRowsL = L->NRows();
+			auto nColsR = R->NCols();
 
 			V< SP< SliP > >	$( nRowsL * nColsR );
 			for ( size_t row = 0; row < nRowsL; row++ ) {
@@ -523,7 +543,7 @@ Functions = {
 			if( auto R = Cast< Name >( r ) ) return Z( "lhs must be Dict", Cast< Dict >( l ) )->$.at( R->$ );
 			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
 
-			Pusher _( l );
+			Push( l );
 			auto $ = Eval( C, r );
 			return $;
 		}
@@ -566,6 +586,9 @@ Build() {
 //		}
 //		Builtins[ _->label ]	= _;
 //	}
-	for ( auto const& _: Functions )		Builtins[ _->label ]	= _;
+	for ( auto const& _: Primitives	)		Builtins[ _->label ]	= _;
+	for ( auto const& _: Prefixes	)		Builtins[ _->label ]	= _;
+	for ( auto const& _: Unaries 	)		Builtins[ _->label ]	= _;
+	for ( auto const& _: Infixes	)		Builtins[ _->label ]	= _;
 	for ( auto const& _: NumericConstants )	Builtins[ _->$ ]		= _;
 }
