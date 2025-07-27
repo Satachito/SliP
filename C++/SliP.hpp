@@ -29,12 +29,12 @@ SliP {
 struct
 Context {
 	SP< Context >				next;
-	UM< string, SP< SliP > >	dict;
+	UM< string, SP< SliP > >	$;
 	Context(
 		SP< Context >				next = nullptr
-	,	UM< string, SP< SliP > >	dict = {}
+	,	UM< string, SP< SliP > >	$ = {}
 	) :	next( next )
-	,	dict( dict ) {
+	,	$( $ ) {
 	}
 };
 
@@ -344,10 +344,3 @@ StringReader : iReader {
 	char32_t	Read()		{ return $[ _++ ]		; }
 	char32_t	Peek()		{ return $[ _ ]			; }
 };
-
-extern SP< SliP >
-Read( iReader&, char32_t );
-
-extern SP< SliP >
-Eval( SP< Context >, SP< SliP > );
-

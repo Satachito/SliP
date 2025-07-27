@@ -73,53 +73,17 @@ BreakingChars = {
 ,	U'»'
 };
 
+extern SP< SliP >
+Read( SP< Context >, iReader&, char32_t );
+
+extern SP< SliP >
+Eval( SP< Context >, SP< SliP > );
 
 V< SP< SliP > >
-ReadList( iReader& _, char32_t close ) {
-
-	extern	SP< Prefix >	prefixPlus;
-	extern	SP< Prefix >	prefixMinus;
+ReadList( SP< Context > C, iReader& R, char32_t close ) {
 
 	V< SP< SliP > > $;
-
-	auto slip = Read( _, close );
-	if( !slip ) return $;
-	auto infix = Cast< Infix >( slip );
-	if( infix ) {
-		if(	infix->label == "+" ) {
-			$.push_back( prefixPlus );
-		} else if( infix->label == "-" ) {
-			$.push_back( prefixMinus );
-		} else {
-			$.push_back( slip );
-		}
-	} else {
-		$.push_back( slip );
-	}
-
-	while ( SP< SliP > draft = Read( _, close ) ) {
-		auto draftInfix = Cast< Infix >( draft );
-		if( infix && draftInfix ) {
-			if(	draftInfix->label == "+" ) {
-				$.push_back( prefixPlus );
-			} else if( draftInfix->label == "-" ) {
-				$.push_back( prefixMinus );
-			} else {
-				_Z( "Syntax error: " + infix->label + ' ' + draftInfix->label );
-			}
-		} else {
-			$.push_back( draft );
-		}
-		slip = draft;
-		infix = draftInfix;
-	}
-//	DEBUG
-//	for ( auto const& _: $ ) {
-//		auto prefix = Cast< Prefix >( _ );
-//		cout << ( prefix ? ( ':' + prefix->label + ':' ) : _->REPR() ) << ' ';
-//	}
-//	cout << endl;
-//
+	while ( auto _ = Read( C, R, close ) ) $.push_back( _ );
 	return $;
 }
 
@@ -185,9 +149,7 @@ CreateLiteral( iReader& R, char32_t terminator ) {
 }
 
 SP< SliP >
-Read( iReader& R, char32_t terminator ) {
-
-	extern	UM< string, SP< SliP > >	Builtins;
+Read( SP< Context > C, iReader& R, char32_t terminator ) {
 
 	while ( R.Avail() ) {
 		auto _ = R.Read();
@@ -221,15 +183,20 @@ Read( iReader& R, char32_t terminator ) {
 		case U'»'	: _Z( "Detect close parenthesis" );
 		case U'"'	: return CreateLiteral( R, _ );
 		case U'`'	: return CreateLiteral( R, _ );
-		case U'['	: return MS< List		>( ReadList( R, U']' ) );
-		case U'⟨'	: return MS< Matrix		>( ReadList( R, U'⟩' ) );
-		case U'{'	: return MS< Procedure	>( ReadList( R, U'}' ) );
-		case U'«'	: return MS< Parallel	>( ReadList( R, U'»' ) );
-		case U'('	: return MS< Sentence	>( ReadList( R, U')' ) );
+		case U'['	: return MS< List		>( ReadList( C, R, U']' ) );
+		case U'⟨'	: return MS< Matrix		>( ReadList( C, R, U'⟩' ) );
+		case U'{'	: return MS< Procedure	>( ReadList( C, R, U'}' ) );
+		case U'«'	: return MS< Parallel	>( ReadList( C, R, U'»' ) );
+		case U'('	: return MS< Sentence	>( ReadList( C, R, U')' ) );
 		default		:
 			{	auto name = ReadNameRaw( R, _ );
-				auto it = Builtins.find( name );
-				return it == Builtins.end()
+				extern SP< Prefix >	prefixPlus;
+				if(	name == "+" ) return prefixPlus;
+				extern SP< Prefix >	prefixMinus;
+				if(	name == "-" ) return prefixMinus;
+			//	TODO: Follow context chain
+				auto it = C->$.find( name );
+				return it == C->$.end()
 				?	MS< Name >( name )
 				:	it->second
 				;
@@ -238,3 +205,4 @@ Read( iReader& R, char32_t terminator ) {
 	}
 	return 0;
 }
+

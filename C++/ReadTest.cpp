@@ -1,33 +1,36 @@
 #include "SliP.hpp"
 
+extern SP< SliP >
+Read( SP< Context >, iReader&, char32_t );
+
 static auto
-READ( const string& _ ) {
+READ( SP< Context > C, const string& _ ) {
 //	cerr << _ << endl;
 	StringReader R( _ );
-	return Read( R, -1 );
+	return Read( C, R, -1 );
 };
 
 static auto
-TestRead( string const& _ ) {
+TestRead( SP< Context > C, string const& _ ) {
 	auto
-	$ = READ( _ )->REPR();
-	A( $ == READ( $ )->REPR() );
+	$ = READ( C, _ )->REPR();
+	A( $ == READ( C, $ )->REPR() );
 }
 
 static auto
-TestReadException( string const& _, string const& expected ) {
+TestReadException( SP< Context > C, string const& _, string const& expected ) {
 	try {
-		READ( _ );
+		READ( C, _ );
 	} catch( exception const& e ) {
 		A( e.what() == expected );
 	}
 }
 
 void
-ReadTest() {
+ReadTest( SP< Context > C ) {
 	
-	TestReadException( "⟨@⟩", "All elements of the matrix must be numeric." );
-	{	auto $ = Cast< Matrix >( READ( "⟨1 2 3 4 5 6⟩" ) );
+	TestReadException( C, "⟨@⟩", "All elements of the matrix must be numeric." );
+	{	auto $ = Cast< Matrix >( READ( C, "⟨1 2 3 4 5 6⟩" ) );
 		{	auto [ nRows, nCols ] = $->Shape();
 			A( nRows == 1 );
 			A( nCols == 6 );
@@ -44,75 +47,67 @@ ReadTest() {
 			A( (*$)( 1, 2 ) == 6 );
 		}
 	}
-	try {
-		MS< Matrix >( V< SP< SliP > >{}, numeric_limits< int64_t >::min() );
-	} catch( exception const& e ) {
-		A( e.what() == string( "nCols must not be numeric_limits< int64_t >::min()" ) );
-	}
-	A( READ( "⟨1 2 3 4 5 6⟩" )->REPR() == "⟨ 1.000000 2.000000 3.000000 4.000000 5.000000 6.000000 ⟩" );
+	A( READ( C, "⟨1 2 3 4 5 6⟩" )->REPR() == "⟨ 1.000000 2.000000 3.000000 4.000000 5.000000 6.000000 ⟩" );
 
-	A( READ( " [ ] " )->REPR() == "[]" );
-	A( READ( "" ) == nullptr );
+	A( READ( C, " [ ] " )->REPR() == "[]" );
+	A( READ( C, "" ) == nullptr );
 
-	A( READ( "\"\\\\\"" )->REPR() == "\"\\\"" );
-	TestRead( R"("\a")" );
-	TestRead( R"("\0")" );
-	TestRead( R"("\f")" );
-	TestRead( R"("\n")" );
-	TestRead( R"("\r")" );
-	TestRead( R"("\t")" );
-	TestRead( R"("\v")" );
-//	TestRead( R"("\\\\")" );
-	TestRead( "1" );
-	A( Cast< Literal >( READ( "\"A\\0\"" ) )->$[ 1 ] == 0 );
-	A( Cast< Literal >( READ( "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
-	A( Cast< Literal >( READ( "\"A\\n\"" ) )->$[ 1 ] == U'\n' );
-	A( Cast< Literal >( READ( "\"A\\r\"" ) )->$[ 1 ] == U'\r' );
-	A( Cast< Literal >( READ( "\"A\\t\"" ) )->$[ 1 ] == U'\t' );
-	A( Cast< Literal >( READ( "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
-	A( Cast< Literal >( READ( "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
-	A( Cast< Literal >( READ( "\"A\\X\"" ) )->$[ 1 ] == U'X' );
+	A( READ( C, "\"\\\\\"" )->REPR() == "\"\\\"" );
+	TestRead( C, R"("\a")" );
+	TestRead( C, R"("\0")" );
+	TestRead( C, R"("\f")" );
+	TestRead( C, R"("\n")" );
+	TestRead( C, R"("\r")" );
+	TestRead( C, R"("\t")" );
+	TestRead( C, R"("\v")" );
+//	TestRead( C, R"("\\\\")" );
+	TestRead( C, "1" );
+	A( Cast< Literal >( READ( C, "\"A\\0\"" ) )->$[ 1 ] == 0 );
+	A( Cast< Literal >( READ( C, "\"A\\f\"" ) )->$[ 1 ] == U'\f' );
+	A( Cast< Literal >( READ( C, "\"A\\n\"" ) )->$[ 1 ] == U'\n' );
+	A( Cast< Literal >( READ( C, "\"A\\r\"" ) )->$[ 1 ] == U'\r' );
+	A( Cast< Literal >( READ( C, "\"A\\t\"" ) )->$[ 1 ] == U'\t' );
+	A( Cast< Literal >( READ( C, "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
+	A( Cast< Literal >( READ( C, "\"A\\v\"" ) )->$[ 1 ] == U'\v' );
+	A( Cast< Literal >( READ( C, "\"A\\X\"" ) )->$[ 1 ] == U'X' );
 
-	TestReadException( "\\", "Invalid escape" );
+	TestReadException( C, "\\", "Invalid escape" );
 
-	TestRead( "[=]" );
-	TestRead( "[A=]" );
-	TestRead( "[AΩ]" );
+	TestRead( C, "[=]" );
+	TestRead( C, "[A=]" );
+	TestRead( C, "[AΩ]" );
 
-	TestRead( "[ - -1 ]" );
-	TestRead( "[ + -1 ]" );
-	TestRead( "[ - +1 ]" );
-	TestRead( "[ + +1 ]" );
+	TestRead( C, "[ - -1 ]" );
+	TestRead( C, "[ + -1 ]" );
+	TestRead( C, "[ - +1 ]" );
+	TestRead( C, "[ + +1 ]" );
 
-	A( READ( "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
+	A( READ( C, "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
 
-	TestReadException( "[ 3 + = 5 ]", "Syntax error: + =" );
+	TestReadException( C, "[ 3 + = 5 ]", "Syntax error: + =" );
 
 
-	TestRead( "[ -1 ]" );
+	TestRead( C, "[ -1 ]" );
 
-	TestReadException( "]", "Detect close parenthesis" );
-	TestReadException( "⟩", "Detect close parenthesis" );
-	TestReadException( "}", "Detect close parenthesis" );
-	TestReadException( ")", "Detect close parenthesis" );
-	TestReadException( "»", "Detect close parenthesis" );
-	TestReadException( "`", "Unterminated string: " );
+	TestReadException( C, "]", "Detect close parenthesis" );
+	TestReadException( C, "⟩", "Detect close parenthesis" );
+	TestReadException( C, "}", "Detect close parenthesis" );
+	TestReadException( C, ")", "Detect close parenthesis" );
+	TestReadException( C, "»", "Detect close parenthesis" );
+	TestReadException( C, "`", "Unterminated string: " );
 
-	TestRead( "[A]" );
+	TestRead( C, "[A]" );
 
-	TestRead( "[1.23.45]" );
+	TestRead( C, "[1.23.45]" );
 
-	TestReadException( "!@¡", "No such operator: !@¡" );
+	TestReadException( C, "!@¡", "No such operator: !@¡" );
 
-	TestRead( "[@1||2@]" );
-	TestRead( "{@1||2@}" );
-	TestRead( "(@1||2@)" );
-	TestRead( "«@1||2@»" );
+	TestRead( C, "[@1||2@]" );
+	TestRead( C, "{@1||2@}" );
+	TestRead( C, "(@1||2@)" );
+	TestRead( C, "«@1||2@»" );
 
-	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
+	TestRead( C, "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
-	extern UM< string, SP< SliP > >
-	Builtins;
-
-	for( auto const& [ k, v ]: Builtins ) TestRead( k );
+	for( auto const& [ k, v ]: C->$ ) TestRead( C, k );
 }

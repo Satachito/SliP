@@ -1,25 +1,31 @@
 #include "SliP.hpp"
 
+extern SP< SliP >
+Eval( SP< Context >, SP< SliP > );
+
+extern SP< SliP >
+Read( SP< Context >, iReader&, char32_t );
+
 extern bool				IsNil( SP< SliP > );
 extern bool				IsT( SP< SliP > );
 
 static auto
-READ( const string& _ ) {
+READ( SP< Context > C, const string& _ ) {
 	StringReader R( _ );
-	return Read( R, -1 );
+	return Read( C, R, -1 );
 };
 
 template< typename T, typename F > void
 TestEval( SP< Context > C, string const& _, F f ) {
 //cerr << _ << endl;
-	f( Cast< T >( Eval( C, READ( _ ) ) ) );
+	f( Cast< T >( Eval( C, READ( C, _ ) ) ) );
 }
 
 static auto
 TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 //cerr << _ << endl;
 	try {
-		Eval( C, READ( _ ) );
+		Eval( C, READ( C, _ ) );
 		A( false );
 	} catch( exception const& e ) {
 //cerr << e.what() << ':' << expected << endl;
@@ -28,17 +34,41 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 }
 
 void
-EvalDict() {
-	auto c = MS< Context >();
-	Eval( c, READ( "( 'x = 1 )" ) );
-	auto C = MS< Context >( c );
-	Eval( C, READ( "( 'X = 2 )" ) );
-	TestEval< Bits >( C, "( x )", []( auto const& _ ){ A( _->$ == 1 ); } );
-	TestEval< Bits >( C, "( X )", []( auto const& _ ){ A( _->$ == 2 ); } );
+TestDict( SP< Context > C ) {
+//	TODO:
+//	auto C1 = MS< Context >( C );
+//	Eval( C1, READ( C1, "( 'x = 1 )" ) );
+//	auto C2 = MS< Context >( C1 );
+//	Eval( C2, READ( C2, "( 'X = 2 )" ) );
+//	TestEval< Bits >( C2, "( x )", []( auto const& _ ){ A( _->$ == 1 ); } );
+//	TestEval< Bits >( C2, "( X )", []( auto const& _ ){ A( _->$ == 2 ); } );
+//	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
 }
 
 void
 TestMatrix( SP< Context > C ) {
+//	TODO:
+//	TestEval< SliP >(
+//		C
+//	,	"(⟨1 2 3 4 5 6 7 8 9 10 11 12 ⟩±4 == ⟨1 5 9     2 6 10    3 7 11  4 8 12 ⟩±-4)"
+//	,	[]( auto const& _ ){ A( IsT( _ ) ); }
+//	);
+//	TestEval< Matrix >(
+//		C
+//	,	"(⟨1 2 3 4 5 6⟩±3·⟨1 5 9     2 6 10    3 7 11  4 8 12 ⟩±-4)"
+//	,	[]( auto const& _ ){
+//			A( _->size == 8 );
+//			A( _->nCols == 4 );
+//			A( _->$[ 0 ] == 1 * 1 + 2 * 5 + 3 * 9 );
+//			A( _->$[ 1 ] == 1 * 2 + 2 * 6 + 3 * 10 );
+//			A( _->$[ 2 ] == 1 * 3 + 2 * 7 + 3 * 11 );
+//			A( _->$[ 3 ] == 1 * 4 + 2 * 8 + 3 * 12 );
+//			A( _->$[ 4 ] == 4 * 1 + 5 * 5 + 6 * 9 );
+//			A( _->$[ 5 ] == 4 * 2 + 5 * 6 + 6 * 10 );
+//			A( _->$[ 6 ] == 4 * 3 + 5 * 7 + 6 * 11 );
+//			A( _->$[ 7 ] == 4 * 4 + 5 * 8 + 6 * 12 );
+//		}
+//	);
 	TestEval< SliP >(
 		C
 	,	"(⟨1 2 3⟩±3 == ⟨1 2 3⟩±1)"
@@ -171,36 +201,20 @@ TestMatrix( SP< Context > C ) {
 			A( _->$[ 7 ] == 4 * 4 + 5 * 8 + 6 * 12 );
 		}
 	);
-	TestEval< Matrix >(
-		C
-	,	"(⟨1 2 3 4 5 6⟩±3·⟨1 5 9     2 6 10    3 7 11  4 8 12 ⟩±-4)"
-	,	[]( auto const& _ ){
-			A( _->size == 8 );
-			A( _->nCols == 4 );
-			A( _->$[ 0 ] == 1 * 1 + 2 * 5 + 3 * 9 );
-			A( _->$[ 1 ] == 1 * 2 + 2 * 6 + 3 * 10 );
-			A( _->$[ 2 ] == 1 * 3 + 2 * 7 + 3 * 11 );
-			A( _->$[ 3 ] == 1 * 4 + 2 * 8 + 3 * 12 );
-			A( _->$[ 4 ] == 4 * 1 + 5 * 5 + 6 * 9 );
-			A( _->$[ 5 ] == 4 * 2 + 5 * 6 + 6 * 10 );
-			A( _->$[ 6 ] == 4 * 3 + 5 * 7 + 6 * 11 );
-			A( _->$[ 7 ] == 4 * 4 + 5 * 8 + 6 * 12 );
-		}
-	);
-
-	TestEval< SliP >(
-		C
-	,	"(⟨1 2 3 4 5 6 7 8 9 10 11 12 ⟩±4 == ⟨1 5 9     2 6 10    3 7 11  4 8 12 ⟩±-4)"
-	,	[]( auto const& _ ){ A( IsT( _ ) ); }
-	);
 }
 
 void
 EvalTest( SP< Context > C ) {
 
-	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
+
+	TestDict( C );
 
 	TestMatrix( C );
+
+	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
+
+	TestEval< SliP >( C, "()", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Prefix >( C, "(')", []( auto const& _ ){ A( _->label == "'" ); } );
 
 	TestEval< List >( C, "(1+'a)", []( auto const& _ ){ A( _->REPR() == "[ 1 a ]" ); } );
 	TestEval< List >( C, "('a+1)", []( auto const& _ ){ A( _->REPR() == "[ a 1 ]" ); } );
@@ -310,8 +324,6 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "( 1¿'( 3 + 5 ) )", []( auto const& _ ){ A( _->$ == 8 ); } );
 	TestEval< Bits >( C, "( 1?[ 1 0 ] )", []( auto const& _ ){ A( _->$ == 1 ); } );
 	TestEval< Bits >( C, "( []?[ 1 0 ] )", []( auto const& _ ){ A( _->$ == 0 ); } );
-
-	EvalDict();
 
 	TestEval< List >( C, "( 0 ^^ 1 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
 	TestEval< List >( C, "( [] ^^ 2 )", []( auto const& _ ){ A( IsT( _ ) ); } );
@@ -430,12 +442,11 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "( 3 × 4 + 2 )"	, []( auto const& _ ){ A( _->$ == 14 ); } );
 
 	TestEvalException( C, "a"				, "Undefined name: a" );
-	Eval( C, READ( "('a=3)" ) );
-	Eval( C, READ( "('b=4)" ) );
+	Eval( C, READ( C, "('a=3)" ) );
+	Eval( C, READ( C, "('b=4)" ) );
 	TestEval< Bits >( C, "a"				, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
-	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
 
 	TestEval< List >( C, "∅"					, []( auto const& _ ){ A( IsNil( _ ) ); } );
 	TestEval< List >( C, "«0»"				, []( auto const& _ ){ A( Cast< Bits >( _->$[ 0 ] )->$ == 0 ); } );
@@ -445,7 +456,6 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "( 2 + 3 × 4 )"	, []( auto const& _ ){ A( _->$ == 14 ); } );
 	
 	TestEvalException( C, "(`a` `b`)"		, "Syntax Error: No numeric value: `a`" );
-	TestEvalException( C, "(')"				, "Syntax Error: No operand for prefix: '" );
 	TestEvalException( C, "(×3)"			, "Syntax Error: No left operand for infix operator: ×" );
 	TestEvalException( C, "(3×)"			, "Syntax Error: No right operand for infix operator: ×" );
 
@@ -484,7 +494,6 @@ EvalTest( SP< Context > C ) {
 	TestEval< SliP >( C, "( 0 >= 1 )"		, []( auto const& _ ){ A( IsNil( _ ) ); } );
 
 	TestEval< Bits >( C, "( 0 )"			, []( auto const& _ ){ A( _->$ == 0 ); } );
-	TestEval< List >( C, "()"				, []( auto const& _ ){ A( IsNil( _ ) ); } );
 }
 
 

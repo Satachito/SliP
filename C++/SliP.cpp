@@ -76,6 +76,54 @@ prefixMinus = MS< Prefix >(
 ,	"-"
 );
 
+auto
+infixPlus = MS< Infix >(
+	[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+		{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+			if( L && R ) {
+				int64_t	$;
+				if( !ckd_add( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+			}
+		}
+		{	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+			if( L && R ) return MS< Float >( L->Double() + R->Double() );
+		}
+		{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
+			if( L && R ) return MS< Literal	>( L->$ + R->$, L->mark );
+		}
+		{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
+			if( L && R ) return MS< Sentence	>( L->$ + R->$ );
+		}
+		{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
+			if( L && R ) return MS< Procedure	>( L->$ + R->$ );
+		}
+		{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
+			if( L && R ) return MS< Parallel	>( L->$ + R->$ );
+		}
+		{	auto L = Cast< List			>( l ), R = Cast< List		>( r );
+			if( L && R ) return MS< List		>( L->$ + R->$ );
+		}
+		return MS< List >( V< SP< SliP > >{ l, r } );
+	}
+,	"+"		//	Plus
+,	30
+);
+auto
+infixMinus = MS< Infix >(
+	[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+		{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
+			if( L && R ) {
+				int64_t	$;
+				if( !ckd_sub( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+			}
+		}
+		auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
+		auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
+		return MS< Float >( L->Double() - R->Double() );
+	}
+,	"-"		//	Minus
+,	30
+);
 int
 _Compare( SP< SliP > l, SP< SliP > r ) {
 	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
@@ -130,15 +178,15 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 	return l == r ? 0 : l < r ? -1 : 1;
 }
 
-UM< string, SP< SliP > >
-Builtins;
-void
-RegisterFunction( SP< Function > _ ) { Builtins[ _->label ] = _; }
-void
-RegisterNumericConstant( SP< NumericConstant > _ ) { Builtins[ _->$ ] = _; }
+SP< Context >
+BuiltinContext() {
+	UM< string, SP< SliP > > $;
+	
+	auto
+	RegisterFunction = [ & ]( SP< Function > _ ) { $[ _->label ] = _; };
+	auto
+	RegisterNumericConstant = [ & ]( SP< NumericConstant > _ ) { $[ _->$ ] = _; };
 
-void
-Build() {
 	RegisterFunction(
 		MS< Primitive >(
 			[]( SP< Context > ) -> SP< SliP > {
@@ -158,7 +206,7 @@ Build() {
 	RegisterFunction(
 		MS< Primitive >(
 			[]( SP< Context > C ) -> SP< SliP > {
-				return MS< Dict >( C->dict );
+				return MS< Dict >( C->$ );
 			}
 		,	"¤"		//	make Dict
 		)
@@ -296,7 +344,7 @@ Build() {
 	RegisterFunction(
 		MS< Infix >(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return C->dict[
+				return C->$[
 					Z( "Only name can be assigned.", Cast< Name >( l ) )->$
 				] = r;
 			}
@@ -485,56 +533,6 @@ Build() {
 	RegisterFunction(
 		MS< Infix >(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-					if( L && R ) {
-						int64_t	$;
-						if( !ckd_add( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-					}
-				}
-				{	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-					if( L && R ) return MS< Float >( L->Double() + R->Double() );
-				}
-				{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
-					if( L && R ) return MS< Literal	>( L->$ + R->$, L->mark );
-				}
-				{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
-					if( L && R ) return MS< Sentence	>( L->$ + R->$ );
-				}
-				{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
-					if( L && R ) return MS< Procedure	>( L->$ + R->$ );
-				}
-				{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
-					if( L && R ) return MS< Parallel	>( L->$ + R->$ );
-				}
-				{	auto L = Cast< List			>( l ), R = Cast< List		>( r );
-					if( L && R ) return MS< List		>( L->$ + R->$ );
-				}
-				return MS< List >( V< SP< SliP > >{ l, r } );
-			}
-		,	"+"		//	Plus
-		,	30
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
-					if( L && R ) {
-						int64_t	$;
-						if( !ckd_sub( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-					}
-				}
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
-				return MS< Float >( L->Double() - R->Double() );
-			}
-		,	"-"		//	Minus
-		,	30
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
 				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Matrix >( r ) );
 				
@@ -653,5 +651,7 @@ Build() {
 	RegisterNumericConstant( MS< NumericConstant >( "log10e"	) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln2"		) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln10"		) );
+
+	return MS< Context >( nullptr, $ );
 }
 
