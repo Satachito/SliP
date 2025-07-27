@@ -91,8 +91,7 @@ Eval( SP< Context > C, SP< SliP > S ) {
 			auto	next = Ss[ I ];
 			while( I-- ) {
 				if( auto _ = Cast< Prefix >( Ss[ I ] ) ) {
-					$.insert( $.begin(), _->$( C, next ) );
-					next = nullptr;
+					next = _->$( C, next );
 				} else {
 					if( next ) $.insert( $.begin(), next );
 					next = Ss[ I ];

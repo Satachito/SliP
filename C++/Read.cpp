@@ -30,7 +30,7 @@ SoloChars = {
 ,	U'¦'
 ,	U'§'
 ,	U'¬'
-,	U'±'	//	未定義
+,	U'±'	//	nCols of matrix
 ,	U'¶'
 ,	U'·'
 ,	U'¿'

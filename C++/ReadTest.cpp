@@ -28,22 +28,28 @@ ReadTest() {
 	
 	TestReadException( "⟨@⟩", "All elements of the matrix must be numeric." );
 	{	auto $ = Cast< Matrix >( READ( "⟨1 2 3 4 5 6⟩" ) );
-		A( $->NCols() == 0 );
-		A( $->NRows() == 0 );
-		$->nCols = 2;
-		A( $->NCols() == 2 );
-		A( $->NRows() == 3 );
-		$->nCols = -3;
-		A( $->NCols() == 3 );
-		A( $->NRows() == 2 );
-		A( Cast< Numeric >( $->operator()( 1, 2 ) )->Double() == 6 );
+		{	auto [ nRows, nCols ] = $->Shape();
+			A( nRows == 1 );
+			A( nCols == 6 );
+		}
+		{	$->nCols = 2;
+			auto [ nRows, nCols ] = $->Shape();
+			A( nCols == 2 );
+			A( nRows == 3 );
+		}
+		{	$->nCols = -3;
+			auto [ nRows, nCols ] = $->Shape();
+			A( nCols == 3 );
+			A( nRows == 2 );
+			A( (*$)( 1, 2 ) == 6 );
+		}
 	}
 	try {
 		MS< Matrix >( V< SP< SliP > >{}, numeric_limits< int64_t >::min() );
 	} catch( exception const& e ) {
 		A( e.what() == string( "nCols must not be numeric_limits< int64_t >::min()" ) );
 	}
-	A( READ( "⟨1 2 3 4 5 6⟩" )->REPR() == "TODO:MATRIX REPR()" );
+	A( READ( "⟨1 2 3 4 5 6⟩" )->REPR() == "⟨ 1.000000 2.000000 3.000000 4.000000 5.000000 6.000000 ⟩" );
 
 	A( READ( " [ ] " )->REPR() == "[]" );
 	A( READ( "" ) == nullptr );
@@ -105,33 +111,8 @@ ReadTest() {
 
 	TestRead( "[ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψως𝑒∞∅]" );
 
-	extern V< SP< Primitive	> >			Primitives;
-	::apply(
-		Primitives
-	,	[]( SP< Primitive	> const& _ ) { TestRead( _->label ); }
-	);
+	extern UM< string, SP< SliP > >
+	Builtins;
 
-	extern V< SP< Prefix	> >			Prefixes;
-	::apply(
-		Prefixes
-	,	[]( SP< Prefix		> const& _ ) { TestRead( _->label ); }
-	);
-
-	extern V< SP< Unary		> >			Unaries;
-	::apply(
-		Unaries
-	,	[]( SP< Unary		>	 const& _ ) { TestRead( _->label ); }
-	);
-
-	extern V< SP< Infix		> >			Infixes;
-	::apply(
-		Infixes
-	,	[]( SP< Infix		> const& _ ) { TestRead( _->label ); }
-	);
-
-	extern V< SP< NumericConstant > >	NumericConstants;
-	::apply(
-		NumericConstants
-	,	[]( SP< NumericConstant > const& _ ) { TestRead( _->$ ); }
-	);
+	for( auto const& [ k, v ]: Builtins ) TestRead( k );
 }

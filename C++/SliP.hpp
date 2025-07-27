@@ -219,12 +219,17 @@ Infix : Function {
 struct
 Matrix : SliP {
 	double*																			$;
-	int64_t																			nCols;
 	uint64_t																		size;
+	int64_t																			nCols;
 
 	~
 	Matrix() {
 		delete[] $;
+	}
+	Matrix( double* $, uint64_t size, int64_t nCols )
+	:	$( $ )
+	,	nCols( nCols )
+	,	size( size ) {
 	}
 	double*
 	new$( V< SP< SliP > > const& Ss ) {
@@ -239,32 +244,37 @@ Matrix : SliP {
 		return $;
 	}
 	Matrix( V< SP< SliP > > const& $, int64_t nCols = 0 )
-	:	$( new$( $ ) )
-	,	nCols( nCols )
-	,	size( $.size() ) {
-		if( nCols == numeric_limits< int64_t >::min() ) _Z( "nCols must not be numeric_limits< int64_t >::min()" );
+	:	Matrix( new$( $ ), $.size(), nCols ) {
 	}
 
 	string
-	REPR() const override { return "TODO:MATRIX REPR()"; }
+	REPR() const override {
+		const auto O = string_U( U'⟨' );
+		const auto C = string_U( U'⟩' );
+		if( size == 0 ) return O + C;
+		string	_ = O;
+		for ( size_t I = 0; I < size; I++ ) {
+			_ += ' ';
+			_ += to_string( $[ I ] );
+		}
+		return _ + ' ' + C;
+	}
 
-	uint64_t
-	NCols() const {
-		return nCols
-		?	uint64_t( nCols > 0 ? nCols : -nCols )
-		:	0
-		;
+	tuple< uint64_t, uint64_t >
+	Shape() const {
+		auto $ = nCols == 0 ? size : uint64_t( nCols < 0 ? -nCols : nCols );
+		return { size / $, $ };
 	}
-	uint64_t
-	NRows() const {
-		return nCols
-		?	size / uint64_t( nCols > 0 ? nCols : -nCols )
-		:	0
-		;
-	}
-	SP< SliP >
+
+	double
 	operator() ( size_t r, size_t c ) const {
-		return MS< Float >( $[ r * NCols() + c ] );
+		return $[
+			nCols == 0
+			?	c
+			:	nCols < 0
+				?	c * ( size / -nCols ) + r
+				:	r * nCols + c
+		];
 	}
 };
 
@@ -283,9 +293,9 @@ List : SliP {
 		const auto O = string_U( o );
 		const auto C = string_U( c );
 		if( $.size() == 0 ) return O + C;
-		string	_ = O + ' ' + $[ 0 ]->REPR();
-		for ( size_t i = 1; i < $.size(); i++ ) {
-			_ += " ";
+		string	_ = O;
+		for ( size_t i = 0; i < $.size(); i++ ) {
+			_ += ' ';
 			_ += $[ i ]->REPR();
 		}
 		return _ + ' ' + C;
