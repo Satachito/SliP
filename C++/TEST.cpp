@@ -5,18 +5,51 @@
 
 #include <cassert>
 
+void
+ExtraTest() {
+
+//	auto numeric = MS< Bits >( 3 );
+//	auto nega = numeric->Negate();
+//	A( nega->Double() == -3 );
+	
+
+	extern SP< SliP >	T;
+	A( T->REPR() == "SliP" );
+	extern bool _Compare( SP< SliP >, SP< SliP > );
+	A( _Compare( T, T ) == 0 );
+
+	extern SP< SliP >	Nil;
+	A( Nil->REPR() == "[]" );
+
+//	auto reader = new StringReader( "abc" );
+//	iReader* i = reader;
+//	assert( i->Avail() );
+//	assert( i->Peek() == 'a' );
+//	assert( i->Read() == 'a' );
+//	delete reader;
+	
+//	auto um = new UM< string, string >{};
+//	delete um;
+//	auto us = new US< string >{};
+//	delete us;
+}
+
 int
 main( int argc, char* argv[] ) {
 
 //	freopen( "TEST.slip", "r", stdin );
 
 	try {
-		extern SP< Context > BuiltinContext();
-		auto
-		C = BuiltinContext();
+		extern void Build();
+		Build();
 
-		void ReadTest( SP< Context > );
-		ReadTest( C );
+		ExtraTest();
+		
+		void ReadTest();
+		ReadTest();
+
+		auto
+		C = MS< Context >();
 
 		void EvalTest( SP< Context > );
 		EvalTest( C );

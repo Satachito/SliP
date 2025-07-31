@@ -13,9 +13,7 @@ llvm-profdata merge -sparse _.profraw -o _.profdata
 # カバレッジレポート（テキスト）
 llvm-cov report ./_ -instr-profile=_.profdata
 
-# HTMLレポート出力
-# llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=.
-# Branch 詳細つき　
+# HTMLレポート出力 / Branch 詳細つき　
 llvm-cov show ./_ -instr-profile=_.profdata -format=html -output-dir=. --show-branches=count
 
 # HTMLをブラウザで開く

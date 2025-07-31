@@ -50,18 +50,30 @@ ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 		return $;
 	}
 }
-//SP< SliP >
-//ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss );
-//
-//SP< SliP >
-//ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss ) {
-//	cerr << '<' << MS< List >( Ss )->REPR() << endl;
-//	auto
-//	$ = _ApplyInfix( C, Ss );
-//	cerr << '>' << $->REPR() << endl;
-//	cerr << endl;
-//	return $;
-//}
+
+V< SP< SliP > >
+ApplyPrefix( SP< Context > C, V< SP< SliP > > const& Ss ) {
+	size_t	I = Ss.size();
+	if( I == 0 ) return Ss;
+	if( I == 1 ) return V< SP< SliP > >{ Eval( C, Ss[ 0 ] ) };
+
+	auto _ = Ss[ --I ];
+	auto applied = false;
+	V< SP< SliP > >	$;
+	while( I ) {
+		auto prefix = Cast< Prefix >( Ss[ --I ] );
+		if( prefix ) {
+			_ = prefix->$( C, _ );
+			applied = true;
+		} else {
+			$.insert( $.begin(), applied ? _ : Eval( C, _ ) );
+			_ = Ss[ I ];
+			applied = false;
+		}
+	}
+	$.insert( $.begin(), applied ? _ : Eval( C, _ ) );
+	return $;
+}
 
 V< SP< SliP > >
 ReplacePrefix( V< SP< SliP > > const& Ss ) {
@@ -95,27 +107,6 @@ ReplacePrefix( V< SP< SliP > > const& Ss ) {
 	return $;
 }
 
-V< SP< SliP > >
-ApplyPrefix( SP< Context > C, V< SP< SliP > > const& Ss ) {
-	size_t	I = Ss.size();
-	if( I < 2 ) return Ss;
-
-	auto _ = Ss[ --I ];
-	
-	V< SP< SliP > >	$;
-	while( I ) {
-		auto prefix = Cast< Prefix >( Ss[ --I ] );
-		if( prefix ) {
-			_ = prefix->$( C, _ );
-		} else {
-			$.insert( $.begin(), _ );
-			_ = Ss[ I ];
-		}
-	}
-	$.insert( $.begin(), _ );
-	return $;
-}
-
 SP< SliP >
 Eval( SP< Context > C, SP< SliP > S ) {
 	if(	const auto name = Cast< Name >( S ) ) {
@@ -144,7 +135,7 @@ Eval( SP< Context > C, SP< SliP > S ) {
 			ranges::to< V >(
 				project(
 					procedure->$
-				,	[ & ]( auto const& _ ){ return Eval( C, _ ); }
+				,	[ & ]( auto const& _ ){ return Eval( newC, _ ); }
 				)
 			)
 		);

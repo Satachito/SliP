@@ -4,28 +4,28 @@ extern SP< SliP >
 Eval( SP< Context >, SP< SliP > );
 
 extern SP< SliP >
-Read( SP< Context >, iReader&, char32_t );
+Read( iReader&, char32_t );
 
 extern bool				IsNil( SP< SliP > );
 extern bool				IsT( SP< SliP > );
 
 static auto
-READ( SP< Context > C, const string& _ ) {
+READ( const string& _ ) {
 	StringReader R( _ );
-	return Read( C, R, -1 );
+	return Read( R, -1 );
 };
 
 template< typename T, typename F > void
 TestEval( SP< Context > C, string const& _, F f ) {
 //cerr << _ << endl;
-	f( Cast< T >( Eval( C, READ( C, _ ) ) ) );
+	f( Cast< T >( Eval( C, READ( _ ) ) ) );
 }
 
 static auto
 TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 //cerr << _ << endl;
 	try {
-		Eval( C, READ( C, _ ) );
+		Eval( C, READ( _ ) );
 		A( false );
 	} catch( exception const& e ) {
 //cerr << e.what() << ':' << expected << endl;
@@ -35,18 +35,34 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 
 void
 TestDict( SP< Context > C ) {
-//	TODO:
-//	auto C1 = MS< Context >( C );
-//	Eval( C1, READ( C1, "( 'x = 1 )" ) );
-//	auto C2 = MS< Context >( C1 );
-//	Eval( C2, READ( C2, "( 'X = 2 )" ) );
-//	TestEval< Bits >( C2, "( x )", []( auto const& _ ){ A( _->$ == 1 ); } );
-//	TestEval< Bits >( C2, "( X )", []( auto const& _ ){ A( _->$ == 2 ); } );
-//	TestEval< Dict >( C, "¤"				, []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEvalException( C, "a"				, "Undefined name: a" );
+	Eval( C, READ( "('a=3)" ) );
+	Eval( C, READ( "('b=4)" ) );
+	TestEval< Bits >( C, "(¤§'(a))"			, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "a"				, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
+	TestEval< Dict >( C, "¤", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEval< List >(
+		C
+	,	"{ ( 'x = 2 ) x }"
+	,	[]( auto const& _ ) {
+			A( _->$.size() == 2 );
+			A( Cast< Bits >( _->$[ 1 ] )->$ == 2 );
+		}
+	);
+	TestEval< Dict >( C, "¤", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEval< Bits >( C, "(¤.'a)", []( auto const& _ ){ A( _->$ == 3 ); } );
+
+	Eval( C, READ( "( 'x = 1 )" ) );
+	TestEval< Bits >( C, "x", []( auto const& _ ){ A( _->$ == 1 ); } );
+	auto C2 = MS< Context >( C );
+	TestEval< Bits >( C2, "x", []( auto const& _ ){ A( _->$ == 1 ); } );
 }
 
 void
 TestMatrix( SP< Context > C ) {
+	A( MS< Matrix >( new double[ 0 ], 0, 0 )->REPR() == "⟨⟩" );
 //	TODO:
 //	TestEval< SliP >(
 //		C
@@ -204,12 +220,21 @@ TestMatrix( SP< Context > C ) {
 }
 
 void
-EvalTest( SP< Context > C ) {
+TestStack( SP< Context > C ) {
+	TestEvalException( C, "@"				, "Stack underflow" );
+	TestEval< Bits >( C, "(3:'@)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< List >( C, "(3:'@@)"			, []( auto const& _ ){ A( _->REPR() == "[ 3 ]" ); } );
 
+}
+
+void
+EvalTest( SP< Context > C ) {
 
 	TestDict( C );
 
 	TestMatrix( C );
+
+	TestStack( C );
 
 	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
 
@@ -406,10 +431,7 @@ EvalTest( SP< Context > C ) {
 	
 	TestEval< Float >( C, "(π×π)", []( auto const& _ ){ A( _->Double() == numbers::pi * numbers::pi ); } );
 
-	TestEvalException( C, "@"				, "Stack underflow" );
 
-	TestEval< Bits >( C, "(3:@)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< List >( C, "(3:@@)"			, []( auto const& _ ){ A( _->REPR() == "[ 3 ]" ); } );
 	{	auto _ = MS< Bits >( numeric_limits< int64_t >::min() );
 		auto $ = Cast< Float >( _->Negate() );
 		A( $->$ == 9223372036854775808.0 );
@@ -441,12 +463,6 @@ EvalTest( SP< Context > C ) {
 
 	TestEval< Bits >( C, "( 3 × 4 + 2 )"	, []( auto const& _ ){ A( _->$ == 14 ); } );
 
-	TestEvalException( C, "a"				, "Undefined name: a" );
-	Eval( C, READ( C, "('a=3)" ) );
-	Eval( C, READ( C, "('b=4)" ) );
-	TestEval< Bits >( C, "a"				, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
 
 	TestEval< List >( C, "∅"					, []( auto const& _ ){ A( IsNil( _ ) ); } );
 	TestEval< List >( C, "«0»"				, []( auto const& _ ){ A( Cast< Bits >( _->$[ 0 ] )->$ == 0 ); } );

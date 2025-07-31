@@ -178,15 +178,16 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 	return l == r ? 0 : l < r ? -1 : 1;
 }
 
-SP< Context >
-BuiltinContext() {
-	UM< string, SP< SliP > > $;
-	
-	auto
-	RegisterFunction = [ & ]( SP< Function > _ ) { $[ _->label ] = _; };
-	auto
-	RegisterNumericConstant = [ & ]( SP< NumericConstant > _ ) { $[ _->$ ] = _; };
+UM< string, SP< SliP > > BUILTINS;
 
+void
+RegisterFunction( SP< Function > _ ) { BUILTINS[ _->label ] = _; };
+void
+RegisterNumericConstant( SP< NumericConstant > _ ) { BUILTINS[ _->$ ] = _; };
+
+auto
+Build() {
+	
 	RegisterFunction(
 		MS< Primitive >(
 			[]( SP< Context > ) -> SP< SliP > {
@@ -651,7 +652,5 @@ BuiltinContext() {
 	RegisterNumericConstant( MS< NumericConstant >( "log10e"	) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln2"		) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln10"		) );
-
-	return MS< Context >( nullptr, $ );
 }
 
