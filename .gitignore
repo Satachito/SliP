@@ -8,4 +8,8 @@ a.out
 .firebase/
 public/
 firebase-debug.log
-C++/coverage/
+C++Test/coverage/
+C++Test/control.js
+C++Test/index.html
+C++Test/style.css
+
