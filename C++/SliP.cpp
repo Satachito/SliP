@@ -1,3 +1,39 @@
+/*
+数字が小さいほどあと
+
+10:
+=           // assign
+
+20:
+== <>
+
+30:
+< > <= >= ∈ ∋
+
+40:
+&& || ^^    // logical
+
+50:
+§           // new context eval
+? ¿         // if, if-else
+,           // [l, ...r]
+
+60:
++ -
+
+70:
+× · ÷ / %   // arithmetic
+
+80:
+& | ^       // bitwise
+
+90:
+:           // apply
+.           // Dict access
+±           // matrix-cols
+*/
+
+
 #include	"SliP.hpp"
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
@@ -106,7 +142,7 @@ infixPlus = MS< Infix >(
 		return MS< List >( V< SP< SliP > >{ l, r } );
 	}
 ,	"+"		//	Plus
-,	30
+,	60
 );
 auto
 infixMinus = MS< Infix >(
@@ -122,7 +158,7 @@ infixMinus = MS< Infix >(
 		return MS< Float >( L->Double() - R->Double() );
 	}
 ,	"-"		//	Minus
-,	30
+,	60
 );
 int
 _Compare( SP< SliP > l, SP< SliP > r ) {
@@ -180,14 +216,17 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 
 UM< string, SP< SliP > > BUILTINS;
 
-void
-RegisterFunction( SP< Function > _ ) { BUILTINS[ _->label ] = _; };
+template < typename T, typename F > void
+Register( F $, string const& _ ) { BUILTINS[ _ ] = MS< T >( $, _ ); }
+template < typename F > void
+RegisterInfix( F $, string const& _, int priority ) { BUILTINS[ _ ] = MS< Infix >( $, _, priority ); };
+
 void
 RegisterNumericConstant( SP< NumericConstant > _ ) { BUILTINS[ _->$ ] = _; };
 
-template	< typename F >	SP< Prefix >
-NewFloatPrefix( const string& label, F f ) {
-	return MS< Prefix >(
+template	< typename F >	void
+RegisterFloatPrefix( string const& label, F f ) {
+	BUILTINS[ label ] = MS< Prefix >(
 		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			return MS< Float >(
 				f( Z( "Must be float", Cast< Numeric >( Eval( C, _ ) ) )->Double() )
@@ -200,82 +239,63 @@ NewFloatPrefix( const string& label, F f ) {
 auto
 Build() {
 	
-	RegisterFunction(
-		MS< Primitive >(
-			[]( SP< Context > ) -> SP< SliP > {
-				return Pop();
-			}
-		,	"@"		//	Stack top
-		)
+	Register< Primitive >(
+		[]( SP< Context > ) -> SP< SliP > {
+			return Pop();
+		}
+	,	"@"		//	Stack top
 	);
-	RegisterFunction(
-		MS< Primitive >(
-			[]( SP< Context > ) -> SP< SliP > {
-				return MS< List >( StackCopy() );
-			}
-		,	"@@"	//	Stack list
-		)
+	Register< Primitive >(
+		[]( SP< Context > ) -> SP< SliP > {
+			return MS< List >( StackCopy() );
+		}
+	,	"@@"	//	Stack list
 	);
-	RegisterFunction(
-		MS< Primitive >(
-			[]( SP< Context > C ) -> SP< SliP > {
-				return MS< Dict >( C->$ );
-			}
-		,	"¤"		//	make Dict
-		)
+	Register< Primitive >(
+		[]( SP< Context > C ) -> SP< SliP > {
+			return MS< Dict >( C->$ );
+		}
+	,	"¤"		//	make Dict
 	);
-	RegisterFunction(
-		MS< Primitive >(
-			[]( SP< Context > ) -> SP< SliP > {
-				return Nil;
-			}
-		,	"∅"
-		)
+	Register< Primitive >(
+		[]( SP< Context > ) -> SP< SliP > {
+			return Nil;
+		}
+	,	"∅"
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				return _;
 			}
 		,	"'"		//	Quote
-		)
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				_Z( _->REPR() );
 			}
 		,	"¡"		//	Throw
-		)
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 				return Eval( C, _ );
 			}
 		,	"!"		//	Eval
-		)
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 				return MS< Bits >(
 					~Z( "Illegal operand type: " + _->REPR(), Cast< Bits >( _ ) )->$
 				);
 			}
 		,	"~"		//	Bit not
-		)
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 				return IsNil( _ ) ? T : Nil;
 			}
 		,	"¬"		//	Logical not
-		)
 	);
-	RegisterFunction(
-		MS< Prefix >(
+	Register< Prefix >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				auto literal = Cast< Literal >( _ );
 				return literal
@@ -284,19 +304,15 @@ Build() {
 				;
 			}
 		,	"¶"		//	Convert to literal
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				if( auto list = Cast< List >( _ ) ) return MS< Bits >( list->$.size() );
 				return MS< Bits >( Z( "Illegal operand type", Cast< Literal >( _ ) )->$.length() );
 			}
 		,	"#"		//	Number of elements
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				auto list = Z( "Illegal operand type", Cast< List >( _ ) );
 				V< SP< SliP > > $;
@@ -308,10 +324,8 @@ Build() {
 				return MS< List >( $ );
 			}
 		,	"*"		//	CDR
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				auto list = Z( "Illegal operand type", Cast< List >( _ ) );
 				auto size = list->$.size();
@@ -319,42 +333,124 @@ Build() {
 				return list->$[ size - 1 ];
 			}
 		,	"$"		//	Last element
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				cout << _->REPR() << endl;
 				return _;
 			}
 		,	";"		//	stdout
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 				cerr << _->REPR() << endl;
 				return _;
 			}
 		,	"¦"		//	stderr
-		)
 	);
 
 	//	INFIX
-	
-	RegisterFunction(
-		MS< Infix >(
+
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Dict >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Name >( r ) );
-				return L->$[ R->$ ];
+				return C->$[
+					Z( "Only name can be assigned.", Cast< Name >( l ) )->$
+				] = r;
 			}
-		,	"."		//	Dict element
-		,	100
-		)
+		,	"="		//	assign
+		,	10
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto list = Z( "Right operand must be List", Cast< List >( r ) );
+				for( auto const& _: list->$ ) {
+					if( _Compare( _, l ) == 0 ) return T;
+				}
+				return Nil;
+			}
+		,	"∈"		//	Member of
+		,	20
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto list = Z( "Left operand must be List", Cast< List >( l ) );
+				for( auto const& _: list->$ ) {
+					if( _Compare( _, r ) == 0 ) return T;
+				}
+				return Nil;
+			}
+		,	"∋"		//	Includes
+		,	20
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) ? Nil : T;
+			}
+		,	"=="	//	Equal
+		,	20
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) ? T : Nil;
+			}
+		,	"<>"	//	Not Equal
+		,	20
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) == -1 ? T : Nil;
+			}
+		,	"<"		//	Less than
+		,	30
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) == 1 ? T : Nil;
+			}
+		,	">"		//	Greater than
+		,	30
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) != 1 ? T : Nil;
+			}
+		,	"<="	//	Less equal
+		,	30
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return _Compare( l, r ) != -1 ? T : Nil;
+			}
+		,	">="	//	Greater equal
+		,	30
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return ( IsT( l ) && IsT( r ) ) ? T : Nil;
+			}
+		,	"&&"	//	Logical and
+		,	40
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return ( IsT( l ) || IsT( r ) ) ? T: Nil;
+			}
+		,	"||"	//	Logical or
+		,	40
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				return ( IsT( l ) != IsT( r ) ) ? T: Nil;
+			}
+		,	"^^"	//	Logical exclusive or
+		,	40
+	);
+	
+	
+	
+	
+	
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				return Eval(
 					MS< Context >(
@@ -365,22 +461,9 @@ Build() {
 				);
 			}
 		,	"§"		//	Open new context with dict(l) then eval r
-		,	95
-		)
+		,	50
 	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return C->$[
-					Z( "Only name can be assigned.", Cast< Name >( l ) )->$
-				] = r;
-			}
-		,	"="		//	assign
-		,	90
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				return Eval(
 					C
@@ -388,127 +471,16 @@ Build() {
 				);
 			}
 		,	"?"		//	if else
-		,	80
-		)
+		,	50
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				return IsT( l ) ? Eval( C, r ) : Nil;
 			}
 		,	"¿"		//	if
-		,	80
-		)
+		,	50
 	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return ( IsT( l ) && IsT( r ) ) ? T : Nil;
-			}
-		,	"&&"	//	Logical and
-		,	70
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return ( IsT( l ) || IsT( r ) ) ? T: Nil;
-			}
-		,	"||"	//	Logical or
-		,	70
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return ( IsT( l ) != IsT( r ) ) ? T: Nil;
-			}
-		,	"^^"	//	Logical exclusive or
-		,	70
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto list = Z( "Right operand must be List", Cast< List >( r ) );
-				for( auto const& _: list->$ ) {
-					if( _Compare( _, l ) == 0 ) return T;
-				}
-				return Nil;
-			}
-		,	"∈"		//	Member of
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto list = Z( "Left operand must be List", Cast< List >( l ) );
-				for( auto const& _: list->$ ) {
-					if( _Compare( _, r ) == 0 ) return T;
-				}
-				return Nil;
-			}
-		,	"∋"		//	Includes
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) ? Nil : T;
-			}
-		,	"=="	//	Equal
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) ? T : Nil;
-			}
-		,	"<>"	//	Not Equal
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) == -1 ? T : Nil;
-			}
-		,	"<"		//	Less than
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) == 1 ? T : Nil;
-			}
-		,	">"		//	Greater than
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) != 1 ? T : Nil;
-			}
-		,	"<="	//	Less equal
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				return _Compare( l, r ) != -1 ? T : Nil;
-			}
-		,	">="	//	Greater equal
-		,	60
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto list = Z( "Right operand must be List", Cast< List >( r ) );
 				V< SP< SliP > > $;
@@ -522,43 +494,9 @@ Build() {
 			}
 		,	","		//	[ l, ...r ]
 		,	50
-		)
 	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
-				return MS< Bits >( L->$ & R->$ );
-			}
-		,	"&"		//	And
-		,	40
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
-				return MS< Bits >( L->$ | R->$ );
-			}
-		,	"|"		//	Or
-		,	40
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
-				return MS< Bits >( L->$ ^ R->$ );
-			}
-		,	"^"		//	Exclusive or
-		,	40
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
+
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
 				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Matrix >( r ) );
@@ -586,53 +524,89 @@ Build() {
 				return MS< Matrix >( $, rNCols );
 			}
 		,	"·"		//	Dot product
-		,	20
-		)
+		,	70
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				return Mul( l, r );
 			}
 		,	"×"		//	Multiple
-		,	20
-		)
+		,	70
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
 				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
 				return MS< Float >( L->Double() / R->Double() );
 			}
 		,	"÷"		//	Div
-		,	20
-		)
+		,	70
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
 				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
 				return MS< Bits >( L->$ / R->$ );
 			}
 		,	"/"		//	iDiv
-		,	20
-		)
+		,	70
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
 				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
 				return MS< Bits >( L->$ % R->$ );
 			}
 		,	"%"		//	Remainder
-		,	20
-		)
+		,	70
 	);
-	RegisterFunction(
-		MS< Infix >(
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
+				return MS< Bits >( L->$ & R->$ );
+			}
+		,	"&"		//	And
+		,	80
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
+				return MS< Bits >( L->$ | R->$ );
+			}
+		,	"|"		//	Or
+		,	80
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Bits >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
+				return MS< Bits >( L->$ ^ R->$ );
+			}
+		,	"^"		//	Exclusive or
+		,	80
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
+				L->nCols = R->$;
+				return L;
+			}
+		,	"±"		//	Set nCols
+		,	90
+	);
+	RegisterInfix(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Dict >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Name >( r ) );
+				return L->$[ R->$ ];
+			}
+		,	"."		//	Dict element
+		,	90
+	);
+	RegisterInfix(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 				if( auto R = Cast< Bits >( r ) ) return Z( "lhs must be List", Cast< List >( l ) )->$.at( R->$ );
 				if( auto R = Cast< Name >( r ) ) return Z( "lhs must be Dict", Cast< Dict >( l ) )->$.at( R->$ );
@@ -643,20 +617,7 @@ Build() {
 				return $;
 			}
 		,	":"		//	Apply
-		,	10
-		)
-	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
-				L->nCols = R->$;
-				return L;
-			}
-		,	"±"		//	Set nCols
-		,	10
-		)
+		,	90
 	);
 	RegisterNumericConstant( MS< NumericConstant >( "∞"			) );
 	RegisterNumericConstant( MS< NumericConstant >( "𝑒"			) );
@@ -669,56 +630,52 @@ Build() {
 	RegisterNumericConstant( MS< NumericConstant >( "ln10"		) );
 
 //	String <-> Int Conversion
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 				return MS< Bits >(
 					stoi( Z( "Illegal operand type: " + _->REPR(), Cast< Literal >( _ ) )->$ )
 				);
 			}
 		,	"int"		//	parse Int 
-		)
 	);
-	RegisterFunction(
-		MS< Unary >(
+	Register< Unary >(
 			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 				return MS< Literal >( _->REPR(), U'"' );
 			}
 		,	"string"		//	parse Int 
-		)
 	);
 //	MATH EXTENTION
-	RegisterFunction( NewFloatPrefix( "abs", []( double _ ) -> double { return abs( _ ); } ) );
+	RegisterFloatPrefix( "abs", []( double _ ) -> double { return abs( _ ); } );
 
-	RegisterFunction( NewFloatPrefix( "acos", []( double _ ) -> double { return acos( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "acosh", []( double _ ) -> double { return acosh( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "asin", []( double _ ) -> double { return asin( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "asinh", []( double _ ) -> double { return asinh( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "atan", []( double _ ) -> double { return atan( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "atanh", []( double _ ) -> double { return atanh( _ ); } ) );
+	RegisterFloatPrefix( "acos", []( double _ ) -> double { return acos( _ ); } );
+	RegisterFloatPrefix( "acosh", []( double _ ) -> double { return acosh( _ ); } );
+	RegisterFloatPrefix( "asin", []( double _ ) -> double { return asin( _ ); } );
+	RegisterFloatPrefix( "asinh", []( double _ ) -> double { return asinh( _ ); } );
+	RegisterFloatPrefix( "atan", []( double _ ) -> double { return atan( _ ); } );
+	RegisterFloatPrefix( "atanh", []( double _ ) -> double { return atanh( _ ); } );
 //	TODO: ATAN2
-	RegisterFunction( NewFloatPrefix( "cbrt", []( double _ ) -> double { return cbrt( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "ceil", []( double _ ) -> double { return ceil( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "cos", []( double _ ) -> double { return cos( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "cosh", []( double _ ) -> double { return cosh( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "exp", []( double _ ) -> double { return exp( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "floor", []( double _ ) -> double { return floor( _ ); } ) );
+	RegisterFloatPrefix( "cbrt", []( double _ ) -> double { return cbrt( _ ); } );
+	RegisterFloatPrefix( "ceil", []( double _ ) -> double { return ceil( _ ); } );
+	RegisterFloatPrefix( "cos", []( double _ ) -> double { return cos( _ ); } );
+	RegisterFloatPrefix( "cosh", []( double _ ) -> double { return cosh( _ ); } );
+	RegisterFloatPrefix( "exp", []( double _ ) -> double { return exp( _ ); } );
+	RegisterFloatPrefix( "floor", []( double _ ) -> double { return floor( _ ); } );
 //	TODO: HYPOT
-	RegisterFunction( NewFloatPrefix( "log", []( double _ ) -> double { return log( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "log10", []( double _ ) -> double { return log10( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "log2", []( double _ ) -> double { return log2( _ ); } ) );
+	RegisterFloatPrefix( "log", []( double _ ) -> double { return log( _ ); } );
+	RegisterFloatPrefix( "log10", []( double _ ) -> double { return log10( _ ); } );
+	RegisterFloatPrefix( "log2", []( double _ ) -> double { return log2( _ ); } );
 //	TODO: MAX
 //	TODO: MIN
 //	TODO: POW
 //	TODO: RANDOM
-	RegisterFunction( NewFloatPrefix( "round", []( double _ ) -> double { return round( _ ); } ) );
+	RegisterFloatPrefix( "round", []( double _ ) -> double { return round( _ ); } );
 //	TODO: SIGN
-	RegisterFunction( NewFloatPrefix( "sin", []( double _ ) -> double { return sin( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "sinh", []( double _ ) -> double { return sinh( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "sqrt", []( double _ ) -> double { return sqrt( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "tan", []( double _ ) -> double { return tan( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "tanh", []( double _ ) -> double { return tanh( _ ); } ) );
-	RegisterFunction( NewFloatPrefix( "trunc", []( double _ ) -> double { return trunc( _ ); } ) );
+	RegisterFloatPrefix( "sin", []( double _ ) -> double { return sin( _ ); } );
+	RegisterFloatPrefix( "sinh", []( double _ ) -> double { return sinh( _ ); } );
+	RegisterFloatPrefix( "sqrt", []( double _ ) -> double { return sqrt( _ ); } );
+	RegisterFloatPrefix( "tan", []( double _ ) -> double { return tan( _ ); } );
+	RegisterFloatPrefix( "tanh", []( double _ ) -> double { return tanh( _ ); } );
+	RegisterFloatPrefix( "trunc", []( double _ ) -> double { return trunc( _ ); } );
 
 //	llround
 //	nearbyint

@@ -8,12 +8,16 @@ extern SP< SliP > Nil;
 SP< SliP >
 ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 
+//cerr << "ApplyInfix:";
+//for( auto const& S: Ss ) cerr << ' ' << S->REPR();
+//cerr << endl;
+
 	size_t		infixI	= 0;
 	SP< Infix >	infix	= nullptr;
 	{	for( size_t _ = 0; _ < Ss.size(); _++ ) {
 			if( auto $ = Cast< Infix >( Ss[ _ ] ) ) {
 				if( infixI ) {
-					if( infix->priority < $->priority ) {
+					if( infix->priority > $->priority ) {
 						infixI = _;
 						infix = $;
 					}
@@ -30,11 +34,19 @@ ApplyInfix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 		if( infixI == Ss.size() - 1 )	_Z( "Syntax Error: No right operand for infix operator: " + infix->label );
 
 //cerr << "Infix: " << infix->label << endl;
-		return infix->$(
+		auto
+		$ = infix->$(
 			C
 		,	ApplyInfix( C, ranges::to< V >( ::take( Ss, infixI + 0 ) ) )
 		,	ApplyInfix( C, ranges::to< V >( ::drop( Ss, infixI + 1 ) ) )
 		);
+//cerr << $->REPR() << endl;
+		return $;
+//		return infix->$(
+//			C
+//		,	ApplyInfix( C, ranges::to< V >( ::take( Ss, infixI + 0 ) ) )
+//		,	ApplyInfix( C, ranges::to< V >( ::drop( Ss, infixI + 1 ) ) )
+//		);
 	} else {
 		if( Ss.size() == 0 ) return Nil;
 		if( Ss.size() == 1 ) return Ss[ 0 ];
