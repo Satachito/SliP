@@ -1,7 +1,7 @@
 #undef	DEBUG
 #define	DEBUG
 
-#include "SliP.hpp"
+#include "../C++/SliP.hpp"
 
 #include <cassert>
 
@@ -34,10 +34,13 @@ ExtraTest() {
 //	delete us;
 }
 
+
+
+
+
+
 int
 main( int argc, char* argv[] ) {
-
-//	freopen( "TEST.slip", "r", stdin );
 
 	try {
 		extern void Build();
@@ -51,6 +54,9 @@ main( int argc, char* argv[] ) {
 		auto
 		C = MS< Context >();
 
+		void MathTest( SP< Context > );
+		MathTest( C );
+		
 		void EvalTest( SP< Context > );
 		EvalTest( C );
 

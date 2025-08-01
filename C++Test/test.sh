@@ -2,7 +2,9 @@ rm -f _ *.profraw *.profdata index.html control.js style.css
 rm -rf coverage
 
 # カバレッジ計測付きでビルド
-clang++ -DDEBUG -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ TEST.cpp Read.cpp Eval.cpp SliP.cpp EvalTest.cpp ReadTest.cpp
+clang++ -DDEBUG -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ \
+	../C++/Read.cpp ../C++/Eval.cpp ../C++/SliP.cpp \
+	TEST.cpp EvalTest.cpp ReadTest.cpp MathTest.cpp
 
 # プロファイル出力を指定して実行
 LLVM_PROFILE_FILE="_.profraw" ./_

@@ -82,13 +82,14 @@ ReplacePrefix( V< SP< SliP > > const& Ss ) {
 	auto _ = Cast< Prefix >( Ss[ --I ] );
 
 	V< SP< SliP > >	$;
-	while( I ) {
-		auto prefix = Cast< Prefix >( Ss[ --I ] );
-		if( prefix ) {
+	while( I-- ) {
+		auto prefix = Cast< Prefix >( Ss[ I ] );
+		auto infix = Cast< Infix >( Ss[ I ] );
+		if( prefix || infix ) {
 			$.insert( $.begin(), Ss[ I + 1 ] );
 		} else {
 			if ( _ ) {
-				if(	_->label == "+" ) {
+				if ( _->label == "+" ) {
 					extern SP< Infix > infixPlus;
 					$.insert( $.begin(), infixPlus );
 				} else if( _->label == "-" ) {

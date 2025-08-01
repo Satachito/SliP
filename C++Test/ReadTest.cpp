@@ -1,4 +1,4 @@
-#include "SliP.hpp"
+#include "../C++/SliP.hpp"
 
 extern SP< SliP >
 Read( iReader&, char32_t );

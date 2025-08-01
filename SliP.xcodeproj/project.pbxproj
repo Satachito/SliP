@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		128935442E19005E0036A00B /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 128935382E18FFF70036A00B /* TEST.cpp */; };
+		1280CD352E3B93910024B733 /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD332E3B93910024B733 /* TEST.cpp */; };
+		1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2D2E3B93910024B733 /* EvalTest.cpp */; };
+		1280CD372E3B93910024B733 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2F2E3B93910024B733 /* ReadTest.cpp */; };
+		1280CD392E3CD2830024B733 /* MathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD382E3CD2770024B733 /* MathTest.cpp */; };
 		12D9D7042E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
 		12D9D7052E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
 		12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
@@ -62,8 +65,6 @@
 		12FBD5452E2D033E00B178F7 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
 		12FBD5472E2D071200B178F7 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
 		12FBD5482E2D071200B178F7 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
-		12FBD54D2E2DCE2000B178F7 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */; };
-		12FBD54F2E2DCE2800B178F7 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,7 +116,10 @@
 
 /* Begin PBXFileReference section */
 		1233447F2E0CC5BB001764D8 /* CLI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CLI.xctestplan; sourceTree = "<group>"; };
-		128935382E18FFF70036A00B /* TEST.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TEST.cpp; path = "C++/TEST.cpp"; sourceTree = SOURCE_ROOT; };
+		1280CD2D2E3B93910024B733 /* EvalTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EvalTest.cpp; sourceTree = "<group>"; };
+		1280CD2F2E3B93910024B733 /* ReadTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReadTest.cpp; sourceTree = "<group>"; };
+		1280CD332E3B93910024B733 /* TEST.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TEST.cpp; sourceTree = "<group>"; };
+		1280CD382E3CD2770024B733 /* MathTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MathTest.cpp; sourceTree = "<group>"; };
 		1289353D2E19002C0036A00B /* SliPTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SliPTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		12ABD01A2DF8FAF800E20C13 /* SwiftCUI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftCUI; sourceTree = BUILT_PRODUCTS_DIR; };
 		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
@@ -162,8 +166,6 @@
 		12FBD5432E2D033E00B178F7 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
 		12FBD5462E2D071200B178F7 /* SliP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SliP.cpp; sourceTree = "<group>"; };
 		12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
-		12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EvalTest.cpp; sourceTree = "<group>"; };
-		12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReadTest.cpp; sourceTree = "<group>"; };
 		5EEE09412223C957001CFDEA /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1B520E0071400AD8172 /* OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -259,6 +261,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1280CD342E3B93910024B733 /* C++Test */ = {
+			isa = PBXGroup;
+			children = (
+				1280CD382E3CD2770024B733 /* MathTest.cpp */,
+				1280CD2D2E3B93910024B733 /* EvalTest.cpp */,
+				1280CD2F2E3B93910024B733 /* ReadTest.cpp */,
+				1280CD332E3B93910024B733 /* TEST.cpp */,
+			);
+			path = "C++Test";
+			sourceTree = "<group>";
+		};
 		12D9D6F22E00A186006EAD54 /* JP_CPP */ = {
 			isa = PBXGroup;
 			children = (
@@ -351,9 +364,6 @@
 				12FBD5462E2D071200B178F7 /* SliP.cpp */,
 				12FBD5432E2D033E00B178F7 /* Eval.cpp */,
 				12FBD5402E2D028500B178F7 /* Read.cpp */,
-				128935382E18FFF70036A00B /* TEST.cpp */,
-				12FBD54C2E2DCE2000B178F7 /* EvalTest.cpp */,
-				12FBD54E2E2DCE2800B178F7 /* ReadTest.cpp */,
 			);
 			path = "C++";
 			sourceTree = "<group>";
@@ -364,6 +374,7 @@
 				1233447F2E0CC5BB001764D8 /* CLI.xctestplan */,
 				12EE63922DFE7DD4002EBE1E /* Swift */,
 				12EE643C2DFE7F99002EBE1E /* C++ */,
+				1280CD342E3B93910024B733 /* C++Test */,
 				12EE64662DFE85AE002EBE1E /* SwiftUI-CPP */,
 				12EE647B2DFE85AF002EBE1E /* SwiftUI-CPPTests */,
 				12EE64852DFE85AF002EBE1E /* SwiftUI-CPPUITests */,
@@ -663,12 +674,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12FBD54D2E2DCE2000B178F7 /* EvalTest.cpp in Sources */,
+				1280CD392E3CD2830024B733 /* MathTest.cpp in Sources */,
 				12FBD5452E2D033E00B178F7 /* Eval.cpp in Sources */,
 				12FBD5472E2D071200B178F7 /* SliP.cpp in Sources */,
-				128935442E19005E0036A00B /* TEST.cpp in Sources */,
 				12FBD5422E2D028500B178F7 /* Read.cpp in Sources */,
-				12FBD54F2E2DCE2800B178F7 /* ReadTest.cpp in Sources */,
+				1280CD352E3B93910024B733 /* TEST.cpp in Sources */,
+				1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */,
+				1280CD372E3B93910024B733 /* ReadTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

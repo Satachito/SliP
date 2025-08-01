@@ -2,7 +2,7 @@
 
 rm ./a.out
 echo "Compiling CLI..."
-c++ -std=c++23 CLI.cpp
+c++ -std=c++23 CLI.cpp SliP.cpp Read.cpp Eval.cpp -o SliP
 
 echo "Compiling to WebAssembly..."
 # Emscripten を使ってコンパイル

@@ -185,6 +185,18 @@ RegisterFunction( SP< Function > _ ) { BUILTINS[ _->label ] = _; };
 void
 RegisterNumericConstant( SP< NumericConstant > _ ) { BUILTINS[ _->$ ] = _; };
 
+template	< typename F >	SP< Prefix >
+NewFloatPrefix( const string& label, F f ) {
+	return MS< Prefix >(
+		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			return MS< Float >(
+				f( Z( "Must be float", Cast< Numeric >( Eval( C, _ ) ) )->Double() )
+			);
+		}
+	,	label
+	);
+}
+
 auto
 Build() {
 	
@@ -327,6 +339,20 @@ Build() {
 		,	"¦"		//	stderr
 		)
 	);
+
+	//	INFIX
+	
+	RegisterFunction(
+		MS< Infix >(
+			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Dict >( l ) );
+				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Name >( r ) );
+				return L->$[ R->$ ];
+			}
+		,	"."		//	Dict element
+		,	100
+		)
+	);
 	RegisterFunction(
 		MS< Infix >(
 			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
@@ -339,7 +365,7 @@ Build() {
 				);
 			}
 		,	"§"		//	Open new context with dict(l) then eval r
-		,	100
+		,	95
 		)
 	);
 	RegisterFunction(
@@ -632,17 +658,6 @@ Build() {
 		,	10
 		)
 	);
-	RegisterFunction(
-		MS< Infix >(
-			[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-				auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Dict >( l ) );
-				auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Name >( r ) );
-				return L->$[ R->$ ];
-			}
-		,	"."		//	Dict element
-		,	100
-		)
-	);
 	RegisterNumericConstant( MS< NumericConstant >( "∞"			) );
 	RegisterNumericConstant( MS< NumericConstant >( "𝑒"			) );
 	RegisterNumericConstant( MS< NumericConstant >( "π"			) );
@@ -652,5 +667,67 @@ Build() {
 	RegisterNumericConstant( MS< NumericConstant >( "log10e"	) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln2"		) );
 	RegisterNumericConstant( MS< NumericConstant >( "ln10"		) );
+
+//	String <-> Int Conversion
+	RegisterFunction(
+		MS< Unary >(
+			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+				return MS< Bits >(
+					stoi( Z( "Illegal operand type: " + _->REPR(), Cast< Literal >( _ ) )->$ )
+				);
+			}
+		,	"int"		//	parse Int 
+		)
+	);
+	RegisterFunction(
+		MS< Unary >(
+			[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+				return MS< Literal >( _->REPR(), U'"' );
+			}
+		,	"string"		//	parse Int 
+		)
+	);
+//	MATH EXTENTION
+	RegisterFunction( NewFloatPrefix( "abs", []( double _ ) -> double { return abs( _ ); } ) );
+
+	RegisterFunction( NewFloatPrefix( "acos", []( double _ ) -> double { return acos( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "acosh", []( double _ ) -> double { return acosh( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "asin", []( double _ ) -> double { return asin( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "asinh", []( double _ ) -> double { return asinh( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "atan", []( double _ ) -> double { return atan( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "atanh", []( double _ ) -> double { return atanh( _ ); } ) );
+//	TODO: ATAN2
+	RegisterFunction( NewFloatPrefix( "cbrt", []( double _ ) -> double { return cbrt( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "ceil", []( double _ ) -> double { return ceil( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "cos", []( double _ ) -> double { return cos( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "cosh", []( double _ ) -> double { return cosh( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "exp", []( double _ ) -> double { return exp( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "floor", []( double _ ) -> double { return floor( _ ); } ) );
+//	TODO: HYPOT
+	RegisterFunction( NewFloatPrefix( "log", []( double _ ) -> double { return log( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "log10", []( double _ ) -> double { return log10( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "log2", []( double _ ) -> double { return log2( _ ); } ) );
+//	TODO: MAX
+//	TODO: MIN
+//	TODO: POW
+//	TODO: RANDOM
+	RegisterFunction( NewFloatPrefix( "round", []( double _ ) -> double { return round( _ ); } ) );
+//	TODO: SIGN
+	RegisterFunction( NewFloatPrefix( "sin", []( double _ ) -> double { return sin( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "sinh", []( double _ ) -> double { return sinh( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "sqrt", []( double _ ) -> double { return sqrt( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "tan", []( double _ ) -> double { return tan( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "tanh", []( double _ ) -> double { return tanh( _ ); } ) );
+	RegisterFunction( NewFloatPrefix( "trunc", []( double _ ) -> double { return trunc( _ ); } ) );
+
+//	llround
+//	nearbyint
+//	rint
+//	expm1
+//	log1p
+
+
+
+//	TODO: JSON EXTENSION
 }
 
