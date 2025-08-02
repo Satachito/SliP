@@ -216,20 +216,54 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 
 UM< string, SP< SliP > > BUILTINS;
 
-template < typename T, typename F > void
-Register( F $, string const& _ ) { BUILTINS[ _ ] = MS< T >( $, _ ); }
+template < typename T, typename F > void	//	prefix, unary, primitive
+Register( F $, string const& label ) { BUILTINS[ label ] = MS< T >( $, label ); }
+
 template < typename F > void
-RegisterInfix( F $, string const& _, int priority ) { BUILTINS[ _ ] = MS< Infix >( $, _, priority ); };
+RegisterInfix( F $, string const& label, int priority ) { BUILTINS[ label ] = MS< Infix >( $, label, priority ); }
 
 void
-RegisterNumericConstant( SP< NumericConstant > _ ) { BUILTINS[ _->$ ] = _; };
+RegisterNumericConstant( string const& label ) { BUILTINS[ label ] = MS< NumericConstant >( label ); }
 
 template	< typename F >	void
 RegisterFloatPrefix( string const& label, F f ) {
 	BUILTINS[ label ] = MS< Prefix >(
 		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			return MS< Float >(
-				f( Z( "Must be float", Cast< Numeric >( Eval( C, _ ) ) )->Double() )
+				f( Z( "Illegal operand type: " + _->REPR(), Cast< Numeric >( Eval( C, _ ) ) )->Double() )
+			);
+		}
+	,	label
+	);
+}
+
+template < typename F > void
+RegisterFloatPairPrefix( string const& label, F f ) {
+	BUILTINS[ label ] = MS< Prefix >(
+		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			auto $ = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$;
+			return MS< Float >(
+				f(	Z( "Illegal operand type: " + $[ 0 ]->REPR(), Cast< Numeric >( $[ 0 ] ) )->Double()
+				,	Z( "Illegal operand type: " + $[ 1 ]->REPR(), Cast< Numeric >( $[ 1 ] ) )->Double()
+				)
+			);
+		}
+	,	label
+	);
+}
+
+template < typename F > void
+RegisterFloatListPrefix( string const& label, F f ) {
+	BUILTINS[ label ] = MS< Prefix >(
+		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			return MS< Float >(
+				f(	ranges::to< V >(
+						project(
+							Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$
+						,	[ & ]( auto const& _ ){ return Z( "Illegal operand type: ", Cast< Numeric >( _ ) )->Double(); }
+		¶				)
+					)
+				)
 			);
 		}
 	,	label
@@ -255,13 +289,22 @@ Build() {
 		[]( SP< Context > C ) -> SP< SliP > {
 			return MS< Dict >( C->$ );
 		}
-	,	"¤"		//	make Dict
+	,	"¶"		//	make Dict
 	);
 	Register< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
 			return Nil;
 		}
 	,	"∅"
+	);
+	Register< Primitive >(
+		[]( SP< Context > C ) -> SP< SliP > {
+			static mt19937_64 RANGE{ random_device{}() };
+			uniform_real_distribution<double> dist( 0, 1 );
+			double $ = dist( RANGE );
+			return MS< Float >( $ );
+		}
+	,	"¤"
 	);
 	Register< Prefix >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
@@ -295,6 +338,7 @@ Build() {
 		}
 	,	"¬"		//	Logical not
 	);
+	/*
 	Register< Prefix >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			auto literal = Cast< Literal >( _ );
@@ -305,6 +349,8 @@ Build() {
 		}
 	,	"¶"		//	Convert to literal
 	);
+	*/
+
 	Register< Unary >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			if( auto list = Cast< List >( _ ) ) return MS< Bits >( list->$.size() );
@@ -619,15 +665,15 @@ Build() {
 	,	":"		//	Apply
 	,	90
 	);
-	RegisterNumericConstant( MS< NumericConstant >( "∞"			) );
-	RegisterNumericConstant( MS< NumericConstant >( "𝑒"			) );
-	RegisterNumericConstant( MS< NumericConstant >( "π"			) );
-	RegisterNumericConstant( MS< NumericConstant >( "γ"			) );
-	RegisterNumericConstant( MS< NumericConstant >( "φ"			) );
-	RegisterNumericConstant( MS< NumericConstant >( "log2e"		) );
-	RegisterNumericConstant( MS< NumericConstant >( "log10e"	) );
-	RegisterNumericConstant( MS< NumericConstant >( "ln2"		) );
-	RegisterNumericConstant( MS< NumericConstant >( "ln10"		) );
+	RegisterNumericConstant( "∞"		);
+	RegisterNumericConstant( "𝑒"			);
+	RegisterNumericConstant( "π"		);
+	RegisterNumericConstant( "γ"		);
+	RegisterNumericConstant( "φ"		);
+	RegisterNumericConstant( "log2e"	);
+	RegisterNumericConstant( "log10e"	);
+	RegisterNumericConstant( "ln2"		);
+	RegisterNumericConstant( "ln10"		);
 
 //	String <-> Int Conversion
 	Register< Unary >(
@@ -642,7 +688,7 @@ Build() {
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			return MS< Literal >( _->REPR(), U'"' );
 		}
-	,	"string"		//	parse Int 
+	,	"string"	//	stringify
 	);
 //	MATH EXTENTION
 	RegisterFloatPrefix( "abs", []( double _ ) { return abs( _ ); } );
@@ -653,23 +699,36 @@ Build() {
 	RegisterFloatPrefix( "asinh", []( double _ ) { return asinh( _ ); } );
 	RegisterFloatPrefix( "atan", []( double _ ) { return atan( _ ); } );
 	RegisterFloatPrefix( "atanh", []( double _ ) { return atanh( _ ); } );
-//	TODO: ATAN2
+	RegisterFloatPairPrefix( "atan2", []( double y, double x ) { return atan2( y, x ); } );
 	RegisterFloatPrefix( "cbrt", []( double _ ) { return cbrt( _ ); } );
 	RegisterFloatPrefix( "ceil", []( double _ ) { return ceil( _ ); } );
 	RegisterFloatPrefix( "cos", []( double _ ) { return cos( _ ); } );
 	RegisterFloatPrefix( "cosh", []( double _ ) { return cosh( _ ); } );
 	RegisterFloatPrefix( "exp", []( double _ ) { return exp( _ ); } );
 	RegisterFloatPrefix( "floor", []( double _ ) { return floor( _ ); } );
-//	TODO: HYPOT
+	RegisterFloatPairPrefix( "hypot", []( double _0, double _1 ) { return hypot( _0, _1 ); } );
 	RegisterFloatPrefix( "log", []( double _ ) { return log( _ ); } );
 	RegisterFloatPrefix( "log10", []( double _ ) { return log10( _ ); } );
 	RegisterFloatPrefix( "log2", []( double _ ) { return log2( _ ); } );
-//	TODO: MAX
-//	TODO: MIN
-//	TODO: POW
-//	TODO: RANDOM
+	RegisterFloatListPrefix( "max", []( V< double > const&_ ) { return *std::max_element( _.begin(), _.end() ); } );
+	RegisterFloatListPrefix( "min", []( V< double > const&_ ) { return *std::min_element( _.begin(), _.end() ); } );
+	RegisterFloatPairPrefix( "pow", []( double _0, double _1 ) { return pow( _0, _1 ); } );
+	RegisterFloatPairPrefix(
+		"random"
+	,	[]( double _0, double _1 ) {
+			static mt19937_64 RANGE{ random_device{}() };
+			uniform_real_distribution<double> dist( _0, _1 );
+			return dist( RANGE );
+		}
+	);
 	RegisterFloatPrefix( "round", []( double _ ) { return round( _ ); } );
-//	TODO: SIGN
+	Register< Prefix >(
+		[]( SP< Context > C, SP< SliP > _ ) {
+			auto $ = Z( "Illegal operand type: " + _->REPR(), Cast< Numeric >( _ ) )->Double();
+			return MS< Bits >( $ == 0 ? 0 : $ < 0 ? -1 : 1 );
+		}
+	,	"sign"
+	);
 	RegisterFloatPrefix( "sin", []( double _ ) { return sin( _ ); } );
 	RegisterFloatPrefix( "sinh", []( double _ ) { return sinh( _ ); } );
 	RegisterFloatPrefix( "sqrt", []( double _ ) { return sqrt( _ ); } );
@@ -683,8 +742,7 @@ Build() {
 //	expm1
 //	log1p
 
-
-
 //	TODO: JSON EXTENSION
+//	TODO: Graphic Extension
 }
 

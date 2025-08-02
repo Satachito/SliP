@@ -19,6 +19,11 @@ TestMath( SP< Context > C, string const& _, F f ) {
 }
 void
 TestMathApprox( SP< Context > C, string const& _, double $ ) {
+//	{	auto l = Cast< Float >( Eval( C, READ( _ ) ) )->$;
+//		if( !( abs( l - $ ) < numeric_limits<double>::epsilon() ) ) {
+//			cerr << setprecision( 16 ) << l << ':' << $ << ':' << numeric_limits<double>::epsilon() << endl;
+//		}
+//	}
 	A( abs( Cast< Float >( Eval( C, READ( _ ) ) )->$ - $ ) < numeric_limits<double>::epsilon() );
 }
 
@@ -46,7 +51,17 @@ MathTest( SP< Context > C ) {
 	TestMath< Float >( C, "( tan 1 )", []( auto const& _ ){ A( _->$ == tan( 1 ) ); } );
 	TestMath< Float >( C, "( tanh 1 )", []( auto const& _ ){ A( _->$ == tanh( 1 ) ); } );
 	TestMath< Float >( C, "( trunc 1 )", []( auto const& _ ){ A( _->$ == trunc( 1 ) ); } );
-//	TestMath< Float >( C, "(  1 )", []( auto const& _ ){ A( _->$ == ( 1 ) ); } );
+	
+	TestMathApprox( C, "( atan2 [ 1 1.7320508 ] )", 0.5235987833701112);
+	TestMathApprox( C, "( hypot [ 3 4 ] )", 5 );
+	TestMathApprox( C, "( max [ 2 3 4 ] )", 4 );
+	TestMathApprox( C, "( min [ 2 3 4 ] )", 2 );
+	TestMathApprox( C, "( pow [ 2 3 ] )", 8 );
+	TestMath< Float >( C, "( random [ 0 1 ] )", []( auto const& _ ){ A( 0 <= _->$ && _->$ <= 1 ); } );
+	TestMath< Float >( C, "¤", []( auto const& _ ){ A( 0 <= _->$ && _->$ <= 1 ); } );
+	TestMath< Bits >( C, "( sign -2 )", []( auto const& _ ){ A( _->$ == -1 ); } );
+	TestMath< Bits >( C, "( sign 0 )", []( auto const& _ ){ A( _->$ == 0 ); } );
+	TestMath< Bits >( C, "( sign 2 )", []( auto const& _ ){ A( _->$ == 1 ); } );
 
 	// log 系
 	TestMath< Float >( C, "( log 1 )",    []( auto const& _ ){ A( _->$ == 0 ); } );

@@ -257,7 +257,11 @@ Matrix : SliP {
 			_ += ' ';
 			_ += to_string( $[ I ] );
 		}
-		return _ + ' ' + C;
+		_ += ' ' + C;
+		return nCols
+		?	'(' + _ + "±" + to_string( nCols ) + ')'
+		:	_
+		;
 	}
 
 	tuple< uint64_t, uint64_t >

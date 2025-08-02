@@ -6,8 +6,8 @@ Eval( SP< Context >, SP< SliP > );
 extern SP< SliP >
 Read( iReader&, char32_t );
 
-extern bool				IsNil( SP< SliP > );
-extern bool				IsT( SP< SliP > );
+extern bool	IsNil( SP< SliP > );
+extern bool	IsT( SP< SliP > );
 
 static auto
 READ( const string& _ ) {
@@ -38,11 +38,13 @@ TestDict( SP< Context > C ) {
 	TestEvalException( C, "a"				, "Undefined name: a" );
 	Eval( C, READ( "('a=3)" ) );
 	Eval( C, READ( "('b=4)" ) );
-	TestEval< Bits >( C, "(¤§'(a))"			, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(¶§'(a))"			, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(¶§'a)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(¶§a)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "a"				, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
-	TestEval< Dict >( C, "¤", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
 	TestEval< List >(
 		C
 	,	"{ ( 'x = 2 ) x }"
@@ -51,8 +53,8 @@ TestDict( SP< Context > C ) {
 			A( Cast< Bits >( _->$[ 1 ] )->$ == 2 );
 		}
 	);
-	TestEval< Dict >( C, "¤", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
-	TestEval< Bits >( C, "(¤.'a)", []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEval< Bits >( C, "(¶.'a)", []( auto const& _ ){ A( _->$ == 3 ); } );
 
 	Eval( C, READ( "( 'x = 1 )" ) );
 	TestEval< Bits >( C, "x", []( auto const& _ ){ A( _->$ == 1 ); } );
@@ -394,8 +396,8 @@ EvalTest( SP< Context > C ) {
 	
 	TestEval< Bits >( C, "( [ 1 2 3 ]:# )", []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "( `abc`:# )", []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Literal >( C, "( ¶3 )", []( auto const& _ ){ A( _->$ == "3" ); } );
-	TestEval< Literal >( C, "( ¶`abc` )", []( auto const& _ ){ A( _->$ == "abc" ); } );
+	TestEval< Literal >( C, "( 3:string )", []( auto const& _ ){ A( _->$ == "3" ); } );
+	TestEval< Literal >( C, "( `abc`:string )", []( auto const& _ ){ A( _->$ == "`abc`" ); } );
 	TestEval< SliP >( C, "( ¬0 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
 	TestEval< SliP >( C, "( ¬[] )", []( auto const& _ ){ A( IsT( _ ) ); } );
 	TestEval< Bits >( C, "( ~1 )", []( auto const& _ ){ A( _->$ == 0xfffffffffffffffeL ); } );
