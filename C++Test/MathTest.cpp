@@ -57,7 +57,7 @@ MathTest( SP< Context > C ) {
 	TestMathApprox( C, "( max [ 2 3 4 ] )", 4 );
 	TestMathApprox( C, "( min [ 2 3 4 ] )", 2 );
 	TestMathApprox( C, "( pow [ 2 3 ] )", 8 );
-	TestMath< Float >( C, "( random [ 0 1 ] )", []( auto const& _ ){ A( 0 <= _->$ && _->$ <= 1 ); } );
+	TestMath< Float >( C, "( random [ 1 2 ] )", []( auto const& _ ){ A( 1 <= _->$ && _->$ <= 2 ); } );
 	TestMath< Float >( C, "¤", []( auto const& _ ){ A( 0 <= _->$ && _->$ <= 1 ); } );
 	TestMath< Bits >( C, "( sign -2 )", []( auto const& _ ){ A( _->$ == -1 ); } );
 	TestMath< Bits >( C, "( sign 0 )", []( auto const& _ ){ A( _->$ == 0 ); } );

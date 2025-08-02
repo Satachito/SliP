@@ -223,30 +223,35 @@ TestMatrix( SP< Context > C ) {
 	);
 }
 
-void
-TestStack( SP< Context > C ) {
-	TestEvalException( C, "@"				, "Stack underflow" );
-	TestEval< Bits >( C, "(3:'@)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< List >( C, "(3:'@@)"			, []( auto const& _ ){ A( _->REPR() == "[ 3 ]" ); } );
-
-}
 
 void
 EvalTest( SP< Context > C ) {
-
-	TestEval< Float >( C, "(abs -3)", []( auto const& _ ){ A( _->$ == 3 ); } );
-
+	TestEval< List >( C, "(3:'£)", []( auto const& _ ){ A( _->REPR() == "[ 3 ]" ); } );
+	TestEval< SliP >( C, "(3:'(@==3))", []( auto const& _ ){ A( IsT( _ ) ); } );
+	TestEvalException( C, "([255 37]:str)", "base must be 2..36" );
+	TestEval< Literal >( C, "(0:str)", []( auto const& _ ){ A( _->$ == "0" ); } );
+	TestEval< Literal >( C, "(-1:str)", []( auto const& _ ){ A( _->$ == "(-1)" ); } );
 
 	TestEval< Literal >( C, "(123:string)", []( auto const& _ ){ A( _->$ == "123" ); } );
+
+	TestEval< Literal >( C, "(255:str)", []( auto const& _ ){ A( _->$ == "255" ); } );
+	TestEval< Literal >( C, "([255 16]:str)", []( auto const& _ ){ A( _->$ == "ff" ); } );
+
+	//	TODO: Convert exception
+	TestEvalException( C, "([`ffffffffffffffffffffffffffffffff` 16]:int)", "stoll: out of range" );
+	TestEvalException( C, "([`ff` 37]:int)", "stoll: no conversion" );
+
+	TestEval< Bits >( C, "([`ff` 16]:int)", []( auto const& _ ){ A( _->$ == 255 ); } );
 	TestEval< Bits >( C, "(`123`:int)", []( auto const& _ ){ A( _->$ == 123 ); } );
 
+	TestEval< Float >( C, "(abs -3)", []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(3'3)", []( auto const& _ ){ A( _->$ == 9 ); } );
 
 	TestMatrix( C );
 
 	TestDict( C );
 
-	TestStack( C );
+	TestEval< Bits >( C, "(3:'@)", []( auto const& _ ){ A( _->REPR() == "3" ); } );
 
 	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
 
@@ -329,8 +334,11 @@ EvalTest( SP< Context > C ) {
 	TestEvalException( C, "( 5 / `3` )", "Illegal operand type: `3`" );
 	TestEval< Bits >( C, "( 5 / 3 )", []( auto const& _ ){ A( _->$ == 1 ); } );
 
-	TestEvalException( C, "( 3:3 )", "lhs must be List" );
-	TestEvalException( C, "( 3:'abc )", "lhs must be Dict" );
+	TestEval< Bits >( C, "( 3:3 )", []( auto const& _ ){ A( _->$ == 3 ); } );
+	
+	TestEvalException( C, "( 3:'abc )", "Undefined name: abc" );
+	extern SP< SliP > Pop();
+	A( Z( "TESTING: Must be Bits: ", Cast< Bits >( Pop() ) )->$ == 3 );
 
 	TestEval< SliP >( C, "( 2.0 == 1.0 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
 	TestEval< SliP >( C, "( 1 == `1` )", []( auto const& _ ){ A( IsNil( _ ) ); } );

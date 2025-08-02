@@ -12,6 +12,7 @@ SoloChars = {
 ,	U'⊥'	//	Falsum
 
 ,	U'!'
+,	U'@'
 ,	U'#'
 ,	U'$'
 ,	U'%'
@@ -54,7 +55,6 @@ OperatorChars = {
 ,	U'='
 ,	U'<'
 ,	U'>'
-,	U'@'
 };
 
 US<char32_t>

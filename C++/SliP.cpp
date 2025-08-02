@@ -1,39 +1,3 @@
-/*
-数字が小さいほどあと
-
-10:
-=           // assign
-
-20:
-== <>
-
-30:
-< > <= >= ∈ ∋
-
-40:
-&& || ^^    // logical
-
-50:
-§           // new context eval
-? ¿         // if, if-else
-,           // [l, ...r]
-
-60:
-+ -
-
-70:
-× · ÷ / %   // arithmetic
-
-80:
-& | ^       // bitwise
-
-90:
-:           // apply
-.           // Dict access
-±           // matrix-cols
-*/
-
-
 #include	"SliP.hpp"
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
@@ -51,13 +15,18 @@ Push( SP< SliP > _ ) {
 }
 SP< SliP >
 Pop() {
-	if ( theStack.empty() ) _Z( "Stack underflow" );
 	lock_guard< mutex >	lock( stackMutex );
+	if ( theStack.empty() ) _Z( "Stack underflow" );
 	auto $ = theStack.back();
 	theStack.pop_back();
 	return $;
 }
-
+SP< SliP >
+Top() {
+    lock_guard< mutex > lock( stackMutex );
+    if ( theStack.empty() ) _Z( "Stack underflow" );
+    return theStack.back();
+}
 V< SP< SliP > >
 StackCopy() {
 	lock_guard< mutex >	lock( stackMutex );
@@ -275,15 +244,15 @@ Build() {
 	
 	Register< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
-			return Pop();
+			return Top();
 		}
-	,	"@"		//	Stack top
+	,	"@"	//	Stack top
 	);
 	Register< Primitive >(
 		[]( SP< Context > ) -> SP< SliP > {
 			return MS< List >( StackCopy() );
 		}
-	,	"@@"	//	Stack list
+	,	"£"	//	Stack list
 	);
 	Register< Primitive >(
 		[]( SP< Context > C ) -> SP< SliP > {
@@ -338,18 +307,6 @@ Build() {
 		}
 	,	"¬"		//	Logical not
 	);
-	/*
-	Register< Prefix >(
-		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
-			auto literal = Cast< Literal >( _ );
-			return literal
-			?	literal
-			:	MS< Literal >( _->REPR() , U'`' )
-			;
-		}
-	,	"¶"		//	Convert to literal
-	);
-	*/
 
 	Register< Unary >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
@@ -404,6 +361,18 @@ Build() {
 			] = r;
 		}
 	,	"="		//	assign
+	,	0
+	);
+	RegisterInfix(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
+
+			Push( l );
+			auto $ = Eval( C, r );
+			Pop();
+			return $;
+		}
+	,	":"		//	Apply
 	,	10
 	);
 	RegisterInfix(
@@ -652,21 +621,8 @@ Build() {
 	,	"."		//	Dict element
 	,	90
 	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto R = Cast< Bits >( r ) ) return Z( "lhs must be List", Cast< List >( l ) )->$.at( R->$ );
-			if( auto R = Cast< Name >( r ) ) return Z( "lhs must be Dict", Cast< Dict >( l ) )->$.at( R->$ );
-			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
-
-			Push( l );
-			auto $ = Eval( C, r );
-			return $;
-		}
-	,	":"		//	Apply
-	,	90
-	);
 	RegisterNumericConstant( "∞"		);
-	RegisterNumericConstant( "𝑒"			);
+	RegisterNumericConstant( "𝑒"		);
 	RegisterNumericConstant( "π"		);
 	RegisterNumericConstant( "γ"		);
 	RegisterNumericConstant( "φ"		);
@@ -678,11 +634,54 @@ Build() {
 //	String <-> Int Conversion
 	Register< Unary >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			if( auto literal = Cast< Literal >( _ ) ) {
+				return MS< Bits >( stoll( literal->$ ) );
+			}
+			auto list = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) );
 			return MS< Bits >(
-				stoi( Z( "Illegal operand type: " + _->REPR(), Cast< Literal >( _ ) )->$ )
+				stoll(
+					Z( "Illegal operand type: " + list->$[ 0 ]->REPR(), Cast< Literal >( list->$[ 0 ] ) )->$
+				,	nullptr
+				,	(int)Z( "Illegal operand type: " + list->$[ 1 ]->REPR(), Cast< Bits >( list->$[ 1 ] ) )->$
+				)
 			);
 		}
 	,	"int"		//	parse Int 
+	);
+	Register< Unary >(
+		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			auto _Convert = []( uint64_t bits, uint64_t base ) {
+				if ( base < 2 || base > 36 ) throw invalid_argument( "base must be 2..36" );
+				const char* digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+				string $;
+				while( bits > 0 ) {
+					$ = digits[ bits % base ] + $;
+					bits /= base;
+				}
+				return $;
+			};
+			//	TODO: when intmin
+			auto Convert = [ & ]( int64_t bits, int64_t base = 10 ) {
+				return bits == 0
+				?	string( "0" )
+				:	bits < 0
+					?	string( "(-" ) + _Convert( -bits, base ) + string( ")" )
+					:	_Convert( bits, base )
+				;
+			};
+			if( auto bits = Cast< Bits >( _ ) ) {
+				return MS< Literal >( Convert( bits->$ ), U'`' );
+			}
+			auto list = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) );
+			return MS< Literal >(
+				Convert(
+					Z( "Illegal operand type: " + list->$[ 0 ]->REPR(), Cast< Bits >( list->$[ 0 ] ) )->$
+				,	Z( "Illegal operand type: " + list->$[ 1 ]->REPR(), Cast< Bits >( list->$[ 1 ] ) )->$
+				)
+			,	U'`'
+			);
+		}
+	,	"str"		//	stringify with hex
 	);
 	Register< Unary >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {

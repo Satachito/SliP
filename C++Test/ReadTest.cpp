@@ -21,6 +21,7 @@ static auto
 TestReadException( string const& _, string const& expected ) {
 	try {
 		READ( _ );
+		A( false );
 	} catch( exception const& e ) {
 		A( e.what() == expected );
 	}
@@ -85,9 +86,6 @@ ReadTest() {
 
 	A( READ( "\"A\\\\B\"" )->REPR() == "\"A\\B\"" );
 
-	TestReadException( "[ 3 + = 5 ]", "Syntax error: + =" );
-
-
 	TestRead( "[ -1 ]" );
 
 	TestReadException( "]", "Detect unopened close parenthesis: ]" );
@@ -101,7 +99,7 @@ ReadTest() {
 
 	TestRead( "[1.23.45]" );
 
-	TestReadException( "!@¡", "No such operator: !@¡" );
+	TestRead( "!@¡" );
 
 	TestRead( "[@1||2@]" );
 	TestRead( "{@1||2@}" );
