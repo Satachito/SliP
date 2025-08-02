@@ -261,7 +261,7 @@ RegisterFloatListPrefix( string const& label, F f ) {
 						project(
 							Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$
 						,	[ & ]( auto const& _ ){ return Z( "Illegal operand type: ", Cast< Numeric >( _ ) )->Double(); }
-		¶				)
+						)
 					)
 				)
 			);
