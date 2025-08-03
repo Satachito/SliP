@@ -15,7 +15,7 @@ echo "Compiling to WebAssembly..."
 # -s 'USE_EXCEPTION_CATCHING=1': C++例外処理を使用する場合 (今回の例では不要だが、一般的な設定として)
 # -s 'MALLOC="emmalloc"': メモリマネージャを指定（通常はデフォルトで良いが、明示的に）
 # --bind: emscripten::bind.h を使用することを示す
-emcc WASM.cpp \
+emcc WASM.cpp SliP.cpp Read.cpp Eval.cpp \
     -o ../Web/SliP.js \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MODULARIZE=1 \

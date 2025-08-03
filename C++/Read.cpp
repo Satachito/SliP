@@ -200,6 +200,6 @@ Read( iReader& R, char32_t terminator ) {
 			}
 		}
 	}
-	return 0;
+	return nullptr;
 }
 

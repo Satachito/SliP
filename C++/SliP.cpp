@@ -140,6 +140,9 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 	{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
 		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
 	}
+	{	auto L = Cast< Name >( l ), R = Cast< Name >( r );
+		if( L && R ) return L->$ == R->$ ? 0 : L->$ < R->$ ? -1 : 1;
+	}
 	{	auto L = Cast< List >( l ), R = Cast< List >( r );
 		if( L && R ) {
 			if( L->$.size() == R->$.size() ) {
@@ -289,12 +292,6 @@ Build() {
 	);
 	Register< Prefix >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-			return Eval( C, _ );
-		}
-	,	"!"		//	Eval
-	);
-	Register< Prefix >(
-		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			return MS< Bits >(
 				~Z( "Illegal operand type: " + _->REPR(), Cast< Bits >( _ ) )->$
 			);
@@ -306,6 +303,13 @@ Build() {
 			return IsNil( _ ) ? T : Nil;
 		}
 	,	"¬"		//	Logical not
+	);
+
+	Register< Unary >(
+		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			return Eval( C, _ );
+		}
+	,	"!"		//	Eval
 	);
 
 	Register< Unary >(
@@ -365,14 +369,18 @@ Build() {
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
-
-			Push( l );
-			auto $ = Eval( C, r );
-			Pop();
-			return $;
+			auto list = Z( "rhs must be a list", Cast< List >( r ) );
+			if( list->$.size() != 2 ) _Z( "rhs list must be 2 element" );
+			return Eval( C, list->$[ IsNil( l ) ? 1 : 0 ] );
 		}
-	,	":"		//	Apply
+	,	"?"		//	if else
+	,	10
+	);
+	RegisterInfix(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			return IsT( l ) ? Eval( C, r ) : Nil;
+		}
+	,	"¿"		//	if
 	,	10
 	);
 	RegisterInfix(
@@ -384,7 +392,7 @@ Build() {
 			return Nil;
 		}
 	,	"∈"		//	Member of
-	,	20
+	,	30
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
@@ -395,21 +403,21 @@ Build() {
 			return Nil;
 		}
 	,	"∋"		//	Includes
-	,	20
+	,	30
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) ? Nil : T;
 		}
 	,	"=="	//	Equal
-	,	20
+	,	30
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return _Compare( l, r ) ? T : Nil;
 		}
 	,	"<>"	//	Not Equal
-	,	20
+	,	30
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
@@ -460,11 +468,7 @@ Build() {
 	,	"^^"	//	Logical exclusive or
 	,	40
 	);
-	
-	
-	
-	
-	
+
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return Eval(
@@ -476,23 +480,6 @@ Build() {
 			);
 		}
 	,	"§"		//	Open new context with dict(l) then eval r
-	,	50
-	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return Eval(
-				C
-			,	Z( "Right operand must be two element List.", Cast< List >( r ) )->$[ IsNil( l ) ? 1 : 0 ]
-			);
-		}
-	,	"?"		//	if else
-	,	50
-	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return IsT( l ) ? Eval( C, r ) : Nil;
-		}
-	,	"¿"		//	if
 	,	50
 	);
 	RegisterInfix(
@@ -604,22 +591,46 @@ Build() {
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
+
+			Push( l );
+			auto $ = Eval( C, r );
+			Pop();
+			return $;
+		}
+	,	":"		//	Apply
+	,	90
+	);
+	RegisterInfix(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
 			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
 			L->nCols = R->$;
 			return L;
 		}
 	,	"±"		//	Set nCols
-	,	90
+	,	100
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Dict >( l ) );
-			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Name >( r ) );
-			return L->$[ R->$ ];
+			{	auto L = Cast< Dict >( l );
+				auto R = Cast< Name >( r );
+				if( L && R ) {
+					if( !L->$.contains( R->$ ) ) _Z( "No such key in dict: " + R->$ );
+					return L->$[ R->$ ];
+				}
+			}
+			{	auto L = Cast< List >( l );
+				auto R = Cast< Bits >( r );
+				if( L && R ) {
+					if( R->$ < 0 || R->$ >= L->$.size() ) _Z( "No such index in list: " + to_string( R->$ ) );
+					return L->$[ R->$ ];
+				}
+			}
+			_Z( "Illegal operand combination: " + l->REPR() + " :" + r->REPR() );
 		}
 	,	"."		//	Dict element
-	,	90
+	,	100
 	);
 	RegisterNumericConstant( "∞"		);
 	RegisterNumericConstant( "𝑒"		);

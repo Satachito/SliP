@@ -15,5 +15,8 @@ main( int argc, char* argv[] ) {
 
 	SP< SliP > Read( iReader&, char32_t );
 	SP< SliP > Eval( SP< Context >, SP< SliP > );
-	while( auto _ = Read( R, -1 ) ) cout << Eval( C, _ )->REPR() << endl;
+	while( auto _ = Read( R, -1 ) ) {
+		cout << '>' << _->REPR() << endl;
+		cout << '<' << Eval( C, _ )->REPR() << endl;
+	}
 }

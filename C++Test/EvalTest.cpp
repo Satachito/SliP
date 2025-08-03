@@ -6,9 +6,6 @@ Eval( SP< Context >, SP< SliP > );
 extern SP< SliP >
 Read( iReader&, char32_t );
 
-extern bool	IsNil( SP< SliP > );
-extern bool	IsT( SP< SliP > );
-
 static auto
 READ( const string& _ ) {
 	StringReader R( _ );
@@ -32,6 +29,9 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 		A( e.what() == expected );
 	}
 }
+
+extern bool	IsNil( SP< SliP > );
+extern bool	IsT( SP< SliP > );
 
 void
 TestDict( SP< Context > C ) {
@@ -413,8 +413,8 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "( 1 ^ 3 )", []( auto const& _ ){ A( _->$ == 2 ); } );
 
 
-	TestEval< Bits >( C, "(!'(3 + 5 ))", []( auto const& _ ){ A( _->$ == 8 ); } );
-	TestEvalException( C, "(¡`operator ¡`)", "`operator ¡`" );
+	TestEval< Bits >( C, "('(3 + 5 ):!)", []( auto const& _ ){ A( _->$ == 8 ); } );
+	TestEvalException( C, "(¡`LET ME THROW`)", "`LET ME THROW`" );
 
 	TestEval< SliP >( C, "( 1.0 == 1.0 )", []( auto const& _ ){ A( IsT( _ ) ); } );
 	TestEval< SliP >( C, "( 1.0 <> 1.0 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
