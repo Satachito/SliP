@@ -2,7 +2,6 @@
 xcuserdata/
 tmp
 _*
-*.wasm
 a.out
 *.swp
 .firebase/

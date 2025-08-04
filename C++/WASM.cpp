@@ -5,31 +5,29 @@
 auto
 C = MS< Context >();
 
-string
-REP( string const& _ ) {
-
-	StringReader
-	R( _ );
-
-	extern SP< SliP >
-	Read( iReader&, char32_t );
-
-	extern SP< SliP >
-	Eval( SP< Context >, SP< SliP > );
-
-	return Eval( C, Read( R, -1 ) )->REPR();
-}
-
 void
 INIT() {
-	cerr << "INIT" << endl;
+    extern void Build();
+    Build();
+    std::cout << "INIT" << std::endl;
 }
 
-EMSCRIPTEN_BINDINGS( SliP ) {
+string
+REP( string const& _ ) {
+    StringReader
+    R( _ );
+
+    extern SP< SliP >
+    Read( iReader&, char32_t );
+
+    extern SP< SliP >
+    Eval( SP< Context >, SP< SliP > );
+
+    return Eval( C, Read( R, -1 ) )->REPR();
+}
+
+EMSCRIPTEN_BINDINGS( my_module ) {
     emscripten::function( "init", &INIT );
-
-	extern void Build();
-    emscripten::function( "build", &Build );
-
     emscripten::function( "rep", &REP );
 }
+
