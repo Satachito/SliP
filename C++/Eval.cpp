@@ -72,10 +72,12 @@ ApplyPrefix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 	auto _ = Ss[ --I ];
 	auto applied = false;
 	V< SP< SliP > >	$;
-	while( I ) {
-		auto prefix = Cast< Prefix >( Ss[ --I ] );
-		if( prefix ) {
-			_ = prefix->$( C, _ );
+	while( I-- ) {
+		if( auto quote = Cast< Quote >( Ss[ I ] ) ) {
+			_ = quote->$( C, _ );
+			applied = true;
+		} else if( auto prefix = Cast< Prefix >( Ss[ I ] ) ) {
+			_ = prefix->$( C, applied ? _ : Eval( C, _ ) );
 			applied = true;
 		} else {
 			$.insert( $.begin(), applied ? _ : Eval( C, _ ) );
@@ -84,39 +86,6 @@ ApplyPrefix( SP< Context > C, V< SP< SliP > > const& Ss ) {
 		}
 	}
 	$.insert( $.begin(), applied ? _ : Eval( C, _ ) );
-	return $;
-}
-
-V< SP< SliP > >
-ReplacePrefix( V< SP< SliP > > const& Ss ) {
-	size_t	I = Ss.size();
-	if( I < 2 ) return Ss;
-	auto _ = Cast< Prefix >( Ss[ --I ] );
-
-	V< SP< SliP > >	$;
-	while( I-- ) {
-		auto prefix = Cast< Prefix >( Ss[ I ] );
-		auto infix = Cast< Infix >( Ss[ I ] );
-		if( prefix || infix ) {
-			$.insert( $.begin(), Ss[ I + 1 ] );
-		} else {
-			if ( _ ) {
-				if ( _->label == "+" ) {
-					extern SP< Infix > infixPlus;
-					$.insert( $.begin(), infixPlus );
-				} else if( _->label == "-" ) {
-					extern SP< Infix > infixMinus;
-					$.insert( $.begin(), infixMinus );
-				} else {
-					$.insert( $.begin(), Ss[ I + 1 ] );
-				}
-			} else {
-				$.insert( $.begin(), Ss[ I + 1 ] );
-			}
-		}
-		_ = prefix;
-	}
-	$.insert( $.begin(), Ss[ 0 ] );
 	return $;
 }
 
@@ -154,7 +123,7 @@ Eval( SP< Context > C, SP< SliP > S ) {
 		);
 	}
 	if( const auto sentence = Cast< Sentence >( S ) ) {
-		return ApplyInfix( C, ApplyPrefix( C, ReplacePrefix( sentence->$ ) ) );
+		return ApplyInfix( C, ApplyPrefix( C, sentence->$ ) );
 	}
 	return S;
 }

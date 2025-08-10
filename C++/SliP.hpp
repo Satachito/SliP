@@ -185,6 +185,14 @@ Primitive : Function {
 	) :	Function( label ), $( $ ) {}
 };
 struct
+Quote : Function {
+	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
+	Quote(
+		function< SP< SliP >( SP< Context >, SP< SliP > ) >				const& $
+	,	string label
+	) :	Function( label ), $( $ ) {}
+};
+struct
 Prefix : Function {
 	function< SP< SliP >( SP< Context >, SP< SliP > ) >								$;
 	Prefix(

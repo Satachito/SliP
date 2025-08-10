@@ -14,8 +14,14 @@ READ( const string& _ ) {
 
 template< typename T, typename F > void
 TestEval( SP< Context > C, string const& _, F f ) {
-//cerr << _ << endl;
 	f( Cast< T >( Eval( C, READ( _ ) ) ) );
+//	try {
+//		f( Cast< T >( Eval( C, READ( _ ) ) ) );
+//	} catch( exception const& e ) {
+//		cerr << "--------:" << _ << endl;
+//		cerr << "e.what():" << e.what() << endl;
+//		throw e;
+//	}
 }
 
 static auto
@@ -25,10 +31,11 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 		Eval( C, READ( _ ) );
 		A( false );
 	} catch( exception const& e ) {
-		if( e.what() != expected ) {
-			cerr << "e.what():" << e.what() << endl;
-			cerr << "expected:" << expected << endl;
-		}
+//		if( e.what() != expected ) {
+//			cerr << "--------:" << _ << endl;
+//			cerr << "e.what():" << e.what() << endl;
+//			cerr << "expected:" << expected << endl;
+//		}
 		A( e.what() == expected );
 	}
 }
@@ -237,6 +244,7 @@ TestMatrix( SP< Context > C ) {
 void
 EvalTest( SP< Context > C ) {
 	TestEval< SliP >( C, "( 'a == 1 )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
+	TestEvalException( C, "( + 'a )", "Not a numeric" );
 	TestEval< SliP >( C, "( 1 == 'a )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
 	TestEval< SliP >( C, "( 'a == 'b )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
 	TestEval< SliP >( C, "( 'b == 'a )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
@@ -247,7 +255,6 @@ EvalTest( SP< Context > C ) {
 	TestEvalException( C, "([255 37]:str)", "base must be 2..36" );
 	TestEval< Literal >( C, "(0:str)", []( auto const& _ ){ A( _->$ == "0" ); } );
 	TestEval< Literal >( C, "(-1:str)", []( auto const& _ ){ A( _->$ == "(-1)" ); } );
-
 	TestEval< Literal >( C, "(123:string)", []( auto const& _ ){ A( _->$ == "123" ); } );
 
 	TestEval< Literal >( C, "(255:str)", []( auto const& _ ){ A( _->$ == "255" ); } );
@@ -272,7 +279,7 @@ EvalTest( SP< Context > C ) {
 	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
 
 	TestEval< SliP >( C, "()", []( auto const& _ ){ A( IsNil( _ ) ); } );
-	TestEval< Prefix >( C, "(')", []( auto const& _ ){ A( _->label == "'" ); } );
+	TestEval< Quote >( C, "(')", []( auto const& _ ){ A( _->label == "'" ); } );
 
 	TestEval< List >( C, "(1+'a)", []( auto const& _ ){ A( _->REPR() == "[ 1 a ]" ); } );
 	TestEval< List >( C, "('a+1)", []( auto const& _ ){ A( _->REPR() == "[ a 1 ]" ); } );

@@ -77,13 +77,60 @@ BreakingChars = {
 extern SP< SliP >
 Read( iReader&, char32_t );
 
+static auto
+PlusOrMinusInfix( SP< SliP > _ ) {
+	auto
+	$ = Cast< Infix >( _ );
+	return $
+	?	( $->label == "+" || $->label == "-" ) ? $ : nullptr
+	:	nullptr
+	;
+}
+
+
 V< SP< SliP > >
 ReadList( iReader& R, char32_t close ) {
 
-	V< SP< SliP > > $;
-	while ( auto _ = Read( R, close ) ) $.push_back( _ );
+	SP< Infix >
+	PMI = nullptr;
+
+	V< SP< SliP > >	$;
+
+	auto
+	BackIsInfixOrPrefix = [ & ]() {
+		return $.size()
+		?	( Cast< Infix >( $.back() ) != 0 || Cast< Prefix >( $.back() ) != 0 )
+		:	true	//	CAUTION: true if no back()
+		;
+	};
+
+	while( auto _ = Read( R, close ) ) {
+
+		if(	PMI ) {
+			if(	BackIsInfixOrPrefix() ) {
+				if(	auto numeric = Cast< Numeric >( _ ) ) {	//	Infix/Prefix - PMI - numeric
+					$.push_back( PMI->label == "-" ? numeric->Negate() : numeric );
+				} else {									//	Infix/Prefix - PMI - SliP -> Infix/Prefix - prefixMinus - SliP
+					extern SP< Prefix >	prefixPlus;
+					extern SP< Prefix >	prefixMinus;
+					$.push_back( PMI->label == "-" ? prefixMinus : prefixPlus );
+					$.push_back( _ );
+				}
+				PMI = nullptr;
+			} else {										//	SliP - PMI - SliP
+				$.push_back( PMI );
+				PMI = PlusOrMinusInfix( _ );
+				if( !PMI ) $.push_back( _ );
+			}
+		} else {
+			PMI = PlusOrMinusInfix( _ );
+			if( !PMI ) $.push_back( _ );
+		}
+	}
+	if( PMI ) $.push_back( PMI );
 	return $;
 }
+
 
 void
 WhenEscaped( V< char32_t >& $, char32_t _ ) {
@@ -188,10 +235,6 @@ Read( iReader& R, char32_t terminator ) {
 		case U'('	: return MS< Sentence	>( ReadList( R, U')' ) );
 		default		:
 			{	auto name = ReadNameRaw( R, _ );
-				extern SP< Prefix >	prefixPlus;
-				if(	name == "+" ) return prefixPlus;
-				extern SP< Prefix >	prefixMinus;
-				if(	name == "-" ) return prefixMinus;
 				extern UM< string, SP< SliP > > BUILTINS;
 				auto it = BUILTINS.find( name );
 				return it == BUILTINS.end()

@@ -14,6 +14,12 @@ static auto
 TestRead( string const& _ ) {
 	auto
 	$ = READ( _ )->REPR();
+//	{	auto _ = READ( $ )->REPR();
+//		if( $ != _ ) {
+//			cerr << "_: " << _ << endl;
+//			cerr << "$: " << $ << endl;
+//		}
+//	}
 	A( $ == READ( $ )->REPR() );
 }
 
@@ -21,8 +27,14 @@ static auto
 TestReadException( string const& _, string const& expected ) {
 	try {
 		READ( _ );
+		cerr << "--------:" << _ << endl;
 		A( false );
 	} catch( exception const& e ) {
+//		if( e.what() != expected ) {
+//			cerr << "--------:" << _ << endl;
+//			cerr << "e.what():" << e.what() << endl;
+//			cerr << "expected:" << expected << endl;
+//		}
 		A( e.what() == expected );
 	}
 }
@@ -30,6 +42,8 @@ TestReadException( string const& _, string const& expected ) {
 void
 ReadTest() {
 	
+	A( READ( "(1-)" )->REPR() == "( 1 - )" );
+
 	TestReadException( "⟨@⟩", "All elements of the matrix must be numeric." );
 	{	auto $ = Cast< Matrix >( READ( "⟨1 2 3 4 5 6⟩" ) );
 		{	auto [ nRows, nCols ] = $->Shape();

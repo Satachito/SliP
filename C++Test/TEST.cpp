@@ -68,7 +68,7 @@ main( int argc, char* argv[] ) {
 
 		{	auto
 			C2 = MS< Context >( C );
-
+			cerr << Eval( C2, READ( "( sign -2 )" ) )->REPR() << endl;
 			cerr << Eval( C2, READ(
 R"(	(   'forX = '(
 			@.0:# > 0 ¿ '{
@@ -81,8 +81,6 @@ R"(	(   'forX = '(
 			) )->REPR() << endl;
 
 			cerr << Eval( C2, READ( "( [ [ a b c ] ( @:¦ ) ]:forX )" ) )->REPR() << endl;
-
-
 
 			Eval(
 				C2
@@ -150,12 +148,9 @@ R"(	( 'MAX = '(
 
 		}
 		
-		
-
-
 		void MathTest( SP< Context > );
 		MathTest( C );
-		
+
 		void EvalTest( SP< Context > );
 		EvalTest( C );
 

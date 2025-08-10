@@ -71,7 +71,7 @@ Nil = MS< List >( V< SP< SliP > >{} );
 auto
 prefixPlus = MS< Prefix >(
 	[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-		return Z( "Not numeric", Cast< Numeric >( Eval( C, _ ) ) );
+		return Z( "Not a numeric", Cast< Numeric >( _ ) );
 	}
 ,	"+"
 );
@@ -79,59 +79,11 @@ prefixPlus = MS< Prefix >(
 auto
 prefixMinus = MS< Prefix >(
 	[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-		return Z( "Not numeric", Cast< Numeric >( Eval( C, _ ) ) )->Negate();
+		return Z( "Not a numeric", Cast< Numeric >( _ ) )->Negate();
 	}
 ,	"-"
 );
 
-auto
-infixPlus = MS< Infix >(
-	[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-		{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
-			if( L && R ) {
-				int64_t	$;
-				if( !ckd_add( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-			}
-		}
-		{	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
-			if( L && R ) return MS< Float >( L->Double() + R->Double() );
-		}
-		{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
-			if( L && R ) return MS< Literal	>( L->$ + R->$, L->mark );
-		}
-		{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
-			if( L && R ) return MS< Sentence	>( L->$ + R->$ );
-		}
-		{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
-			if( L && R ) return MS< Procedure	>( L->$ + R->$ );
-		}
-		{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
-			if( L && R ) return MS< Parallel	>( L->$ + R->$ );
-		}
-		{	auto L = Cast< List			>( l ), R = Cast< List		>( r );
-			if( L && R ) return MS< List		>( L->$ + R->$ );
-		}
-		return MS< List >( V< SP< SliP > >{ l, r } );
-	}
-,	"+"		//	Plus
-,	60
-);
-auto
-infixMinus = MS< Infix >(
-	[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-		{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
-			if( L && R ) {
-				int64_t	$;
-				if( !ckd_sub( &$, L->$, R->$ ) ) return MS< Bits >( $ );
-			}
-		}
-		auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
-		auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
-		return MS< Float >( L->Double() - R->Double() );
-	}
-,	"-"		//	Minus
-,	60
-);
 int
 _Compare( SP< SliP > l, SP< SliP > r ) {
 	{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
@@ -281,7 +233,7 @@ Build() {
 		}
 	,	"¤"
 	);
-	Register< Prefix >(
+	Register< Quote >(
 		[]( SP< Context >, SP< SliP > _ ) -> SP< SliP > {
 			return _;
 		}
@@ -501,6 +453,52 @@ Build() {
 	,	50
 	);
 
+	RegisterInfix(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			{	auto L = Cast< Bits >( l ), R = Cast< Bits >( r );
+				if( L && R ) {
+					int64_t	$;
+					if( !ckd_add( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+				}
+			}
+			{	auto L = Cast< Numeric >( l ), R = Cast< Numeric >( r );
+				if( L && R ) return MS< Float >( L->Double() + R->Double() );
+			}
+			{	auto L = Cast< Literal >( l ), R = Cast< Literal >( r );
+				if( L && R ) return MS< Literal	>( L->$ + R->$, L->mark );
+			}
+			{	auto L = Cast< Sentence		>( l ), R = Cast< Sentence	>( r );
+				if( L && R ) return MS< Sentence	>( L->$ + R->$ );
+			}
+			{	auto L = Cast< Procedure	>( l ), R = Cast< Procedure	>( r );
+				if( L && R ) return MS< Procedure	>( L->$ + R->$ );
+			}
+			{	auto L = Cast< Parallel		>( l ), R = Cast< Parallel	>( r );
+				if( L && R ) return MS< Parallel	>( L->$ + R->$ );
+			}
+			{	auto L = Cast< List			>( l ), R = Cast< List		>( r );
+				if( L && R ) return MS< List		>( L->$ + R->$ );
+			}
+			return MS< List >( V< SP< SliP > >{ l, r } );
+		}
+	,	"+"		//	Plus
+	,	60
+	);
+	RegisterInfix(
+		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
+			{	auto L = Cast< Bits	>( l ), R = Cast< Bits	>( r );
+				if( L && R ) {
+					int64_t	$;
+					if( !ckd_sub( &$, L->$, R->$ ) ) return MS< Bits >( $ );
+				}
+			}
+			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Numeric >( l ) );
+			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Numeric >( r ) );
+			return MS< Float >( L->Double() - R->Double() );
+		}
+	,	"-"		//	Minus
+	,	60
+	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
