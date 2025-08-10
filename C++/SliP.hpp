@@ -151,11 +151,7 @@ Dict : SliP {
 	string
 	REPR() const override {
 		string _ = "{";
-		bool first = true;
-		for ( auto const& [ K, V ] : $ ) {
-			_ += ( first ? "\t" : ",\t" ) + K + ": " + V->REPR() + "\n";
-			first = false;
-		}
+		for ( auto const& [ K, V ] : $ ) _ += "\t( '" + K + " = '" + V->REPR() + " )\n";
 		_ += "}";
 		return _;
 	}

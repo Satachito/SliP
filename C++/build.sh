@@ -7,7 +7,7 @@ c++ -std=c++23 CLI.cpp SliP.cpp Read.cpp Eval.cpp -o SliP
 echo "Compiling to WebAssembly..."
 # Emscripten を使ってコンパイル
 # -s EXPORTED_FUNCTIONS="['_processString']": C++の関数をJS側から呼び出せるようにエクスポート
-#    通常、emscripten::bind.h を使う場合は不要ですが、念のため記述
+#	通常、emscripten::bind.h を使う場合は不要ですが、念のため記述
 # -s ALLOW_MEMORY_GROWTH=1: 必要に応じてメモリを自動的に拡張することを許可
 # -s MODULARIZE=1: JSグルーコードをCommonJS/ESモジュールとしてラップする
 # -s 'EXPORT_ES6=1': ES6モジュールとしてエクスポート（import文で読み込むため）
@@ -22,15 +22,16 @@ echo "Compiling to WebAssembly..."
 #	-s EXPORT_ES6=1 \
 #	-s ENVIRONMENT="web" \
 #	--bind \
-#	-Wno-character-conversion \
+#	--no-character-conversion \
 #	-std=c++23 \
 #	-g
 
 em++ SliP.cpp Read.cpp Eval.cpp WASM.cpp \
 	-o ../Web/SliP.js \
 	-std=c++23 \
-    -sMODULARIZE \
-    -sEXPORT_ES6 \
+	-sMODULARIZE \
+	-sEXPORT_ES6 \
 	-sENVIRONMENT=web \
-    -sEXPORT_NAME=createModule \
-    --bind
+	-sEXCEPTION_CATCHING_ALLOWED=all \
+	-sEXPORT_NAME=createSliP \
+	--bind

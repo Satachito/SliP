@@ -25,7 +25,10 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 		Eval( C, READ( _ ) );
 		A( false );
 	} catch( exception const& e ) {
-//cerr << e.what() << ':' << expected << endl;
+		if( e.what() != expected ) {
+			cerr << "e.what():" << e.what() << endl;
+			cerr << "expected:" << expected << endl;
+		}
 		A( e.what() == expected );
 	}
 }
@@ -35,16 +38,15 @@ extern bool	IsT( SP< SliP > );
 
 void
 TestDict( SP< Context > C ) {
-	TestEvalException( C, "a"				, "Undefined name: a" );
-	Eval( C, READ( "('a=3)" ) );
-	Eval( C, READ( "('b=4)" ) );
-	TestEval< Bits >( C, "(¶§'(a))"			, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(¶§'a)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(¶§a)"			, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "a"				, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(a)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEval< Bits >( C, "(-a)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
-	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEvalException( C, "a"		, "Undefined name: a" );
+	TestEval< Bits >( C, "('a=3)"	, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "('b=4)"	, []( auto const& _ ){ A( _->$ == 4 ); } );
+	TestEval< Bits >( C, "(¶§'(a))"	, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(¶§'a)"	, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(¶§a)"	, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "a"		, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(a)"		, []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< Bits >( C, "(-a)"		, []( auto const& _ ){ A( _->$ == -3 ); } );
 	TestEval< List >(
 		C
 	,	"{ ( 'x = 2 ) x }"
@@ -53,8 +55,16 @@ TestDict( SP< Context > C ) {
 			A( Cast< Bits >( _->$[ 1 ] )->$ == 2 );
 		}
 	);
-	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\ta: 3\n,\tb: 4\n}" ); } );
+	TestEval< SliP >( C, "( 'A == 'B )", []( auto const& _ ){ A( IsNil( _ ) ); }  );
+	TestEval< SliP >( C, "( 'B == 'A )", []( auto const& _ ){ A( IsNil( _ ) ); }  );
+	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\t( 'a = '3 )\n\t( 'b = '4 )\n}" ); } );
 	TestEval< Bits >( C, "(¶.'a)", []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEvalException( C, "(¶.`abc`)", "Illegal operand combination" );
+	TestEvalException( C, "(¶.'x)", "No such key in dict: x" );
+	TestEvalException( C, "(¶.3)", "Illegal operand combination" );
+	TestEvalException( C, "( [ a b c ].-1 )", "Index out of bounds: -1" );
+	TestEvalException( C, "( [ a b c ].3 )", "Index out of bounds: 3" );
+	TestEvalException( C, "( [ a b c ].`a` )", "Illegal operand combination" );
 
 	Eval( C, READ( "( 'x = 1 )" ) );
 	TestEval< Bits >( C, "x", []( auto const& _ ){ A( _->$ == 1 ); } );
@@ -226,8 +236,14 @@ TestMatrix( SP< Context > C ) {
 
 void
 EvalTest( SP< Context > C ) {
+	TestEval< SliP >( C, "( 'a == 1 )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
+	TestEval< SliP >( C, "( 1 == 'a )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
+	TestEval< SliP >( C, "( 'a == 'b )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
+	TestEval< SliP >( C, "( 'b == 'a )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
+	TestEvalException( C, "( 0 ? [ 1 2 3 ] )", "rhs list must be 2 element" );
 	TestEval< List >( C, "(3:'£)", []( auto const& _ ){ A( _->REPR() == "[ 3 ]" ); } );
 	TestEval< SliP >( C, "(3:'(@==3))", []( auto const& _ ){ A( IsT( _ ) ); } );
+	TestEvalException( C, "([255 1]:str)", "base must be 2..36" );
 	TestEvalException( C, "([255 37]:str)", "base must be 2..36" );
 	TestEval< Literal >( C, "(0:str)", []( auto const& _ ){ A( _->$ == "0" ); } );
 	TestEval< Literal >( C, "(-1:str)", []( auto const& _ ){ A( _->$ == "(-1)" ); } );

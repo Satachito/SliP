@@ -118,7 +118,7 @@ textarea {
 	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
 	<br>
 	<input type=button class="di mini-key" value=π>
-	<input type=button class="di mini-key" value=e>
+	<input type=button class="di mini-key" value=𝑒>
 	<input type=button class="di mini-key" value=∞><br>
 	<br>
 	<input type=button class="di label" value=sin()>
@@ -308,6 +308,11 @@ ReplaceAllParenthesis = _ => (
 ,	_
 )
  
+import createSliP from './SliP.js'
+const
+SliP = await createSliP()
+SliP.INIT()
+
 const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
 
@@ -315,8 +320,6 @@ const
 Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	RemoveCanvas()
-
-	const c = NewContext()
 
 	RESULT.textContent = ''
 
@@ -350,14 +353,13 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 			}
 			return $
 		}
-		const $ = new StringReader( pped )
 		while ( true ) {
 			try {
-				const start = $._
-				const _ = Read( $ )
-				if ( !_ ) break
-				INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ).style.color = 'grey' )
-				AppendPRE( Eval( c, _ ).string() )
+			//	INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ).style.color = 'grey' )
+				const
+				rep = JSON.parse( SliP.REP( $ ) )
+				rep.response && AppendPRE( rep.response )
+				if( rep.error ) throw( rep.error )
 			} catch ( ex ) {
 				TreatEX( ex )
 			}
@@ -374,7 +376,10 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 				const $ = ( index < 0 ? _ : _.substring( 0, index ) ).trim()
 				if ( $.length ) {
 					try {
-						AppendPRE( Eval( c, Sugared( $ ) ).string() )
+						const
+						rep = JSON.parse( SliP.REP( '(' + $ + ')' ) )
+						rep.response && AppendPRE( rep.response )
+						if( rep.error ) throw( rep.error )
 					} catch ( ex ) {
 						TreatEX( ex )
 					}
@@ -448,13 +453,11 @@ AppendPRE = text => {
 }
 const
 TreatEX = ex => (
-	console.error( ex )
-,	Array.isArray( ex )
+	Array.isArray( ex )
 	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
 	:	AppendDIV( ex ).style.color = 'red'
+//,	console.error( ex )
 )
-
-import { NewContext, StringReader, Read, Eval, Sugared } from './SliP/_.js'
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
@@ -468,6 +471,19 @@ window.onload = () => (
 ,	PROGRAM_MODE.checked = localStorage.getItem( 'MODE' ) != null
 ,	SyncProgrammingKeys()
 )
+
+/*
+setInterval(
+	() => performance.memory && console.log(
+		performance.memory.usedJSHeapSize       // 使用中の JS ヒープサイズ（bytes）
+	,	performance.memory.totalJSHeapSize      // JS ヒープ全体（bytes）
+	,	performance.memory.jsHeapSizeLimit      // 上限（bytes）
+	,	SliP.HEAP8.buffer.byteLength
+	,	SliP.HEAPU8.buffer.byteLength
+	)
+,	1000
+)
+*/
 
 </script>
 

@@ -1,4 +1,7 @@
-#include	"SliP.hpp"
+#include "SliP.hpp"
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
 
@@ -623,13 +626,13 @@ Build() {
 			{	auto L = Cast< List >( l );
 				auto R = Cast< Bits >( r );
 				if( L && R ) {
-					if( R->$ < 0 || R->$ >= L->$.size() ) _Z( "No such index in list: " + to_string( R->$ ) );
+					if( R->$ < 0 || L->$.size() <= R->$ ) _Z( "Index out of bounds: " + to_string( R->$ ) );
 					return L->$[ R->$ ];
 				}
 			}
-			_Z( "Illegal operand combination: " + l->REPR() + " :" + r->REPR() );
+			_Z( "Illegal operand combination" );	//	+ l->REPR() + " :" + r->REPR() );
 		}
-	,	"."		//	Dict element
+	,	"."		//	element
 	,	100
 	);
 	RegisterNumericConstant( "∞"		);
@@ -753,6 +756,19 @@ Build() {
 //	log1p
 
 //	TODO: JSON EXTENSION
+/*
+	Register< Unary >(
+		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			auto literal = Z( "LHS must be Literal", Cast< Literal >( _ ) );
+			json j = json::parse( literal->$ )
+
+			return MS< Literal >(
+			//	TODO:
+			);
+		}
+	,	"byJSON"
+	);
+*/
 //	TODO: Graphic Extension
 }
 

@@ -46,14 +46,14 @@ cosπ
 tan(0)
 tanπ
 
-e
+𝑒
 exp(0)
 exp(1)
 exp(-1)
 exp(2)
 
-log( e )
-log( e × e )
+log( 𝑒 )
+log( 𝑒 × 𝑒 )
 
 'log8 = '( log( @ ) ÷ log( 8 ) )
 512:log8
@@ -131,8 +131,8 @@ a + b
 
 [ "A" "B" "C" ] + [ "D" "E" "F" ]
 //	Lisp's CAR
-[ "A" "B" "C" ]:0
-[ "A" "B" "C" ]:1
+[ "A" "B" "C" ].0
+[ "A" "B" "C" ].1
 [ "A" "B" "C" ]:$
 [ "A" "B" "C" ]:#
 //	Lisp's CDR
@@ -150,8 +150,10 @@ a + b
 
 //	 String <-> Integer
 
-[ 65536 16 ] : string
+65536 : string
+[ 65536 16 ] : str
 [ "10000" 16 ] : int
+"10000" : int
 
 //	 byJSON, toJSON
 `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON
@@ -159,14 +161,16 @@ a + b
 `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:toJSON
 
 //	 Matrix
-[ 1 2 3 ] · [ 1 2 3 ]
-[ [ 1 2 3 4 5 6 ] 3 ] : matrix
-[ [ 1 2 3 4 5 6 ] 2 ] : matrix · [ [ 1 2 3 4 5 6 ] 3 ]: matrix
 
-//	 Builtins
-"Show all"
+⟨ 1 2 3 ⟩ · ⟨ 1 2 3 ⟩
+⟨ 1 2 3 4 5 6 ⟩±3
+⟨ 1 2 3 4 5 6 ⟩±2 · ⟨ 1 2 3 4 5 6 ⟩±3
+
+//	Make dict
+¶
+
+//	Random
 ¤
-
 
 ///////////////////////////////////	MATH
 
@@ -207,7 +211,7 @@ atan( 5 ÷ 3 )
 //	1.0303768265243125
 atan2[ 1 1 ]
 //	0.7853981633974483
-'calcAngleDegrees = '( atan2[ ( @:1 ) (@:0 ) ] × 180 ÷ π ) 
+'calcAngleDegrees = '( atan2( ( @.1 ) (@.0 ) ) × 180 ÷ π ) 
 [ 5 5 ]:calcAngleDegrees
 //	45
 [ 0 10 ]:calcAngleDegrees
@@ -236,7 +240,7 @@ ceil(7.004)
 //	8
 ceil(-7.004)
 //	-7
-'getCircleX = '( cos( @:0 ) × @:1 )
+'getCircleX = '( cos( @.0 ) × @.1 )
 [ 1 10 ]:getCircleX
 //	5.403023058681398
 [ 2 10 ]:getCircleX
@@ -300,7 +304,7 @@ log2(0)
 //	-∞
 max[ 1 3 2 ]
 //	3
-max[ (-1) (-3) (-2) ]
+max{ (-1) (-3) (-2) }
 //	-1
 'array1 = [ 1 3 2 ]
 max( array1 )
@@ -321,9 +325,9 @@ pow[ 7 (-2) ]
 //                  (1/49)
 pow[ -7 0.5 ]
 //	NaN
-random
+¤
 //
-'getRandomInt = '( floor( random × @ ) )
+'getRandomInt = '( floor( ¤ × @ ) )
 3:getRandomInt
 //	0, 1 or 2
 1:getRandomInt
