@@ -113,6 +113,7 @@ MathTest( SP< Context > C ) {
 	TestMathApprox( C, "( acosh 1 )",    0 );
 	TestMathApprox( C, "( atanh 0 )",    0 );
 
+
 }
 
 

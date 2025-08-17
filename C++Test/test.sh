@@ -2,8 +2,8 @@ rm -f _ *.profraw *.profdata index.html control.js style.css
 rm -rf coverage
 
 # カバレッジ計測付きでビルド
-clang++ -DDEBUG -fprofile-instr-generate -fcoverage-mapping -std=c++23 -o _ \
-	../C++/Read.cpp ../C++/Eval.cpp ../C++/SliP.cpp \
+clang++ -DDEBUG -fprofile-instr-generate -fcoverage-mapping -std=c++2c -o _ \
+	../C++/Read.cpp ../C++/Eval.cpp ../C++/SliP.cpp ../C++/json.cpp \
 	TEST.cpp EvalTest.cpp ReadTest.cpp MathTest.cpp
 
 # プロファイル出力を指定して実行
@@ -23,12 +23,4 @@ open index.html
 
 # rm -f _ *.profraw *.profdata index.html control.js style.css 
 # rm -rf coverage
-
-
-
-# rm ./_ _-*
-# echo "Compiling TEST..."
-# c++ -fprofile-arcs -ftest-coverage -std=c++23 TEST.cpp
-# ./test
-# gcov TEST.cpp
 

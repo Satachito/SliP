@@ -54,7 +54,7 @@ Float : Numeric {
 	Float( double $ ) : $( $ ) {}
 
 	string
-	REPR() const override { return to_string( $ ); }
+	REPR() const override { return double_to_string( $ ); }
 
 	SP< Numeric >
 	Negate() const override {
@@ -352,3 +352,4 @@ StringReader : iReader {
 	char32_t	Read()		{ return $[ _++ ]		; }
 	char32_t	Peek()		{ return $[ _ ]			; }
 };
+

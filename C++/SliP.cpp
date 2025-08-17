@@ -1,8 +1,5 @@
 #include "SliP.hpp"
 
-#include "json.hpp"
-using json = nlohmann::json;
-
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
 
 V< SP< SliP > >
@@ -140,6 +137,7 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 	}
 	return l == r ? 0 : l < r ? -1 : 1;
 }
+
 
 UM< string, SP< SliP > > BUILTINS;
 
@@ -753,20 +751,35 @@ Build() {
 //	expm1
 //	log1p
 
-//	TODO: JSON EXTENSION
-/*
+//	JSON EXTENSION
+
 	Register< Unary >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-			auto literal = Z( "LHS must be Literal", Cast< Literal >( _ ) );
-			json j = json::parse( literal->$ )
-
-			return MS< Literal >(
-			//	TODO:
+			extern string ToJSON( SP< SliP > );
+			return MS< Literal >( ToJSON( _ ), U'`' );
+		}
+	,	"toJSON"
+	);
+	Register< Unary >(
+		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			StringReader R( 
+				Z( "LHS must be Literal", Cast< Literal >( _ ) )->$
 			);
+			extern SP< SliP >ByJSON( iReader& );
+			return ByJSON( R );
 		}
 	,	"byJSON"
 	);
-*/
 //	TODO: Graphic Extension
 }
-
+/*
+is_null()
+is_boolean()
+is_number()
+is_number_integer()
+is_number_unsigned()
+is_number_float()
+is_string()
+is_array()
+is_object()
+*/

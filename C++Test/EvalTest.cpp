@@ -29,6 +29,7 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 //cerr << _ << endl;
 	try {
 		Eval( C, READ( _ ) );
+		cerr << _ << ':' << expected << endl;
 		A( false );
 	} catch( exception const& e ) {
 //		if( e.what() != expected ) {
@@ -243,6 +244,221 @@ TestMatrix( SP< Context > C ) {
 
 void
 EvalTest( SP< Context > C ) {
+
+	TestEvalException( C, "( ``:byJSON )", "Invalid JSON" );
+	TestEvalException( C, "( `hoge`:byJSON )", "Invalid JSON" );
+	TestEvalException( C, "( `test`:byJSON )", "Invalid JSON" );
+	TestEvalException( C, "( `full`:byJSON )", "Invalid JSON" );
+	TestEvalException( C, "( `none`:byJSON )", "Invalid JSON" );
+	TestEval< Bits >(
+		C
+	,	"( `\n\t\r +123`:byJSON )"
+	,	[]( auto const& _ ) {
+			A( _->$ == 123 );
+		}
+	);
+	TestEval< List >( C, "(`[ null,1.23 ]`:byJSON)", []( auto const& _ ){ A( _->$.size() == 2 ); } );
+	TestEval< List >( C, "(`[ null ,1.23 ]`:byJSON)", []( auto const& _ ){ A( _->$.size() == 2 ); } );
+
+	TestEval< List >(
+		C
+	,	R"(
+			( `[]`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$.size() == 0 );
+		}
+	);
+	TestEvalException(
+		C
+	,	R"( ( `[`: byJSON ) )"
+	,	"Invalid JSON Array"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `[ 123 123 ]`: byJSON ) )"
+	,	"Invalid JSON Array"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{`: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{ 123 `: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{ "a"`: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{ "a" 123 `: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{ "a": 123 "b" `: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `{ "a": 123,`: byJSON ) )"
+	,	"Invalid JSON Object"
+	);
+	TestEvalException(
+		C
+	,	R"( ( `"`: byJSON ) )"
+	,	"Invalid JSON String"
+	);
+	TestEval< Literal >(
+		C
+	,	R"( ( `{ "a": 3.14, "b": "3.14","C":[123,"ABC"] }`: byJSON : toJSON ) )"
+	,	[]( auto const& _ ) {
+			A( _->$ == R"({"a":3.14,"b":"3.14","C":[123,"ABC"]})" );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	R"( ( 'abc: toJSON ) )"
+	,	[]( auto const& _ ) {
+			A( _->$ == "" );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	R"( ( [ 3.14 "3.14" ]: toJSON ) )"
+	,	[]( auto const& _ ) {
+			A( _->$ == "[3.14,\"3.14\"]" );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	R"( ( "3.14": toJSON ) )"
+	,	[]( auto const& _ ) {
+			A( _->$ == "\"3.14\"" );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	"( 3.14: toJSON )"
+	,	[]( auto const& _ ) {
+			A( _->$ == "3.14" );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	"( 3: toJSON )"
+	,	[]( auto const& _ ) {
+			A( _->$ == "3" );
+		}
+	);
+
+	TestEval< Dict >(
+		C
+	,	R"(
+			( `{ "a": "abc", "b": 3.14 }`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$.size() == 2 );
+			A( Cast< Literal >( _->$[ "a" ] ) != nullptr );
+			A( Cast< Float >( _->$[ "b" ] ) != nullptr );
+		}
+	);
+	TestEval< List >(
+		C
+	,	R"(
+			( `[ "abc", 3.14 ]`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$.size() == 2 );
+			A( Cast< Literal >( _->$[ 0 ] ) != nullptr );
+			A( Cast< Float >( _->$[ 1 ] ) != nullptr );
+		}
+	);
+	TestEval< Float >(
+		C
+	,	R"(
+			( `3.14`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == 3.14 );
+		}
+	);
+	TestEval< Float >(
+		C
+	,	R"(
+			( `19223372036854775808`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == 19223372036854775808.0 );
+		}
+	);
+	TestEval< Float >(
+		C
+	,	R"(
+			( `9223372036854775808`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == 9223372036854775808ULL );
+		}
+	);
+	TestEval< Bits >(
+		C
+	,	R"(
+			( `-9223372036854775808`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == -9223372036854775807LL - 1 );
+		}
+	);
+	TestEval< Literal >(
+		C
+	,	R"(
+			( `"ABC"`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == "ABC" );
+		}
+	);
+	TestEval< Bits >(
+		C
+	,	R"(
+			( `3`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == 3 );
+		}
+	);
+	TestEval< Float >(
+		C
+	,	R"(
+			( `3.5`:byJSON )
+		)"
+	,	[]( auto const& _ ) {
+			A( _->$ == 3.5 );
+		}
+	);
+
+	TestEval< SliP >(
+		C
+	,	R"( ( `null`:byJSON ))"
+	,	[]( auto const& _ ) { A( IsNil( _ ) ); }
+	);
+	TestEval< SliP >(
+		C
+	,	R"( ( `true`:byJSON ))"
+	,	[]( auto const& _ ) { A( IsT( _ ) ); }
+	);
+	TestEval< SliP >(
+		C
+	,	R"( ( `false`:byJSON ))"
+	,	[]( auto const& _ ) { A( IsNil( _ ) ); }
+	);
+
 	TestEval< SliP >( C, "( 'a == 1 )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
 	TestEvalException( C, "( + 'a )", "Not a numeric" );
 	TestEval< SliP >( C, "( 1 == 'a )" , []( auto const& _ ){ A( IsNil(_ ) ); } );
@@ -521,7 +737,10 @@ EvalTest( SP< Context > C ) {
 	TestEval< Bits >( C, "(+3)"				, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "(-3)"				, []( auto const& _ ){ A( _->$ == -3 ); } );
 
-	TestEval< Float >( C, "( 1.2 - 1.3 )"	, []( auto const& _ ){ A( _->REPR() == "-0.100000" ); } );
+	TestEval< Float >( C, "( 1.2 - 1.3 )"	, []( auto const& _ ){
+cerr << _->REPR() << endl;
+		A( _->REPR() == "-0.1" );
+	} );
 
 	TestEval< Bits >( C, "( 1+ +1 )"		, []( auto const& _ ){ A( _->$ == 2 ); } );
 	TestEval< Bits >( C, "( 1+ -1 )"		, []( auto const& _ ){ A( _->$ == 0 ); } );

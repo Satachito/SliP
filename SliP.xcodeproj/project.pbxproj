@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		121371562E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
+		121371572E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
 		1280CD352E3B93910024B733 /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD332E3B93910024B733 /* TEST.cpp */; };
 		1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2D2E3B93910024B733 /* EvalTest.cpp */; };
 		1280CD372E3B93910024B733 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2F2E3B93910024B733 /* ReadTest.cpp */; };
@@ -115,6 +117,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		121371552E4E2FFF00E28A33 /* json.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = json.cpp; sourceTree = "<group>"; };
 		1233447F2E0CC5BB001764D8 /* CLI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CLI.xctestplan; sourceTree = "<group>"; };
 		1280CD2D2E3B93910024B733 /* EvalTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EvalTest.cpp; sourceTree = "<group>"; };
 		1280CD2F2E3B93910024B733 /* ReadTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReadTest.cpp; sourceTree = "<group>"; };
@@ -364,6 +367,7 @@
 				12FBD5462E2D071200B178F7 /* SliP.cpp */,
 				12FBD5432E2D033E00B178F7 /* Eval.cpp */,
 				12FBD5402E2D028500B178F7 /* Read.cpp */,
+				121371552E4E2FFF00E28A33 /* json.cpp */,
 			);
 			path = "C++";
 			sourceTree = "<group>";
@@ -677,6 +681,7 @@
 				1280CD392E3CD2830024B733 /* MathTest.cpp in Sources */,
 				12FBD5452E2D033E00B178F7 /* Eval.cpp in Sources */,
 				12FBD5472E2D071200B178F7 /* SliP.cpp in Sources */,
+				121371572E4E2FFF00E28A33 /* json.cpp in Sources */,
 				12FBD5422E2D028500B178F7 /* Read.cpp in Sources */,
 				1280CD352E3B93910024B733 /* TEST.cpp in Sources */,
 				1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */,
@@ -709,6 +714,7 @@
 				12FBD5442E2D033E00B178F7 /* Eval.cpp in Sources */,
 				12FBD5482E2D071200B178F7 /* SliP.cpp in Sources */,
 				12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */,
+				121371562E4E2FFF00E28A33 /* json.cpp in Sources */,
 				12FBD5412E2D028500B178F7 /* Read.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
