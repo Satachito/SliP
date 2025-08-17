@@ -242,9 +242,23 @@ TestMatrix( SP< Context > C ) {
 }
 
 
+
+
+
+//			( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'C )
+
+
+
 void
 EvalTest( SP< Context > C ) {
 
+	TestEval< Dict >(
+		C
+	,	R"( ( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'@ ) )"
+	,	[]( auto const& _ ) {
+			cerr << _->REPR() << endl;
+		}
+	);
 	TestEvalException( C, "( ``:byJSON )", "Invalid JSON" );
 	TestEvalException( C, "( `hoge`:byJSON )", "Invalid JSON" );
 	TestEvalException( C, "( `test`:byJSON )", "Invalid JSON" );

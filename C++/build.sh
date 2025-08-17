@@ -2,7 +2,9 @@
 
 rm ./a.out
 echo "Compiling CLI..."
-c++ -std=c++23 CLI.cpp SliP.cpp Read.cpp Eval.cpp -o SliP
+c++ CLI.cpp SliP.cpp Read.cpp Eval.cpp json.cpp \
+	-o SliP \
+	-std=c++23
 
 echo "Compiling to WebAssembly..."
 # Emscripten を使ってコンパイル
@@ -26,7 +28,7 @@ echo "Compiling to WebAssembly..."
 #	-std=c++23 \
 #	-g
 
-em++ SliP.cpp Read.cpp Eval.cpp WASM.cpp \
+em++ SliP.cpp Read.cpp Eval.cpp json.cpp WASM.cpp \
 	-o ../Web/SliP.js \
 	-std=c++23 \
 	-sMODULARIZE \
