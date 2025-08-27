@@ -162,14 +162,19 @@ RegisterFloatPrefix( string const& label, F f ) {
 	);
 }
 
+SP< SliP >
+EvalIsolated( SP< Context > C, SP< SliP > _ ) {
+	return Eval( MS< Context >( C ), _ );
+}
+
 template < typename F > void
 RegisterFloatPairPrefix( string const& label, F f ) {
 	BUILTINS[ label ] = MS< Prefix >(
 		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			auto $ = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$;
 			return MS< Float >(
-				f(	Z( "Illegal operand type: " + $[ 0 ]->REPR(), Cast< Numeric >( $[ 0 ] ) )->Double()
-				,	Z( "Illegal operand type: " + $[ 1 ]->REPR(), Cast< Numeric >( $[ 1 ] ) )->Double()
+				f(	Z( "Illegal operand type: " + $[ 0 ]->REPR(), Cast< Numeric >( EvalIsolated( C, $[ 0 ] ) ) )->Double()
+				,	Z( "Illegal operand type: " + $[ 1 ]->REPR(), Cast< Numeric >( EvalIsolated( C, $[ 1 ] ) ) )->Double()
 				)
 			);
 		}
@@ -185,7 +190,7 @@ RegisterFloatListPrefix( string const& label, F f ) {
 				f(	ranges::to< V >(
 						project(
 							Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$
-						,	[ & ]( auto const& _ ){ return Z( "Illegal operand type: ", Cast< Numeric >( _ ) )->Double(); }
+						,	[ & ]( auto const& _ ){ return Z( "Illegal operand type: ", Cast< Numeric >( EvalIsolated( C, _ ) ) )->Double(); }
 						)
 					)
 				)
@@ -715,12 +720,19 @@ Build() {
 	RegisterFloatPrefix( "cosh", []( double _ ) { return cosh( _ ); } );
 	RegisterFloatPrefix( "exp", []( double _ ) { return exp( _ ); } );
 	RegisterFloatPrefix( "floor", []( double _ ) { return floor( _ ); } );
-	RegisterFloatPairPrefix( "hypot", []( double _0, double _1 ) { return hypot( _0, _1 ); } );
+	RegisterFloatListPrefix(
+		"hypot"
+	,	[]( V< double > const& _ ) {
+			double $ = 0.0;
+			for ( auto _ : _ ) $ += _ * _;
+			return sqrt( $ );
+		}
+	);
 	RegisterFloatPrefix( "log", []( double _ ) { return log( _ ); } );
 	RegisterFloatPrefix( "log10", []( double _ ) { return log10( _ ); } );
 	RegisterFloatPrefix( "log2", []( double _ ) { return log2( _ ); } );
-	RegisterFloatListPrefix( "max", []( V< double > const&_ ) { return *std::max_element( _.begin(), _.end() ); } );
-	RegisterFloatListPrefix( "min", []( V< double > const&_ ) { return *std::min_element( _.begin(), _.end() ); } );
+	RegisterFloatListPrefix( "max", []( V< double > const& _ ) { return *std::max_element( _.begin(), _.end() ); } );
+	RegisterFloatListPrefix( "min", []( V< double > const& _ ) { return *std::min_element( _.begin(), _.end() ); } );
 	RegisterFloatPairPrefix( "pow", []( double _0, double _1 ) { return pow( _0, _1 ); } );
 	RegisterFloatPairPrefix(
 		"random"

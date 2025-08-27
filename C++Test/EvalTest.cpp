@@ -45,7 +45,8 @@ extern bool	IsNil( SP< SliP > );
 extern bool	IsT( SP< SliP > );
 
 void
-TestDict( SP< Context > C ) {
+TestDict( SP< Context > c ) {
+	auto C = MS< Context >( c );
 	TestEvalException( C, "a"		, "Undefined name: a" );
 	TestEval< Bits >( C, "('a=3)"	, []( auto const& _ ){ A( _->$ == 3 ); } );
 	TestEval< Bits >( C, "('b=4)"	, []( auto const& _ ){ A( _->$ == 4 ); } );
@@ -242,19 +243,25 @@ TestMatrix( SP< Context > C ) {
 }
 
 
-
-
-
-//			( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'C )
-
-
-
 void
 EvalTest( SP< Context > C ) {
 
+	TestEval< Name >(
+		C
+	,	"( 'angleInDegree = '( atan2[ ( @.1 ) (@.0 ) ] × 180 ÷ π ) )"
+	,	[]( auto const& _ ) {
+		}
+	);
+	TestEval< Float >(
+		C
+	,	R"( ( [ 5 5 ]:angleInDegree ) )"
+	,	[]( auto const& _ ) {
+			A( _->$ == 45 );
+		}
+	);
 	TestEval< Dict >(
 		C
-	,	R"( ( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'@ ) )"
+	,	R"( ( ( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON ).'C ) )"
 	,	[]( auto const& _ ) {
 			cerr << _->REPR() << endl;
 		}

@@ -157,7 +157,7 @@ a + b
 
 //	 byJSON, toJSON
 `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON
-`{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:'C
+( `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON ).'C
 `{ "A":1, "B":[ 2, 3, 4 ], "C":{ "D":[ 4, 5, 6 ] } }`:byJSON:toJSON
 
 //	 Matrix
@@ -177,7 +177,7 @@ a + b
 //	https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math
 
 π
-e
+𝑒
 ∞
 -∞
 
@@ -211,10 +211,10 @@ atan( 5 ÷ 3 )
 //	1.0303768265243125
 atan2[ 1 1 ]
 //	0.7853981633974483
-'calcAngleDegrees = '( atan2( ( @.1 ) (@.0 ) ) × 180 ÷ π ) 
-[ 5 5 ]:calcAngleDegrees
+'angleInDegree = '( atan2[ ( @.1 ) (@.0 ) ] × 180 ÷ π ) 
+[ 5 5 ]:angleInDegree
 //	45
-[ 0 10 ]:calcAngleDegrees
+[ 0 10 ]:angleInDegree
 //	90
 atanh(-1)
 //	-∞
@@ -412,7 +412,6 @@ trunc(-0.123)
 ///////////////////////	Operators
 
 3:'@
-3:'@@
 ¤
 ¡"Exception"
 
@@ -423,8 +422,8 @@ trunc(-0.123)
 ¬[] 
 
 '{ ( 'a = 3 ) a }
-!'{ ( 'a = 3 ) a }
-!'{ ( 'a = 3 ) a }:0
+'{ ( 'a = 3 ) a }:!
+('{ ( 'a = 3 ) a }:!).0
 
 `{"a":3,"b":2}`:byJSON§'( a b ) 
 //	6
@@ -445,15 +444,16 @@ trunc(-0.123)
 //	`1`
 
 '{ 1 2 3 }:toJSON
-//	{ 1 2 3 } can not be converted to JSON
-//	Evaluating: ' { 1 2 3 } : toJSON
+//	`[1,2,3]`
 
 [ 2 3 4 ]:#
 [ 2 3 4 ]:*
 [ 2 3 4 ]:$
 
-¶3 + "ab"
-3:.:¦
+//¶3 + "ab"
+//	これ、なんで書いたのか思い出せない
+
+3:;:¦
 //	See console
 
 "abc"?[ ( 3 + 4 ) ( 5 + 6 ) ]
