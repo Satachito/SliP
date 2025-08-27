@@ -1,6 +1,6 @@
 #include <emscripten/bind.h>
 
-#include "SliP.hpp"
+#include "../C++/SliP.hpp"
 
 string
 json_escape( string const& _ ) {
