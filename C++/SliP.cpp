@@ -141,65 +141,6 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 
 UM< string, SP< SliP > > BUILTINS;
 
-template < typename T, typename F > void	//	prefix, unary, primitive
-Register( F $, string const& label ) { BUILTINS[ label ] = MS< T >( $, label ); }
-
-template < typename F > void
-RegisterInfix( F $, string const& label, int priority ) { BUILTINS[ label ] = MS< Infix >( $, label, priority ); }
-
-void
-RegisterNumericConstant( string const& label ) { BUILTINS[ label ] = MS< NumericConstant >( label ); }
-
-template	< typename F >	void
-RegisterFloatPrefix( string const& label, F f ) {
-	BUILTINS[ label ] = MS< Prefix >(
-		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-			return MS< Float >(
-				f( Z( "Illegal operand type: " + _->REPR(), Cast< Numeric >( Eval( C, _ ) ) )->Double() )
-			);
-		}
-	,	label
-	);
-}
-
-SP< SliP >
-EvalIsolated( SP< Context > C, SP< SliP > _ ) {
-	return Eval( MS< Context >( C ), _ );
-}
-
-template < typename F > void
-RegisterFloatPairPrefix( string const& label, F f ) {
-	BUILTINS[ label ] = MS< Prefix >(
-		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-			auto $ = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$;
-			return MS< Float >(
-				f(	Z( "Illegal operand type: " + $[ 0 ]->REPR(), Cast< Numeric >( EvalIsolated( C, $[ 0 ] ) ) )->Double()
-				,	Z( "Illegal operand type: " + $[ 1 ]->REPR(), Cast< Numeric >( EvalIsolated( C, $[ 1 ] ) ) )->Double()
-				)
-			);
-		}
-	,	label
-	);
-}
-
-template < typename F > void
-RegisterFloatListPrefix( string const& label, F f ) {
-	BUILTINS[ label ] = MS< Prefix >(
-		[ & ]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
-			return MS< Float >(
-				f(	ranges::to< V >(
-						project(
-							Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$
-						,	[ & ]( auto const& _ ){ return Z( "Illegal operand type: ", Cast< Numeric >( EvalIsolated( C, _ ) ) )->Double(); }
-						)
-					)
-				)
-			);
-		}
-	,	label
-	);
-}
-
 auto
 Build() {
 	
@@ -784,14 +725,5 @@ Build() {
 	);
 //	TODO: Graphic Extension
 }
-/*
-is_null()
-is_boolean()
-is_number()
-is_number_integer()
-is_number_unsigned()
-is_number_float()
-is_string()
-is_array()
-is_object()
-*/
+
+
