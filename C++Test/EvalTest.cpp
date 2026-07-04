@@ -513,6 +513,14 @@ EvalTest( SP< Context > C ) {
 
 	TestEval< Bits >( C, "(3:'@)", []( auto const& _ ){ A( _->REPR() == "3" ); } );
 
+	//	Apply as accessor ( JS engine compatible ) — non List / Dict lhs keeps the stack semantics ( "( 3:3 )" below )
+	TestEval< Bits >( C, "( [ 10 20 30 ] : 1 )", []( auto const& _ ){ A( _->$ == 20 ); } );
+	TestEval< SliP >( C, "( [ 10 20 30 ] : 5 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< SliP >( C, "( [ 10 20 30 ] : 1.5 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Bits >( C, "( { ( 'a = 3 ) ¶ }:$ : 'a )", []( auto const& _ ){ A( _->$ == 3 ); } );
+	TestEval< SliP >( C, "( { ( 'a = 3 ) ¶ }:$ : 'b )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Bits >( C, "( { ( 'a = 3 ) ¶ }:$ : `a` )", []( auto const& _ ){ A( _->$ == 3 ); } );
+
 	TestEval< SliP >( C, "( π == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
 
 	TestEval< SliP >( C, "()", []( auto const& _ ){ A( IsNil( _ ) ); } );

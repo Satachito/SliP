@@ -540,7 +540,19 @@ Build() {
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			if( auto R = Cast< Unary >( r ) ) return R->$( C, l );
-
+			if( auto L = Cast< List >( l ) ) {		//	list : index -> element, Nil when out of range
+				if( auto R = Cast< Numeric >( r ) ) {
+					auto $ = R->Double();
+					auto i = (int64_t)$;
+					return ( i == $ && 0 <= i && i < (int64_t)L->$.size() ) ? L->$[ i ] : Nil;
+				}
+			}
+			if( auto L = Cast< Dict >( l ) ) {		//	dict : key -> value, Nil when missing
+				if( Cast< Name >( r ) || Cast< Literal >( r ) ) {
+					auto K = Cast< Name >( r ) ? Cast< Name >( r )->$ : Cast< Literal >( r )->$;
+					return L->$.contains( K ) ? L->$[ K ] : Nil;
+				}
+			}
 			Push( l );
 			auto $ = Eval( C, r );
 			Pop();
