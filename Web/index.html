@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html lang=zxx>
+<meta charset=utf-8>
 <title>SliP, the awesome calculator.</title>
 <style>
 :root {
@@ -80,6 +81,7 @@ nav {
 ;	padding					: 6px
 ;	font-family				: monospace
 ;	overflow				: scroll
+;	min-width				: 242px
 }
 aside {
 ;	border-left				: 1px solid var( --border )
@@ -144,6 +146,54 @@ textarea {
 ;	font-size				: 85%
 ;	color					: var( --muted )
 }
+.mode-tabs {
+;	display					: grid
+;	grid-template-columns	: repeat( 3, minmax( 0, 1fr ) )
+;	gap						: 4px
+;	margin					: 0 0 8px 0
+}
+.mode-tab {
+;	min-height				: 32px
+;	padding					: 0 6px
+;	border					: 1px solid var( --soft-border )
+;	background				: var( --control-bg )
+;	color					: var( --control-fg )
+;	cursor					: pointer
+}
+.mode-tab.active {
+;	border-color			: var( --border )
+;	background				: var( --subtle-bg )
+;	font-weight				: bold
+}
+.key-section {
+;	display					: grid
+;	gap						: 4px
+;	margin-bottom			: 10px
+}
+.key-row {
+;	display					: grid
+;	grid-template-columns	: repeat( 4, 1fr )
+;	gap						: 4px
+}
+.key-row input {
+;	width					: 100%
+;	min-width				: 0
+}
+.key-row.three {
+;	grid-template-columns	: repeat( 3, 1fr )
+}
+.key-row.six {
+;	grid-template-columns	: repeat( 6, 1fr )
+}
+.key-row.seven {
+;	grid-template-columns	: repeat( 7, 1fr )
+}
+.section-title {
+;	margin					: 10px 0 4px 0
+;	font-size				: 11px
+;	color					: var( --muted )
+;	text-transform			: uppercase
+}
 @media ( max-width: 768px ) {
 body {
 ;	grid-template-columns	: minmax( 0, 1fr )
@@ -156,6 +206,7 @@ nav {
 ;	border-right			: none
 ;	border-bottom			: 1px solid var( --border )
 ;	max-height				: 36vh
+;	min-width				: 0
 }
 aside {
 ;	border-left				: none
@@ -174,20 +225,33 @@ aside {
 }
 .big-key {
 ;	height					: 32px
-;	width					: 32px
+;	min-width				: 42px
+}
+.bracket-key {
+;	height					: 44px
+;	font-size				: 140%
+;	font-weight				: bold
 }
 .mini-key {
 ;	padding					: 0
 ;	height					: 24px
-;	width					: 20px
+;	min-width				: 24px
 }
 .label {
 ;	padding					: 0
-;	width					: 56px
+;	min-height				: 28px
+;	min-width				: 56px
 }
 .mid-key {
 ;	padding					: 0
-;	width					: 24px
+;	min-height				: 26px
+;	min-width				: 28px
+}
+.wide-key {
+;	grid-column				: span 2
+}
+.mode-panel[hidden] {
+;	display					: none
 }
 
 </style>
@@ -201,173 +265,228 @@ aside {
 
 <nav>
 	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALCULATE><br>
-	<br>
-	<input type=button class="di big-key" value=7>
-	<input type=button class="di big-key" value=8>
-	<input type=button class="di big-key" value=9>
-	<input type=button class="di big-key" value=÷><br>
-	<input type=button class="di big-key" value=4>
-	<input type=button class="di big-key" value=5>
-	<input type=button class="di big-key" value=6>
-	<input type=button class="di big-key" value=×><br>
-	<input type=button class="di big-key" value=1>
-	<input type=button class="di big-key" value=2>
-	<input type=button class="di big-key" value=3>
-	<input type=button class="di big-key" value=-><br>
-	<input type=button class="di big-key" value=0>
-	<input type=button class="di big-key" value=.>
-	<input type=button class="   big-key" value=⏎	id=KEY_RET	>
-	<input type=button class="di big-key" value=+><br>
-	<input type=button class="di big-key" value=(>
-	<input type=button class="di big-key" value=)>
-	<input type=button class="di big-key" value=%>
-	<input type=button class="   big-key" value=←	id=DELETE	><br>
-	<br>
-	<input type=button style="height:32px; width:100%" value=SPACE id=KEY_SPACE><br>
-	<br>
-	<input type=button class="di mini-key" value=π>
-	<input type=button class="di mini-key" value=𝑒>
-	<input type=button class="di mini-key" value=∞><br>
-	<br>
-	<input type=button class="di label" value=sin()>
-	<input type=button class="di label" value=cos()>
-	<input type=button class="di label" value=tan()><br>
-	<input type=button class="di label" value=log()>
-	<input type=button class="di label" value=exp()>
-	<input type=button class="di label" value=sqrt()><br>
-	<input type=button class="di label" value=atan2[]>
-	<input type=button class="di label" value=pow[]>
-	<input type=button class="di label" value=random><br>
-	<br>
-	<input type=button class="di label" value=asin()>
-	<input type=button class="di label" value=acos()>
-	<input type=button class="di label" value=atan()><br>
-
-	<input type=button class="di label" value=sinh()>
-	<input type=button class="di label" value=cosh()>
-	<input type=button class="di label" value=tanh()><br>
-
-	<input type=button class="di label" value=asinh()>
-	<input type=button class="di label" value=acosh()>
-	<input type=button class="di label" value=atanh()><br>
-
-	<input type=button class="di label" value=round()>
-	<input type=button class="di label" value=ceil()>
-	<input type=button class="di label" value=floor()><br>
-	<input type=button class="di label" value=abs()>
-	<input type=button class="di label" value=trunc()>
-	<input type=button class="di label" value=sign()><br>
-	<input type=button class="di label" value=cbrt()>
-	<input type=button class="di label" value=log2()>
-	<input type=button class="di label" value=log10()><br>
-	<input type=button class="di label" value=hypot[]>
-	<input type=button class="di label" value=max[]>
-	<input type=button class="di label" value=min[]><br>
-	<br>
-	<input type=button class="di mini-key" value=α>
-	<input type=button class="di mini-key" value=β>
-	<input type=button class="di mini-key" value=γ>
-	<input type=button class="di mini-key" value=δ>
-	<input type=button class="di mini-key" value=ε>
-	<input type=button class="di mini-key" value=ζ><br>
-	<input type=button class="di mini-key" value=η>
-	<input type=button class="di mini-key" value=θ>
-	<input type=button class="di mini-key" value=ι>
-	<input type=button class="di mini-key" value=κ>
-	<input type=button class="di mini-key" value=λ>
-	<input type=button class="di mini-key" value=μ><br>
-	<input type=button class="di mini-key" value=ν>
-	<input type=button class="di mini-key" value=ξ>
-	<input type=button class="di mini-key" value=ο>
-	<input type=button class="di mini-key" value=π>
-	<input type=button class="di mini-key" value=ρ>
-	<input type=button class="di mini-key" value=ς>
-	<input type=button class="di mini-key" value=σ><br>
-	<input type=button class="di mini-key" value=τ>
-	<input type=button class="di mini-key" value=υ>
-	<input type=button class="di mini-key" value=φ>
-	<input type=button class="di mini-key" value=χ>
-	<input type=button class="di mini-key" value=ψ>
-	<input type=button class="di mini-key" value=ω><br>
-
-	<div id=PROGRAMMING_KEYS style="display: none">
-		<br>
-		<input type=button class="di mid-key" value=&>		Bit and<br>
-		<input type=button class="di mid-key" value=|>		Bit or<br>
-		<input type=button class="di mid-key" value=^>		Bit xor<br>
-		<input type=button class="di mid-key" value=~>		Bit not<br>
-		<input type=button class="di mid-key" value=&&>		Logical and<br>
-		<input type=button class="di mid-key" value=||>		Logical or<br>
-		<input type=button class="di mid-key" value=^^>		Logical xor<br>
-		<input type=button class="di mid-key" value=¬>		Logical not<br>
-
-		<input type=button class="di mid-key" value=·>		Inner product<br>
-
-		<input type=button class="di mid-key" value=.>		Dict/list index<br>
-		<input type=button class="di mid-key" value=;>		Stdout print<br>
-		<input type=button class="di mid-key" value=¦>		Stderr print<br>
-
-		<input type=button class="di mid-key" value="==">	Equal<br>
-		<input type=button class="di mid-key" value="<>">	Not equal<br>
-		<input type=button class="di mid-key" value="<">	Less than<br>
-		<input type=button class="di mid-key" value="<=">	Less equal<br>
-		<input type=button class="di mid-key" value=">">	Greater than<br>
-		<input type=button class="di mid-key" value=">=">	Greater equal<br>
-
-		<input type=button class="di mid-key" value=∈>		Member of<br>
-		<input type=button class="di mid-key" value=∋>		Include<br>
-
-		<input type=button class="di mid-key" value='""'>	String<br>
-		<input type=button class="di mid-key" value=``>		String<br>
-
-		<input type=button class="di mid-key" value=[]>		List<br>
-		<input type=button class="di mid-key" value={}>		Procedure evaluation<br>
-		<input type=button class="di mid-key" value=«»>		Shared-context block<br>
-
-		<input type=button class="di mid-key" value=#>		# of items in list<br>
-		<input type=button class="di mid-key" value=$>		The last item<br>
-		<input type=button class="di mid-key" value=*>		List w/o 1st element<br>
-		<input type=button class="di mid-key" value=,>		[ L ] + R<br>
-
-		<input type=button class="di mid-key" value=¶>		Context dictionary<br>
-		<input type=button class="di mid-key" value="=">	Assign<br>
-
-		<input type=button class="di mid-key" value=!>		Eval<br>
-		<input type=button class="di mid-key" value="'">	Quote<br>
-		<input type=button class="di mid-key" value=¡>		Throw<br>
-		<input type=button class="di mid-key" value=@>		Stack top<br>
-		<input type=button class="di mid-key" value=¿>		If<br>
-		<input type=button class="di mid-key" value=?>		If else<br>
-		<input type=button class="di mid-key" value=§>		Eval R in Dict L<br>
-		<input type=button class="di mid-key" value=¤>		Random 0..1<br>
-		<input type=button class="di mid-key" value=:>		Apply<br>
+	<div class=mode-tabs id=MODE_TABS>
+		<button type=button class=mode-tab data-mode=CALCULATOR>Calculator</button>
+		<button type=button class=mode-tab data-mode=SCIENCE>Science</button>
+		<button type=button class=mode-tab data-mode=CODE>Code</button>
 	</div>
-	<br>
-	<input type=button class="di mini-key" value=Α>
-	<input type=button class="di mini-key" value=Β>
-	<input type=button class="di mini-key" value=Γ>
-	<input type=button class="di mini-key" value=Δ>
-	<input type=button class="di mini-key" value=Ε>
-	<input type=button class="di mini-key" value=Ζ><br>
-	<input type=button class="di mini-key" value=Η>
-	<input type=button class="di mini-key" value=Θ>
-	<input type=button class="di mini-key" value=Ι>
-	<input type=button class="di mini-key" value=Κ>
-	<input type=button class="di mini-key" value=Λ>
-	<input type=button class="di mini-key" value=Μ><br>
-	<input type=button class="di mini-key" value=Ν>
-	<input type=button class="di mini-key" value=Ξ>
-	<input type=button class="di mini-key" value=Ο>
-	<input type=button class="di mini-key" value=Π>
-	<input type=button class="di mini-key" value=Ρ>
-	<input type=button class="di mini-key" value=Σ><br>
-	<input type=button class="di mini-key" value=Τ>
-	<input type=button class="di mini-key" value=Υ>
-	<input type=button class="di mini-key" value=Φ>
-	<input type=button class="di mini-key" value=Χ>
-	<input type=button class="di mini-key" value=Ψ>
-	<input type=button class="di mini-key" value=Ω><br>
-	<br>
+
+	<div class="key-section">
+		<div class=key-row>
+			<input type=button class="di big-key" value=7>
+			<input type=button class="di big-key" value=8>
+			<input type=button class="di big-key" value=9>
+			<input type=button class="di big-key" value=÷>
+		</div>
+		<div class=key-row>
+			<input type=button class="di big-key" value=4>
+			<input type=button class="di big-key" value=5>
+			<input type=button class="di big-key" value=6>
+			<input type=button class="di big-key" value=×>
+		</div>
+		<div class=key-row>
+			<input type=button class="di big-key" value=1>
+			<input type=button class="di big-key" value=2>
+			<input type=button class="di big-key" value=3>
+			<input type=button class="di big-key" value=->
+		</div>
+		<div class=key-row>
+			<input type=button class="di big-key" value=0>
+			<input type=button class="di big-key" value=.>
+			<input type=button class="big-key" value=⏎ id=KEY_RET>
+			<input type=button class="di big-key" value=+>
+		</div>
+		<div class=key-row>
+			<input type=button class="di big-key" value=%>
+			<input type=button class="big-key" value=SPACE id=KEY_SPACE>
+			<input type=button class="big-key wide-key" value=← id=DELETE>
+		</div>
+	</div>
+
+	<div class="mode-panel" data-mode-panel=CALCULATOR>
+		<div class=section-title>Brackets</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di big-key bracket-key" value=(>
+				<input type=button class="di big-key bracket-key" value=)>
+				<input type=button class="di big-key bracket-key" value=[>
+				<input type=button class="di big-key bracket-key" value=]>
+			</div>
+			<div class=key-row>
+				<input type=button class="di big-key bracket-key" value={>
+				<input type=button class="di big-key bracket-key" value=}>
+				<input type=button class="di big-key bracket-key" value="()">
+				<input type=button class="di big-key bracket-key" value="[]">
+			</div>
+			<div class=key-row>
+				<input type=button class="di big-key bracket-key" value="{}">
+				<input type=button class="di big-key" value=π>
+				<input type=button class="di big-key" value=𝑒>
+				<input type=button class="di big-key" value=∞>
+			</div>
+		</div>
+	</div>
+
+	<div class="mode-panel" data-mode-panel=SCIENCE hidden>
+		<div class=section-title>Constants</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di big-key" value=π>
+				<input type=button class="di big-key" value=𝑒>
+				<input type=button class="di big-key" value=∞>
+				<input type=button class="di big-key" value=γ>
+			</div>
+		</div>
+		<div class=section-title>Functions</div>
+		<div class="key-section">
+			<div class="key-row three">
+				<input type=button class="di label" value=sin()>
+				<input type=button class="di label" value=cos()>
+				<input type=button class="di label" value=tan()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=log()>
+				<input type=button class="di label" value=exp()>
+				<input type=button class="di label" value=sqrt()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=atan2[]>
+				<input type=button class="di label" value=pow[]>
+				<input type=button class="di label" value=random[]>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=asin()>
+				<input type=button class="di label" value=acos()>
+				<input type=button class="di label" value=atan()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=sinh()>
+				<input type=button class="di label" value=cosh()>
+				<input type=button class="di label" value=tanh()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=asinh()>
+				<input type=button class="di label" value=acosh()>
+				<input type=button class="di label" value=atanh()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=round()>
+				<input type=button class="di label" value=ceil()>
+				<input type=button class="di label" value=floor()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=abs()>
+				<input type=button class="di label" value=trunc()>
+				<input type=button class="di label" value=sign()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=cbrt()>
+				<input type=button class="di label" value=log2()>
+				<input type=button class="di label" value=log10()>
+			</div>
+			<div class="key-row three">
+				<input type=button class="di label" value=hypot[]>
+				<input type=button class="di label" value=max[]>
+				<input type=button class="di label" value=min[]>
+			</div>
+		</div>
+		<div class=section-title>Greek</div>
+		<div class="key-section">
+			<div class="key-row seven">
+				<input type=button class="di mini-key" value=α>
+				<input type=button class="di mini-key" value=β>
+				<input type=button class="di mini-key" value=γ>
+				<input type=button class="di mini-key" value=δ>
+				<input type=button class="di mini-key" value=θ>
+				<input type=button class="di mini-key" value=λ>
+				<input type=button class="di mini-key" value=μ>
+			</div>
+			<div class="key-row seven">
+				<input type=button class="di mini-key" value=σ>
+				<input type=button class="di mini-key" value=φ>
+				<input type=button class="di mini-key" value=ω>
+				<input type=button class="di mini-key" value=Δ>
+				<input type=button class="di mini-key" value=Σ>
+				<input type=button class="di mini-key" value=Π>
+				<input type=button class="di mini-key" value=Ω>
+			</div>
+		</div>
+	</div>
+
+	<div class="mode-panel" data-mode-panel=CODE hidden>
+		<div class=section-title>Program</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di mid-key" value="'">
+				<input type=button class="di mid-key" value=!>
+				<input type=button class="di mid-key" value=@>
+				<input type=button class="di mid-key" value=:>
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value="=">
+				<input type=button class="di mid-key" value=¿>
+				<input type=button class="di mid-key" value=?>
+				<input type=button class="di mid-key" value=¶>
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value=[]>	
+				<input type=button class="di mid-key" value={}>	
+				<input type=button class="di mid-key" value=«»>	
+				<input type=button class="di mid-key" value='""'>
+			</div>
+		</div>
+		<div class=section-title>Lists and output</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di mid-key" value=#>
+				<input type=button class="di mid-key" value=$>
+				<input type=button class="di mid-key" value=*>
+				<input type=button class="di mid-key" value=,>
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value=.>
+				<input type=button class="di mid-key" value=;>
+				<input type=button class="di mid-key" value=¦>
+				<input type=button class="di mid-key" value=¡>
+			</div>
+		</div>
+		<div class=section-title>Logic and compare</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di mid-key" value=&&>
+				<input type=button class="di mid-key" value=||>
+				<input type=button class="di mid-key" value=^^>
+				<input type=button class="di mid-key" value=¬>
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value="==">
+				<input type=button class="di mid-key" value="<>">
+				<input type=button class="di mid-key" value="<">
+				<input type=button class="di mid-key" value="<=">
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value=">">
+				<input type=button class="di mid-key" value=">=">
+				<input type=button class="di mid-key" value=∈>
+				<input type=button class="di mid-key" value=∋>
+			</div>
+		</div>
+		<div class=section-title>Bit and vector</div>
+		<div class="key-section">
+			<div class=key-row>
+				<input type=button class="di mid-key" value=&>
+				<input type=button class="di mid-key" value=|>
+				<input type=button class="di mid-key" value=^>
+				<input type=button class="di mid-key" value=~>
+			</div>
+			<div class=key-row>
+				<input type=button class="di mid-key" value=·>
+				<input type=button class="di mid-key" value=§>
+				<input type=button class="di mid-key" value=¤>
+				<input type=button class="di mid-key" value=``>
+			</div>
+		</div>
+	</div>
 </nav>
 
 <jp-split-h grid-template="1fr 6px 1fr">
@@ -388,7 +507,7 @@ aside {
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷				</label><br>
 	<br>
 	When CALCULATE<br>
-	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Programming mode	</label><br>
+	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Code evaluation	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×			</label><br>
 	<label for=CONV_NUM			><input type=checkbox id=CONV_NUM		checked	> Convert numeric	</label><br>
 	<label for=CONV_PAREN		><input type=checkbox id=CONV_PAREN		checked	> Convert ([{}])	</label><br>
@@ -439,13 +558,20 @@ SOURCE = document.getElementById( 'SOURCE' )
 ,	LINE_NUMS = document.getElementById( 'line-nums' )
 ,	RESULT = document.getElementById( 'RESULT' )
 ,	LOAD_SAMPLE_SELECT = document.getElementById( 'LOAD_SAMPLE_SELECT' )
+,	MODE_TABS = document.getElementById( 'MODE_TABS' )
 
 let
-lastProgramMode = PROGRAM_MODE.checked
+currentMode = 'CALCULATOR'
 ,	loadingSample = false
 
 const
 PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Graphics.slip' ] )
+,	SAMPLE_MODES = new Map( [
+		[ 'Samples.sugared.slip', 'CALCULATOR' ]
+	,	[ 'Samples.slip', 'CODE' ]
+	,	[ 'Mandelbrot.slip', 'CODE' ]
+	,	[ 'Graphics.slip', 'CODE' ]
+	] )
 
 const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
@@ -563,9 +689,21 @@ InsertToSOURCE = _ => {
 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
 	SOURCE.focus()
 }
+const
+InsertPairToSOURCE = _ => {
+	const $ = SOURCE.selectionStart
+	,	end = SOURCE.selectionEnd
+	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( end )
+	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + 1 )
+	SOURCE.focus()
+}
 KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
-document.querySelectorAll( 'input.di' ).forEach( _ => _.onclick = () => InsertToSOURCE( _.value ) )
+document.querySelectorAll( 'input.di' ).forEach(
+	_ => _.onclick = () => /^[([{].?[)\]}]$/.test( _.value )
+	?	InsertPairToSOURCE( _.value )
+	:	InsertToSOURCE( _.value )
+)
 SOURCE.oninput = SyncLineNums
 SOURCE.onscroll = () => ( LINE_NUMS.scrollTop = SOURCE.scrollTop )
 SOURCE.onkeydown = ev => {
@@ -596,25 +734,38 @@ SOURCE.onkeydown = ev => {
 	}
 }
 const
-SyncProgrammingKeys = () => (
-	PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
+ModeUsesProgramEvaluation = mode => mode === 'CODE'
+
+const
+SyncMode = () => (
+	PROGRAM_MODE.checked = ModeUsesProgramEvaluation( currentMode )
+,	document.querySelectorAll( '[data-mode-panel]' ).forEach(
+		_ => _.hidden = _.dataset.modePanel !== currentMode
+	)
+,	MODE_TABS.querySelectorAll( '.mode-tab' ).forEach(
+		_ => _.classList.toggle( 'active', _.dataset.mode === currentMode )
+	)
 ,	!loadingSample && (
-		LOAD_SAMPLE_SELECT.value = PROGRAM_MODE.checked ? 'Samples.slip' : 'Samples.sugared.slip'
+		LOAD_SAMPLE_SELECT.value = currentMode === 'CODE' ? 'Samples.slip' : 'Samples.sugared.slip'
 	)
 )
-PROGRAM_MODE.onchange = () => {
+const
+SetMode = mode => {
+	const wasProgram = ModeUsesProgramEvaluation( currentMode )
+	,	willProgram = ModeUsesProgramEvaluation( mode )
 	if (
 		!loadingSample
 		&& SOURCE.value.trim()
-		&& PROGRAM_MODE.checked !== lastProgramMode
+		&& wasProgram !== willProgram
 		&& !confirm( 'Switch mode? The source is kept but line semantics change (see SPEC).' )
 	) {
-		PROGRAM_MODE.checked = lastProgramMode
 		return
 	}
-	lastProgramMode = PROGRAM_MODE.checked
-	SyncProgrammingKeys()
+	currentMode = mode
+	SyncMode()
 }
+MODE_TABS.querySelectorAll( '.mode-tab' ).forEach( _ => _.onclick = () => SetMode( _.dataset.mode ) )
+PROGRAM_MODE.onchange = () => SetMode( PROGRAM_MODE.checked ? 'CODE' : 'CALCULATOR' )
 const
 LoadSample = path => fetch( './' + path ).then(
 	_ => _.text()
@@ -622,11 +773,8 @@ LoadSample = path => fetch( './' + path ).then(
 	text => {
 		const needsProgram = PROGRAM_SAMPLES.has( path )
 		loadingSample = true
-		if ( PROGRAM_MODE.checked !== needsProgram ) {
-			lastProgramMode = needsProgram
-			PROGRAM_MODE.checked = needsProgram
-		}
-		SyncProgrammingKeys()
+		currentMode = SAMPLE_MODES.get( path ) ?? ( needsProgram ? 'CODE' : 'CALCULATOR' )
+		SyncMode()
 		loadingSample = false
 		SOURCE.value = text
 		SyncLineNums()
@@ -646,19 +794,18 @@ RESET_CONTEXT.onclick = () => (
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
-,	PROGRAM_MODE.checked
-	?	localStorage.setItem( 'MODE', 'PROGRAMMING' )
-	:	localStorage.removeItem( 'MODE' )
+,	localStorage.setItem( 'MODE', currentMode )
 )
 
-window.onload = () => (
+const
+InitUI = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
-,	PROGRAM_MODE.checked = localStorage.getItem( 'MODE' ) != null
-,	lastProgramMode = PROGRAM_MODE.checked
-,	SyncProgrammingKeys()
-,	LOAD_SAMPLE_SELECT.value = PROGRAM_MODE.checked ? 'Samples.slip' : 'Samples.sugared.slip'
+,	currentMode = localStorage.getItem( 'MODE' ) ?? 'CALCULATOR'
+,	currentMode === 'PROGRAMMING' && ( currentMode = 'CODE' )
+,	SyncMode()
 ,	SyncLineNums()
 )
+InitUI()
 
 /*
 setInterval(
