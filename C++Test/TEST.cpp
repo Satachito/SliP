@@ -26,7 +26,7 @@ ExtraTest() {
 	
 
 	extern SP< SliP >	T;
-	A( T->REPR() == "SliP" );
+	A( T->REPR() == "T" );
 	extern bool _Compare( SP< SliP >, SP< SliP > );
 	A( _Compare( T, T ) == 0 );
 
@@ -153,6 +153,9 @@ R"(	( 'MAX = '(
 
 		void EvalTest( SP< Context > );
 		EvalTest( C );
+
+		void RegressionTest( SP< Context > );
+		RegressionTest( C );
 
 		cerr << "Stack depth: " << theStack.size() << endl;
 

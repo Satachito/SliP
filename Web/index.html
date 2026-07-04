@@ -58,6 +58,71 @@ textarea {
 ;	resize					: none
 ;	border					: none
 }
+.editor-pane {
+;	display					: flex
+;	flex-direction			: row
+;	height					: 100%
+;	min-height				: 0
+;	overflow				: hidden
+;	background-color		: #ffe
+}
+#line-nums {
+;	font-family				: ui-monospace, Menlo, Consolas, monospace
+;	font-size				: 13px
+;	line-height				: 1.45
+;	padding					: 6px 6px 6px 4px
+;	text-align				: right
+;	color					: #888
+;	background				: #f0f0e8
+;	border-right			: 1px solid #ccc
+;	overflow				: hidden
+;	user-select				: none
+;	white-space				: pre
+;	min-width				: 2.5em
+}
+#SOURCE {
+;	font-family				: ui-monospace, Menlo, Consolas, monospace
+;	font-size				: 13px
+;	line-height				: 1.45
+;	tab-size				: 4
+;	padding					: 6px
+;	flex					: 1
+;	min-width				: 0
+;	background				: #ffe
+}
+.err-line {
+;	color					: #c00
+;	font-family				: ui-monospace, Menlo, Consolas, monospace
+;	font-size				: 13px
+;	margin					: 4px 0
+;	white-space				: pre-wrap
+}
+.hint-kbd {
+;	margin					: 0 0 6px 0
+;	font-size				: 85%
+;	color					: #444
+}
+@media ( max-width: 768px ) {
+body {
+;	grid-template-columns	: minmax( 0, 1fr )
+;	grid-template-rows		: auto auto minmax( 180px, 1fr ) auto auto
+}
+header, footer, nav, jp-split-h, aside {
+;	grid-column				: 1
+}
+nav {
+;	border-right			: none
+;	border-bottom			: 1px solid black
+;	max-height				: 36vh
+}
+aside {
+;	border-left				: none
+;	border-top				: 1px solid black
+}
+#SOURCE, #line-nums {
+;	font-size				: 16px
+}
+}
 .gutter {
 ;	background				: lightgrey
 ;	cursor					: col-resize
@@ -89,6 +154,7 @@ textarea {
 	SliP, the awesome calculator.
 	<div></div>
 	<a href=Tutorial.html target=_blank>Tutorial</a>
+	<a href=SPEC.html target=_blank>Reference</a>
 </header>
 
 <nav>
@@ -190,13 +256,14 @@ textarea {
 		<input type=button class="di mid-key" value=~>		Bit not<br>
 		<input type=button class="di mid-key" value=&&>		Logical and<br>
 		<input type=button class="di mid-key" value=||>		Logical or<br>
-		<input type=button class="di mid-key" value=^^>		Logical or<br>
+		<input type=button class="di mid-key" value=^^>		Logical xor<br>
 		<input type=button class="di mid-key" value=¬>		Logical not<br>
 
 		<input type=button class="di mid-key" value=·>		Inner product<br>
 
-		<input type=button class="di mid-key" value=.>		Console.log<br>
-		<input type=button class="di mid-key" value=¦>		Console.error<br>
+		<input type=button class="di mid-key" value=.>		Dict/list index<br>
+		<input type=button class="di mid-key" value=;>		Stdout print<br>
+		<input type=button class="di mid-key" value=¦>		Stderr print<br>
 
 		<input type=button class="di mid-key" value="==">	Equal<br>
 		<input type=button class="di mid-key" value="<>">	Not equal<br>
@@ -213,14 +280,14 @@ textarea {
 
 		<input type=button class="di mid-key" value=[]>		List<br>
 		<input type=button class="di mid-key" value={}>		Procedure evaluation<br>
-		<input type=button class="di mid-key" value=«»>		Parallel evaluation<br>
+		<input type=button class="di mid-key" value=«»>		Shared-context block<br>
 
 		<input type=button class="di mid-key" value=#>		# of items in list<br>
 		<input type=button class="di mid-key" value=$>		The last item<br>
 		<input type=button class="di mid-key" value=*>		List w/o 1st element<br>
 		<input type=button class="di mid-key" value=,>		[ L ] + R<br>
 
-		<input type=button class="di mid-key" value=¶>		Stringify<br>
+		<input type=button class="di mid-key" value=¶>		Context dictionary<br>
 		<input type=button class="di mid-key" value="=">	Assign<br>
 
 		<input type=button class="di mid-key" value=!>		Eval<br>
@@ -229,8 +296,8 @@ textarea {
 		<input type=button class="di mid-key" value=@>		Stack top<br>
 		<input type=button class="di mid-key" value=¿>		If<br>
 		<input type=button class="di mid-key" value=?>		If else<br>
-		<input type=button class="di mid-key" value=§>		Eval R in context L<br>
-		<input type=button class="di mid-key" value=¤>		Context dictionay<br>
+		<input type=button class="di mid-key" value=§>		Eval R in Dict L<br>
+		<input type=button class="di mid-key" value=¤>		Random 0..1<br>
 		<input type=button class="di mid-key" value=:>		Apply<br>
 	</div>
 	<br>
@@ -262,7 +329,10 @@ textarea {
 </nav>
 
 <jp-split-h grid-template="1fr 6px 1fr">
-	<textarea id=SOURCE></textarea>
+	<div class=editor-pane>
+		<div id=line-nums aria-hidden=true>1</div>
+		<textarea id=SOURCE spellcheck=false autocapitalize=off autocomplete=off></textarea>
+	</div>
 	<div class=gutter></div>
 	<div id=RESULT style="overflow: scroll"></div>
 </jp-split-h>
@@ -270,6 +340,7 @@ textarea {
 <aside>
 	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALSUB><br>
 	<br>
+	<p class=hint-kbd>⌘↩ or Ctrl↩ to calculate</p>
 	When INPUT<br>
 	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * → ×				</label><br>
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷				</label><br>
@@ -284,7 +355,17 @@ textarea {
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
 	<label>Round precision:</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
 	<br>
-	<input type=button value="Load sample" id=LOAD_SAMPLE><br>
+	<p style="margin: 0 0 6px 0; font-size: 85%;">Variables and definitions persist until you reset or reload the page.</p>
+	<input type=button value="Reset context" id=RESET_CONTEXT style="width: 100%"><br>
+	<br>
+	<label for=LOAD_SAMPLE_SELECT>Sample</label>
+	<select id=LOAD_SAMPLE_SELECT style="width: 100%; margin-bottom: 4px">
+		<option value=Samples.sugared.slip>Calculator — general</option>
+		<option value=Samples.slip>Programming — general</option>
+		<option value=Mandelbrot.slip>Mandelbrot — WebGL</option>
+		<option value=Graphics.slip>Graphics — Canvas 2D</option>
+	</select>
+	<input type=button value="Load sample" id=LOAD_SAMPLE style="width: 100%"><br>
 </aside>
 
 <footer style="display: grid; grid-template-columns: auto 1fr auto">
@@ -314,7 +395,55 @@ SliP = await createSliP()
 SliP.INIT()
 
 const
+SOURCE = document.getElementById( 'SOURCE' )
+,	LINE_NUMS = document.getElementById( 'line-nums' )
+,	RESULT = document.getElementById( 'RESULT' )
+,	LOAD_SAMPLE_SELECT = document.getElementById( 'LOAD_SAMPLE_SELECT' )
+
+let
+lastProgramMode = PROGRAM_MODE.checked
+,	loadingSample = false
+
+const
+PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Graphics.slip' ] )
+
+const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
+
+const
+AppendDIV = text => {
+	const $ = RESULT.appendChild( document.createElement( 'div' ) )
+	$.textContent = text
+	return $
+}
+const
+AppendPRE = text => {
+	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
+	$.textContent = text
+	$.style.width = '100%'
+	$.style.margin = '6px 0 2px 0'
+	return $
+}
+const
+TreatEX = ( ex, meta = {} ) => {
+	const head = meta.line != null
+	?	`Line ${ meta.line }: `
+	:	meta.exprIndex != null
+		?	`#${ meta.exprIndex }: `
+		:	''
+	const msgs = Array.isArray( ex ) ? ex : [ ex ]
+	for ( const msg of msgs ) {
+		const $ = RESULT.appendChild( document.createElement( 'div' ) )
+		$.className = 'err-line'
+		$.textContent = head + msg
+	}
+}
+
+const
+SyncLineNums = () => {
+	const n = Math.max( 1, SOURCE.value.split( '\n' ).length )
+	LINE_NUMS.textContent = Array.from( { length: n }, ( _, i ) => i + 1 ).join( '\n' )
+}
 
 const
 Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
@@ -340,25 +469,28 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 		).join( '\n' )
 		try {
 			JSON.parse( SliP.REPL( pped ) ).forEach(
-				rep => {
-					INCLUDE_SOURCE.checked && rep.source && ( AppendPRE( rep.source ).style.color = 'grey' )
+				( rep, exprIndex ) => {
+					INCLUDE_SOURCE.checked && rep.source && !rep.error && ( AppendPRE( rep.source ).style.color = 'grey' )
 					rep.response && AppendPRE( rep.response )
-					rep.error && TreatEX( rep.error )
+					if ( rep.error ) {
+						rep.source && ( AppendPRE( rep.source ).style.color = '#c66' )
+						TreatEX( rep.error, { exprIndex: exprIndex + 1 } )
+					}
 				}
 			)
 		} catch ( ex ) {
 			TreatEX( ex )
 		}
 	} else {
-		source.split( '\n' ).map(
-			_ => {
+		source.split( '\n' ).forEach(
+			( line, lineIndex ) => {
 				INCLUDE_SOURCE.checked && (
-					_.length
-					?	( AppendDIV( _ ).style.color = 'grey' )
+					line.length
+					?	( AppendDIV( line ).style.color = 'grey' )
 					:	RESULT.appendChild( document.createElement( 'br' ) )
 				)
-				const index = _.indexOf( '//' )
-				const $ = ( index < 0 ? _ : _.substring( 0, index ) ).trim()
+				const index = line.indexOf( '//' )
+				const $ = ( index < 0 ? line : line.substring( 0, index ) ).trim()
 				if ( $.length ) {
 					try {
 						const
@@ -366,7 +498,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 						rep.response && AppendPRE( rep.response )
 						if( rep.error ) throw( rep.error )
 					} catch ( ex ) {
-						TreatEX( ex )
+						TreatEX( ex, { line: lineIndex + 1 } )
 					}
 				}
 			}
@@ -380,6 +512,7 @@ DELETE		.onclick = () => {
 	?	SOURCE.value.substring( 0, --$ ) + SOURCE.value.substring( SOURCE.selectionEnd )
 	:	SOURCE.value.substring( 0, $ ) + SOURCE.value.substring( SOURCE.selectionEnd )
  	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ )
+ 	SyncLineNums()
  	SOURCE.focus()
 }
 
@@ -393,8 +526,20 @@ InsertToSOURCE = _ => {
 KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 document.querySelectorAll( 'input.di' ).forEach( _ => _.onclick = () => InsertToSOURCE( _.value ) )
+SOURCE.oninput = SyncLineNums
+SOURCE.onscroll = () => ( LINE_NUMS.scrollTop = SOURCE.scrollTop )
 SOURCE.onkeydown = ev => {
+	if ( ( ev.metaKey || ev.ctrlKey ) && ev.key === 'Enter' ) {
+		ev.preventDefault()
+		Calculate()
+		return
+	}
 	if ( ev.metaKey ) return
+	if ( ev.key === 'Tab' && PROGRAM_MODE.checked ) {
+		ev.preventDefault()
+		InsertToSOURCE( '    ' )
+		return
+	}
 	switch ( ev.key ) {
 	case '*':
 		CONV_ASTERISK.checked && (
@@ -411,37 +556,52 @@ SOURCE.onkeydown = ev => {
 	}
 }
 const
-SyncProgrammingKeys = () => PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
-PROGRAM_MODE.onchange = SyncProgrammingKeys
-LOAD_SAMPLE.onclick = () => fetch( PROGRAM_MODE.checked ? './Samples.slip' : './Samples.sugared.slip' ).then(
-	_ => _.text()
-).then(
-	_ => (
-		SOURCE.value = _
-	,	Calculate()
+SyncProgrammingKeys = () => (
+	PROGRAMMING_KEYS.style.display = PROGRAM_MODE.checked ? 'block' : 'none'
+,	!loadingSample && (
+		LOAD_SAMPLE_SELECT.value = PROGRAM_MODE.checked ? 'Samples.slip' : 'Samples.sugared.slip'
 	)
 )
+PROGRAM_MODE.onchange = () => {
+	if (
+		!loadingSample
+		&& SOURCE.value.trim()
+		&& PROGRAM_MODE.checked !== lastProgramMode
+		&& !confirm( 'Switch mode? The source is kept but line semantics change (see SPEC).' )
+	) {
+		PROGRAM_MODE.checked = lastProgramMode
+		return
+	}
+	lastProgramMode = PROGRAM_MODE.checked
+	SyncProgrammingKeys()
+}
+const
+LoadSample = path => fetch( './' + path ).then(
+	_ => _.text()
+).then(
+	text => {
+		const needsProgram = PROGRAM_SAMPLES.has( path )
+		loadingSample = true
+		if ( PROGRAM_MODE.checked !== needsProgram ) {
+			lastProgramMode = needsProgram
+			PROGRAM_MODE.checked = needsProgram
+		}
+		SyncProgrammingKeys()
+		loadingSample = false
+		SOURCE.value = text
+		SyncLineNums()
+		Calculate()
+	}
+)
+LOAD_SAMPLE.onclick = () => LoadSample( LOAD_SAMPLE_SELECT.value )
 
-const
-AppendDIV = text => {
-	const $ = RESULT.appendChild( document.createElement( 'div' ) )
-	$.textContent = text
-	return $
-}
-const
-AppendPRE = text => {
-	const $ = RESULT.appendChild( document.createElement( 'pre' ) )
-	$.textContent = text
-	$.style.width = '100%'
-	$.style.margin = '6px 0 2px 0'
-	return $
-}
-const
-TreatEX = ex => (
-	Array.isArray( ex )
-	?	ex.forEach( _ => AppendDIV( _ ).style.color = 'red' )
-	:	AppendDIV( ex ).style.color = 'red'
-//,	console.error( ex )
+RESET_CONTEXT.onclick = () => (
+	confirm( 'Clear all variables, definitions, and stack?' )
+	&& (
+		SliP.ResetContext()
+	,	RemoveCanvas()
+	,	RESULT.textContent = ''
+	)
 )
 
 window.onbeforeunload = () => (
@@ -452,9 +612,12 @@ window.onbeforeunload = () => (
 )
 
 window.onload = () => (
-	SOURCE.value = localStorage.getItem( 'SOURCE' )
+	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
 ,	PROGRAM_MODE.checked = localStorage.getItem( 'MODE' ) != null
+,	lastProgramMode = PROGRAM_MODE.checked
 ,	SyncProgrammingKeys()
+,	LOAD_SAMPLE_SELECT.value = PROGRAM_MODE.checked ? 'Samples.slip' : 'Samples.sugared.slip'
+,	SyncLineNums()
 )
 
 /*

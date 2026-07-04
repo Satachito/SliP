@@ -1,0 +1,157 @@
+
+<title>SliP Language Reference</title>
+
+<style>
+pre {
+;	background-color	: #f7f7f7
+;	padding				: 8px
+;	border				: 1px solid black
+}
+table {
+;	border-collapse		: collapse
+;	width				: 100%
+;	margin				: 8px 0
+}
+th, td {
+;	border				: 1px solid #ccc
+;	padding				: 4px 8px
+;	text-align			: left
+;	vertical-align		: top
+}
+</style>
+
+<body style="width: 720px; overflow: scroll; font-family: sans-serif">
+<h1>SliP Language Reference</h1>
+<p>Draft 2026-07-04. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
+<hr>
+
+<h2>1. Two modes</h2>
+<table>
+<tr><th>Mode</th><th>Checkbox</th><th>Input</th></tr>
+<tr><td><strong>Calculator</strong></td><td>Programming mode off</td><td>One expression per line (§2)</td></tr>
+<tr><td><strong>Programming</strong></td><td>Programming mode on</td><td>Full SliP; <code>//</code> comments stripped</td></tr>
+</table>
+<p>Both modes share one <strong>session context</strong> on the web until <strong>Reset context</strong> or reload.</p>
+
+<h2>2. Calculator (sugared) mode</h2>
+<h3>Line wrapping</h3>
+<p>Each non-empty line <code>expr</code> (trimmed, comment stripped) is evaluated as:</p>
+<pre>( expr )</pre>
+
+<h3>Implicit multiply</h3>
+<pre>
+2 3 4   →  24
+2πr     →  2 × π × r
+cosπ    →  cos(π)
+</pre>
+
+<h3>Function calls</h3>
+<pre>
+sin(0)        sin applied to 0
+atan2[ 1 1 ]  two-argument form
+max[ 3 2 1 ]  list argument
+</pre>
+
+<h3>Assignment</h3>
+<pre>'r = 2</pre>
+<p>becomes <code>( 'r = 2 )</code> and binds <code>r</code> in the session.</p>
+
+<h2>3. Names and tokens</h2>
+<ul>
+<li>Whitespace separates tokens.</li>
+<li><strong>Solo characters</strong> (always alone): Greek letters, <code>π</code> <code>𝑒</code> <code>∞</code>, operators like <code>+ - × ÷</code> <code>==</code> <code>:</code> …</li>
+<li><strong>Names</strong>: letters/digits until space, solo char, or delimiter. <code>abπcd</code> → <code>ab</code>, <code>π</code>, <code>cd</code>.</li>
+<li>ASCII <code>e</code> is a <em>name</em>. Napier's number is <code>𝑒</code> (keypad).</li>
+</ul>
+
+<h2>4. Evaluation</h2>
+<h3>Sentence <code>( … )</code></h3>
+<ol>
+<li>Prefix / quote pass (right to left)</li>
+<li>Infix pass (lowest priority operator splits first)</li>
+<li>Adjacent numerics with no operator → multiply</li>
+</ol>
+
+<h3>Blocks</h3>
+<table>
+<tr><th>Form</th><th>Context</th><th>Effect</th></tr>
+<tr><td><code>{ … }</code></td><td>New child context</td><td>Sequential; returns list of results</td></tr>
+<tr><td><code>« … »</code></td><td>Same context</td><td>Sequential (not parallel threads); bindings persist</td></tr>
+</table>
+
+<h3>Truth</h3>
+<table>
+<tr><th>Value</th><th>Meaning</th><th>Printed</th></tr>
+<tr><td><code>[]</code></td><td>Nil / false</td><td><code>[]</code></td></tr>
+<tr><td>non-empty</td><td>Truthy</td><td>own REPR</td></tr>
+<tr><td>from <code>==</code> etc.</td><td>true</td><td><code>T</code></td></tr>
+</table>
+
+<h2>5. Context</h2>
+<ul>
+<li><code>'name = value</code> — assign in current context</li>
+<li><code>¶</code> — snapshot bindings as Dictionary</li>
+<li><code>¤</code> — random float in [0, 1), <em>not</em> context snapshot</li>
+</ul>
+
+<h2>6. Operators (summary)</h2>
+
+<h3>Primitives</h3>
+<table>
+<tr><th>Sym</th><th>Meaning</th></tr>
+<tr><td><code>@</code></td><td>Stack top (for <code>:</code> apply)</td></tr>
+<tr><td><code>£</code></td><td>Stack as list</td></tr>
+<tr><td><code>¶</code></td><td>Context → Dict</td></tr>
+<tr><td><code>∅</code></td><td>Empty list</td></tr>
+<tr><td><code>¤</code></td><td>Random [0, 1)</td></tr>
+</table>
+
+<h3>Quote / prefix / unary</h3>
+<table>
+<tr><th>Sym</th><th>Meaning</th></tr>
+<tr><td><code>'</code></td><td>Quote</td></tr>
+<tr><td><code>!</code></td><td>Eval</td></tr>
+<tr><td><code>#</code> <code>*</code> <code>$</code></td><td>Length / CDR / last</td></tr>
+<tr><td><code>;</code> <code>¦</code></td><td>Stdout / stderr print</td></tr>
+<tr><td><code>~</code> <code>¬</code></td><td>Bit / logical NOT</td></tr>
+<tr><td><code>¡</code></td><td>Throw</td></tr>
+</table>
+
+<h3>Infix (priority low → loose)</h3>
+<table>
+<tr><th>Pri</th><th>Operators</th></tr>
+<tr><td>0</td><td><code>=</code> assign</td></tr>
+<tr><td>10</td><td><code>?</code> <code>¿</code> if</td></tr>
+<tr><td>30</td><td><code>∈</code> <code>∋</code> <code>==</code> <code>&lt;&gt;</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code></td></tr>
+<tr><td>40</td><td><code>&amp;&amp;</code> <code>||</code> <code>^^</code></td></tr>
+<tr><td>50</td><td><code>§</code> <code>,</code></td></tr>
+<tr><td>60</td><td><code>+</code> <code>-</code></td></tr>
+<tr><td>70</td><td><code>·</code> <code>×</code> <code>÷</code> <code>/</code> <code>%</code></td></tr>
+<tr><td>80</td><td><code>&amp;</code> <code>|</code> <code>^</code></td></tr>
+<tr><td>90</td><td><code>:</code> apply</td></tr>
+<tr><td>100</td><td><code>±</code> <code>.</code> matrix cols / index</td></tr>
+</table>
+
+<h3>Math (prefix)</h3>
+<p><code>sin</code> <code>cos</code> <code>tan</code> <code>log</code> <code>exp</code> <code>sqrt</code> … — one arg.<br>
+<code>atan2</code> <code>pow</code> <code>random</code> — two args via <code>[ ]</code> or <code>( )</code>.<br>
+<code>hypot</code> <code>max</code> <code>min</code> — list arg.</p>
+
+<h3>Random</h3>
+<pre>
+¤                 →  uniform [0, 1)
+random[ 1 2 ]     →  uniform [1, 2)
+</pre>
+
+<h3>JSON</h3>
+<p><code>operand:toJSON</code> · `` literal`:byJSON ``</p>
+
+<h2>7. Web graphics</h2>
+<p>WASM build adds Canvas/WebGL operators (<code>canvas</code>, <code>fill</code>, <code>stroke</code>, …). Not in CLI. Canvases are removed on each CALCULATE.</p>
+
+<h2>8. Constants</h2>
+<pre>∞  𝑒  π  γ  φ  log2e  log10e  ln2  ln10</pre>
+
+<br>
+<br>
+</body>

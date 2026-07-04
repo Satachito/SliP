@@ -1,9 +1,9 @@
 [submodule "Web/jp-split"]
 	path = Web/jp-split
-	url = git@github.com:Satachito/jp-split.git
+	url = https://github.com/Satachito/jp-split.git
 [submodule "Web/ReplaceNumeral"]
 	path = Web/ReplaceNumeral
-	url = git@github.com:Satachito/ReplaceNumeral.git
+	url = https://github.com/Satachito/ReplaceNumeral.git
 [submodule "JP"]
 	path = JP
-	url = git@github.com:Satachito/JP.git
+	url = https://github.com/Satachito/JP.git

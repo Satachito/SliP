@@ -29,6 +29,12 @@ SliP {
 };
 
 struct
+Verum : SliP {
+	string
+	REPR() const override { return "T"; }
+};
+
+struct
 Context {
 	SP< Context >				next;
 	UM< string, SP< SliP > >	$;

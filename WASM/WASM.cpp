@@ -27,6 +27,13 @@ auto
 C = MS< Context >();
 
 void
+ResetContext() {
+	C = MS< Context >();
+	extern void ClearStack();
+	ClearStack();
+}
+
+void
 SetRoundPrecision( int _ ) {
 	extern int RoundPrecision;
 	RoundPrecision = _;
@@ -106,6 +113,7 @@ REPL( string const& _ ) {
 EMSCRIPTEN_BINDINGS( my_module ) {
 	emscripten::function( "INIT", &INIT );
 	emscripten::function( "SetRoundPrecision", &SetRoundPrecision );
+	emscripten::function( "ResetContext", &ResetContext );
 	emscripten::function( "REP", &REP );
 	emscripten::function( "REPL", &REPL );
 }

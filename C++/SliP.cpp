@@ -36,6 +36,12 @@ StackCopy() {
 	return theStack;
 }
 
+void
+ClearStack() {
+	lock_guard< mutex >	lock( stackMutex );
+	theStack.clear();
+}
+
 bool
 IsNil( SP< SliP > _ ) {
 	auto list = Cast< List >( _ );
@@ -63,7 +69,7 @@ Mul( SP< SliP > l, SP< SliP > r ) {
 }
 
 auto
-T = MS< SliP >();
+T = MS< Verum >();
 
 SP< SliP >
 Nil = MS< List >( V< SP< SliP > >{} );
@@ -587,7 +593,7 @@ Build() {
 					return L->$[ R->$ ];
 				}
 			}
-			_Z( "Illegal operand combination" );	//	+ l->REPR() + " :" + r->REPR() );
+			_Z( "Illegal operand combination: " + l->REPR() + " . " + r->REPR() );
 		}
 	,	"."		//	element
 	,	100

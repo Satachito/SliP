@@ -68,12 +68,12 @@ TestDict( SP< Context > c ) {
 	TestEval< SliP >( C, "( 'B == 'A )", []( auto const& _ ){ A( IsNil( _ ) ); }  );
 	TestEval< Dict >( C, "¶", []( auto const& _ ){ A( _->REPR() == "{\t( 'a = '3 )\n\t( 'b = '4 )\n}" ); } );
 	TestEval< Bits >( C, "(¶.'a)", []( auto const& _ ){ A( _->$ == 3 ); } );
-	TestEvalException( C, "(¶.`abc`)", "Illegal operand combination" );
+	TestEvalException( C, "(¶.`abc`)", "Illegal operand combination: {\t( 'a = '3 )\n\t( 'b = '4 )\n} . `abc`" );
 	TestEvalException( C, "(¶.'x)", "No such key in dict: x" );
-	TestEvalException( C, "(¶.3)", "Illegal operand combination" );
+	TestEvalException( C, "(¶.3)", "Illegal operand combination: {\t( 'a = '3 )\n\t( 'b = '4 )\n} . 3" );
 	TestEvalException( C, "( [ a b c ].-1 )", "Index out of bounds: -1" );
 	TestEvalException( C, "( [ a b c ].3 )", "Index out of bounds: 3" );
-	TestEvalException( C, "( [ a b c ].`a` )", "Illegal operand combination" );
+	TestEvalException( C, "( [ a b c ].`a` )", "Illegal operand combination: [ a b c ] . `a`" );
 
 	Eval( C, READ( "( 'x = 1 )" ) );
 	TestEval< Bits >( C, "x", []( auto const& _ ){ A( _->$ == 1 ); } );

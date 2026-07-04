@@ -11,6 +11,7 @@ pre {
 
 <body style="width: 640px; overflow: scroll">
 <h1>SliP Tutorial</h1>
+<p>Language reference: <a href=SPEC.html>SPEC</a> (operators, tokens, modes).</p>
 <hr>
 
 <h2>Screen shot and area names</h2>
@@ -82,11 +83,11 @@ Several prefix operators are available. The main ones are as follows.
 The following three symbols have pre-set values.
 <pre>
 π	//  PI
-e	//  Napier number
+𝑒	//  Napier number (use keypad 𝑒; ASCII e is a name)
 ∞	//  Infinity
 </pre>
 
-<h3>Variables</h2>
+<h3>Variables</h3>
 A variable is a named memory.
 For example, to make a variable named r remember the value 2, you would do the following
 <pre>
@@ -112,7 +113,6 @@ na12me
 These names have not yet been defined and will result in 'undefined' error.
 
 Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, π, cd, ∞, and ef.
-</pre>
 
 <h3>Arithmetic Functions</h3>
 Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad Area.
@@ -132,9 +132,11 @@ min[ 3 2 1 ]	// → 1
 </pre>
 
 <h3>Primitives</h3>
-'random' is also available, it is not secure enough to be used in cryptography. It should not be used for security-related purposes.
+¤ returns a random float in [0, 1). For a bounded range use random with two arguments, e.g. random[ 1 2 ].
+Neither is secure enough for cryptography.
 <pre>
-random
+¤
+random[ 1 2 ]
 </pre>
 <br>
 <br>
@@ -192,7 +194,7 @@ Name returns the assigned SliP object when evaluated. In this case, the expressi
 
 <h3>NIL</h3>
 SliP does not have a boolean type. Instead, empty lists such as [] are called NIL and treated like false in other computer languages.
-A dummy SliP Object with a display name of T may be used to represent something that is non-NIL.
+Non-NIL results of comparisons are truthy and print as <strong>T</strong>.
 Therefore, all boolean operators such as == return NIL or non-NIL.
 
 <h3>Recursive</h3>
@@ -213,8 +215,6 @@ This operator returns non-NIL if the left and right arguments are equal, NIL oth
 
 <h5>?</h5>
 This operator evaluates the first element of the right argument if the left argument is non-null, otherwise it evaluates the second element of the right argument.
-
-</pre>
 
 <h3>String</h3>
 SliP strings are available in two notations. One is to use " and the other is to use `.
@@ -269,8 +269,8 @@ A list of values for the statement being evaluated is returned.
 </pre>
 
 
-<h3>Parallel evaluation</h3>
-If you list sentences in «», they are evaluated in parallel.
+<h3>Shared-context block</h3>
+If you list sentences in «», they are evaluated in order in the <em>current</em> context (assignments persist).
 No new context is created.
 <pre>
 «   ( 'a = 2 )
@@ -280,12 +280,12 @@ No new context is created.
 //	→ [ 2 3 5 ]
 </pre>
 
-<h3>Difference between Procedure and Parallel</h3>
+<h3>Difference between Procedure and Shared-context block</h3>
 
-Operator ¤ creates a Dictionary object from the current context.
+Operator ¶ snapshots the current context as a Dictionary.
 
 <pre>
-¤
+¶
 //  → {}
 
 {   ( 'a = 2 )
@@ -294,7 +294,7 @@ Operator ¤ creates a Dictionary object from the current context.
 }
 //  → [ 2 3 5 ]
 
-¤
+¶
 //  → {}
 
 «   ( 'a = 2 )
@@ -303,14 +303,15 @@ Operator ¤ creates a Dictionary object from the current context.
 »
 //  → [ 2 3 5 ]
 
-¤
+¶
 //  → { a : 2 , b : 3 }
 </pre>
 
-After parallel evaluation, a new variable is registered in the current context.
+After a «» block, new bindings remain in the current context. After { }, bindings made inside the block are not visible outside (unless captured otherwise).
 
 <h2>Finally</h2>
-We are currently working on the reference. We hope you enjoy SliP.
+Full operator and token rules: <a href=SPEC.html>Language reference (SPEC)</a>.
+We hope you enjoy SliP.
 
 <br>
 <br>
