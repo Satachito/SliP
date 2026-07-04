@@ -2,15 +2,15 @@
 	( 'gl = { WH WH 100 100 `webgl` }:canvas )
 	( 'program = gl:createProgram )
 	( 'AttachShader = '(
-			{	( 'src	= @:0 )
-				( 'type	= @:1 )
+			{	( 'src	= @.0 )
+				( 'type	= @.1 )
 				( 'shader = gl:createShader type )
 				( gl:shaderSource{ shader src } )
 				( gl:compileShader shader )
 				( ¬( gl:getShaderParameter{ shader ( gl:COMPILE_STATUS ) } ) ¿ '( ¡ ( gl:getShaderInfoLog shader ) ) )
 				( gl:attachShader{ program shader } )
 				( gl:deleteShader shader  )
-			}:2
+			}.2
 		)
 	)
 	(	{	`	attribute vec3 position;
@@ -155,7 +155,7 @@
 		}:enableVertexAttribArray(
 			0
 		):drawArrays{
-			{ gl.TRIANGLES }
+			( gl:TRIANGLES )
 			0
 			6
 		}:disableVertexAttribArray(
