@@ -105,7 +105,7 @@ Read from the first character until a **break** condition:
 
 ```
 Greek letters (Α…Ω, α…ω, ς), 𝑒, ∞, ∅, ⊤, ⊥
-! @ # $ % ' * , . / : ; ? ` ~ ¡ ¤ ¦ § ¬ ± ¶ · ¿ ∈ ∋ ⊂ ⊃ ∩ ∪ + - × ÷
+! @ # $ % ' * , . / : ; ? ~ ¡ ¤ ¦ § ¬ ± ¶ · ¿ ∈ ∋ ⊂ ⊃ ∩ ∪ + - × ÷
 ```
 
 **Operator names** — if the name starts with `& | ^ = < >`, subsequent operator chars continue the name (`==`, `<=`, `&&`, …).
@@ -121,6 +121,10 @@ Greek letters (Α…Ω, α…ω, ς), 𝑒, ∞, ∅, ⊤, ⊥
 | `na12me` | one name `na12me` |
 | `e` | name `e` (undefined unless assigned) — **not** Napier's number |
 | `𝑒` | constant 𝑒 (U+1D452) |
+
+`⊤`, `⊥`, `⊂`, `⊃`, `∩`, and `∪` are tokenized as reserved solo names, but
+the current canonical interpreter does not register builtin behaviour for them.
+See [Known Issues](KNOWN_ISSUES.md).
 
 ### 3.5 Delimiters
 
@@ -163,7 +167,7 @@ If no infix remains and multiple numerics are adjacent, **implicit multiply** ap
 
 ### 4.3 Apply `:`
 
-`f : arg` pushes `arg` on the argument stack, evaluates `f`, pops stack. Used with `'( @ … )` functions where `@` reads the stack top.
+`arg : f` pushes `arg` on the argument stack, evaluates `f`, then pops the stack. Used with `'( @ … )` functions where `@` reads the stack top.
 
 ### 4.4 List types at evaluation
 
@@ -287,7 +291,7 @@ Use keypad **𝑒** or `euler`, not ASCII `e`. ASCII `e` remains an ordinary nam
 
 **One argument:** `abs` `sin` `cos` `tan` `asin` `acos` `atan` `sinh` `cosh` `tanh` `asinh` `acosh` `atanh` `sqrt` `cbrt` `exp` `log` `log2` `log10` `ceil` `floor` `round` `trunc` `sign`
 
-**Two arguments** (`name[ a b ]` or `name( a b )`): `atan2` `pow` `random` (uniform in **[lo, hi)**)
+**Two arguments** (`name[ a b ]`): `atan2` `pow` `random` (uniform in **[lo, hi)**)
 
 **List argument:** `hypot` `max` `min`
 
@@ -321,6 +325,7 @@ Not cryptographically secure.
 When built for WASM (`WASM/BuildJS.cpp`), additional operators bind to browser Canvas / WebGL (e.g. `canvas`, `fill`, `stroke`, `path2D`, shader helpers). These are **not** available in the CLI binary.
 
 Graphics canvases are created on `document.body` and removed on each CALCULATE in the main UI.
+The graphics surface is sample-driven for now; see [Known Issues](KNOWN_ISSUES.md).
 
 ---
 

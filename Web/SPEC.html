@@ -63,6 +63,7 @@ max[ 3 2 1 ]  list argument
 <li><strong>Names</strong>: letters/digits until space, solo char, or delimiter. <code>abπcd</code> → <code>ab</code>, <code>π</code>, <code>cd</code>.</li>
 <li>ASCII aliases exist for common hard-to-type constants: <code>pi</code>, <code>euler</code>, <code>inf</code>.</li>
 <li>ASCII <code>e</code> is a <em>name</em>. Napier's number is <code>𝑒</code> (keypad) or <code>euler</code>.</li>
+<li><code>⊤</code> <code>⊥</code> <code>⊂</code> <code>⊃</code> <code>∩</code> <code>∪</code> are reserved solo names without builtin behaviour in the current interpreter.</li>
 </ul>
 
 <h2>4. Evaluation</h2>
@@ -133,9 +134,12 @@ max[ 3 2 1 ]  list argument
 <tr><td>100</td><td><code>±</code> <code>.</code> matrix cols / index</td></tr>
 </table>
 
+<h3>Apply <code>:</code></h3>
+<p><code>arg : f</code> pushes <code>arg</code> on the argument stack, evaluates <code>f</code>, then pops the stack. Use <code>@</code> inside quoted functions to read the stack top.</p>
+
 <h3>Math (prefix)</h3>
 <p><code>sin</code> <code>cos</code> <code>tan</code> <code>log</code> <code>exp</code> <code>sqrt</code> … — one arg.<br>
-<code>atan2</code> <code>pow</code> <code>random</code> — two args via <code>[ ]</code> or <code>( )</code>.<br>
+<code>atan2</code> <code>pow</code> <code>random</code> — two args via <code>[ ]</code>.<br>
 <code>hypot</code> <code>max</code> <code>min</code> — list arg.</p>
 
 <h3>Random</h3>
@@ -148,7 +152,7 @@ random[ 1 2 ]     →  uniform [1, 2)
 <p><code>operand:toJSON</code> · `` literal`:byJSON ``</p>
 
 <h2>7. Web graphics</h2>
-<p>WASM build adds Canvas/WebGL operators (<code>canvas</code>, <code>fill</code>, <code>stroke</code>, …). Not in CLI. Canvases are removed on each CALCULATE.</p>
+<p>WASM build adds Canvas/WebGL operators (<code>canvas</code>, <code>fill</code>, <code>stroke</code>, …). Not in CLI. Canvases are removed on each CALCULATE. The graphics surface is currently sample-driven rather than specified operator by operator.</p>
 
 <h2>8. Constants</h2>
 <pre>∞  𝑒  π  γ  φ  log2e  log10e  ln2  ln10</pre>

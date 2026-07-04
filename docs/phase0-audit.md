@@ -3,6 +3,10 @@
 Date: 2026-07-04  
 Purpose: Fix baseline before Phase 1. **Implementation (`C++/SliP.cpp`, `C++/Read.cpp`, `C++/Eval.cpp`) is source of truth.**
 
+This file is a historical maintenance log. Some discrepancies listed below were
+fixed in later phases; for the current public surface and remaining limitations,
+see [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
 ---
 
 ## 1. Test baseline
@@ -121,7 +125,7 @@ ASCII aliases: `inf` → `∞`, `euler` → `𝑒`, `pi` → `π`.
 |-------|------|
 | `[]` (empty list) | Nil / false |
 | Any other non-empty value | Truthy |
-| `T` (internal `MS<SliP>()`) | Canonical truthy; **REPR = `"SliP"`** |
+| `T` (`Verum`) | Canonical truthy; **REPR = `"T"`** |
 
 ### Web-only (`WASM/BuildJS.cpp`)
 
@@ -265,10 +269,10 @@ Follow Tutorial lines 285–307 using `¤` expecting Dict before/after `{ }` / `
 
 ---
 
-### R8 — Truthy displays as `SliP`
+### R8 — Truthy displays as `T`
 
 1. Programming mode.
-2. `( 3 == 3 )` → result REPR: **`SliP`**, not `T` or `true`.
+2. `( 3 == 3 )` → result REPR: **`T`**, not `SliP` or `true`.
 
 ---
 

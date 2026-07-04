@@ -19,6 +19,7 @@ Visit the calculator and tutorial:
 |-----|----------|
 | [Web/Tutorial.html](Web/Tutorial.html) | First-time users |
 | [Web/SPEC.html](Web/SPEC.html) / [docs/SPEC.md](docs/SPEC.md) | Language specification |
+| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Current limits and reserved surface |
 | [docs/phase0-audit.md](docs/phase0-audit.md) | Maintenance audit log |
 
 ## Implementation map
