@@ -307,7 +307,12 @@ ReplaceAllParenthesis = _ => (
 ,	_ = _.replaceAll( /[}﹜｝]/g, '}' )
 ,	_
 )
- 
+
+import createSliP from './SliP.js'
+const
+SliP = await createSliP()
+SliP.INIT()
+
 const
 RemoveCanvas = () => Array.from( document.getElementsByTagName( 'canvas' ) ).forEach( _ => _.parentNode.removeChild( _ ) )
 
@@ -325,39 +330,22 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	CONV_PAREN.checked && ( source = ReplaceAllParenthesis( source ) )
 
 	if ( PROGRAM_MODE.checked ) {
-		const deleted = []
-		let tracer = 0
 		const pped = source.split( '\n' ).map(
 			_ => {
 				const index = _.indexOf( '//' )
-				const $ = index < 0 ? _ : (
-					deleted.push( [ tracer + index, _.length - index ] )
-				,	_.substring( 0, index )
-				)
-				tracer += _.length + 1
-				return $
+				return index < 0 ? _ : _.substring( 0, index )
 			}
 		).join( '\n' )
-		const
-		OI = _ => {
-			let $ = _
-			let index = 0
-			while ( index < deleted.length ) {
-				if ( deleted[ index ][ 0 ] < $ ) $ += deleted[ index++ ][ 1 ]
-				else break
-			}
-			return $
-		}
-		while ( true ) {
-			try {
-			//	INCLUDE_SOURCE.checked && ( AppendPRE( source.substring( OI( start ), OI( $._ ) ).trim() ).style.color = 'grey' )
-				const
-				rep = JSON.parse( SliP.REP( $ ) )
-				rep.response && AppendPRE( rep.response )
-				if( rep.error ) throw( rep.error )
-			} catch ( ex ) {
-				TreatEX( ex )
-			}
+		try {
+			JSON.parse( SliP.REPL( pped ) ).forEach(
+				rep => {
+					INCLUDE_SOURCE.checked && rep.source && ( AppendPRE( rep.source ).style.color = 'grey' )
+					rep.response && AppendPRE( rep.response )
+					rep.error && TreatEX( rep.error )
+				}
+			)
+		} catch ( ex ) {
+			TreatEX( ex )
 		}
 	} else {
 		source.split( '\n' ).map(
