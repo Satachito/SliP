@@ -1,8 +1,10 @@
 //	Smoke test for the WASM build (run from repo root after WASM/build.sh).
+import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 const dir = dirname( fileURLToPath( import.meta.url ) )
+const wasmPath = join( dir, '../Web/SliP.wasm' )
 
 // Emscripten web build expects browser globals (see WASM/pre.js).
 const g = globalThis
@@ -30,7 +32,7 @@ g.document = {
 }
 
 const createSliP = ( await import( join( dir, '../Web/SliP.js' ) ) ).default
-const SliP = await createSliP()
+const SliP = await createSliP( { wasmBinary: readFileSync( wasmPath ) } )
 SliP.INIT()
 
 const rep = json => JSON.parse( SliP.REP( json ) )

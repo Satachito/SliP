@@ -615,11 +615,13 @@ Build() {
 				return MS< Bits >( stoll( literal->$ ) );
 			}
 			auto list = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) );
+			auto radix = (int)Z( "Illegal operand type: " + list->$[ 1 ]->REPR(), Cast< Bits >( list->$[ 1 ] ) )->$;
+			if( radix < 2 || radix > 36 ) throw invalid_argument( "base must be 2..36" );
 			return MS< Bits >(
 				stoll(
 					Z( "Illegal operand type: " + list->$[ 0 ]->REPR(), Cast< Literal >( list->$[ 0 ] ) )->$
 				,	nullptr
-				,	(int)Z( "Illegal operand type: " + list->$[ 1 ]->REPR(), Cast< Bits >( list->$[ 1 ] ) )->$
+				,	radix
 				)
 			);
 		}

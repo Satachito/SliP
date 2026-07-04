@@ -178,8 +178,11 @@ Dict : SliP {
 
 	string
 	REPR() const override {
+		vector< string > keys;
+		for( auto const& [ K, V ] : $ ) keys.push_back( K );
+		std::sort( keys.begin(), keys.end() );
 		string _ = "{";
-		for ( auto const& [ K, V ] : $ ) _ += "\t( '" + K + " = '" + V->REPR() + " )\n";
+		for( auto const& K : keys ) _ += "\t( '" + K + " = '" + $.at( K )->REPR() + " )\n";
 		_ += "}";
 		return _;
 	}

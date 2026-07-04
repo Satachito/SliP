@@ -32,11 +32,11 @@ TestEvalException( SP< Context > C, string const& _, string const& expected ) {
 		cerr << _ << ':' << expected << endl;
 		A( false );
 	} catch( exception const& e ) {
-//		if( e.what() != expected ) {
-//			cerr << "--------:" << _ << endl;
-//			cerr << "e.what():" << e.what() << endl;
-//			cerr << "expected:" << expected << endl;
-//		}
+		if( string( e.what() ) != expected ) {
+			cerr << "--------:" << _ << endl;
+			cerr << "got:" << e.what() << endl;
+			cerr << "expected:" << expected << endl;
+		}
 		A( e.what() == expected );
 	}
 }
@@ -499,7 +499,7 @@ EvalTest( SP< Context > C ) {
 
 	//	TODO: Convert exception
 	TestEvalException( C, "([`ffffffffffffffffffffffffffffffff` 16]:int)", "stoll: out of range" );
-	TestEvalException( C, "([`ff` 37]:int)", "stoll: no conversion" );
+	TestEvalException( C, "([`ff` 37]:int)", "base must be 2..36" );
 
 	TestEval< Bits >( C, "([`ff` 16]:int)", []( auto const& _ ){ A( _->$ == 255 ); } );
 	TestEval< Bits >( C, "(`123`:int)", []( auto const& _ ){ A( _->$ == 123 ); } );
