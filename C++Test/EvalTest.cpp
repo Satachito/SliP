@@ -246,6 +246,10 @@ TestMatrix( SP< Context > C ) {
 void
 EvalTest( SP< Context > C ) {
 
+	TestEval< SliP >( C, "( pi == π )", []( auto const& _ ){ A( IsT( _ ) ); } );
+	TestEval< SliP >( C, "( euler == 𝑒 )", []( auto const& _ ){ A( IsT( _ ) ); } );
+	TestEval< SliP >( C, "( inf == ∞ )", []( auto const& _ ){ A( IsT( _ ) ); } );
+
 	TestEval< Name >(
 		C
 	,	"( 'angleInDegree = '( atan2[ ( @.1 ) (@.0 ) ] × 180 ÷ π ) )"
@@ -805,4 +809,3 @@ cerr << _->REPR() << endl;
 
 
 //	Eval name 'a = 3, a
-

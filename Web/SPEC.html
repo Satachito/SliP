@@ -22,7 +22,7 @@ th, td {
 
 <body style="width: 720px; overflow: scroll; font-family: sans-serif">
 <h1>SliP Language Reference</h1>
-<p>Draft 2026-07-04. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
+<p>Draft 2026-07-04. SliP is a programmable symbolic calculator. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
 <hr>
 
 <h2>1. Two modes</h2>
@@ -61,7 +61,8 @@ max[ 3 2 1 ]  list argument
 <li>Whitespace separates tokens.</li>
 <li><strong>Solo characters</strong> (always alone): Greek letters, <code>π</code> <code>𝑒</code> <code>∞</code>, operators like <code>+ - × ÷</code> <code>==</code> <code>:</code> …</li>
 <li><strong>Names</strong>: letters/digits until space, solo char, or delimiter. <code>abπcd</code> → <code>ab</code>, <code>π</code>, <code>cd</code>.</li>
-<li>ASCII <code>e</code> is a <em>name</em>. Napier's number is <code>𝑒</code> (keypad).</li>
+<li>ASCII aliases exist for common hard-to-type constants: <code>pi</code>, <code>euler</code>, <code>inf</code>.</li>
+<li>ASCII <code>e</code> is a <em>name</em>. Napier's number is <code>𝑒</code> (keypad) or <code>euler</code>.</li>
 </ul>
 
 <h2>4. Evaluation</h2>
@@ -151,6 +152,13 @@ random[ 1 2 ]     →  uniform [1, 2)
 
 <h2>8. Constants</h2>
 <pre>∞  𝑒  π  γ  φ  log2e  log10e  ln2  ln10</pre>
+<table>
+<tr><th>ASCII alias</th><th>Constant</th></tr>
+<tr><td><code>pi</code></td><td><code>π</code></td></tr>
+<tr><td><code>euler</code></td><td><code>𝑒</code></td></tr>
+<tr><td><code>inf</code></td><td><code>∞</code></td></tr>
+</table>
+<p>ASCII <code>e</code> remains an ordinary name.</p>
 
 <br>
 <br>

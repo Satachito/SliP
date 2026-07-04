@@ -65,6 +65,15 @@ RegressionTest( SP< Context > C ) {
 	TestEval< NumericConstant >( C, "𝑒", []( auto const& _ ){
 		A( _->Double() == numbers::e );
 	} );
+	TestEval< NumericConstant >( C, "euler", []( auto const& _ ){
+		A( _->Double() == numbers::e );
+	} );
+	TestEval< NumericConstant >( C, "pi", []( auto const& _ ){
+		A( _->Double() == numbers::pi );
+	} );
+	TestEval< NumericConstant >( C, "inf", []( auto const& _ ){
+		A( isinf( _->Double() ) );
+	} );
 	TestEvalException( C, "e", "Undefined name: e" );
 
 	//	Phase 1: . operand detail in errors

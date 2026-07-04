@@ -43,6 +43,15 @@ if ( r.response !== '4' ) throw new Error( `2+2: expected 4, got ${ r.response }
 r = rep( '( 3 == 3 )' )
 if ( r.response !== 'T' ) throw new Error( `3==3: expected T, got ${ r.response }` )
 
+r = rep( '( pi == π )' )
+if ( r.response !== 'T' ) throw new Error( `pi alias: expected T, got ${ r.response }` )
+
+r = rep( '( euler == 𝑒 )' )
+if ( r.response !== 'T' ) throw new Error( `euler alias: expected T, got ${ r.response }` )
+
+r = rep( '( inf == ∞ )' )
+if ( r.response !== 'T' ) throw new Error( `inf alias: expected T, got ${ r.response }` )
+
 {
 	SliP.REPL( "( 'x = 9 )" )
 	r = rep( 'x' )

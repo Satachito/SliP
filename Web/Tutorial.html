@@ -11,6 +11,7 @@ pre {
 
 <body style="width: 640px; overflow: scroll">
 <h1>SliP Tutorial</h1>
+<p>SliP is a programmable symbolic calculator. You can use it as a normal calculator, then keep the same session and define variables and small functions when you need more.</p>
 <p>Language reference: <a href=SPEC.html>SPEC</a> (operators, tokens, modes).</p>
 <hr>
 
@@ -21,6 +22,27 @@ pre {
 <h2>Normal mode</h2>
 
 Make sure 'Programming mode' checkbox in the Option Area is unchecked.
+
+<h3>Five-minute tour</h3>
+
+Try these lines first. Press CALCULATE after entering them.
+
+<pre>
+2π
+'r = 2
+2πr
+cosπ
+</pre>
+
+The second line stores <code>r</code> in the current session. Later lines can use it until you press Reset context or reload the page.
+
+If typing the symbols is awkward, these ASCII aliases are also available:
+
+<pre>
+pi       // same as π
+euler    // same as 𝑒
+inf      // same as ∞
+</pre>
 
 <h3>Basic usage</h3>
 
@@ -82,10 +104,11 @@ Several prefix operators are available. The main ones are as follows.
 <h3>Constants</h3>
 The following three symbols have pre-set values.
 <pre>
-π	//  PI
-𝑒	//  Napier number (use keypad 𝑒; ASCII e is a name)
-∞	//  Infinity
+π	//  PI; ASCII alias: pi
+𝑒	//  Napier number; ASCII alias: euler
+∞	//  Infinity; ASCII alias: inf
 </pre>
+ASCII <code>e</code> is a normal name, not Napier's number.
 
 <h3>Variables</h3>
 A variable is a named memory.

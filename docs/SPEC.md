@@ -273,7 +273,15 @@ Priority: **lower number binds looser** (split first). Omitted infix between num
 
 `∞` `𝑒` `π` `γ` `φ` `log2e` `log10e` `ln2` `ln10`
 
-Use keypad **𝑒**, not ASCII `e`.
+ASCII aliases are available for the most common hard-to-type constants:
+
+| Alias | Constant |
+|-------|----------|
+| `pi` | `π` |
+| `euler` | `𝑒` |
+| `inf` | `∞` |
+
+Use keypad **𝑒** or `euler`, not ASCII `e`. ASCII `e` remains an ordinary name.
 
 ### 6.6 Math functions (prefix)
 

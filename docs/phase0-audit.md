@@ -24,9 +24,10 @@ clang++ -DDEBUG -std=c++23 -o _ \
 | Compile | OK |
 | Exit code | 0 |
 | `TESTING ENDS` | printed |
-| CI runs this | **No** (`.github/workflows/pages.yml` is WASM deploy only) |
+| CI runs this | **Yes** (`.github/workflows/test.yml`) |
 
 `test.sh` also builds coverage HTML and runs `open index.html` — not required for the baseline gate.
+The Pages deploy workflow separately builds WASM and runs `WASM/smoke.mjs`.
 
 ---
 
@@ -98,7 +99,9 @@ clang++ -DDEBUG -std=c++23 -o _ \
 |--------|-------|
 | `∞` `𝑒` `π` `γ` `φ` `log2e` `log10e` `ln2` `ln10` | IEEE / `std::numbers` |
 
-**Note:** Napier's number is **`𝑒` (U+1D452)**, not ASCII `e`.
+ASCII aliases: `inf` → `∞`, `euler` → `𝑒`, `pi` → `π`.
+
+**Note:** Napier's number is **`𝑒` (U+1D452)** or `euler`, not ASCII `e`.
 
 ### Named functions (prefix)
 

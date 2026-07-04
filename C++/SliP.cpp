@@ -601,6 +601,9 @@ Build() {
 	RegisterNumericConstant( "∞"		);
 	RegisterNumericConstant( "𝑒"		);
 	RegisterNumericConstant( "π"		);
+	BUILTINS[ "inf" ]	= MS< NumericConstant >( "∞" );
+	BUILTINS[ "euler" ]	= MS< NumericConstant >( "𝑒" );
+	BUILTINS[ "pi" ]	= MS< NumericConstant >( "π" );
 	RegisterNumericConstant( "γ"		);
 	RegisterNumericConstant( "φ"		);
 	RegisterNumericConstant( "log2e"	);
@@ -757,5 +760,4 @@ Build() {
 	);
 //	TODO: Graphic Extension
 }
-
 
