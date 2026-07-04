@@ -52,7 +52,7 @@ MathTest( SP< Context > C ) {
 	TestMath< Float >( C, "( tanh 1 )", []( auto const& _ ){ A( _->$ == tanh( 1 ) ); } );
 	TestMath< Float >( C, "( trunc 1 )", []( auto const& _ ){ A( _->$ == trunc( 1 ) ); } );
 	
-	TestMathApprox( C, "( atan2 [ 1 1.7320508 ] )", 0.5235987833701112);
+	TestMathApprox( C, "( atan2 [ 1 1.7320508 ] )", 0.5235987774905182);
 	TestMathApprox( C, "( hypot [ 3 4 ] )", 5 );
 	TestMathApprox( C, "( max [ 2 3 4 ] )", 4 );
 	TestMathApprox( C, "( min [ 2 3 4 ] )", 2 );

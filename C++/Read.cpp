@@ -212,11 +212,11 @@ Read( iReader& R, char32_t terminator ) {
 				}
 				$.push_back( R.Read() );
 			}
-			if( dotRead ) return MS<Float >( stof( string_Us( $ ) ) );
+			if( dotRead ) return MS<Float >( stod( string_Us( $ ) ) );
 			try {
 				return MS<Bits	>( stol( string_Us( $ ) ) );
 			} catch( out_of_range const& ) {
-				return MS<Float >( stof( string_Us( $ ) ) );
+				return MS<Float >( stod( string_Us( $ ) ) );
 			}
 		}
 		switch ( _ ) {

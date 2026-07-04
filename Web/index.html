@@ -323,6 +323,8 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	RESULT.textContent = ''
 
+	SliP.SetRoundPrecision( Number( ROUND_PRECISION.value ) || 15 )
+
 	let source = SOURCE.value
 	CONV_X.checked && ( source = source.replaceAll( /[xX]/, '×' ) )
 

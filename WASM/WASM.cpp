@@ -27,6 +27,12 @@ auto
 C = MS< Context >();
 
 void
+SetRoundPrecision( int _ ) {
+	extern int RoundPrecision;
+	RoundPrecision = _;
+}
+
+void
 INIT() {
 	extern void Build();
 	Build();
@@ -99,6 +105,7 @@ REPL( string const& _ ) {
 
 EMSCRIPTEN_BINDINGS( my_module ) {
 	emscripten::function( "INIT", &INIT );
+	emscripten::function( "SetRoundPrecision", &SetRoundPrecision );
 	emscripten::function( "REP", &REP );
 	emscripten::function( "REPL", &REPL );
 }

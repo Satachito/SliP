@@ -2,6 +2,9 @@
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
 
+int
+RoundPrecision = 15;
+
 V< SP< SliP > >
 theStack;
 

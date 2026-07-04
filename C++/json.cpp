@@ -126,7 +126,7 @@ SP<SliP> ByJSON( iReader& R ) {
 string
 ToJSON( SP< SliP > _ ) {
 	if(	auto bits = Cast< Bits >( _ ) ) return to_string( bits->$ );
-	if(	auto numeric = Cast< Numeric >( _ ) ) return double_to_string( numeric->Double() );
+	if(	auto numeric = Cast< Numeric >( _ ) ) return ShortestString( numeric->Double() );
 	if(	auto literal = Cast< Literal >( _ ) ) return "\"" + literal->$ + "\"";
 	if(	auto list = Cast< List >( _ ) ) {
 		auto count = 0;

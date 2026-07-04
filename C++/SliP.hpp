@@ -1,5 +1,7 @@
 #include	"../JP/JP_CPP/JP.h"
 
+#include	<charconv>
+
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
 #define	MS		make_shared
@@ -38,6 +40,26 @@ Context {
 	}
 };
 
+inline string	//	Shortest round-trip representation, the way JS prints a number.
+ShortestString( double _ ) {
+	char buf[ 32 ];
+	auto [ p, ec ] = to_chars( buf, buf + sizeof( buf ), _ );
+	return string( buf, p );
+}
+
+extern int
+RoundPrecision;	//	Significant digits for Float REPR, settable from the UI. Default 15.
+
+inline string	//	Round to RoundPrecision digits the way the JS engine did, then print the shortest form.
+RoundedString( double _ ) {
+	if( _ == 1 ) return "1";
+	if( isfinite( _ ) ) {
+		auto coef = pow( 10, _ < 1 ? RoundPrecision : RoundPrecision - (int)ceil( log10( _ ) ) );
+		_ = round( _ * coef ) / coef;
+	}
+	return ShortestString( _ );
+}
+
 struct
 Numeric	: SliP {
 	virtual	SP< Numeric >
@@ -54,7 +76,7 @@ Float : Numeric {
 	Float( double $ ) : $( $ ) {}
 
 	string
-	REPR() const override { return double_to_string( $ ); }
+	REPR() const override { return RoundedString( $ ); }
 
 	SP< Numeric >
 	Negate() const override {
