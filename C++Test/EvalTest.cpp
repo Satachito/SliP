@@ -498,7 +498,7 @@ EvalTest( SP< Context > C ) {
 	TestEval< Literal >( C, "([255 16]:str)", []( auto const& _ ){ A( _->$ == "ff" ); } );
 
 	//	TODO: Convert exception
-	TestEvalException( C, "([`ffffffffffffffffffffffffffffffff` 16]:int)", "stoll: out of range" );
+	TestEvalException( C, "([`ffffffffffffffffffffffffffffffff` 16]:int)", "integer out of range" );
 	TestEvalException( C, "([`ff` 37]:int)", "base must be 2..36" );
 
 	TestEval< Bits >( C, "([`ff` 16]:int)", []( auto const& _ ){ A( _->$ == 255 ); } );

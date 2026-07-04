@@ -609,18 +609,27 @@ Build() {
 	RegisterNumericConstant( "ln10"		);
 
 //	String <-> Int Conversion
+	static auto
+	StoInt = []( string const& digits, int radix = 10 ) -> int64_t {
+		try {
+			return stoll( digits, nullptr, radix );
+		} catch( out_of_range const& ) {
+			throw out_of_range( "integer out of range" );
+		} catch( invalid_argument const& ) {
+			throw invalid_argument( "invalid integer" );
+		}
+	};
 	Register< Unary >(
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			if( auto literal = Cast< Literal >( _ ) ) {
-				return MS< Bits >( stoll( literal->$ ) );
+				return MS< Bits >( StoInt( literal->$ ) );
 			}
 			auto list = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) );
 			auto radix = (int)Z( "Illegal operand type: " + list->$[ 1 ]->REPR(), Cast< Bits >( list->$[ 1 ] ) )->$;
 			if( radix < 2 || radix > 36 ) throw invalid_argument( "base must be 2..36" );
 			return MS< Bits >(
-				stoll(
+				StoInt(
 					Z( "Illegal operand type: " + list->$[ 0 ]->REPR(), Cast< Literal >( list->$[ 0 ] ) )->$
-				,	nullptr
 				,	radix
 				)
 			);
