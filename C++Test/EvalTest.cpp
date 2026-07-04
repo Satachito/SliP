@@ -339,7 +339,7 @@ EvalTest( SP< Context > C ) {
 		C
 	,	R"( ( `{ "a": 3.14, "b": "3.14","C":[123,"ABC"] }`: byJSON : toJSON ) )"
 	,	[]( auto const& _ ) {
-			A( _->$ == R"({"a":3.14,"b":"3.14","C":[123,"ABC"]})" );
+			A( _->$ == R"({"C":[123,"ABC"],"a":3.14,"b":"3.14"})" );
 		}
 	);
 	TestEval< Literal >(

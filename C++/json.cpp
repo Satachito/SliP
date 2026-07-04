@@ -137,10 +137,14 @@ ToJSON( SP< SliP > _ ) {
 		) + "]";
 	}
 	if(	auto dict = Cast< Dict >( _ ) ) {
+		vector< string > keys;
+		keys.reserve( dict->$.size() );
+		for( auto const& kv : dict->$ ) keys.push_back( get< 0 >( kv ) );
+		std::sort( keys.begin(), keys.end() );
 		auto count = 0;
 		return reduce(
-			dict->$
-		,	[ & ]( string const& $, auto const& kv ){ return $ + ( count++ ? ",\"" : "\"" ) + get< 0 >( kv ) + "\":" + ToJSON( get< 1 >( kv ) ); }
+			keys
+		,	[ & ]( string const& $, string const& key ){ return $ + ( count++ ? ",\"" : "\"" ) + key + "\":" + ToJSON( dict->$.at( key ) ); }
 		,	string( "{" )
 		) + "}";
 	}

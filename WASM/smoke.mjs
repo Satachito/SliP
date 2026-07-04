@@ -4,6 +4,31 @@ import { dirname, join } from 'node:path'
 
 const dir = dirname( fileURLToPath( import.meta.url ) )
 
+// Emscripten web build expects browser globals (see WASM/pre.js).
+const g = globalThis
+g.window = g
+g.document = {
+	body: { appendChild( node ) { return node } },
+	createElement() {
+		const canvas = {
+			width: 0, height: 0, style: {},
+			setAttribute() {},
+			getBoundingClientRect() { return { left: 0, top: 0 } },
+			parentNode: { removeChild() {} },
+			getContext() {
+				return {
+					fillRect() {}, strokeRect() {}, clearRect() {},
+					beginPath() {}, moveTo() {}, lineTo() {}, stroke() {},
+					fillText() {}, measureText() { return { width: 0 } },
+					putImageData() {}, createImageData() { return { data: [] } },
+					getImageData() { return { data: [] } },
+				}
+			},
+		}
+		return canvas
+	},
+}
+
 const createSliP = ( await import( join( dir, '../Web/SliP.js' ) ) ).default
 const SliP = await createSliP()
 SliP.INIT()
