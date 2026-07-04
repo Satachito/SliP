@@ -41,3 +41,7 @@ node WASM/smoke.mjs           # after WASM build
 
 GitHub Actions runs the C++ tests and the WASM smoke test in
 [.github/workflows/test.yml](.github/workflows/test.yml).
+
+## License
+
+SliP is released under the [MIT License](LICENSE).
