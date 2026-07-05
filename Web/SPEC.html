@@ -31,7 +31,7 @@ th, td {
 <tr><td><strong>Calculator</strong></td><td>Programming mode off</td><td>One expression per line (§2)</td></tr>
 <tr><td><strong>Programming</strong></td><td>Programming mode on</td><td>Full SliP; <code>//</code> comments stripped</td></tr>
 </table>
-<p>Both modes share one <strong>session context</strong> on the web until <strong>Reset context</strong> or reload.</p>
+<p>Both modes use a fresh context on each <strong>CALCULATE</strong> by default. Bindings from earlier lines in the source are visible to later lines in the same run. Check <strong>Keep session between runs</strong> in the settings panel to retain bindings across runs.</p>
 
 <h2>2. Calculator (sugared) mode</h2>
 <h3>Line wrapping</h3>
@@ -54,7 +54,7 @@ max[ 3 2 1 ]  list argument
 
 <h3>Assignment</h3>
 <pre>'r = 2</pre>
-<p>becomes <code>( 'r = 2 )</code> and binds <code>r</code> in the session.</p>
+<p>becomes <code>( 'r = 2 )</code> and binds <code>r</code> for the rest of that CALCULATE run.</p>
 
 <h2>3. Names and tokens</h2>
 <ul>

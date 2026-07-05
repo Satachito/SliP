@@ -41,8 +41,8 @@ operator by operator.
 
 ### Canvas lifetime
 
-The main web UI removes existing canvases at the start of each CALCULATE.
-Reloading the page or pressing Reset context also clears the visual state.
+The main web UI removes existing canvases at the start of each CALCULATE and resets the evaluation context unless **Keep session between runs** is checked.
+Reloading the page clears bindings and the visual state.
 
 ## Repository Shape
 

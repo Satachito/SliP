@@ -11,7 +11,7 @@ pre {
 
 <body style="width: 640px; overflow: scroll">
 <h1>SliP Tutorial</h1>
-<p>SliP is a programmable symbolic calculator. You can use it as a normal calculator, then keep the same session and define variables and small functions when you need more.</p>
+<p>SliP is a programmable symbolic calculator. You can use it as a normal calculator, then define variables and small functions in the same source when you need more.</p>
 <p>Language reference: <a href=SPEC.html>SPEC</a> (operators, tokens, modes).</p>
 <hr>
 
@@ -34,7 +34,7 @@ Try these lines first. Press CALCULATE after entering them.
 cosπ
 </pre>
 
-The second line stores <code>r</code> in the current session. Later lines can use it until you press Reset context or reload the page.
+The second line binds <code>r</code> for this run. Later lines in the same source can use it (all evaluated in one CALCULATE).
 
 If typing the symbols is awkward, these ASCII aliases are also available:
 

@@ -53,46 +53,171 @@ html {
 ;	height					: 100%
 }
 body {
-;	height					: 100%
 ;	margin					: 0
+;	height					: 100vh
 ;	display					: grid
 ;	grid-template-rows		: auto 1fr auto
-;	grid-template-columns	: auto 1fr auto
+;	grid-template-columns	: var( --nav-w, 242px ) 1fr var( --aside-w, 220px )
+;	position				: relative
+;	overflow				: hidden
 ;	color					: var( --page-fg )
 ;	background-color		: var( --page-bg )
+}
+body.nav-collapsed		{ --nav-w	: 0 }
+body.aside-collapsed	{ --aside-w	: 0 }
+body.nav-collapsed		> nav	{ display: none }
+body.aside-collapsed	> aside	{ display: none }
+
+.panel-toggle {
+;	flex-shrink		: 0
+;	align-self		: stretch
+;	width			: 28px
+;	display			: flex
+;	align-items		: center
+;	justify-content	: center
+;	padding			: 0
+;	border			: none
+;	background		: var( --control-bg )
+;	color			: var( --control-fg )
+;	cursor			: pointer
+;	font-size		: 16px
+;	font-weight		: 700
+;	opacity			: .85
+}
+.panel-toggle:hover		{ opacity: 1; background: var( --subtle-bg ) }
+#NAV_TOGGLE				{ border-right	: 1px solid var( --border ) }
+#ASIDE_TOGGLE			{ border-left	: 1px solid var( --border ) }
+
+.topbar {
+;	grid-row		: 1
+;	grid-column		: 1 / 4
+;	display			: flex
+;	align-items		: stretch
+;	flex-wrap		: wrap
+;	min-height		: 44px
+;	box-sizing		: border-box
+;	overflow-x		: auto
+;	border-bottom	: 1px solid var( --border )
+}
+.topbar > header {
+;	box-sizing		: border-box
+;	min-height		: 0
+;	padding			: 5px 8px
+;	border-bottom	: none
+}
+.topbar > header.brand {
+;	flex-shrink		: 0
+;	display			: flex
+;	flex-direction	: column
+;	justify-content	: center
+;	font-family		: fantasy
+}
+.topbar > header.links {
+;	flex-shrink		: 0
+;	display			: flex
+;	align-items		: center
+;	justify-content	: flex-end
+;	gap				: 10px
+;	font-family		: monospace
+;	font-size		: 13px
+}
+.topbar > header.sample-panel {
+;	flex			: 1 1 auto
+;	min-width		: 0
+;	box-sizing		: border-box
+;	padding			: 4px 6px
+;	display			: flex
+;	align-items		: stretch
+}
+.sample-list {
+;	display			: grid
+;	grid-template-columns	: repeat( 4, auto )
+;	gap				: 4px
+;	height			: 100%
+}
+.sample-list button {
+;	min-width		: 0
+;	min-height		: 28px
+;	margin			: 0
+;	padding			: 2px 8px
+;	border			: 1px solid var( --soft-border )
+;	border-radius	: 4px
+;	background		: var( --control-bg )
+;	color			: var( --control-fg )
+;	font-family		: monospace
+;	font-size		: 11px
+;	line-height		: 1.2
+;	text-align		: center
+;	cursor			: pointer
+;	white-space		: nowrap
+}
+.sample-list button:hover {
+;	background		: var( --subtle-bg )
 }
 a {
 ;	color					: var( --link )
 }
-header {
-;	grid-column				: 1 / 4
-;	border-bottom			: 1px solid var( --border )
-;	padding					: 6px
-;	font-family				: fantasy
+header a:hover
+,	footer a:hover {
+;	text-decoration			: underline
 }
 footer {
+;	grid-row				: 3
 ;	grid-column				: 1 / 4
 ;	border-top				: 1px solid var( --border )
-;	padding					: 6px
+;	padding					: 6px 8px
+;	font-size				: 11px
+;	font-family				: cursive
+;	display					: flex
+;	align-items				: center
+;	justify-content			: flex-end
+;	gap						: 8px
+}
+.footer-meta {
+;	display					: flex
+;	align-items				: center
+;	flex-wrap				: wrap
+;	justify-content			: flex-end
+;	gap						: 6px
 ;	font-family				: cursive
 }
+.footer-credit {
+;	font-size				: 10px
+;	opacity					: .85
+}
+.footer-sponsor {
+;	color					: #db61a2
+;	font-weight				: 600
+}
 nav {
+;	grid-row				: 2
+;	grid-column				: 1
 ;	border-right			: 1px solid var( --border )
 ;	padding					: 6px
 ;	font-family				: monospace
-;	overflow				: scroll
-;	min-width				: 242px
+;	overflow				: auto
+;	min-height				: 0
+;	min-width				: 0
 }
 aside {
+;	grid-row				: 2
+;	grid-column				: 3
 ;	border-left				: 1px solid var( --border )
 ;	padding					: 6px
 ;	font-family				: monospace
-;	overflow				: scroll
+;	overflow				: auto
+;	min-height				: 0
+;	min-width				: 0
 }
 jp-split-h {
+;	grid-row				: 2
+;	grid-column				: 2
 ;	font-family				: monospace
 ;	font-size				: 12px
-;	overflow				: scroll
+;	overflow				: hidden
+;	min-height				: 0
+;	min-width				: 0
+;	height					: 100%
 }
 jp-split-h > * {
 ;	background-color		: var( --panel-bg )
@@ -194,28 +319,6 @@ textarea {
 ;	color					: var( --muted )
 ;	text-transform			: uppercase
 }
-@media ( max-width: 768px ) {
-body {
-;	grid-template-columns	: minmax( 0, 1fr )
-;	grid-template-rows		: auto auto minmax( 180px, 1fr ) auto auto
-}
-header, footer, nav, jp-split-h, aside {
-;	grid-column				: 1
-}
-nav {
-;	border-right			: none
-;	border-bottom			: 1px solid var( --border )
-;	max-height				: 36vh
-;	min-width				: 0
-}
-aside {
-;	border-left				: none
-;	border-top				: 1px solid var( --border )
-}
-#SOURCE, #line-nums {
-;	font-size				: 16px
-}
-}
 .gutter {
 ;	background				: var( --gutter-bg )
 ;	cursor					: col-resize
@@ -256,12 +359,28 @@ aside {
 
 </style>
 
-<header style="display: grid; grid-template-columns: auto 1fr auto">
-	SliP, the awesome calculator.
-	<div></div>
+<div class=topbar>
+<button id=NAV_TOGGLE class=panel-toggle title="Toggle keypad">‹</button>
+<header class=brand style="font-size: 20px; line-height: 1.1">
+	SliP
+	<div style="font-family: monospace; font-size: 10px; font-weight: normal; margin-top: 2px; opacity: .75">
+		the awesome calculator
+	</div>
+</header>
+<header class=sample-panel>
+	<div class=sample-list>
+		<button type=button data-sample=Samples.sugared.slip title="Calculator — general">Calculator</button>
+		<button type=button data-sample=Samples.slip title="Programming — general">Code</button>
+		<button type=button data-sample=Mandelbrot.slip title="Mandelbrot — WebGL">Mandelbrot</button>
+		<button type=button data-sample=Graphics.slip title="Graphics — Canvas 2D">Graphics</button>
+	</div>
+</header>
+<header class=links>
 	<a href=Tutorial.html target=_blank>Tutorial</a>
 	<a href=SPEC.html target=_blank>Reference</a>
 </header>
+<button id=ASIDE_TOGGLE class=panel-toggle title="Toggle settings">›</button>
+</div>
 
 <nav>
 	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALCULATE><br>
@@ -516,21 +635,25 @@ aside {
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
 	<label>Round precision:</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
 	<br>
-	<p style="margin: 0 0 6px 0; font-size: 85%;">Variables and definitions persist until you reset or reload the page.</p>
-	<input type=button value="Reset context" id=RESET_CONTEXT style="width: 100%"><br>
-	<br>
-	<label for=LOAD_SAMPLE_SELECT>Sample</label>
-	<select id=LOAD_SAMPLE_SELECT style="width: 100%; margin-bottom: 4px">
-		<option value=Samples.sugared.slip>Calculator — general</option>
-		<option value=Samples.slip>Programming — general</option>
-		<option value=Mandelbrot.slip>Mandelbrot — WebGL</option>
-		<option value=Graphics.slip>Graphics — Canvas 2D</option>
-	</select>
-	<input type=button value="Load sample" id=LOAD_SAMPLE style="width: 100%"><br>
+	<label for=KEEP_SESSION	><input type=checkbox id=KEEP_SESSION	> Keep session between runs	</label><br>
+	<p class=hint-kbd>Bindings in the source always share within one CALCULATE. When unchecked, each CALCULATE also starts with a fresh context.</p>
 </aside>
 
 <footer>
-	<a href="../Zukai/">../Zukai/</a>
+	<div class=footer-meta>
+		<a href=https://github.com/Satachito/SliP target=_blank rel=noopener>GitHub</a>
+		<span aria-hidden=true>·</span>
+		<a href=https://github.com/Satachito/SliP/blob/main/README.md target=_blank rel=noopener>Usage</a>
+		<span aria-hidden=true>·</span>
+		<a href=https://ezu.828.tokyo target=_blank rel=noopener>EzuSVG ezu.828.tokyo</a>
+		<span aria-hidden=true>·</span>
+		<a href=https://zukai.828.tokyo target=_blank rel=noopener>Zukai zukai.828.tokyo</a>
+		<span aria-hidden=true>·</span>
+		<a href=https://kiseki.828.tokyo target=_blank rel=noopener>Kiseki kiseki.828.tokyo</a>
+		<span aria-hidden=true>·</span>
+		<a href=https://github.com/sponsors/Satachito target=_blank rel=noopener class=footer-sponsor>♥ Sponsor</a>
+		<span class=footer-credit>Written by Satoru Ogura, and AIs.</span>
+	</div>
 </footer>
 
 <script type=module>
@@ -557,8 +680,23 @@ const
 SOURCE = document.getElementById( 'SOURCE' )
 ,	LINE_NUMS = document.getElementById( 'line-nums' )
 ,	RESULT = document.getElementById( 'RESULT' )
-,	LOAD_SAMPLE_SELECT = document.getElementById( 'LOAD_SAMPLE_SELECT' )
 ,	MODE_TABS = document.getElementById( 'MODE_TABS' )
+,	NAV_TOGGLE = document.getElementById( 'NAV_TOGGLE' )
+,	ASIDE_TOGGLE = document.getElementById( 'ASIDE_TOGGLE' )
+
+const
+ApplyPanel = ( cls, btn, collapsed, glyphOpen, glyphClosed ) => (
+	document.body.classList.toggle( cls, collapsed )
+,	btn.textContent = collapsed ? glyphClosed : glyphOpen
+,	localStorage.setItem( cls, collapsed ? '1' : '' )
+)
+,	SetAsideCollapsed = collapsed => (
+	document.body.classList.toggle( 'aside-collapsed', collapsed )
+,	ASIDE_TOGGLE.textContent = collapsed ? '‹' : '›'
+,	localStorage.setItem( 'aside-collapsed', collapsed ? '1' : '0' )
+)
+NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.body.classList.contains( 'nav-collapsed' ), '‹', '›' )
+ASIDE_TOGGLE.onclick = () => SetAsideCollapsed( !document.body.classList.contains( 'aside-collapsed' ) )
 
 let
 currentMode = 'CALCULATOR'
@@ -618,6 +756,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	RESULT.textContent = ''
 
+	KEEP_SESSION.checked || SliP.ResetContext()
 	SliP.SetRoundPrecision( Number( ROUND_PRECISION.value ) || 15 )
 
 	let source = SOURCE.value
@@ -745,9 +884,6 @@ SyncMode = () => (
 ,	MODE_TABS.querySelectorAll( '.mode-tab' ).forEach(
 		_ => _.classList.toggle( 'active', _.dataset.mode === currentMode )
 	)
-,	!loadingSample && (
-		LOAD_SAMPLE_SELECT.value = currentMode === 'CODE' ? 'Samples.slip' : 'Samples.sugared.slip'
-	)
 )
 const
 SetMode = mode => {
@@ -781,20 +917,14 @@ LoadSample = path => fetch( './' + path ).then(
 		Calculate()
 	}
 )
-LOAD_SAMPLE.onclick = () => LoadSample( LOAD_SAMPLE_SELECT.value )
-
-RESET_CONTEXT.onclick = () => (
-	confirm( 'Clear all variables, definitions, and stack?' )
-	&& (
-		SliP.ResetContext()
-	,	RemoveCanvas()
-	,	RESULT.textContent = ''
-	)
+document.querySelectorAll( '[data-sample]' ).forEach(
+	_ => _.onclick = () => LoadSample( _.dataset.sample )
 )
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
 ,	localStorage.setItem( 'MODE', currentMode )
+,	localStorage.setItem( 'KEEP_SESSION', KEEP_SESSION.checked ? '1' : '' )
 )
 
 const
@@ -802,6 +932,9 @@ InitUI = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
 ,	currentMode = localStorage.getItem( 'MODE' ) ?? 'CALCULATOR'
 ,	currentMode === 'PROGRAMMING' && ( currentMode = 'CODE' )
+,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '‹', '›' )
+,	SetAsideCollapsed( localStorage.getItem( 'aside-collapsed' ) !== '0' )
+,	KEEP_SESSION.checked = localStorage.getItem( 'KEEP_SESSION' ) === '1'
 ,	SyncMode()
 ,	SyncLineNums()
 )

@@ -17,7 +17,7 @@ SliP has one evaluator and two ways to feed it source text.
 | **Calculator (sugared)** | Programming mode **off** | One expression per line; see §2 | `2πr`, `sin(0)`, `'r = 2` |
 | **Programming** | Programming mode **on** | Toplevel SliP forms; `//` comments stripped | `( 'fact = '… )`, `{ … }`, `« … »` |
 
-Both modes share the same **session context** on the web: bindings survive across CALCULATE until **Reset context** or page reload (§6).
+Both modes share the same **context within one CALCULATE**: bindings from earlier lines in the source are visible to later lines. By default each **CALCULATE** starts from a fresh context; enable **Keep session between runs** in the settings panel to retain bindings across runs (§5.3).
 
 ---
 
@@ -66,7 +66,7 @@ A line may use programming operators, including quote-assign:
 'r = 2
 ```
 
-Because the line becomes `( 'r = 2 )`, the binding is stored in the session context (§6).
+Because the line becomes `( 'r = 2 )`, the binding is stored for the rest of that CALCULATE run (§5).
 
 ### 2.5 Pre-CALCULATE transforms (web UI)
 
@@ -201,7 +201,7 @@ A **Context** is a name → value map plus an optional parent. Lookup walks upwa
 
 ### 5.3 Web session
 
-The WASM embed holds one global context for the page lifetime. **Reset context** clears bindings and the argument stack.
+By default the WASM embed resets context at the start of each **CALCULATE** (bindings and argument stack cleared; the source editor is the program). With **Keep session between runs** checked in the web UI, context persists across CALCULATE until reload or until the option is turned off.
 
 ### 5.4 Mode comparison
 
@@ -211,7 +211,7 @@ The WASM embed holds one global context for the page lifetime. **Reset context**
 | Line wrapping | `( line )` | None — full parser |
 | Multiline sentence | One line only (unless user types `(` … `)`) | `( …` spanning lines `… )` |
 | Toplevel | One result per line | REPL: many forms, JSON array of results |
-| Session | Persistent | Persistent |
+| Session | Fresh each CALCULATE by default; optional persist (web UI) | Fresh each CALCULATE by default; optional persist (web UI) |
 
 ---
 

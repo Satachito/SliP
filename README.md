@@ -4,8 +4,8 @@ SliP is a programmable symbolic calculator: a small expression language that
 starts as a math-friendly web calculator and grows into a Lisp-influenced
 playground for variables, functions, lists, matrices, JSON, and browser graphics.
 
-Use it when you want a calculator that remembers context, or a tiny language
-where `2πr`, `cosπ`, and quoted programs can live in the same session.
+Use it when you want a calculator that grows into a tiny language
+where `2πr`, `cosπ`, and quoted programs can share bindings within one run.
 
 Visit the calculator and tutorial:
 
