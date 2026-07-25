@@ -1,6 +1,6 @@
 # SliP Language Reference
 
-**Version:** draft (2026-07-25)  
+**Version:** 2.0.0 (2026-07-25) — see [CHANGELOG](../CHANGELOG.md)  
 **Source of truth:** `C++/Read.cpp`, `C++/Eval.cpp`, `C++/SliP.cpp`  
 **Site:** https://slip.828.tokyo
 
