@@ -1,99 +1,64 @@
-#include "SliP.hpp"
+#include "Embed.hpp"
 
-//	Read / ReadList are not declared in SliP.hpp; every consumer declares what it
-//	uses, and this file had drifted into declaring neither.
-extern SP< SliP >
-Read( iReader&, char32_t );
-
-extern V< SP< SliP > >
-ReadList( iReader&, char32_t );
-
-extern void
-Build();
-
-//	CLI, TEST and WASM each call Build() once from their own single entry point.
-//	The bridge has no such point — either loop may be called first, and either may
-//	be called again — so latch it on first use.  A file-scope initializer would be
-//	a static-init-order race against BUILTINS in SliP.cpp.
+//	The bridge to Swift.  Everything it exposes returns the JSON described in
+//	Embed.hpp, so a SliP error arrives as data rather than as a C++ exception —
+//	which is what matters here, because an exception thrown through this boundary
+//	has nowhere to go but std::terminate.
+//
+//	Build() is latched on first use.  CLI, TEST and WASM each call it once from
+//	their single entry point; the bridge has no such point, since Swift may call
+//	any of these first and may call them again.  A file-scope initializer would
+//	be a static-init-order race against BUILTINS in SliP.cpp.
 static void
 BuildOnce() {
+	extern void Build();
 	static auto
 	$ = ( Build(), true );
 	(void)$;
 }
 
-char**
-Bridge( vector< string > const& reprs, size_t* oCount ) {
-
-	*oCount = reprs.size();
-
-	auto
-	$ = new char*[ *oCount ];
-
-	for( size_t _ = 0; _ < *oCount; _++ ) {
-		auto repr = reprs[ _ ];
-		$[ _ ] = new char[ repr.length() + 1 ];
-		strcpy( $[ _ ], repr.c_str() );
-	}
+static char*
+Copy( string const& _ ) {
+	auto $ = new char[ _.length() + 1 ];
+	strcpy( $, _.c_str() );
 	return $;
 }
 
-template< ranges::range R > vector< string >
-EvalSliPs( R&& _ ) {
-	auto							C = MS< Context >();
-	return ranges::to< vector >(
-		project(
-			_
-		,	[ & ]( SP< SliP > const& slip ) {
-				return Eval( C, slip )->REPR();
-			}
-		)
-	);
+extern "C" char*
+BH_Version() {
+	return Copy( Version() );
 }
 
-vector< string >
-CoreSyntaxLoop( string const& _ ) {
+extern "C" char*
+BH_REP( const char* source ) {
 	BuildOnce();
-	StringReader					R( _ );
-	vector< SP< SliP > >			slips;
-	while( auto _ = Read( R, -1 ) ) slips.push_back( _ );
-
-	return EvalSliPs( slips );
+	return Copy( REP( string( source ) ) );
 }
 
-vector< string >
-SugaredSyntaxLoop( string const& _ ) {
+extern "C" char*
+BH_REPL( const char* source ) {
 	BuildOnce();
-	return EvalSliPs(
-		project(
-			Split( _ )
-		,	[ & ]( string const& line ) {
-				//	Strip the comment before appending ')', or the reader — which
-				//	now understands `//` — would swallow the synthetic close
-				//	paren along with the comment.  The web UI strips in the same
-				//	order, for the same reason.
-				auto					$ = line.substr( 0, line.find( "//" ) );
-				StringReader			R( $ + ')' );
-				return MS< Sentence	>( ReadList( R, U')' ) );
-			}
-		)
-	);
+	return Copy( REPL( string( source ) ) );
 }
 
-extern "C" char**
-BH_CoreSyntaxLoop( const char *input, size_t* oCount ) {
-	return Bridge( CoreSyntaxLoop( string( input ) ), oCount );
-}
-
-extern "C" char**
-BH_SugaredSyntaxLoop( const char *input, size_t* oCount ) {
-	return Bridge( SugaredSyntaxLoop( string( input ) ), oCount );
-
+extern "C" char*
+BH_Sugared( const char* source ) {
+	BuildOnce();
+	return Copy( Sugared( string( source ) ) );
 }
 
 extern "C" void
-BH_FreeREPRs( char** reprs, size_t count ) {
-	for ( size_t _ = 0; _ < count; ++_ ) delete[] reprs[ _ ];
-	delete[] reprs;
+BH_Reset() {
+	BuildOnce();
+	Reset();
 }
 
+extern "C" void
+BH_SetRoundPrecision( int _ ) {
+	SetRoundPrecision( _ );
+}
+
+extern "C" void
+BH_Free( char* _ ) {
+	delete[] _;
+}

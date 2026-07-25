@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		121371562E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
 		121371572E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
+		12CAFE112E7A010100E28A33 /* Embed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE102E7A010100E28A33 /* Embed.cpp */; };
 		12CAFE012E7A000100E28A33 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
 		12CAFE022E7A000100E28A33 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
 		12CAFE032E7A000100E28A33 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
@@ -172,6 +173,8 @@
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12FBD5402E2D028500B178F7 /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
+		12CAFE102E7A010100E28A33 /* Embed.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Embed.cpp; sourceTree = "<group>"; };
+		12CAFE122E7A010100E28A33 /* Embed.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Embed.hpp; sourceTree = "<group>"; };
 		12FBD5432E2D033E00B178F7 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
 		12FBD5462E2D071200B178F7 /* SliP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SliP.cpp; sourceTree = "<group>"; };
 		12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
@@ -375,6 +378,8 @@
 				12FBD5432E2D033E00B178F7 /* Eval.cpp */,
 				12FBD5402E2D028500B178F7 /* Read.cpp */,
 				121371552E4E2FFF00E28A33 /* json.cpp */,
+				12CAFE102E7A010100E28A33 /* Embed.cpp */,
+				12CAFE122E7A010100E28A33 /* Embed.hpp */,
 			);
 			path = "C++";
 			sourceTree = "<group>";
@@ -731,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12CAFE112E7A010100E28A33 /* Embed.cpp in Sources */,
 				12CAFE022E7A000100E28A33 /* Eval.cpp in Sources */,
 				12CAFE012E7A000100E28A33 /* SliP.cpp in Sources */,
 				12CAFE042E7A000100E28A33 /* json.cpp in Sources */,

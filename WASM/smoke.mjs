@@ -111,4 +111,27 @@ if ( r.response !== '3' ) throw new Error( `one slash still divides: got ${ r.re
 	SliP.ResetContext()
 }
 
+//	Sugared is calculator mode: one entry per non-empty line, comments skipped,
+//	and — unlike REPL — a failing line does not stop the ones after it.
+{
+	SliP.ResetContext()
+	const $ = JSON.parse( SliP.Sugared( "2πr\ncosπ\n'r = 2\n2πr\n// comment\n3 ×\n2 + 3" ) )
+	const shape = $.map( _ => _.error ? 'error' : _.response )
+	const want = [ 'error', '-1', '2', '12.5663706143592', 'error', '5' ]
+	if ( JSON.stringify( shape ) !== JSON.stringify( want ) ) {
+		throw new Error( `Sugared: expected ${ JSON.stringify( want ) }, got ${ JSON.stringify( shape ) }` )
+	}
+	SliP.ResetContext()
+}
+
+//	REPL, by contrast, stops at the first failure.
+{
+	SliP.ResetContext()
+	const $ = JSON.parse( SliP.REPL( '( 1 + 1 )\n( 3 × )\n( 2 + 2 )' ) )
+	if ( $.length !== 2 || !$[ 1 ].error ) {
+		throw new Error( `REPL should stop at the first error, got ${ JSON.stringify( $ ) }` )
+	}
+	SliP.ResetContext()
+}
+
 console.log( 'WASM smoke: OK' )
