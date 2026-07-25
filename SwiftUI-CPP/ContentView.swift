@@ -12,7 +12,7 @@ ContentView: View {
 	@State		private var
 	results		: [ SliPResult ] = []
 
-	@State		private var
+	@AppStorage( Preference.keepSessionKey ) private var
 	keepSession	= false
 
 	//	The operators are most of the language and none of them are on a keyboard.
@@ -35,6 +35,7 @@ ContentView: View {
 			}
 		}
 		.frame( minWidth: 720, minHeight: 420 )
+		.onReceive( NotificationCenter.default.publisher( for: .slipRun ) ) { _ in Run() }
 	}
 
 	private var

@@ -21,6 +21,7 @@ Visit the calculator and tutorial:
 | [Web/SPEC.html](Web/SPEC.html) / [docs/SPEC.md](docs/SPEC.md) | Language specification |
 | [CHANGELOG.md](CHANGELOG.md) | What changed, and what it breaks |
 | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Current limits and reserved surface |
+| [docs/MACOS_APP.md](docs/MACOS_APP.md) | The Mac app: what it does, and how to sign it |
 | [conformance/](conformance) | Language-level test suite, in SliP |
 | [docs/phase0-audit.md](docs/phase0-audit.md) | Maintenance audit log |
 
@@ -42,7 +43,8 @@ Errors are reported as `file:line: message`, with exit status 1.
 | [C++/](C++) | Canonical interpreter used by tests and WASM |
 | [WASM/](WASM) | Web build that powers `Web/` |
 | [Web/](Web) | Calculator, tutorial, samples, and graphics demos |
-| [Swift/](Swift) | Separate Swift interpreter and front ends; builds as the `OSX`, `macOS`, and `SwiftCUI` Xcode targets. Does not track this spec |
+| [SwiftUI-CPP/](SwiftUI-CPP) | The macOS app, on the canonical engine — see [docs/MACOS_APP.md](docs/MACOS_APP.md) |
+| [Swift/](Swift) | Separate Swift interpreter and front ends, wired to the `OSX`, `macOS`, and `SwiftCUI` Xcode targets. Does not track this spec, and those targets do not currently build |
 | [JS/](JS) | Original JavaScript engine; source of the published npm package `@satachito/slip`. Does not track this spec |
 | [JP/](JP) | Shared utility submodule ([Satachito/JP](https://github.com/Satachito/JP)) used by the C++ core and other projects |
 
