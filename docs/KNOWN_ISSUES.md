@@ -46,9 +46,23 @@ Reloading the page clears bindings and the visual state.
 
 ## Repository Shape
 
-### Legacy implementations
+### Multiple implementations
 
-`C++/` is the canonical interpreter. `Swift/SliP.swift` and older `JP/`
-experiments remain in the repository for history and reuse, but they are not the
-language specification.
+`C++/` is the canonical interpreter: it defines the language and drives both the
+test suite and the WASM build.
+
+Two earlier implementations are still live rather than archived, and neither
+tracks the current specification:
+
+- `Swift/` — a separate Swift interpreter (`SliP.swift`, `SliPBuiltins.swift`)
+  with CUI and macOS front ends, built by the `OSX`, `macOS`, and `SwiftCUI`
+  Xcode targets.
+- `JS/` — the original JavaScript engine, published to npm as
+  `@satachito/slip`.
+
+Where either disagrees with `C++/`, `C++/` is correct. Changes to the language
+land in `C++/` first and are not backported.
+
+`JP/` is a submodule shared with other projects, so changes there are made in
+[Satachito/JP](https://github.com/Satachito/JP), not here.
 

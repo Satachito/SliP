@@ -361,8 +361,9 @@ The graphics surface is sample-driven for now; see [Known Issues](KNOWN_ISSUES.m
 | `C++/` | **Canonical** interpreter |
 | `WASM/` | Web build (`SliP.js`) |
 | `Web/` | Calculator UI |
-| `Swift/SliP.swift` | Legacy Swift interpreter (not spec-compliant) |
-| `JP/` | Utility header (`JP.h`) for C++ core; large library also used elsewhere |
+| `Swift/` | Separate Swift interpreter and front ends (Xcode targets `OSX`, `macOS`, `SwiftCUI`); not spec-compliant |
+| `JS/` | Original JavaScript engine, published as npm `@satachito/slip`; not spec-compliant |
+| `JP/` | Utility submodule (`JP.h`) for the C++ core; shared with other projects |
 
 ---
 

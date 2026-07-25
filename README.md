@@ -29,8 +29,13 @@ Visit the calculator and tutorial:
 | [C++/](C++) | Canonical interpreter used by tests and WASM |
 | [WASM/](WASM) | Web build that powers `Web/` |
 | [Web/](Web) | Calculator, tutorial, samples, and graphics demos |
-| [Swift/SliP.swift](Swift/SliP.swift) | Legacy interpreter, kept for history |
-| [JP/](JP) | Shared utility code used by the C++ core and older experiments |
+| [Swift/](Swift) | Separate Swift interpreter and front ends; builds as the `OSX`, `macOS`, and `SwiftCUI` Xcode targets. Does not track this spec |
+| [JS/](JS) | Original JavaScript engine; source of the published npm package `@satachito/slip`. Does not track this spec |
+| [JP/](JP) | Shared utility submodule ([Satachito/JP](https://github.com/Satachito/JP)) used by the C++ core and other projects |
+
+`C++/` defines the language. `Swift/` and `JS/` are earlier implementations
+that still build and ship respectively; where they disagree with `C++/`, `C++/`
+is correct.
 
 ## Build & test
 
