@@ -113,13 +113,31 @@ jobs:
         if: steps.signing.outputs.enabled == 'true'
         run: |
           # Hardened runtime is a precondition for notarization, not a nicety.
+          # So is NOT carrying get-task-allow: Xcode injects that debug
+          # entitlement by default, and Apple rejects any submission with it —
+          # which is how the first attempt at this came back "Invalid".
           xcodebuild -project SliP.xcodeproj -target SwiftUI-CPP \
             -configuration Release \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="${{ secrets.MACOS_SIGNING_IDENTITY }}" \
             ENABLE_HARDENED_RUNTIME=YES \
+            CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
             build
+
+      # Cheaper to catch here than to learn from Apple minutes later.
+      - name: Check the signature is notarizable
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          set -e
+          codesign -dvvv "$APP" 2>&1 | grep -q "flags=0x10000(runtime)" \
+            || { echo "::error::hardened runtime missing"; exit 1; }
+          codesign -dvvv "$APP" 2>&1 | grep -q "^Timestamp=" \
+            || { echo "::error::no secure timestamp"; exit 1; }
+          if codesign -d --entitlements - "$APP" 2>/dev/null | grep -q "get-task-allow"; then
+            echo "::error::get-task-allow is present; Apple will reject this"
+            exit 1
+          fi
 
       - name: Build (unsigned)
         if: steps.signing.outputs.enabled != 'true'
@@ -153,9 +171,25 @@ jobs:
           set -e
           KEY="$RUNNER_TEMP/AuthKey.p8"
           printf '%s' "$AC_API_KEY" > "$KEY"
-          xcrun notarytool submit SliP-macos.zip \
-            --key "$KEY" --key-id "$AC_API_KEY_ID" --issuer "$AC_API_ISSUER_ID" \
-            --wait
+          CREDS=( --key "$KEY" --key-id "$AC_API_KEY_ID" --issuer "$AC_API_ISSUER_ID" )
+
+          # "status: Invalid" means Apple looked and objected, and the summary
+          # alone does not say to what. Fetch the itemised log before failing,
+          # or the next person is left guessing at exactly the wrong moment.
+          set +e
+          xcrun notarytool submit SliP-macos.zip "${CREDS[@]}" --wait \
+            --output-format json > "$RUNNER_TEMP/submit.json"
+          RC=$?
+          set -e
+          cat "$RUNNER_TEMP/submit.json"
+          ID=$( jq -r '.id // empty' < "$RUNNER_TEMP/submit.json" )
+          STATUS=$( jq -r '.status // empty' < "$RUNNER_TEMP/submit.json" )
+          if [ "$STATUS" != "Accepted" ]; then
+            echo "::error::Notarization returned ${STATUS:-no status}"
+            [ -n "$ID" ] && xcrun notarytool log "$ID" "${CREDS[@]}" || true
+            rm -f "$KEY"
+            exit "${RC:-1}"
+          fi
           rm -f "$KEY"
           # The ticket is stapled to the .app, so the archive has to be rebuilt.
           xcrun stapler staple "$APP"

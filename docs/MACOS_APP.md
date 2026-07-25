@@ -90,6 +90,25 @@ the archive. It then asserts the result the way a downloader's Mac will see
 it, with `codesign --verify`, `stapler validate` and `spctl --assess`, so a
 misconfiguration fails the release rather than shipping.
 
+### If notarization comes back `Invalid`
+
+Apple accepted the upload and then objected to something. The summary does not
+say what; the job fetches `notarytool log` on failure, which itemises it.
+
+The one that bit here: Xcode injects `com.apple.security.get-task-allow` — the
+entitlement that lets a debugger attach — unless
+`CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO` is set, and Apple rejects any
+submission carrying it. The build passes that now, and a step checks the
+signature for it, along with the hardened runtime and the secure timestamp,
+before spending minutes finding out from Apple.
+
+To check a local build:
+
+```sh
+codesign -dvvv build/Release/SwiftUI-CPP.app        # flags=0x10000(runtime), Timestamp=
+codesign -d --entitlements - build/Release/SwiftUI-CPP.app | grep get-task-allow
+```
+
 ### If `security import` says the password is wrong
 
 It usually is not. OpenSSL 3 writes PKCS#12 with PBES2 / AES-256-CBC, and
