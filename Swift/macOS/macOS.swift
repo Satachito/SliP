@@ -46,7 +46,18 @@ ViewController	: NSViewController {
 		editor.isAutomaticSpellingCorrectionEnabled		= false
 		editor.isContinuousSpellCheckingEnabled			= false
 		editor.smartInsertDeleteEnabled					= false
-		editor.font = .monospacedSystemFont( ofSize: 13, weight: .regular )
+
+		//	Plain text, and say what colour it is.  As rich text, the string the
+		//	value binding pushes in carries its own attributes, and those win
+		//	over the view's textColor — which is how the source pane ended up
+		//	drawing near-black on the dark background it also asked for.
+		editor.isRichText	= false
+		editor.font			= .monospacedSystemFont( ofSize: 13, weight: .regular )
+		editor.textColor	= .textColor
+		editor.typingAttributes = [
+			.font			: NSFont.monospacedSystemFont( ofSize: 13, weight: .regular )
+		,	.foregroundColor: NSColor.textColor
+		]
 	}
 
 	@IBAction func
@@ -74,6 +85,12 @@ ViewController	: NSViewController {
 	//	insertText, and taking focus back makes the value binding push its old
 	//	string over what was just typed.  shouldChangeText / didChangeText is the
 	//	supported way to change the text and have the binding notice.
+	//
+	//	Attributed, and deliberately so.  replaceCharacters( in:with: String )
+	//	inserts characters carrying no attributes at all, and text with no
+	//	foreground colour draws black — not the view's textColor, and not
+	//	anything that follows the appearance.  On a dark background that is
+	//	invisible, which is exactly what the source pane was doing.
 	private func
 	Insert( _ text: String ) {
 		guard
@@ -82,7 +99,10 @@ ViewController	: NSViewController {
 		else { return }
 		let	caret = editor.selectedRange()
 		guard editor.shouldChangeText( in: caret, replacementString: text ) else { return }
-		storage.replaceCharacters( in: caret, with: text )
+		storage.replaceCharacters(
+			in: caret
+		,	with: NSAttributedString( string: text, attributes: editor.typingAttributes )
+		)
 		editor.didChangeText()
 		editor.setSelectedRange( NSRange( location: caret.location + ( text as NSString ).length, length: 0 ) )
 	}
