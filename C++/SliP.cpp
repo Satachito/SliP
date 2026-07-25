@@ -274,6 +274,7 @@ Build() {
 		}
 	,	"="		//	assign
 	,	0
+	,	true	//	right-associative: 'a = 'b = 2
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
@@ -284,11 +285,11 @@ Build() {
 	,	"?"		//	if else
 	,	10
 	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return IsT( l ) ? Eval( C, r ) : Nil;
+	RegisterLazyInfix(
+		[]( SP< Context > C, SP< SliP > l, function< SP< SliP >() > const& r ) -> SP< SliP > {
+			return IsT( l ) ? Eval( C, r() ) : Nil;
 		}
-	,	"¿"		//	if
+	,	"¿"		//	if — rhs is not touched when lhs is Nil
 	,	10
 	);
 	RegisterInfix(
@@ -355,26 +356,28 @@ Build() {
 	,	">="	//	Greater equal
 	,	30
 	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return ( IsT( l ) && IsT( r ) ) ? T : Nil;
+	//	Logical operators bind looser than comparisons (priority 20 < 30) so
+	//	`x > 0 && y > 0` reads as ( x > 0 ) && ( y > 0 ).
+	RegisterLazyInfix(
+		[]( SP< Context > C, SP< SliP > l, function< SP< SliP >() > const& r ) -> SP< SliP > {
+			return IsT( l ) ? ( IsT( r() ) ? T : Nil ) : Nil;
 		}
-	,	"&&"	//	Logical and
-	,	40
+	,	"&&"	//	Logical and — short-circuits
+	,	20
 	);
-	RegisterInfix(
-		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
-			return ( IsT( l ) || IsT( r ) ) ? T: Nil;
+	RegisterLazyInfix(
+		[]( SP< Context > C, SP< SliP > l, function< SP< SliP >() > const& r ) -> SP< SliP > {
+			return IsT( l ) ? T : ( IsT( r() ) ? T : Nil );
 		}
-	,	"||"	//	Logical or
-	,	40
+	,	"||"	//	Logical or — short-circuits
+	,	20
 	);
 	RegisterInfix(
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			return ( IsT( l ) != IsT( r ) ) ? T: Nil;
 		}
 	,	"^^"	//	Logical exclusive or
-	,	40
+	,	20
 	);
 
 	RegisterInfix(
@@ -404,6 +407,7 @@ Build() {
 		}
 	,	","		//	[ l, ...r ]
 	,	50
+	,	true	//	right-associative: 1 , 2 , [ 3 ] == [ 1 2 3 ]
 	);
 
 	RegisterInfix(

@@ -94,4 +94,34 @@ RegressionTest( SP< Context > C ) {
 	TestEval< Float >( C, "( random[ 0 1 ] )", []( auto const& _ ){
 		A( 0 <= _->$ && _->$ < 1 );
 	} );
+
+	//	Phase 3: comparisons bind tighter than && || ^^
+	TestEval< Verum >( C, "( 3 > 1 && 5 > 4 )", []( auto const& _ ){ A( _ != nullptr ); } );
+	TestEval< List >( C, "( 1 < 2 && 3 < 2 )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Verum >( C, "( 1 == 1 || 2 == 3 )", []( auto const& _ ){ A( _ != nullptr ); } );
+	TestEval< Verum >( C, "( 1 == 1 ^^ 2 == 3 )", []( auto const& _ ){ A( _ != nullptr ); } );
+
+	//	Phase 3: && || ¿ short-circuit — falsy side never evaluates rhs
+	TestEval< List >( C, "( [] && ( ¡ `boom` ) )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Verum >( C, "( 1 || ( ¡ `boom` ) )", []( auto const& _ ){ A( _ != nullptr ); } );
+	TestEval< List >( C, "( [] ¿ ( ¡ `boom` ) )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEval< Bits >( C, "( 1 ¿ ( 3 + 5 ) )", []( auto const& _ ){ A( _->$ == 8 ); } );
+	TestEval< Bits >( C, "( 1 ¿ '( 3 + 5 ) )", []( auto const& _ ){ A( _->$ == 8 ); } );
+
+	//	Phase 3: `,` and `=` are right-associative
+	TestEval< List >( C, "( 1 , 2 , [ 3 ] )", []( auto const& _ ){ A( _->REPR() == "[ 1 2 3 ]" ); } );
+	{	auto fresh = MS< Context >();
+		TestEval< Bits >( fresh, "( 'p = 'q = 7 )", []( auto const& _ ){ A( _->$ == 7 ); } );
+		TestEval< Bits >( fresh, "p", []( auto const& _ ){ A( _->$ == 7 ); } );
+		TestEval< Bits >( fresh, "q", []( auto const& _ ){ A( _->$ == 7 ); } );
+	}
+
+	//	Phase 3: a prefix absorbs a following run of bare numerics as one product,
+	//	but a parenthesized argument stays a plain call
+	TestEval< Float >( C, "( sin 2 π )", []( auto const& _ ){ A( _->$ == sin( 2 * numbers::pi ) ); } );
+	TestEval< Float >( C, "( cos 2 π )", []( auto const& _ ){ A( _->$ == cos( 2 * numbers::pi ) ); } );
+	TestEval< Float >( C, "( sin(1) π )", []( auto const& _ ){ A( _->$ == sin( 1 ) * numbers::pi ); } );
+	TestEval< Float >( C, "( 2 π sin 3 )", []( auto const& _ ){ A( _->$ == 2 * numbers::pi * sin( 3 ) ); } );
+	TestEval< Float >( C, "( 6 ÷ 2 π )", []( auto const& _ ){ A( _->$ == 6 / ( 2 * numbers::pi ) ); } );
+	TestEval< Float >( C, "( sin 2 π + 1 )", []( auto const& _ ){ A( _->$ == sin( 2 * numbers::pi ) + 1 ); } );
 }

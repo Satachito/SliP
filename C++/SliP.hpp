@@ -244,11 +244,24 @@ struct
 Infix : Function {
 	function< SP< SliP >( SP< Context >, SP< SliP >, SP< SliP > ) >					$;
 	int																				priority;
+	bool																			rightAssoc;
 	Infix(
 		function< SP< SliP >( SP< Context >, SP< SliP >, SP< SliP > ) >	const&	$
 	,	string	label
 	,	int		priority
-	) : Function( label ), $( $ ), priority( priority ) {}
+	,	bool	rightAssoc = false
+	) : Function( label ), $( $ ), priority( priority ), rightAssoc( rightAssoc ) {}
+};
+
+struct	//	Receives the right operand as a thunk so it can skip evaluating it (&&, ||, ¿).
+LazyInfix : Infix {
+	function< SP< SliP >( SP< Context >, SP< SliP >, function< SP< SliP >() > const& ) >	lazy;
+	LazyInfix(
+		function< SP< SliP >( SP< Context >, SP< SliP >, function< SP< SliP >() > const& ) >	const&	lazy
+	,	string	label
+	,	int		priority
+	,	bool	rightAssoc = false
+	) : Infix( nullptr, label, priority, rightAssoc ), lazy( lazy ) {}
 };
 
 struct
@@ -394,7 +407,10 @@ template < typename T, typename F > void	//	prefix, unary, primitive
 Register( F $, string const& label ) { BUILTINS[ label ] = MS< T >( $, label ); }
 
 template < typename F > void
-RegisterInfix( F $, string const& label, int priority ) { BUILTINS[ label ] = MS< Infix >( $, label, priority ); }
+RegisterInfix( F $, string const& label, int priority, bool rightAssoc = false ) { BUILTINS[ label ] = MS< Infix >( $, label, priority, rightAssoc ); }
+
+template < typename F > void
+RegisterLazyInfix( F $, string const& label, int priority, bool rightAssoc = false ) { BUILTINS[ label ] = MS< LazyInfix >( $, label, priority, rightAssoc ); }
 
 inline void
 RegisterNumericConstant( string const& label ) { BUILTINS[ label ] = MS< NumericConstant >( label ); }

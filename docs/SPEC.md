@@ -1,6 +1,6 @@
 # SliP Language Reference
 
-**Version:** draft (2026-07-04)  
+**Version:** draft (2026-07-25)  
 **Source of truth:** `C++/Read.cpp`, `C++/Eval.cpp`, `C++/SliP.cpp`  
 **Site:** https://slip.828.tokyo
 
@@ -150,12 +150,16 @@ See [Known Issues](KNOWN_ISSUES.md).
 
 ### 4.1 Sentence
 
-A Sentence `( a b c … )` is evaluated in two passes:
+A Sentence `( a b c … )` is evaluated by recursive infix splitting:
 
-1. **Prefix / quote pass** (`ApplyPrefix`) — right-to-left: quotes and prefix operators consume the following form.
-2. **Infix pass** (`ApplyInfix`) — pick the **lowest-priority** infix operator; split; recurse. Equal priority → rightmost wins (left-associative for `+`, `-`, …).
+1. **Infix split** (`ApplyInfix`) — scan the raw form list for the **lowest-priority** infix operator; split there; recurse into both sides. Equal priority → rightmost wins (left-associative), except for operators registered **right-associative** (`=`, `,`), where the leftmost wins.
+2. **Prefix / quote pass** (`ApplyPrefix`) — runs only on infix-free segments, right-to-left: quotes and prefix operators consume the following form.
+3. If a segment still holds multiple adjacent numerics, **implicit multiply** applies.
 
-If no infix remains and multiple numerics are adjacent, **implicit multiply** applies.
+Operands are evaluated per segment as the split tree is walked, left side
+before right side, so side effects run **left to right**. Because the right
+side of an infix operator is not evaluated until its operator asks for it,
+`&&`, `||`, and `¿` **short-circuit** (§6.4).
 
 ### 4.2 Prefix and quote
 
@@ -164,6 +168,16 @@ If no infix remains and multiple numerics are adjacent, **implicit multiply** ap
 | `' x` | Quote: evaluate to unevaluated `x` |
 | `sin x` | Prefix `sin` applied to evaluated `x` |
 | `! x` | Eval `x` again |
+
+A prefix operator absorbs the following run of **bare** numerics — numbers,
+constants, and names written directly, without parentheses — as one product:
+
+| Input | Meaning |
+|-------|---------|
+| `sin 2π` | `sin( 2 × π )` |
+| `sin 2 π + 1` | `sin( 2 × π ) + 1` |
+| `sin(2) π` | `sin( 2 ) × π` — a parenthesized argument is a plain call |
+| `2 π sin 3` | `2 × π × sin( 3 )` — a function result ends the run |
 
 ### 4.3 Apply `:`
 
@@ -251,17 +265,25 @@ Priority: **lower number binds looser** (split first). Omitted infix between num
 
 ### 6.4 Infix
 
+All operators are left-associative except `=` and `,`, which are
+**right-associative** (`'a = 'b = 2` binds both names; `1 , 2 , [ 3 ]` builds
+`[ 1 2 3 ]`).
+
+`&&`, `||`, and `¿` **short-circuit**: the right side is not evaluated when
+the left side already decides the result. `?` defers both branches because
+`[ then else ]` is a literal list.
+
 | Pri | Sym | Meaning |
 |-----|-----|---------|
-| 0 | `=` | Assign to name (left must be name) |
+| 0 | `=` | Assign to name (left must be name); right-assoc |
 | 10 | `?` | `cond ? [ then else ]` |
-| 10 | `¿` | Truthy → eval rhs, else Nil |
+| 10 | `¿` | Truthy → eval rhs, else Nil (rhs untouched) |
+| 20 | `&&` `\|\|` `^^` | Logical and / or / xor; `&&` `\|\|` short-circuit |
 | 30 | `∈` | `x ∈ list` — membership |
 | 30 | `∋` | `list ∋ x` — contains |
 | 30 | `==` `<>` `<` `>` `<=` `>=` | Compare → `T` or Nil |
-| 40 | `&&` `\|\|` `^^` | Logical and / or / xor |
 | 50 | `§` | Eval rhs in child context = Dict(lhs) |
-| 50 | `,` | Prepend left to list right |
+| 50 | `,` | Prepend left to list right; right-assoc |
 | 60 | `+` `-` | Add / subtract; strings; list concat |
 | 70 | `·` | Matrix / vector inner product |
 | 70 | `×` | Multiply |
@@ -272,6 +294,9 @@ Priority: **lower number binds looser** (split first). Omitted infix between num
 | 90 | `:` | Apply |
 | 100 | `±` | Set matrix column count |
 | 100 | `.` | `dict.name`, `list.index`, or unary-suffix sugar |
+
+Comparisons bind tighter than the logical operators, so
+`x > 0 && y > 0` reads as `( x > 0 ) && ( y > 0 )`.
 
 ### 6.5 Numeric constants
 

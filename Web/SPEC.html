@@ -22,7 +22,7 @@ th, td {
 
 <body style="width: 720px; overflow: scroll; font-family: sans-serif">
 <h1>SliP Language Reference</h1>
-<p>Draft 2026-07-04. SliP is a programmable symbolic calculator. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
+<p>Draft 2026-07-25. SliP is a programmable symbolic calculator. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
 <hr>
 
 <h2>1. Two modes</h2>
@@ -69,10 +69,11 @@ max[ 3 2 1 ]  list argument
 <h2>4. Evaluation</h2>
 <h3>Sentence <code>( … )</code></h3>
 <ol>
-<li>Prefix / quote pass (right to left)</li>
-<li>Infix pass (lowest priority operator splits first)</li>
+<li>Infix split first: the lowest-priority operator splits the raw sentence; recurse both sides. Equal priority → rightmost wins, except right-associative <code>=</code> and <code>,</code>.</li>
+<li>Prefix / quote pass (right to left) runs inside infix-free segments. A prefix absorbs a following run of bare numerics: <code>sin 2π</code> → <code>sin( 2 × π )</code>, but <code>sin(2) π</code> → <code>sin( 2 ) × π</code>.</li>
 <li>Adjacent numerics with no operator → multiply</li>
 </ol>
+<p>Operands evaluate left to right, and <code>&amp;&amp;</code> <code>||</code> <code>¿</code> short-circuit: the right side is untouched when the left side decides the result.</p>
 
 <h3>Blocks</h3>
 <table>
@@ -122,17 +123,18 @@ max[ 3 2 1 ]  list argument
 <h3>Infix (priority low → loose)</h3>
 <table>
 <tr><th>Pri</th><th>Operators</th></tr>
-<tr><td>0</td><td><code>=</code> assign</td></tr>
-<tr><td>10</td><td><code>?</code> <code>¿</code> if</td></tr>
+<tr><td>0</td><td><code>=</code> assign (right-assoc)</td></tr>
+<tr><td>10</td><td><code>?</code> <code>¿</code> if (<code>¿</code> short-circuits)</td></tr>
+<tr><td>20</td><td><code>&amp;&amp;</code> <code>||</code> <code>^^</code> (<code>&amp;&amp;</code> <code>||</code> short-circuit)</td></tr>
 <tr><td>30</td><td><code>∈</code> <code>∋</code> <code>==</code> <code>&lt;&gt;</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code></td></tr>
-<tr><td>40</td><td><code>&amp;&amp;</code> <code>||</code> <code>^^</code></td></tr>
-<tr><td>50</td><td><code>§</code> <code>,</code></td></tr>
+<tr><td>50</td><td><code>§</code> <code>,</code> (<code>,</code> right-assoc)</td></tr>
 <tr><td>60</td><td><code>+</code> <code>-</code></td></tr>
 <tr><td>70</td><td><code>·</code> <code>×</code> <code>÷</code> <code>/</code> <code>%</code></td></tr>
 <tr><td>80</td><td><code>&amp;</code> <code>|</code> <code>^</code></td></tr>
 <tr><td>90</td><td><code>:</code> apply</td></tr>
 <tr><td>100</td><td><code>±</code> <code>.</code> matrix cols / index</td></tr>
 </table>
+<p>Comparisons bind tighter than <code>&amp;&amp;</code> <code>||</code> <code>^^</code>, so <code>x &gt; 0 &amp;&amp; y &gt; 0</code> reads as <code>( x &gt; 0 ) &amp;&amp; ( y &gt; 0 )</code>.</p>
 
 <h3>Apply <code>:</code></h3>
 <p><code>arg : f</code> pushes <code>arg</code> on the argument stack, evaluates <code>f</code>, then pops the stack. Use <code>@</code> inside quoted functions to read the stack top.</p>
