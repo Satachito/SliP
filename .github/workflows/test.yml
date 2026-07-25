@@ -53,3 +53,25 @@ jobs:
           node-version: '22'
       - name: WASM smoke test
         run: node WASM/smoke.mjs
+
+  xcode:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      #	The Sources phase of SwiftUI-CPP once went empty without anyone noticing,
+      #	because nothing outside Xcode ever built it.  Link every target that is
+      #	green today, so the next such gap fails here instead.
+      #	SwiftCUI, macOS and OSX are left out: they are broken independently of
+      #	this project file (JP_iOS.swift imports UIKit into a macOS target, and the
+      #	two app targets point INFOPLIST_FILE at paths that do not exist).
+      - name: Build Xcode targets
+        run: |
+          for T in CLI SliPTests SwiftUI-CPP SwiftUI-CPPTests SwiftUI-CPPUITests; do
+            echo "=== $T ==="
+            xcodebuild -project SliP.xcodeproj -target "$T" \
+              -configuration Debug CODE_SIGNING_ALLOWED=NO build
+          done
+      - name: Run SliPTests
+        run: ./build/Debug/SliPTests
