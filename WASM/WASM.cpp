@@ -110,7 +110,13 @@ REPL( string const& _ ) {
 	return $ + "]";
 }
 
+static string
+VERSION() {
+	return SLIP_VERSION;
+}
+
 EMSCRIPTEN_BINDINGS( my_module ) {
+	emscripten::function( "VERSION", &VERSION );
 	emscripten::function( "INIT", &INIT );
 	emscripten::function( "SetRoundPrecision", &SetRoundPrecision );
 	emscripten::function( "ResetContext", &ResetContext );

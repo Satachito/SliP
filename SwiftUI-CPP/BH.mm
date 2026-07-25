@@ -1,5 +1,13 @@
 #include "SliP.hpp"
 
+//	Read / ReadList are not declared in SliP.hpp; every consumer declares what it
+//	uses, and this file had drifted into declaring neither.
+extern SP< SliP >
+Read( iReader&, char32_t );
+
+extern V< SP< SliP > >
+ReadList( iReader&, char32_t );
+
 char**
 Bridge( vector< string > const& reprs, size_t* oCount ) {
 
@@ -44,7 +52,12 @@ SugaredSyntaxLoop( string const& _ ) {
 		project(
 			Split( _ )
 		,	[ & ]( string const& line ) {
-				StringReader			R( line + ')' );
+				//	Strip the comment before appending ')', or the reader — which
+				//	now understands `//` — would swallow the synthetic close
+				//	paren along with the comment.  The web UI strips in the same
+				//	order, for the same reason.
+				auto					$ = line.substr( 0, line.find( "//" ) );
+				StringReader			R( $ + ')' );
 				return MS< Sentence	>( ReadList( R, U')' ) );
 			}
 		)

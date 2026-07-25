@@ -39,8 +39,38 @@ TestReadException( string const& _, string const& expected ) {
 	}
 }
 
+//	SPEC §5.4 promises `//` line comments; the reader, not the web UI, is what
+//	has to deliver them, or a commented .slip file cannot be run from the CLI.
+static void
+CommentTest() {
+	extern SP< SliP >	Eval( SP< Context >, SP< SliP > );
+	extern SP< SliP >	Nil;
+	extern bool			IsNil( SP< SliP > );
+
+	auto	C = MS< Context >();
+
+	auto	EVAL = [ & ]( string const& _ ) {
+		StringReader	R( _ );
+		SP< SliP >		$ = Nil;
+		while( auto form = Read( R, -1 ) ) $ = Eval( C, form );
+		return $;
+	};
+
+	A( Cast< Bits >( EVAL( "// nothing but a comment\n( 1 + 1 )" ) )->$ == 2 );
+	A( Cast< Bits >( EVAL( "( 1 + 1 ) // trailing" ) )->$ == 2 );
+	A( Cast< Bits >( EVAL( "( 1 +\n// inside a form\n1 )" ) )->$ == 2 );
+	A( Cast< Bits >( EVAL( "( 7 / 2 )" ) )->$ == 3 );			//	One / still divides
+	A( Cast< Bits >( EVAL( "( 7 / 2 ) // c" ) )->$ == 3 );
+	//	A // inside a string is text, not a comment
+	A( Cast< Literal >( EVAL( "( `http://x` )" ) )->$ == "http://x" );
+	A( IsNil( EVAL( "// only a comment" ) ) );
+}
+
 void
 ReadTest() {
+
+	CommentTest();
+
 	
 	A( READ( "(1-)" )->REPR() == "( 1 - )" );
 

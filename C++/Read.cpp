@@ -201,6 +201,13 @@ Read( iReader& R, char32_t terminator ) {
 		auto _ = R.Read();
 		if( _ == terminator )		return nullptr;
 		if( IsBreakingWhite( _ ) )	continue;
+		//	Line comment.  SPEC §5.4 promises `//` in both modes; until now only
+		//	the web UI delivered it, by stripping comments before the reader saw
+		//	them, so a commented .slip file could not be run any other way.
+		if( _ == U'/' && R.Avail() && R.Peek() == U'/' ) {
+			while( R.Avail() && R.Read() != U'\n' );
+			continue;
+		}
 		if( IsDigit( _ ) ) {
 			V< char32_t > ${ _ };
 			auto dotRead = false;

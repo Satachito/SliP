@@ -81,4 +81,16 @@ if ( r.response !== '[ 6 10 ]' ) throw new Error( `∥ argument stack: expected 
 	SliP.ResetContext()
 }
 
+//	The engine reports the language version the CLI reports.
+if ( !/^\d+\.\d+\.\d+$/.test( SliP.VERSION() ) ) {
+	throw new Error( `VERSION: expected x.y.z, got ${ SliP.VERSION() }` )
+}
+
+//	`//` comments are the reader's job now, not the web UI's pre-processing.
+r = rep( "( 1 + 1 ) // trailing" )
+if ( r.response !== '2' ) throw new Error( `comment: expected 2, got ${ r.response }` )
+
+r = rep( '( 7 / 2 )' )
+if ( r.response !== '3' ) throw new Error( `one slash still divides: got ${ r.response }` )
+
 console.log( 'WASM smoke: OK' )
