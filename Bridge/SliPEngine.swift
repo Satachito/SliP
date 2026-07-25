@@ -65,22 +65,28 @@ SliPEngine {
 		return String( cString: pointer )
 	}
 
+	//	Written out rather than as a map over inferred types: this file is
+	//	compiled into targets that also compile JP.swift, whose extensions make
+	//	`$0[ "source" ]` on an inferred dictionary ambiguous.
 	private static func
 	decode( _ json: String ) -> [ SliPResult ] {
-		guard
-			let data = json.data( using: .utf8 ),
-			let array = try? JSONSerialization.jsonObject( with: data ) as? [ [ String: Any ] ]
-		else {
-			//	The engine promises parseable JSON.  If that promise is ever
-			//	broken, say so plainly instead of showing an empty pane.
-			return [ SliPResult( source: nil, value: nil, error: "Engine returned unreadable output: \( json )" ) ]
+		//	The engine promises parseable JSON. If that promise is ever broken,
+		//	say so plainly instead of showing an empty pane.
+		func unreadable() -> [ SliPResult ] {
+			[ SliPResult( source: nil, value: nil, error: "Engine returned unreadable output: \( json )" ) ]
 		}
-		return array.map {
-			SliPResult(
-				source	: $0[ "source"   ] as? String
-			,	value	: $0[ "response" ] as? String
-			,	error	: $0[ "error"    ] as? String
-			)
+		guard let data = json.data( using: .utf8 ) else { return unreadable() }
+		guard let parsed = try? JSONSerialization.jsonObject( with: data ) else { return unreadable() }
+		guard let array = parsed as? [ Any ] else { return unreadable() }
+
+		var results: [ SliPResult ] = []
+		for element in array {
+			guard let entry = element as? [ String: Any ] else { continue }
+			let source = entry[ "source"   ] as? String
+			let value  = entry[ "response" ] as? String
+			let error  = entry[ "error"    ] as? String
+			results.append( SliPResult( source: source, value: value, error: error ) )
 		}
+		return results
 	}
 }

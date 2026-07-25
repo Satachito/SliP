@@ -44,13 +44,13 @@ Errors are reported as `file:line: message`, with exit status 1.
 | [WASM/](WASM) | Web build that powers `Web/` |
 | [Web/](Web) | Calculator, tutorial, samples, and graphics demos |
 | [SwiftUI-CPP/](SwiftUI-CPP) | The macOS app, on the canonical engine — see [docs/MACOS_APP.md](docs/MACOS_APP.md) |
-| [Swift/](Swift) | Separate Swift interpreter and front ends, wired to the `OSX`, `macOS`, and `SwiftCUI` Xcode targets. Does not track this spec, and those targets do not currently build |
+| [Swift/macOS/](Swift/macOS) | AppKit document app, on the canonical engine |
+| [Bridge/](Bridge) | Objective-C++ bridge shared by both Mac apps |
 | [JS/](JS) | Original JavaScript engine; source of the published npm package `@satachito/slip`. Does not track this spec |
 | [JP/](JP) | Shared utility submodule ([Satachito/JP](https://github.com/Satachito/JP)) used by the C++ core and other projects |
 
-`C++/` defines the language. `Swift/` and `JS/` are earlier implementations
-that still build and ship respectively; where they disagree with `C++/`, `C++/`
-is correct.
+`C++/` defines the language, and both Mac apps run it. `JS/` is the earlier
+JavaScript engine, a different language, still on npm under the 1.x tags.
 
 ## Build & test
 

@@ -700,6 +700,11 @@
                                                             <size key="minSize" width="463" height="476"/>
                                                             <size key="maxSize" width="937" height="10000000"/>
                                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticQuoteSubstitutionEnabled" value="NO"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticDashSubstitutionEnabled" value="NO"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
+                                                    </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.m" id="BPn-aE-4fM"/>
                                                             </connections>
@@ -766,11 +771,6 @@
                                                     <size key="minSize" width="937" height="197"/>
                                                     <size key="maxSize" width="953" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticQuoteSubstitutionEnabled" value="NO"/>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticDashSubstitutionEnabled" value="NO"/>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="automaticTextReplacementEnabled" value="NO"/>
-                                                    </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <binding destination="5gI-5U-AMq" name="value" keyPath="representedObject.err" id="9Ss-ZF-Pd8"/>
                                                     </connections>
@@ -936,7 +936,7 @@
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="sourceItemView" destination="UnI-Z9-zF2" id="2rL-2u-KMG"/>
+                        <outlet property="sourceTextView" destination="8So-sm-6SV" id="2rL-2u-KMG"/>
                     </connections>
                 </viewController>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

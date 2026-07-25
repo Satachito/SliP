@@ -76,20 +76,20 @@ Reloading the page clears bindings and the visual state.
 
 ### Multiple implementations
 
-`C++/` is the canonical interpreter: it defines the language and drives both the
-test suite and the WASM build.
+`C++/` is the canonical interpreter: it defines the language, and every other
+thing here now runs it.
 
-Two earlier implementations are still live rather than archived, and neither
-tracks the current specification:
+- `SwiftUI-CPP/` — the SwiftUI app, signed and released.
+- `Swift/macOS/` — an AppKit document app on the same engine, through the same
+  bridge. Its symbol palette does not work: the buttons are wired to
+  `DoInsert:` in `Main.storyboard` and draw in the right place, but clicking
+  one fires nothing. The frames do not overlap the split view and the buttons
+  are not disabled, so it is something subtler in a storyboard that dates from
+  2016 — inherited, not introduced. Everything else in that window works.
+- `JS/` — the original JavaScript engine, a different language, still on npm
+  under the 1.x tags.
 
-- `Swift/` — a separate Swift interpreter (`SliP.swift`, `SliPBuiltins.swift`)
-  with CUI and macOS front ends, built by the `OSX`, `macOS`, and `SwiftCUI`
-  Xcode targets.
-- `JS/` — the original JavaScript engine, published to npm as
-  `@satachito/slip`.
-
-Where either disagrees with `C++/`, `C++/` is correct. Changes to the language
-land in `C++/` first and are not backported.
+Where any of them disagrees with `C++/`, `C++/` is correct.
 
 `JP/` is a submodule shared with other projects, so changes there are made in
 [Satachito/JP](https://github.com/Satachito/JP), not here.

@@ -1,4 +1,4 @@
-#include "Embed.hpp"
+#include "../C++/Embed.hpp"
 
 //	The bridge to Swift.  Everything it exposes returns the JSON described in
 //	Embed.hpp, so a SliP error arrives as data rather than as a C++ exception —
