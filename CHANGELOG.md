@@ -9,6 +9,41 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
+## 2.1.0 — 2026-07-25
+
+The language is unchanged. This release is the macOS app, and the plumbing the
+app needed.
+
+### Added
+
+- **The macOS app.** Calculator and programming modes, results per form with
+  errors shown rather than fatal, a keypad for the operators no keyboard has,
+  rounding precision in Settings, and `.slip` documents. Attached to this
+  release as `SliP-macos.zip`; see [docs/MACOS_APP.md](docs/MACOS_APP.md).
+- `Sugared()` in the WASM build: calculator-mode evaluation, one entry per
+  line, matching what the web UI used to do in JavaScript.
+- The Xcode targets are built in CI. The `SwiftUI-CPP` target had stopped
+  linking — its build phase never included the interpreter sources — and
+  nothing noticed, because nothing outside Xcode compiled it.
+
+### Fixed
+
+- **The Mac app no longer dies on a SliP error.** The bridge threw C++
+  exceptions across the Objective-C++ boundary, where nothing catches them, so
+  any mistake in the editor terminated the process. Errors are values now, and
+  the evaluation session, the JSON contract and the error handling are shared
+  with the WASM build rather than duplicated.
+- **The Mac editor no longer corrupts `'`.** macOS text substitution rewrote
+  the quote operator into a curly quote, so `( 'r = 2 )` reported
+  `Undefined name: ’r`. SwiftUI's `TextEditor` cannot turn substitution off,
+  so the editor is an `NSTextView`.
+- **Calculator mode does not stop at the first bad line**, matching the web
+  calculator: a typo on line 1 must not hide the answer on line 6. Programming
+  mode still stops, because there a later form usually depends on an earlier
+  one.
+- `REPL` returned invalid JSON — `[,{ … }]` — when the *first* form failed, so
+  the web UI showed a JSON parse error instead of the actual SliP error.
+
 ## 2.0.0 — 2026-07-25
 
 ### Breaking
@@ -45,21 +80,8 @@ where they disagree, `C++/` is correct.
   1, instead of escaping as an uncaught exception with an abort message.
 - `slip -v`, and `VERSION()` in the WASM build, report this version.
 
-- **The macOS app.** `SwiftUI-CPP` now runs on the canonical engine with
-  calculator and programming modes, per-form results, errors shown rather than
-  fatal, an operator keypad, rounding-precision settings and `.slip` documents.
-  See [docs/MACOS_APP.md](docs/MACOS_APP.md). It ships unsigned for now.
-
 ### Fixed
 
-- **The Mac app no longer dies on a SliP error.** The bridge threw C++
-  exceptions across the Objective-C++ boundary, where nothing catches them, so
-  any mistake in the editor terminated the process. Errors are values now.
-- **The Mac editor no longer corrupts `'`.** macOS text substitution rewrote
-  the quote operator into a curly quote, so `( 'r = 2 )` reported
-  `Undefined name: ’r`.
-- **Calculator mode no longer stops at the first bad line**, matching the web
-  calculator: a typo on line 1 must not hide the answer on line 6.
 - **`//` comments work outside the web UI.** SPEC §5.4 has always promised
   them in both modes, but only the browser delivered them, by stripping
   comments before the reader saw them. The reader handles them now, so a
