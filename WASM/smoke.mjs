@@ -93,4 +93,22 @@ if ( r.response !== '2' ) throw new Error( `comment: expected 2, got ${ r.respon
 r = rep( '( 7 / 2 )' )
 if ( r.response !== '3' ) throw new Error( `one slash still divides: got ${ r.response }` )
 
+//	REPL must return parseable JSON even when the very first form fails.  It
+//	used to emit "[,{ ... }]", so the web UI reported a JSON syntax error
+//	instead of the actual SliP error.
+{
+	SliP.ResetContext()
+	const raw = SliP.REPL( 'nosuchname' )
+	let parsed
+	try {
+		parsed = JSON.parse( raw )
+	} catch {
+		throw new Error( `REPL returned invalid JSON for a failing first form: ${ raw }` )
+	}
+	if ( !parsed[ 0 ]?.error?.includes( 'Undefined name' ) ) {
+		throw new Error( `REPL first-form error: got ${ JSON.stringify( parsed ) }` )
+	}
+	SliP.ResetContext()
+}
+
 console.log( 'WASM smoke: OK' )

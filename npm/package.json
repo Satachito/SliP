@@ -1,0 +1,41 @@
+{
+  "name": "@satachito/slip",
+  "version": "2.0.0",
+  "description": "SliP, a programmable symbolic calculator. WASM build of the canonical C++ engine.",
+  "type": "module",
+  "main": "./node.mjs",
+  "exports": {
+    ".": {
+      "node": "./node.mjs",
+      "default": "./SliP.js"
+    },
+    "./node": "./node.mjs",
+    "./wasm": "./SliP.wasm"
+  },
+  "files": [
+    "SliP.js",
+    "SliP.wasm",
+    "node.mjs",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satachito/SliP.git"
+  },
+  "homepage": "https://slip.828.tokyo/",
+  "bugs": {
+    "url": "https://github.com/Satachito/SliP/issues"
+  },
+  "keywords": [
+    "SliP",
+    "language",
+    "calculator",
+    "interpreter",
+    "wasm"
+  ],
+  "author": "Satoru Ogura <satoru.ogura@me.com>",
+  "license": "MIT"
+}

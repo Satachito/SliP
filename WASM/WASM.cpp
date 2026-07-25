@@ -93,9 +93,14 @@ REPL( string const& _ ) {
 			auto S = Read( R, -1 );
 			if( !S ) break;
 			source = S->REPR();
+			//	Finish evaluating before the delimiter is taken.  Taking it
+			//	inline let Eval throw after the count had already advanced,
+			//	so the catch below emitted a second delimiter and the whole
+			//	array came back as "[,{ ... }]" — not parseable as JSON.
+			auto response = json_escape( Eval( C, S )->REPR() );
 			$ += Delimiter()
 			+	R"({ "source": ")"	+ json_escape( source )
-			+	R"(", "response": ")"	+ json_escape( Eval( C, S )->REPR() )
+			+	R"(", "response": ")"	+ response
 			+	R"(" })"
 			;
 		} catch ( exception const& e ) {
