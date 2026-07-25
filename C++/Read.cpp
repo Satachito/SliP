@@ -37,6 +37,7 @@ SoloChars = {
 ,	U'¿'
 ,	U'∈'
 ,	U'∋'
+,	U'∥'	//	Parallel evaluation
 ,	U'⊂'
 ,	U'⊃'
 ,	U'∩'

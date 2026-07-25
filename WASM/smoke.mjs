@@ -63,4 +63,22 @@ if ( r.response !== 'T' ) throw new Error( `inf alias: expected T, got ${ r.resp
 	}
 }
 
+//	∥ falls back to sequential evaluation in the browser build (no threads), so
+//	it must still produce exactly what the threaded native build produces.
+r = rep( "( ∥ '[ ( 1 + 1 ) ( 2 + 2 ) ( 3 + 3 ) ] )" )
+if ( r.response !== '[ 2 4 6 ]' ) throw new Error( `∥ order: expected [ 2 4 6 ], got ${ r.response }` )
+
+r = rep( "( 5 : '( ∥ '[ ( @ + 1 ) ( @ × 2 ) ] ) )" )
+if ( r.response !== '[ 6 10 ]' ) throw new Error( `∥ argument stack: expected [ 6 10 ], got ${ r.response }` )
+
+{
+	SliP.ResetContext()
+	SliP.REPL( "( 'z = 1 )" )
+	r = rep( "( ∥ '[ ( 'z = 99 ) ( z ) ] )" )
+	if ( r.response !== '[ 99 1 ]' ) throw new Error( `∥ isolation: expected [ 99 1 ], got ${ r.response }` )
+	r = rep( 'z' )
+	if ( r.response !== '1' ) throw new Error( `∥ leaked into caller: z is ${ r.response }` )
+	SliP.ResetContext()
+}
+
 console.log( 'WASM smoke: OK' )

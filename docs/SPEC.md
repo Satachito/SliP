@@ -105,7 +105,7 @@ Read from the first character until a **break** condition:
 
 ```
 Greek letters (Α…Ω, α…ω, ς), 𝑒, ∞, ∅, ⊤, ⊥
-! @ # $ % ' * , . / : ; ? ~ ¡ ¤ ¦ § ¬ ± ¶ · ¿ ∈ ∋ ⊂ ⊃ ∩ ∪ + - × ÷
+! @ # $ % ' * , . / : ; ? ~ ¡ ¤ ¦ § ¬ ± ¶ · ¿ ∈ ∋ ∥ ⊂ ⊃ ∩ ∪ + - × ÷
 ```
 
 **Operator names** — if the name starts with `& | ^ = < >`, subsequent operator chars continue the name (`==`, `<=`, `&&`, …).
@@ -188,10 +188,53 @@ constants, and names written directly, without parentheses — as one product:
 | Form | Context | Result |
 |------|---------|--------|
 | `[ … ]` | — | Literal list |
-| `{ s₁ s₂ … }` | **New** child context per block | List of each sentence's value |
-| `« s₁ s₂ … »` | **Same** context (sequential) | List of each sentence's value |
+| `{ s₁ s₂ … }` | **New** child context, shared by the block's sentences | List of each sentence's value |
+| `« s₁ s₂ … »` | **Same** context as the caller | List of each sentence's value |
 
-`«»` does **not** use threads; it only differs from `{ }` in context handling.
+Neither `{ }` nor `« »` uses threads: their sentences share one context and so
+may depend on each other's bindings in order. They differ only in *which*
+context that is — `« »` writes through to the caller, `{ }` does not.
+
+For concurrency, see `∥` (§4.6), which isolates each branch instead of sharing.
+
+### 4.6 Parallel evaluation `∥`
+
+`∥ '[ s₁ s₂ … ]` evaluates the elements **concurrently**, each in its own child
+context, and collects the results **in source order**:
+
+```
+( ∥ '[ ( 1 + 1 ) ( 2 + 2 ) ( 3 + 3 ) ] )   →  [ 2 4 6 ]
+```
+
+Any list form works (`'[ … ]`, `'{ … }`, `'« … »`); the quote is what defers
+evaluation, as with any prefix operator.
+
+**Isolation.** A branch's bindings reach neither its siblings nor the caller:
+
+```
+( 'z = 1 )
+( ∥ '[ ( 'z = 99 ) ( z ) ] )   →  [ 99 1 ]   ( the second branch still sees 1 )
+( z )                          →  1          ( the caller is untouched )
+```
+
+Because branches cannot observe each other and results are source-ordered, the
+value is exactly what sequential evaluation would produce. Use `« »` when the
+sentences *must* see each other's bindings.
+
+**Argument stack.** Each branch is seeded with a copy of the spawning thread's
+argument stack, so `@` reads the argument of the enclosing application:
+
+```
+( 5 : '( ∥ '[ ( @ + 1 ) ( @ × 2 ) ] ) )   →  [ 6 10 ]
+```
+
+**Errors.** If several branches throw, the **earliest branch in source order**
+reports, so failures are reproducible.
+
+**Where threads actually run.** Native builds (CLI, Xcode) evaluate branches on
+real threads. The browser (WASM) build evaluates them sequentially — see
+[Known Issues](KNOWN_ISSUES.md). Both produce the same value; only elapsed time
+differs.
 
 ### 4.5 Truth values
 
@@ -251,6 +294,7 @@ Priority: **lower number binds looser** (split first). Omitted infix between num
 | `¡` | Throw error with operand REPR |
 | `~` | Bitwise NOT (`Bits`) |
 | `¬` | Logical NOT (Nil ↔ truthy) |
+| `∥` | Evaluate a list's elements concurrently, isolated, in source order (§4.6) |
 
 ### 6.3 Unary
 

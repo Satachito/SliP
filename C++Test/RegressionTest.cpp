@@ -134,4 +134,35 @@ RegressionTest( SP< Context > C ) {
 		TestEval< Matrix >( fresh, "m", []( auto const& _ ){ A( _->nCols == 0 ); } );
 		TestEval< Matrix >( fresh, "( m ± 2 )", []( auto const& _ ){ A( _->Size() == 4 ); } );
 	}
+
+	//	Phase 4: ∥ runs branches concurrently, but the value must equal what
+	//	sequential evaluation would produce — source order, isolated contexts
+	TestEval< List >( C, "( ∥ '[ ( 1 + 1 ) ( 2 + 2 ) ( 3 + 3 ) ] )", []( auto const& _ ){ A( _->REPR() == "[ 2 4 6 ]" ); } );
+	TestEval< List >( C, "( ∥ '[] )", []( auto const& _ ){ A( IsNil( _ ) ); } );
+	TestEvalException( C, "( ∥ 3 )", "Illegal operand type: 3" );
+
+	//	A branch's binding reaches neither its siblings nor the caller
+	{	auto fresh = MS< Context >();
+		Eval( fresh, READ( "( 'z = 1 )" ) );
+		TestEval< List >( fresh, "( ∥ '[ ( 'z = 99 ) ( z ) ] )", []( auto const& _ ){ A( _->REPR() == "[ 99 1 ]" ); } );
+		TestEval< Bits >( fresh, "z", []( auto const& _ ){ A( _->$ == 1 ); } );
+	}
+
+	//	Each branch is seeded with the spawning thread's argument stack, so @
+	//	still reads the argument of the function the branch was written in
+	TestEval< List >( C, "( 5 : '( ∥ '[ ( @ + 1 ) ( @ × 2 ) ] ) )", []( auto const& _ ){ A( _->REPR() == "[ 6 10 ]" ); } );
+
+	//	Source-ordered collection: the earliest failing branch is the error that
+	//	surfaces, not whichever thread happened to finish first
+	TestEvalException( C, "( ∥ '[ ( 1 ) ( ¡ `boom` ) ( ¡ `later` ) ] )", "`boom`" );
+
+	//	Enough branches, each doing real work, to actually overlap
+	TestEval< List >(
+		C
+	,	"( ∥ '[ ( 0 + 0 ) ( 1 + 1 ) ( 2 + 2 ) ( 3 + 3 ) ( 4 + 4 ) ( 5 + 5 ) ( 6 + 6 ) ( 7 + 7 ) ] )"
+	,	[]( auto const& _ ){
+			A( _->$.size() == 8 );
+			for( size_t I = 0; I < 8; I++ ) A( Cast< Bits >( _->$[ I ] )->$ == (int64_t)( I * 2 ) );
+		}
+	);
 }

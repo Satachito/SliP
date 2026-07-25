@@ -46,7 +46,7 @@ ExtraTest() {
 //	delete us;
 }
 
-extern V< SP< SliP > >
+extern thread_local V< SP< SliP > >
 theStack;
 
 static void	//	$ must throw "Stack underflow"; not throwing is a failure, not a pass.

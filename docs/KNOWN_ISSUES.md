@@ -18,6 +18,34 @@ Treat them as reserved for future logical and set-related forms. Until they are
 registered as builtins or assigned in the current context, evaluating them raises
 an undefined-name error.
 
+### Parallel evaluation is native-only
+
+`∥` (SPEC §4.6) evaluates its branches on real threads in the native CLI and
+Xcode builds. The WASM build evaluates them **sequentially**, for two reasons:
+
+- Emscripten threads need `SharedArrayBuffer`, which needs `COOP` / `COEP`
+  response headers. The site is served from GitHub Pages, which serves static
+  files and cannot send them.
+- The graphics operators reach the DOM through `emscripten::val`, and the DOM
+  is main-thread only.
+
+This is a difference in elapsed time, not in meaning: branches are isolated and
+results are collected in source order, so both builds return the same value.
+The fallback is selected at compile time by `__EMSCRIPTEN_PTHREADS__`, so a
+future `-pthread` build with the right headers becomes parallel with no source
+change.
+
+Two limits apply to the native path:
+
+- There is no thread pool. `∥` spawns one thread per branch, and a `∥` nested
+  inside another multiplies them. Keep branch counts near the core count.
+- Speedup is sublinear — roughly 4× for 8 CPU-bound branches on 12 cores in a
+  local measurement. Branches share the forms they evaluate, so `shared_ptr`
+  reference counting is atomic traffic on shared cache lines.
+
+`;` and `¦` write to stdout / stderr from whichever thread reaches them, so
+output from concurrent branches can interleave.
+
 ### JSON parser scope
 
 `byJSON` is useful for simple JSON values used by samples and demos, but it is

@@ -1,24 +1,26 @@
 #include "SliP.hpp"
 
+#include	<future>
+
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
 
 int
 RoundPrecision = 15;
 
-V< SP< SliP > >
+//	Each thread owns its argument stack.  A mutex could not have made this
+//	shared: `:` is Push / Eval / Pop, so concurrent applications would keep the
+//	container intact while destroying the invariant that Top() is *my*
+//	argument.  ∥ seeds a branch with a copy of the spawning thread's stack, so
+//	@ inside a branch still reads the argument of the enclosing function.
+thread_local V< SP< SliP > >
 theStack;
-
-mutex
-stackMutex;
 
 void
 Push( SP< SliP > _ ) {
-	lock_guard< mutex >	lock( stackMutex );
 	theStack.push_back( _ );
 }
 SP< SliP >
 Pop() {
-	lock_guard< mutex >	lock( stackMutex );
 	if ( theStack.empty() ) _Z( "Stack underflow" );
 	auto $ = theStack.back();
 	theStack.pop_back();
@@ -26,19 +28,20 @@ Pop() {
 }
 SP< SliP >
 Top() {
-    lock_guard< mutex > lock( stackMutex );
-    if ( theStack.empty() ) _Z( "Stack underflow" );
-    return theStack.back();
+	if ( theStack.empty() ) _Z( "Stack underflow" );
+	return theStack.back();
 }
 V< SP< SliP > >
 StackCopy() {
-	lock_guard< mutex >	lock( stackMutex );
 	return theStack;
+}
+void
+SeedStack( V< SP< SliP > > const& _ ) {
+	theStack = _;
 }
 
 void
 ClearStack() {
-	lock_guard< mutex >	lock( stackMutex );
 	theStack.clear();
 }
 
@@ -211,6 +214,41 @@ Build() {
 			return IsNil( _ ) ? T : Nil;
 		}
 	,	"¬"		//	Logical not
+	);
+	//	∥ '{ … } — evaluate the elements concurrently, each in its own child
+	//	context, collecting the results in source order.  Isolation plus source
+	//	ordering makes the value identical to evaluating them one at a time, so
+	//	the single-threaded fallback below is the same language, not a dialect.
+	//	Branches cannot see each other's bindings; use « » when they must.
+	Register< Prefix >(
+		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
+			auto const&	Ss = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$;
+			V< SP< SliP > >	$( Ss.size() );
+#if defined( __EMSCRIPTEN__ ) && !defined( __EMSCRIPTEN_PTHREADS__ )
+			//	The browser build has no threads: SharedArrayBuffer needs COOP /
+			//	COEP headers that the static Pages host cannot send, and the
+			//	graphics operators reach the DOM, which is main-thread only.
+			for( size_t I = 0; I < Ss.size(); I++ ) $[ I ] = Eval( MS< Context >( C ), Ss[ I ] );
+#else
+			auto	seed = StackCopy();
+			V< future< SP< SliP > > >	fs;
+			fs.reserve( Ss.size() );
+			for( auto const& S: Ss ) fs.push_back(
+				async(
+					launch::async
+				,	[ C, &seed, S ]() {
+						SeedStack( seed );
+						return Eval( MS< Context >( C ), S );
+					}
+				)
+			);
+			//	Collected in source order, so a failing branch reports the
+			//	earliest error rather than whichever thread lost the race.
+			for( size_t I = 0; I < fs.size(); I++ ) $[ I ] = fs[ I ].get();
+#endif
+			return MS< List >( $ );
+		}
+	,	"∥"		//	Parallel evaluation
 	);
 
 	Register< Unary >(

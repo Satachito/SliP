@@ -80,7 +80,22 @@ max[ 3 2 1 ]  list argument
 <tr><th>Form</th><th>Context</th><th>Effect</th></tr>
 <tr><td><code>{ … }</code></td><td>New child context</td><td>Sequential; returns list of results</td></tr>
 <tr><td><code>« … »</code></td><td>Same context</td><td>Sequential (not parallel threads); bindings persist</td></tr>
+<tr><td><code>∥ '[ … ]</code></td><td>Own child context <em>per branch</em></td><td>Concurrent; results in source order</td></tr>
 </table>
+
+<h3>Parallel <code>∥</code></h3>
+<p><code>∥ '[ s₁ s₂ … ]</code> evaluates the elements concurrently, each isolated in its own child context, and collects the results in source order:</p>
+<pre>
+( ∥ '[ ( 1 + 1 ) ( 2 + 2 ) ( 3 + 3 ) ]  )  →  [ 2 4 6 ]
+
+( 'z = 1 )
+( ∥ '[ ( 'z = 99 ) ( z ) ] )               →  [ 99 1 ]   second branch still sees 1
+( z )                                      →  1          caller untouched
+
+( 5 : '( ∥ '[ ( @ + 1 ) ( @ × 2 ) ] ) )    →  [ 6 10 ]   @ is seeded per branch
+</pre>
+<p>Branches cannot observe each other, so the value equals sequential evaluation; when several branches fail, the earliest in source order reports. Use <code>« »</code> when the sentences must share bindings.</p>
+<p><strong>On this page <code>∥</code> runs sequentially.</strong> Browser threads need <code>SharedArrayBuffer</code>, which needs COOP/COEP headers the static host cannot send. The native CLI build uses real threads. The value is the same either way — only elapsed time differs.</p>
 
 <h3>Truth</h3>
 <table>
@@ -118,6 +133,7 @@ max[ 3 2 1 ]  list argument
 <tr><td><code>;</code> <code>¦</code></td><td>Stdout / stderr print</td></tr>
 <tr><td><code>~</code> <code>¬</code></td><td>Bit / logical NOT</td></tr>
 <tr><td><code>¡</code></td><td>Throw</td></tr>
+<tr><td><code>∥</code></td><td>Evaluate a list's elements concurrently, isolated, in source order</td></tr>
 </table>
 
 <h3>Infix (priority low → loose)</h3>
