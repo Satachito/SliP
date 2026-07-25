@@ -62,7 +62,7 @@ password are the whole security of your signing identity.
 
 | Secret | What |
 |--------|------|
-| `MACOS_CERTIFICATE` | The `.p12`, base64 encoded: `base64 -i cert.p12 \| pbcopy` |
+| `MACOS_CERTIFICATE` | The `.p12`, base64 encoded: `base64 -i cert.p12 \| pbcopy` — see the `-legacy` note below |
 | `MACOS_CERTIFICATE_PWD` | The password you set when exporting it |
 | `MACOS_SIGNING_IDENTITY` | e.g. `Developer ID Application: Your Name (TEAMID)` |
 | `AC_API_ISSUER_ID` | UUID at the top of the App Store Connect keys page |
@@ -90,11 +90,33 @@ the archive. It then asserts the result the way a downloader's Mac will see
 it, with `codesign --verify`, `stapler validate` and `spctl --assess`, so a
 misconfiguration fails the release rather than shipping.
 
-Note that the **unsigned path is the tested one**. The signing path is written
-from the documented behaviour of these tools and has never run here, because
-that needs credentials this repository does not have. Expect the first tagged
-run with secrets present to need a fix or two; the verification steps are
-there to make any such failure loud.
+### If `security import` says the password is wrong
+
+It usually is not. OpenSSL 3 writes PKCS#12 with PBES2 / AES-256-CBC, and
+Apple's `security` tool cannot read that — it reports the failure as
+`MAC verification failed during PKCS12 import ( wrong password? )`, which
+sends you looking in the wrong place. Export with `-legacy`:
+
+```sh
+openssl pkcs12 -export -legacy \
+  -inkey private.key -in developerID.pem -certfile DeveloperIDG2CA.pem \
+  -name "Developer ID Application: Your Name (TEAMID)" \
+  -out cert.p12
+```
+
+`openssl pkcs12 -in cert.p12 -nokeys -noout -info` should then report
+`pbeWithSHA1And40BitRC2-CBC` and `MAC: sha1` rather than PBES2. Keychain
+Access exports in the compatible format already; this only bites when the
+`.p12` is built with the command line.
+
+Check it before pushing a tag, rather than finding out from CI:
+
+```sh
+KC=/tmp/check.keychain-db
+security create-keychain -p test "$KC" && security unlock-keychain -p test "$KC"
+security import cert.p12 -k "$KC" -P "$PASSWORD" -T /usr/bin/codesign
+security delete-keychain "$KC"
+```
 
 ### The icon
 

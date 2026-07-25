@@ -93,8 +93,16 @@ jobs:
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "$PWD_" "$KEYCHAIN"
           echo "$CERT" | base64 --decode > "$RUNNER_TEMP/cert.p12"
-          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$CERT_PWD" \
+          # "MAC verification failed ( wrong password? )" here is usually not
+          # the password: OpenSSL 3 writes PKCS#12 with PBES2 / AES-256-CBC,
+          # which Apple's security tool cannot read, and it reports that as a
+          # password error. Export with `openssl pkcs12 -export -legacy`.
+          if ! security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$CERT_PWD" \
             -T /usr/bin/codesign -T /usr/bin/security
+          then
+            echo "::error::Could not import MACOS_CERTIFICATE. If the password is right, the .p12 is probably in OpenSSL 3's default format — re-export it with -legacy."
+            exit 1
+          fi
           # Without this, codesign prompts for keychain access and hangs.
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$PWD_" "$KEYCHAIN" > /dev/null
           security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
