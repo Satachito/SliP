@@ -49,6 +49,18 @@ ExtraTest() {
 extern V< SP< SliP > >
 theStack;
 
+static void	//	$ must throw "Stack underflow"; not throwing is a failure, not a pass.
+TestUnderflow( string const& label, function< void() > $ ) {
+	try {
+		$();
+	} catch( exception const& e ) {
+		A( e.what() == string( "Stack underflow" ) );
+		return;
+	}
+	cerr << label << ": expected Stack underflow, got no exception" << endl;
+	A( false );
+}
+
 int
 main( int argc, char* argv[] ) {
 
@@ -160,21 +172,15 @@ R"(	( 'MAX = '(
 		cerr << "Stack depth: " << theStack.size() << endl;
 
 		theStack.clear();
-		try {
-			extern SP< SliP > Pop();
-			Pop();
-		} catch( exception const& e ) {
-			A( e.what() == string( "Stack underflow" ) );
-		}
-		try {
-			extern SP< SliP > Top();
-			Top();
-		} catch( exception const& e ) {
-			A( e.what() == string( "Stack underflow" ) );
-		}
+		TestUnderflow( "Pop", []() { extern SP< SliP > Pop(); Pop(); } );
+		TestUnderflow( "Top", []() { extern SP< SliP > Top(); Top(); } );
 
-		_Z( "TESTING ENDS" );
 	} catch ( const exception& e ) {
-		cerr << e.what() << endl;
+		//	Anything reaching here truncated the run: report it and fail.
+		cerr << "TESTING ABORTED: " << e.what() << endl;
+		return 1;
 	}
+	//	Reached only when every phase above ran to completion.
+	cerr << "TESTING ENDS" << endl;
+	return 0;
 }
