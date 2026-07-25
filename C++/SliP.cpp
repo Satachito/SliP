@@ -119,9 +119,9 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 	}
 	{	auto L = Cast< Matrix >( l ), R = Cast< Matrix >( r );
 		if( L && R ) {
-			if( L->size == R->size ) {
+			if( L->Size() == R->Size() ) {
 				if( L->nCols == 0 && R->nCols == 0 ) {
-					for( size_t _ = 0; _ < L->size; _++ ) {
+					for( size_t _ = 0; _ < L->Size(); _++ ) {
 						if( L->$[ _ ] == R->$[ _ ] ) continue;
 						return L->$[ _ ] < R->$[ _ ] ? -1 : 1;
 					}
@@ -140,7 +140,7 @@ _Compare( SP< SliP > l, SP< SliP > r ) {
 				}
 				return nRows < rNRows ? -1 : 1;
 			} else {
-				return L->size < R->size ? -1 : 1;
+				return L->Size() < R->Size() ? -1 : 1;
 			}
 		}
 	}
@@ -462,23 +462,23 @@ Build() {
 			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Matrix >( r ) );
 			
 			if( L->nCols == 0 && R->nCols == 0 ) {
-				if( L->size != R->size ) _Z( "The number of elements must mutch in Vector." );
+				if( L->Size() != R->Size() ) _Z( "The number of elements must mutch in Vector." );
 				auto $ = (double)0;
-				for( size_t _ = 0; _ < L->size; _++ ) $+= L->$[ _ ] * R->$[ _ ];
+				for( size_t _ = 0; _ < L->Size(); _++ ) $+= L->$[ _ ] * R->$[ _ ];
 				return MS< Float >( $ );
 			}
-			
+
 			auto [ nRows, nCols ] = L->Shape();
 			auto [ rNRows, rNCols ] = R->Shape();
-			
+
 			if( nCols != rNRows ) _Z( "The number of columns in the left matrix must match the number of rows in the right matrix." );
 
-			V< SP< SliP > >	$( nRows * rNCols );
+			V< double >	$( nRows * rNCols );
 			for ( size_t row = 0; row < nRows; row++ ) {
 				for ( size_t col = 0; col < rNCols; col++ ) {
 					double _ = 0.0;
 					for ( size_t k = 0; k < nCols; k++ ) _ += (*L)( row, k ) * (*R)( k, col );
-					$[ row * rNCols + col ] = MS< Float >( _ );
+					$[ row * rNCols + col ] = _;
 				}
 			}
 			return MS< Matrix >( $, rNCols );
@@ -575,10 +575,9 @@ Build() {
 		[]( SP< Context > C, SP< SliP > l, SP< SliP > r ) -> SP< SliP > {
 			auto L = Z( "Illegal operand type: " + l->REPR(), Cast< Matrix >( l ) );
 			auto R = Z( "Illegal operand type: " + r->REPR(), Cast< Bits >( r ) );
-			L->nCols = R->$;
-			return L;
+			return MS< Matrix >( L->$, R->$ );	//	New value: never reshape the bound operand
 		}
-	,	"±"		//	Set nCols
+	,	"±"		//	Shape as nCols columns
 	,	100
 	);
 	RegisterInfix(

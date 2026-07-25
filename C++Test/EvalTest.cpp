@@ -93,7 +93,7 @@ TestMatrix( SP< Context > C ) {
 		C
 	,	"(⟨1 2 3 4 5 6⟩±3·⟨1 5 9     2 6 10    3 7 11  4 8 12 ⟩±-4)"
 	,	[]( auto const& _ ){
-			A( _->size == 8 );
+			A( _->Size() == 8 );
 			A( _->nCols == 4 );
 			A( _->$[ 0 ] == 1 * 1 + 2 * 5 + 3 * 9 );
 			A( _->$[ 1 ] == 1 * 2 + 2 * 6 + 3 * 10 );
@@ -106,7 +106,7 @@ TestMatrix( SP< Context > C ) {
 		}
 	);
 
-	A( MS< Matrix >( new double[ 0 ], 0, 0 )->REPR() == "⟨⟩" );
+	A( MS< Matrix >( V< double >{} )->REPR() == "⟨⟩" );
 
 	TestEval< SliP >(
 		C
@@ -199,7 +199,7 @@ TestMatrix( SP< Context > C ) {
 		C
 	,	"(⟨1 2⟩·⟨1 2⟩±1)"
 	,	[]( auto const& _ ){
-			A( _->size == 1 );
+			A( _->Size() == 1 );
 			A( _->nCols == 1 );
 			A( _->$[ 0 ] == 5 );
 		}
@@ -209,7 +209,7 @@ TestMatrix( SP< Context > C ) {
 		C
 	,	"(⟨1 2⟩±1·⟨1 2⟩)"
 	,	[]( auto const& _ ){
-			A( _->size == 4 );
+			A( _->Size() == 4 );
 			A( _->nCols == 2 );
 			A( _->$[ 0 ] == 1 );
 			A( _->$[ 1 ] == 2 );
@@ -228,7 +228,7 @@ TestMatrix( SP< Context > C ) {
 		C
 	,	"(⟨1 2 3 4 5 6⟩±3·⟨1 2 3 4 5 6 7 8 9 10 11 12⟩±4)"
 	,	[]( auto const& _ ){
-			A( _->size == 8 );
+			A( _->Size() == 8 );
 			A( _->nCols == 4 );
 			A( _->$[ 0 ] == 1 * 1 + 2 * 5 + 3 * 9 );
 			A( _->$[ 1 ] == 1 * 2 + 2 * 6 + 3 * 10 );

@@ -266,42 +266,37 @@ LazyInfix : Infix {
 
 struct
 Matrix : SliP {
-	double*																			$;
-	uint64_t																		size;
+	V< double >																		$;
 	int64_t																			nCols;
 
-	~
-	Matrix() {
-		delete[] $;
-	}
-	Matrix( double* $, uint64_t size, int64_t nCols )
+	Matrix( V< double > const& $, int64_t nCols = 0 )
 	:	$( $ )
-	,	nCols( nCols )
-	,	size( size ) {
+	,	nCols( nCols ) {
 	}
-	double*
-	new$( V< SP< SliP > > const& Ss ) {
-		auto $ = new double[ Ss.size() ];
-		for( size_t _ = 0; _ < Ss.size(); _++ ) {
-			if( auto numeric = Cast< Numeric >( Ss[ _ ] ) ) {
-				$[ _ ] = numeric->Double();
-			} else {
-				_Z( "All elements of the matrix must be numeric." );
-			}
-		}
+
+	static V< double >
+	Doubles( V< SP< SliP > > const& Ss ) {
+		V< double >	$;
+		$.reserve( Ss.size() );
+		for( auto const& _: Ss ) $.push_back(
+			Z( "All elements of the matrix must be numeric.", Cast< Numeric >( _ ) )->Double()
+		);
 		return $;
 	}
-	Matrix( V< SP< SliP > > const& $, int64_t nCols = 0 )
-	:	Matrix( new$( $ ), $.size(), nCols ) {
+	Matrix( V< SP< SliP > > const& Ss, int64_t nCols = 0 )
+	:	Matrix( Doubles( Ss ), nCols ) {
 	}
+
+	uint64_t
+	Size() const { return $.size(); }
 
 	string
 	REPR() const override {
 		const auto O = string_U( U'⟨' );
 		const auto C = string_U( U'⟩' );
-		if( size == 0 ) return O + C;
+		if( $.empty() ) return O + C;
 		string	_ = O;
-		for ( size_t I = 0; I < size; I++ ) {
+		for ( size_t I = 0; I < $.size(); I++ ) {
 			_ += ' ';
 			_ += to_string( $[ I ] );
 		}
@@ -314,8 +309,8 @@ Matrix : SliP {
 
 	tuple< uint64_t, uint64_t >
 	Shape() const {
-		auto $ = nCols == 0 ? size : uint64_t( nCols < 0 ? -nCols : nCols );
-		return { size / $, $ };
+		auto $ = nCols == 0 ? Size() : uint64_t( nCols < 0 ? -nCols : nCols );
+		return { Size() / $, $ };
 	}
 
 	double
@@ -324,7 +319,7 @@ Matrix : SliP {
 			nCols == 0
 			?	c
 			:	nCols < 0
-				?	c * ( size / -nCols ) + r
+				?	c * ( Size() / -nCols ) + r
 				:	r * nCols + c
 		];
 	}

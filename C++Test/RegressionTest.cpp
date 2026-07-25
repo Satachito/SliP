@@ -124,4 +124,14 @@ RegressionTest( SP< Context > C ) {
 	TestEval< Float >( C, "( 2 π sin 3 )", []( auto const& _ ){ A( _->$ == 2 * numbers::pi * sin( 3 ) ); } );
 	TestEval< Float >( C, "( 6 ÷ 2 π )", []( auto const& _ ){ A( _->$ == 6 / ( 2 * numbers::pi ) ); } );
 	TestEval< Float >( C, "( sin 2 π + 1 )", []( auto const& _ ){ A( _->$ == sin( 2 * numbers::pi ) + 1 ); } );
+
+	//	Phase 3: ± yields a new matrix; the bound operand keeps its own shape
+	{	auto fresh = MS< Context >();
+		Eval( fresh, READ( "( 'm = ⟨ 1 2 3 4 ⟩ )" ) );
+		TestEval< Matrix >( fresh, "( m ± 2 )", []( auto const& _ ){ A( _->nCols == 2 ); } );
+		TestEval< Matrix >( fresh, "m", []( auto const& _ ){ A( _->nCols == 0 ); } );
+		TestEval< Matrix >( fresh, "( m ± 4 )", []( auto const& _ ){ A( _->nCols == 4 ); } );
+		TestEval< Matrix >( fresh, "m", []( auto const& _ ){ A( _->nCols == 0 ); } );
+		TestEval< Matrix >( fresh, "( m ± 2 )", []( auto const& _ ){ A( _->Size() == 4 ); } );
+	}
 }
