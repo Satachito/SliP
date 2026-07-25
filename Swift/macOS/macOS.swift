@@ -21,12 +21,19 @@ ViewController	: NSViewController {
 	@IBOutlet weak var
 	sourceTextView: NSTextView!
 
+	//	The footer read "SliP ver 1.0 … 2016" for as long as the version was
+	//	written into the storyboard by hand. It comes from the engine now.
+	@IBOutlet weak var
+	footerItemView: NSTextField!
+
 	private var
 	editor: NSTextView? { sourceTextView }
 
 	override func
 	viewDidLoad() {
 		super.viewDidLoad()
+		footerItemView?.stringValue =
+			"SliP \( SliPEngine.version ). Written by Satoru Ogura, Tokyo. 2016-2026."
 		//	The storyboard sets these as runtime attributes, and that is not
 		//	enough: macOS restores substitution per application — the Format ▸
 		//	Substitutions menu writes it back — so a quote typed here becomes ’

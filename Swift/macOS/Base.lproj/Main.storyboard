@@ -927,7 +927,7 @@
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sOW-ll-Fdv">
                                 <rect key="frame" x="-2" y="0.0" width="1028" height="17"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="SliP ver 1.0. Written by Satoru Ogura, Tokyo. 2016." id="krf-zS-tut">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="SliP" id="krf-zS-tut">
                                     <font key="font" size="11" name="Arial-ItalicMT"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -937,6 +937,7 @@
                     </view>
                     <connections>
                         <outlet property="sourceTextView" destination="8So-sm-6SV" id="2rL-2u-KMG"/>
+                        <outlet property="footerItemView" destination="sOW-ll-Fdv" id="ftr-01-out"/>
                     </connections>
                 </viewController>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
