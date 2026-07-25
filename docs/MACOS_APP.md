@@ -2,14 +2,17 @@
 
 `SwiftUI-CPP` is the document-based Mac app. It embeds `C++/` — the canonical
 engine — through `C++/Embed.cpp` and the Objective-C++ bridge in
-`SwiftUI-CPP/BH.mm`, so it runs exactly the language this repository specifies.
+`Bridge/BH.mm`, so it runs exactly the language this repository specifies.
 
-The Xcode target keeps its scaffolding name; the shipped app is called **SliP**.
+The Xcode target keeps its scaffolding name. The product does not: it builds
+as `SliP.app`, identifies as `tokyo.828.SliP`, and its executable is `SliP`.
+It shipped once as `SwiftUI-CPP.app`, because only the display name had been
+set — the name a user sees in Finder is `PRODUCT_NAME`.
 
 ```sh
 xcodebuild -project SliP.xcodeproj -target SwiftUI-CPP \
   -configuration Release CODE_SIGNING_ALLOWED=NO build
-open build/Release/SwiftUI-CPP.app
+open build/Release/SliP.app
 ```
 
 ## What it does
@@ -31,7 +34,7 @@ Documents are `.slip` files, registered as `tokyo.828.slip` conforming to
 macOS text substitution rewrites `'` into `’`. In this language `'` is the
 quote operator, so `( 'r = 2 )` typed into a stock SwiftUI `TextEditor`
 evaluates to `Undefined name: ’r` — and `TextEditor` exposes no way to turn
-substitution off. `CodeEditor.swift` wraps an `NSTextView` with quote, dash,
+substitution off. `SwiftUI-CPP/CodeEditor.swift` wraps an `NSTextView` with quote, dash,
 replacement, correction and smart-insert substitution all disabled. Anything
 that replaces it has to keep those off.
 
@@ -105,8 +108,8 @@ before spending minutes finding out from Apple.
 To check a local build:
 
 ```sh
-codesign -dvvv build/Release/SwiftUI-CPP.app        # flags=0x10000(runtime), Timestamp=
-codesign -d --entitlements - build/Release/SwiftUI-CPP.app | grep get-task-allow
+codesign -dvvv build/Release/SliP.app        # flags=0x10000(runtime), Timestamp=
+codesign -d --entitlements - build/Release/SliP.app | grep get-task-allow
 ```
 
 ### If `security import` says the password is wrong

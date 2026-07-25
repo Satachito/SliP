@@ -43,14 +43,15 @@ Errors are reported as `file:line: message`, with exit status 1.
 | [C++/](C++) | Canonical interpreter used by tests and WASM |
 | [WASM/](WASM) | Web build that powers `Web/` |
 | [Web/](Web) | Calculator, tutorial, samples, and graphics demos |
-| [SwiftUI-CPP/](SwiftUI-CPP) | The macOS app, on the canonical engine — see [docs/MACOS_APP.md](docs/MACOS_APP.md) |
-| [Swift/macOS/](Swift/macOS) | AppKit document app, on the canonical engine |
-| [Bridge/](Bridge) | Objective-C++ bridge shared by both Mac apps |
-| [JS/](JS) | Original JavaScript engine; source of the published npm package `@satachito/slip`. Does not track this spec |
+| [SwiftUI-CPP/](SwiftUI-CPP) | The macOS app, shipped as `SliP.app` — see [docs/MACOS_APP.md](docs/MACOS_APP.md) |
+| [Bridge/](Bridge) | Objective-C++ and Swift sides of the embedding bridge |
+| [Swift/](Swift) | The original Swift interpreter. Nothing builds it; kept for history |
+| [JS/](JS) | Original JavaScript engine; source of the npm package's 1.x releases. Does not track this spec |
 | [JP/](JP) | Shared utility submodule ([Satachito/JP](https://github.com/Satachito/JP)) used by the C++ core and other projects |
 
-`C++/` defines the language, and both Mac apps run it. `JS/` is the earlier
-JavaScript engine, a different language, still on npm under the 1.x tags.
+`C++/` defines the language, and everything shipped runs it: the CLI, the web
+build, the npm package and the Mac app. `Swift/` and `JS/` are earlier
+interpreters of an older dialect, kept as history.
 
 ## Build & test
 

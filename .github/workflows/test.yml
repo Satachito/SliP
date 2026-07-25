@@ -65,7 +65,7 @@ jobs:
       #	now, so the next such gap fails in CI instead of silently.
       - name: Build Xcode targets
         run: |
-          for T in CLI SliPTests SwiftUI-CPP SwiftUI-CPPTests SwiftUI-CPPUITests macOS; do
+          for T in CLI SliPTests SwiftUI-CPP SwiftUI-CPPTests SwiftUI-CPPUITests; do
             echo "=== $T ==="
             xcodebuild -project SliP.xcodeproj -target "$T" \
               -configuration Debug CODE_SIGNING_ALLOWED=NO build

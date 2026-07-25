@@ -1,6 +1,6 @@
 {
   "name": "@satachito/slip",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "SliP, a programmable symbolic calculator. WASM build of the canonical C++ engine.",
   "type": "module",
   "main": "./node.mjs",

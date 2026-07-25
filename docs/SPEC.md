@@ -33,7 +33,7 @@ On https://slip.828.tokyo, each non-empty source line `expr` (after trim, before
 
 That is, the line is wrapped in parentheses to form a **Sentence** (§4.1).
 
-The native helper (`Sugared` in `C++/Embed.cpp`, shared by the WASM build and both Mac apps) parses each line as sentence *contents* with a synthetic closing `)` appended. For typical calculator input the effect matches `( expr )`. Unlike programming mode it does not stop at the first failing line.
+The native helper (`Sugared` in `C++/Embed.cpp`, shared by the WASM build and the Mac app) parses each line as sentence *contents* with a synthetic closing `)` appended. For typical calculator input the effect matches `( expr )`. Unlike programming mode it does not stop at the first failing line.
 
 ### 2.2 Implicit multiplication
 
@@ -405,8 +405,9 @@ The graphics surface is sample-driven for now; see [Known Issues](KNOWN_ISSUES.m
 | `C++/` | **Canonical** interpreter |
 | `WASM/` | Web build (`SliP.js`) |
 | `Web/` | Calculator UI |
-| `Swift/macOS/` | AppKit app on the canonical engine |
-| `Bridge/` | Objective-C++ bridge shared by the Mac apps |
+| `SwiftUI-CPP/` | The macOS app, shipped as `SliP.app` |
+| `Bridge/` | Objective-C++ and Swift sides of the embedding bridge |
+| `Swift/` | The original Swift interpreter; not spec-compliant, and no longer built |
 | `JS/` | Original JavaScript engine, published as npm `@satachito/slip`; not spec-compliant |
 | `JP/` | Utility submodule (`JP.h`) for the C++ core; shared with other projects |
 

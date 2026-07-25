@@ -169,7 +169,7 @@
 		12EE63902DFE7DD4002EBE1E /* SliP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = "<group>"; };
 		12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
 		12EE64372DFE7F99002EBE1E /* CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CLI.cpp; sourceTree = "<group>"; };
-		12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwiftUI-CPP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		12EE64652DFE85AE002EBE1E /* SliP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SliP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12FBD5402E2D028500B178F7 /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
@@ -182,7 +182,6 @@
 		12FBD5432E2D033E00B178F7 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
 		12FBD5462E2D071200B178F7 /* SliP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SliP.cpp; sourceTree = "<group>"; };
 		12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
-		5EEE09412223C957001CFDEA /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF4D1B520E0071400AD8172 /* OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -247,13 +246,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		12EE647F2DFE85AF002EBE1E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5EEE093E2223C957001CFDEA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -405,9 +397,8 @@
 			isa = PBXGroup;
 			children = (
 				5EF4D1B520E0071400AD8172 /* OSX.app */,
-				5EEE09412223C957001CFDEA /* macOS.app */,
 				12EE62B82DFE71BB002EBE1E /* CLI */,
-				12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */,
+				12EE64652DFE85AE002EBE1E /* SliP.app */,
 				12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */,
 				12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */,
 				1289353D2E19002C0036A00B /* SliPTests */,
@@ -475,7 +466,7 @@
 			packageProductDependencies = (
 			);
 			productName = "SwiftUI-CPP";
-			productReference = 12EE64652DFE85AE002EBE1E /* SwiftUI-CPP.app */;
+			productReference = 12EE64652DFE85AE002EBE1E /* SliP.app */;
 			productType = "com.apple.product-type.application";
 		};
 		12EE64772DFE85AF002EBE1E /* SwiftUI-CPPTests */ = {
@@ -524,24 +515,7 @@
 			productReference = 12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		5EEE09402223C957001CFDEA /* macOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 5EEE09522223C958001CFDEA /* Build configuration list for PBXNativeTarget "macOS" */;
-			buildPhases = (
-				5EEE093D2223C957001CFDEA /* Sources */,
-				5EEE093E2223C957001CFDEA /* Frameworks */,
-				5EEE093F2223C957001CFDEA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = macOS;
-			productName = macOS;
-			productReference = 5EEE09412223C957001CFDEA /* macOS.app */;
-			productType = "com.apple.product-type.application";
-		};
-		/* End PBXNativeTarget section */
+				/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5EF4D18920E005F600AD8172 /* Project object */ = {
@@ -594,7 +568,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5EEE09402223C957001CFDEA /* macOS */,
 				12EE62B72DFE71BB002EBE1E /* CLI */,
 				12EE64642DFE85AE002EBE1E /* SwiftUI-CPP */,
 				12EE64772DFE85AF002EBE1E /* SwiftUI-CPPTests */,
@@ -623,17 +596,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5EEE093F2223C957001CFDEA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				12CAFE512E7A050100E28A33 /* Sample.slip in Resources */,
-				12EE63952DFE7DD4002EBE1E /* Assets.xcassets in Resources */,
-				12EE63992DFE7DD4002EBE1E /* Main.storyboard in Resources */,
-				12EE639D2DFE7DD4002EBE1E /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -693,23 +655,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5EEE093D2223C957001CFDEA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				12EE63BB2DFE7DD4002EBE1E /* macOS.swift in Sources */,
-				12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */,
-				12D9D7072E00A1A4006EAD54 /* JP_macOS.swift in Sources */,
-				12CAFE402E7A040100E28A33 /* SliP.cpp in Sources */,
-				12CAFE412E7A040100E28A33 /* Read.cpp in Sources */,
-				12CAFE422E7A040100E28A33 /* Eval.cpp in Sources */,
-				12CAFE432E7A040100E28A33 /* json.cpp in Sources */,
-				12CAFE442E7A040100E28A33 /* Embed.cpp in Sources */,
-				12CAFE452E7A040100E28A33 /* BH.mm in Sources */,
-				12CAFE462E7A040100E28A33 /* SliPEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -829,11 +774,11 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPP";
+				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				INFOPLIST_KEY_CFBundleDisplayName = SliP;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SliP;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = Bridge/BH.h;
@@ -864,11 +809,11 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPP";
+				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
 				INFOPLIST_KEY_CFBundleDisplayName = SliP;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SliP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = Bridge/BH.h;
 				SWIFT_VERSION = 5.0;
@@ -886,14 +831,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPPTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftUI-CPP.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftUI-CPP";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SliP.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SliP";
 			};
 			name = Debug;
 		};
@@ -908,13 +853,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPPTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftUI-CPP.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SwiftUI-CPP";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SliP.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SliP";
 			};
 			name = Release;
 		};
@@ -928,7 +873,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPPUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -949,62 +894,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "tokyo.828.SwiftUI-CPPUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = "SwiftUI-CPP";
-			};
-			name = Release;
-		};
-		5EEE09502223C958001CFDEA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				SWIFT_OBJC_BRIDGING_HEADER = Bridge/BH.h;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 42D35TL6R9;
-				INFOPLIST_FILE = "Swift/macOS/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
-			};
-			name = Debug;
-		};
-		5EEE09512223C958001CFDEA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				SWIFT_OBJC_BRIDGING_HEADER = Bridge/BH.h;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 42D35TL6R9;
-				INFOPLIST_FILE = "Swift/macOS/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.1;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -1171,15 +1067,6 @@
 			buildConfigurations = (
 				12EE64922DFE85AF002EBE1E /* Debug */,
 				12EE64932DFE85AF002EBE1E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		5EEE09522223C958001CFDEA /* Build configuration list for PBXNativeTarget "macOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5EEE09502223C958001CFDEA /* Debug */,
-				5EEE09512223C958001CFDEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

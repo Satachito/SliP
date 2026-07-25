@@ -79,17 +79,14 @@ Reloading the page clears bindings and the visual state.
 `C++/` is the canonical interpreter: it defines the language, and every other
 thing here now runs it.
 
-- `SwiftUI-CPP/` — the SwiftUI app, signed and released.
-- `Swift/macOS/` — an AppKit document app on the same engine, through the same
-  bridge. Its symbol palette does not work: the buttons are wired to
-  `DoInsert:` in `Main.storyboard` and draw in the right place, but clicking
-  one fires nothing. The frames do not overlap the split view and the buttons
-  are not disabled, so it is something subtler in a storyboard that dates from
-  2016 — inherited, not introduced. Everything else in that window works.
+- `SwiftUI-CPP/` — the macOS app, shipped as `SliP.app`, signed and released.
+- `Swift/` — the original Swift interpreter. Its front ends and Xcode targets
+  are gone; nothing builds it, so it is history rather than a second
+  implementation.
 - `JS/` — the original JavaScript engine, a different language, still on npm
   under the 1.x tags.
 
-Where any of them disagrees with `C++/`, `C++/` is correct.
+Where either of the older two disagrees with `C++/`, `C++/` is correct.
 
 `JP/` is a submodule shared with other projects, so changes there are made in
 [Satachito/JP](https://github.com/Satachito/JP), not here.

@@ -5,7 +5,7 @@
 //	Version of the language as implemented by C++/, reported by `slip -v` and by
 //	the WASM build.  See CHANGELOG.md.
 inline constexpr auto
-SLIP_VERSION = "2.1.0";
+SLIP_VERSION = "2.1.1";
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr

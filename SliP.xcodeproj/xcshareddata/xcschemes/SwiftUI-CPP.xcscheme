@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "12EE64642DFE85AE002EBE1E"
-               BuildableName = "SwiftUI-CPP.app"
+               BuildableName = "SliP.app"
                BlueprintName = "SwiftUI-CPP"
                ReferencedContainer = "container:SliP.xcodeproj">
             </BuildableReference>
@@ -69,7 +69,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "12EE64642DFE85AE002EBE1E"
-            BuildableName = "SwiftUI-CPP.app"
+            BuildableName = "SliP.app"
             BlueprintName = "SwiftUI-CPP"
             ReferencedContainer = "container:SliP.xcodeproj">
          </BuildableReference>
@@ -86,7 +86,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "12EE64642DFE85AE002EBE1E"
-            BuildableName = "SwiftUI-CPP.app"
+            BuildableName = "SliP.app"
             BlueprintName = "SwiftUI-CPP"
             ReferencedContainer = "container:SliP.xcodeproj">
          </BuildableReference>

@@ -9,6 +9,22 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
+## 2.1.1 — 2026-07-25
+
+### Fixed
+
+- **The Mac app shipped as `SwiftUI-CPP.app`.** Only its display name had been
+  set to SliP, and the name a user sees in Finder is `PRODUCT_NAME`. It builds
+  as `SliP.app` now, identifies as `tokyo.828.SliP`, and its executable is
+  `SliP`.
+
+### Removed
+
+- The AppKit app. It ran the canonical engine as of 2.1.0, but it was a second
+  app doing the same job as the SwiftUI one, and two apps both called SliP is
+  worse than one. Its bridge layer stays — `Bridge/` and `C++/Embed.cpp` are
+  what the SwiftUI app and the WASM build now share.
+
 ## 2.1.0 — 2026-07-25
 
 The language is unchanged. This release is the macOS app, and the plumbing the

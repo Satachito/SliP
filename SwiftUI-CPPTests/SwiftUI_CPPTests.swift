@@ -1,5 +1,5 @@
 import Testing
-@testable import SwiftUI_CPP
+@testable import SliP
 
 struct SwiftUI_CPPTests {
 
