@@ -24,6 +24,20 @@ jobs:
       - name: C++ tests
         run: sh C++Test/ci.sh
 
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build the CLI
+        run: |
+          clang++ -std=c++23 -O2 \
+            C++/CLI.cpp C++/SliP.cpp C++/Read.cpp C++/Eval.cpp C++/json.cpp \
+            -o slip
+      - name: Conformance suite
+        run: sh conformance/run.sh ./slip
+
   wasm:
     runs-on: ubuntu-latest
     steps:

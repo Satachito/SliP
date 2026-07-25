@@ -1,0 +1,30 @@
+//	Blocks, contexts and comments ( SPEC §4.4, §5, §5.4 )
+
+//	// is a comment, but a single / divides and // inside a string is text
+( 7 / 2 ) // trailing comment
+( `http://x` )
+
+( 'z = 1 )
+
+//	{ } evaluates in a new child context: the binding does not escape
+( { ( 'z = 7 ) ( z ) } )
+( z )
+
+//	« » evaluates in the caller's context: the binding does escape
+( « ( 'z = 9 ) ( z ) » )
+( z )
+
+//	Sentences in a block share one context, so they see each other in order
+( { ( 'b = 1 ) ( b + 1 ) } )
+
+//	[ ] is a literal list, unevaluated
+( [ 1 2 3 ] )
+( [ 1 2 3 ] : # )
+( [ 1 2 3 ] : * )
+( [ 1 2 3 ] : $ )
+( [ 10 20 30 ] . 1 )
+
+//	∥ isolates each branch: neither siblings nor the caller see the binding,
+//	and results come back in source order
+( ∥ '[ ( 'z = 99 ) ( z ) ] )
+( z )

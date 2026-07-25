@@ -1,0 +1,18 @@
+//	Implicit multiplication and prefix absorption ( SPEC §2.2, §4.2 )
+
+//	Adjacent numerics multiply
+( 2 3 4 )
+( 'r = 2 )
+( 2 π r )
+
+//	A prefix absorbs the run of bare numerics after it: this is cos( 2 × π ),
+//	not cos( 2 ) × π
+( cos 2 π )
+( cos 0 )
+( cos π )
+
+//	A parenthesised argument ends the run, so this is cos( 0 ) × 3
+( cos(0) 3 )
+
+//	A function result also ends the run: 2 × π × cos( 0 )
+( 2 π cos 0 )

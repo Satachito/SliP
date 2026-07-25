@@ -1,0 +1,30 @@
+//	Truth, comparison and the logical operators ( SPEC §4.5, §6.4 )
+
+//	Only [] is false.  0 is a value, and therefore truthy.
+( ¬[] )
+( ¬0 )
+( [] == [] )
+
+//	Comparisons bind tighter than && || ^^
+( 3 > 1 && 5 > 4 )
+( 1 < 2 && 3 < 2 )
+( 1 == 1 || 2 == 3 )
+( 1 == 1 ^^ 2 == 3 )
+
+//	&& and || short-circuit: the thrown right side is never reached
+( [] && ( ¡ `boom` ) )
+( 1 || ( ¡ `boom` ) )
+
+//	¿ likewise, with or without the quote the idiom uses
+( [] ¿ ( ¡ `boom` ) )
+( [] ¿ '( ¡ `boom` ) )
+( 1 ¿ '( 3 + 5 ) )
+
+//	? takes a two element list and evaluates only the branch it picks
+( 1 ? [ 1 0 ] )
+( [] ? [ 1 0 ] )
+
+//	Membership
+( 1 ∈ [ 1 2 3 ] )
+( 0 ∈ [ 1 2 3 ] )
+( [ 1 2 3 ] ∋ 1 )

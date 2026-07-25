@@ -1,0 +1,40 @@
+//	Numbers, strings and matrices ( SPEC §3.2, §3.3, §6.5 )
+
+//	Integers stay integers
+( 1 + 1 )
+( 9223372036854775807 )
+
+//	Overflow promotes to float.  The printed form of a very large float depends
+//	on RoundPrecision, so this checks the promotion, not the digits.
+( 9223372036854775807 + 9223372036854775807 > 9223372036854775807 )
+
+//	+ and - after a value subtract; after an operator they sign the operand
+( 1 + -1 )
+( 1 - -1 )
+( 5 - 3 )
+
+//	ASCII e is an ordinary name, not Napier's number; the aliases are explicit
+( pi == π )
+( euler == 𝑒 )
+( inf == ∞ )
+
+//	Strings concatenate, and REPR keeps the delimiter that was written
+( `a` + `b` )
+( `abc` : # )
+( 123 : string )
+( [ `ff` 16 ] : int )
+( [ 255 16 ] : str )
+
+//	A matrix is a value: ± yields a reshaped copy and leaves the operand alone.
+//	Compared rather than printed, because the printed form is fixed-point.
+( 'm = ⟨ 1 2 3 4 ⟩ )
+( ( m ± 2 ) == ⟨ 1 2 3 4 ⟩ ± 2 )
+( m == ⟨ 1 2 3 4 ⟩ )
+( ( m ± 4 ) == ⟨ 1 2 3 4 ⟩ ± 4 )
+( m == ⟨ 1 2 3 4 ⟩ )
+
+//	Vector inner product
+( ⟨ 1 2 3 ⟩ · ⟨ 1 2 3 ⟩ )
+
+//	JSON round trip, keys sorted
+( `{ "a": 3.14, "b": "x" }` : byJSON : toJSON )

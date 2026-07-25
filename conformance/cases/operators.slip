@@ -1,0 +1,28 @@
+//	Operator priority, associativity and grouping ( SPEC §6.4 )
+
+//	× binds tighter than +, either way round
+( 2 + 3 × 4 )
+( 3 × 4 + 2 )
+
+//	+ and - are left-associative
+( 10 - 3 - 2 )
+( 2 + 3 - 1 )
+
+//	Bitwise binds tighter than comparison, so C's classic trap does not apply
+( 12 & 10 == 8 )
+( 12 & 10 )
+( 12 | 10 )
+( 12 ^ 10 )
+
+//	= is right-associative: both names bind
+( 'p = 'q = 7 )
+( p )
+( q )
+
+//	, is right-associative, so cons chains
+( 1 , 2 , [ 3 ] )
+
+//	Integer and float division are different operators
+( 7 / 2 )
+( 7 % 3 )
+( 3 ÷ 5 )

@@ -1,0 +1,36 @@
+//	Apply, the argument stack, and quoted functions ( SPEC §4.3 )
+
+//	arg : f pushes arg, evaluates f, pops.  @ reads the stack top.
+( 3 : '( @ + 1 ) )
+( 3 : '@ )
+
+//	A named function is just a quoted sentence in a binding
+( 'double = '( @ × 2 ) )
+( 5 : double )
+
+//	@.0 / @.1 index a list argument
+( 'sum2 = '( @.0 + @.1 ) )
+( [ 3 4 ] : sum2 )
+
+//	Recursion: the stack nests
+( 'ZOT = '( @ < 2 ? [ @ 2 ] ) )
+( 'fib = '( ( [ 0 1 ( ( @ - 1 ):fib + ( @ - 2 ):fib ) ].(@:ZOT) ):! ) )
+( 0 : fib )
+( 1 : fib )
+( 7 : fib )
+
+//	: also indexes a list or a dict, returning [] when out of range or missing
+( [ 10 20 30 ] : 1 )
+( [ 10 20 30 ] : 5 )
+
+//	Each ∥ branch is seeded with the spawning stack, so @ still resolves
+( 5 : '( ∥ '[ ( @ + 1 ) ( @ × 2 ) ] ) )
+
+//	' quotes, ! evaluates
+( '( 3 + 5 ) : ! )
+
+//	Quoting is idempotent.  ' yields its operand unevaluated, and there is no
+//	reified quote object, so ''θ is θ — unlike Lisp, where ''x is a list.
+( 'θ )
+( ''θ )
+( '''θ )

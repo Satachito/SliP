@@ -19,8 +19,21 @@ Visit the calculator and tutorial:
 |-----|----------|
 | [Web/Tutorial.html](Web/Tutorial.html) | First-time users |
 | [Web/SPEC.html](Web/SPEC.html) / [docs/SPEC.md](docs/SPEC.md) | Language specification |
+| [CHANGELOG.md](CHANGELOG.md) | What changed, and what it breaks |
 | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Current limits and reserved surface |
+| [conformance/](conformance) | Language-level test suite, in SliP |
 | [docs/phase0-audit.md](docs/phase0-audit.md) | Maintenance audit log |
+
+## Running programs
+
+```sh
+slip program.slip     # run it
+slip -e '( 2 π )'     # evaluate one expression
+slip -p program.slip  # print the value of every toplevel form
+slip -i               # transcript: echo each form and its value
+```
+
+Errors are reported as `file:line: message`, with exit status 1.
 
 ## Implementation map
 
@@ -41,8 +54,10 @@ is correct.
 
 ```sh
 sh C++Test/ci.sh              # C++ tests
+sh conformance/run.sh         # language conformance suite
 sh WASM/build.sh              # Web/SliP.js (requires emscripten)
 node WASM/smoke.mjs           # after WASM build
+sh npm/build.sh               # stage the npm package, after the WASM build
 ```
 
 GitHub Actions runs the C++ tests and the WASM smoke test in
