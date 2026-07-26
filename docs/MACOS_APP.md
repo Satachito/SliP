@@ -22,12 +22,16 @@ open build/Release/SliP.app
 | **Calculator** | One expression per line. A failing line reports and the rest still run. |
 | **Programming** | Toplevel forms. Evaluation stops at the first failure, as a later form usually depends on an earlier one. |
 | **Run** | ⌘↩ |
-| **Keep session** | Carry bindings from the previous run instead of starting clean |
+| **Keep session** | Carry bindings from the previous run instead of starting clean. Each document window has an independent session. |
 | **Keypad** | The operators no keyboard has — `¶ ¤ ∅ × ÷ ± · ∈ ∋ ¿ ¬ ¡ ¦ § ∥ ⟨ ⟩ « » 𝑒 π` |
 | **Settings** (⌘,) | Rounding precision, 1–17 significant digits |
 
 Documents are `.slip` files, registered as `tokyo.828.slip` conforming to
 `public.plain-text`.
+
+The Help menu includes an English/Japanese getting-started guide and the
+privacy policy. Mac App Store preparation and listing copy are in
+[`APP_STORE.md`](APP_STORE.md).
 
 ## Why the editor is not a `TextEditor`
 

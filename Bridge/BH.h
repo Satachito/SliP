@@ -2,6 +2,10 @@
 //	holding JSON — see C++/Embed.hpp for the shapes — and the caller frees it
 //	with BH_Free.  Errors arrive inside that JSON, never as exceptions.
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 char*	BH_Version( void );
 
 //	{ "source": "…", "response": "…" } | { "error": "…" }
@@ -16,4 +20,15 @@ char*	BH_Sugared( const char* source );
 void	BH_Reset( void );
 void	BH_SetRoundPrecision( int precision );
 
+typedef void* BH_Session;
+BH_Session	BH_SessionCreate( void );
+void		BH_SessionDestroy( BH_Session );
+char*		BH_SessionREPL( BH_Session, const char* source );
+char*		BH_SessionSugared( BH_Session, const char* source );
+void		BH_SessionReset( BH_Session );
+
 void	BH_Free( char* _ );
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,3 +1,4 @@
+#include "BH.h"
 #include "../C++/Embed.hpp"
 
 //	The bridge to Swift.  Everything it exposes returns the JSON described in
@@ -56,6 +57,32 @@ BH_Reset() {
 extern "C" void
 BH_SetRoundPrecision( int _ ) {
 	SetRoundPrecision( _ );
+}
+
+extern "C" BH_Session
+BH_SessionCreate() {
+	BuildOnce();
+	return NewEmbedSession();
+}
+
+extern "C" void
+BH_SessionDestroy( BH_Session session ) {
+	DeleteEmbedSession( static_cast< EmbedSession* >( session ) );
+}
+
+extern "C" char*
+BH_SessionREPL( BH_Session session, const char* source ) {
+	return Copy( SessionREPL( static_cast< EmbedSession* >( session ), string( source ) ) );
+}
+
+extern "C" char*
+BH_SessionSugared( BH_Session session, const char* source ) {
+	return Copy( SessionSugared( static_cast< EmbedSession* >( session ), string( source ) ) );
+}
+
+extern "C" void
+BH_SessionReset( BH_Session session ) {
+	ResetEmbedSession( static_cast< EmbedSession* >( session ) );
 }
 
 extern "C" void

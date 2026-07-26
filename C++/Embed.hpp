@@ -37,3 +37,14 @@ string	Sugared( string const& );
 
 void	Reset();
 void	SetRoundPrecision( int );
+
+//	Native document hosts can keep one interpreter context per window.  The
+//	opaque session keeps Context out of the C bridge while the original
+//	process-wide entry points remain available to WASM.
+struct EmbedSession;
+
+EmbedSession*	NewEmbedSession();
+void			DeleteEmbedSession( EmbedSession* );
+string			SessionREPL( EmbedSession*, string const& );
+string			SessionSugared( EmbedSession*, string const& );
+void			ResetEmbedSession( EmbedSession* );

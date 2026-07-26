@@ -31,12 +31,17 @@ Version() {
 	return SLIP_VERSION;
 }
 
-static SP< Context >
-theContext = MS< Context >();
+struct
+EmbedSession {
+	SP< Context >	context = MS< Context >();
+};
+
+static EmbedSession
+theSession;
 
 void
 Reset() {
-	theContext = MS< Context >();
+	theSession.context = MS< Context >();
 	ClearStack();
 }
 
@@ -66,7 +71,7 @@ REP( string const& _ ) {
 		//	Evaluate before building the entry: taking the source and the
 		//	response in one expression once let a throw leave the entry
 		//	half-built.  See the REPL delimiter note below.
-		auto response = Eval( theContext, form )->REPR();
+		auto response = Eval( theSession.context, form )->REPR();
 		return Entry( source, "response", response );
 	} catch ( exception const& e ) {
 		return Entry( "", "error", e.what() );
@@ -82,7 +87,7 @@ REP( string const& _ ) {
 //	typo on line 1 should not hide the answer on line 6.  The web calculator has
 //	always behaved this way, one try per line.
 template < typename F > static string
-Each( F NextForm, bool stopOnError ) {
+Each( SP< Context > context, F NextForm, bool stopOnError ) {
 	string	$ = "[";
 	auto	count = 0;
 	auto	Delimiter = [ & ]() -> string { return count++ ? "," : ""; };
@@ -97,7 +102,7 @@ Each( F NextForm, bool stopOnError ) {
 			//	inline let Eval throw after the count had already advanced, so
 			//	the catch emitted a second delimiter and the array came back as
 			//	"[,{ … }]" — not parseable as JSON.
-			auto response = Eval( theContext, form )->REPR();
+			auto response = Eval( context, form )->REPR();
 			$ += Delimiter() + Entry( source, "response", response );
 		} catch ( exception const& e ) {
 			$ += Delimiter() + Entry( source, "error", e.what() );
@@ -110,7 +115,7 @@ Each( F NextForm, bool stopOnError ) {
 string
 REPL( string const& _ ) {
 	auto	R = MS< StringReader >( _ );
-	return Each( [ R ]() { return Read( *R, -1 ); }, true );
+	return Each( theSession.context, [ R ]() { return Read( *R, -1 ); }, true );
 }
 
 //	Calculator mode: each non-empty line is read as the contents of a sentence,
@@ -122,6 +127,8 @@ Sugared( string const& _ ) {
 	auto	lines = MS< V< string > >( Split( _ ) );
 	auto	index = MS< size_t >( 0 );
 	return Each(
+		theSession.context
+	,
 		[ lines, index ]() -> SP< SliP > {
 			while( *index < lines->size() ) {
 				auto line = ( *lines )[ (*index)++ ];
@@ -129,6 +136,52 @@ Sugared( string const& _ ) {
 				if( $.find_first_not_of( " \t\r" ) == string::npos ) continue;
 				StringReader	R( $ + ')' );
 				return MS< Sentence >( ReadList( R, U')' ) );
+			}
+			return nullptr;
+		}
+	,	false
+	);
+}
+
+EmbedSession*
+NewEmbedSession() {
+	return new EmbedSession;
+}
+
+void
+DeleteEmbedSession( EmbedSession* session ) {
+	delete session;
+}
+
+void
+ResetEmbedSession( EmbedSession* session ) {
+	if( !session ) return;
+	session->context = MS< Context >();
+	ClearStack();
+}
+
+string
+SessionREPL( EmbedSession* session, string const& source ) {
+	if( !session ) return R"([{ "error": "Missing interpreter session" }])";
+	auto reader = MS< StringReader >( source );
+	return Each( session->context, [ reader ]() { return Read( *reader, -1 ); }, true );
+}
+
+string
+SessionSugared( EmbedSession* session, string const& source ) {
+	if( !session ) return R"([{ "error": "Missing interpreter session" }])";
+	auto lines = MS< V< string > >( Split( source ) );
+	auto index = MS< size_t >( 0 );
+	return Each(
+		session->context
+	,
+		[ lines, index ]() -> SP< SliP > {
+			while( *index < lines->size() ) {
+				auto line = ( *lines )[ (*index)++ ];
+				auto expression = line.substr( 0, line.find( "//" ) );
+				if( expression.find_first_not_of( " \t\r" ) == string::npos ) continue;
+				StringReader reader( expression + ')' );
+				return MS< Sentence >( ReadList( reader, U')' ) );
 			}
 			return nullptr;
 		}

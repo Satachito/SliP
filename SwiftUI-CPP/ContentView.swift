@@ -7,10 +7,13 @@ ContentView: View {
 	document	: SwiftUI_CPPDocument
 
 	@State		private var
-	mode		= SliPMode.programming
+	mode		= SliPMode.calculator
 
 	@State		private var
 	results		: [ SliPResult ] = []
+
+	@StateObject	private var
+	session		= SliPSession()
 
 	@AppStorage( Preference.keepSessionKey ) private var
 	keepSession	= false
@@ -35,14 +38,14 @@ ContentView: View {
 			}
 		}
 		.frame( minWidth: 720, minHeight: 420 )
-		.onReceive( NotificationCenter.default.publisher( for: .slipRun ) ) { _ in Run() }
+		.focusedSceneValue( \.slipRunAction, Run )
 	}
 
 	private var
 	Toolbar: some View {
 		HStack( spacing: 12 ) {
 			Picker( "", selection: $mode ) {
-				ForEach( SliPMode.allCases ) { Text( $0.rawValue ).tag( $0 ) }
+				ForEach( SliPMode.allCases ) { Text( $0.title ).tag( $0 ) }
 			}
 			.pickerStyle( .segmented )
 			.frame( width: 220 )
@@ -115,8 +118,8 @@ ContentView: View {
 
 	private func
 	Run() {
-		if !keepSession { SliPEngine.reset() }
-		results = SliPEngine.run( document.text, mode: mode )
+		if !keepSession { session.reset() }
+		results = session.run( document.text, mode: mode )
 	}
 }
 

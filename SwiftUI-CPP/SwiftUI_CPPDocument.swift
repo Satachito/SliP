@@ -18,7 +18,12 @@ extension UTType {
 struct SwiftUI_CPPDocument: FileDocument {
     var text: String
 
-    init(text: String = "[1 2 3]\n\"ABC\"") {
+    init(text: String = """
+    // Select Calculator, then press ⌘↩ to run these examples.
+    1 + 2 × 3
+    cosπ
+    [1 2 3] + 10
+    """) {
         self.text = text
     }
 
