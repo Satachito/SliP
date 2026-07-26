@@ -21,6 +21,7 @@ struct SwiftUI_CPPApp: App {
 			SliPCommands()
 		}
 
+		#if os(macOS)
 		Settings { SettingsView() }
 
 		Window( "SliP Help", id: "help" ) { HelpView() }
@@ -28,6 +29,7 @@ struct SwiftUI_CPPApp: App {
 
 		Window( "Privacy Policy", id: "privacy" ) { PrivacyPolicyView() }
 			.defaultSize( width: 560, height: 520 )
+		#endif
 	}
 }
 
@@ -44,7 +46,9 @@ extension FocusedValues {
 
 private struct SliPCommands: Commands {
 	@FocusedValue( \.slipRunAction ) private var run
+	#if os(macOS)
 	@Environment( \.openWindow ) private var openWindow
+	#endif
 
 	var body: some Commands {
 		CommandGroup( after: .newItem ) {
@@ -53,10 +57,12 @@ private struct SliPCommands: Commands {
 				.disabled( run == nil )
 		}
 
+		#if os(macOS)
 		CommandGroup( replacing: .help ) {
 			Button( "SliP Help" ) { openWindow( id: "help" ) }
 				.keyboardShortcut( "?", modifiers: .command )
 			Button( "Privacy Policy" ) { openWindow( id: "privacy" ) }
 		}
+		#endif
 	}
 }

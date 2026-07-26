@@ -32,12 +32,34 @@ ContentView: View {
 		VStack( spacing: 0 ) {
 			Toolbar
 			Divider()
+			#if os(macOS)
 			HSplitView {
 				Editor
 				Results
 			}
+			#else
+			GeometryReader { geometry in
+				if geometry.size.width >= 700 {
+					HStack( spacing: 0 ) {
+						Editor
+							.frame( width: geometry.size.width * 0.52 )
+						Divider()
+						Results
+					}
+				} else {
+					VStack( spacing: 0 ) {
+						Editor
+							.frame( height: geometry.size.height * 0.58 )
+						Divider()
+						Results
+					}
+				}
+			}
+			#endif
 		}
+		#if os(macOS)
 		.frame( minWidth: 720, minHeight: 420 )
+		#endif
 		.focusedSceneValue( \.slipRunAction, Run )
 	}
 
@@ -48,17 +70,29 @@ ContentView: View {
 				ForEach( SliPMode.allCases ) { Text( $0.title ).tag( $0 ) }
 			}
 			.pickerStyle( .segmented )
+			#if os(macOS)
 			.frame( width: 220 )
+			#else
+			.frame( maxWidth: 260 )
+			#endif
 			.help( mode.help )
 
+			#if os(macOS)
 			Toggle( "Keep session", isOn: $keepSession )
 				.help( "Carry bindings over from the previous run" )
+			#else
+			Toggle( "Keep", isOn: $keepSession )
+				.labelsHidden()
+				.accessibilityLabel( "Keep session" )
+			#endif
 
 			Spacer()
 
+			#if os(macOS)
 			Text( "SliP \( SliPEngine.version )" )
 				.foregroundStyle( .secondary )
 				.font( .caption )
+			#endif
 
 			Button( "Run" ) { Run() }
 				.keyboardShortcut( .return, modifiers: .command )
@@ -73,16 +107,26 @@ ContentView: View {
 			Divider()
 			Keypad
 		}
+		#if os(macOS)
 		.frame( minWidth: 280 )
+		#endif
 	}
 
 	private var
 	Keypad: some View {
-		LazyVGrid( columns: Array( repeating: GridItem( .flexible(), spacing: 2 ), count: 12 ), spacing: 2 ) {
+		#if os(macOS)
+		let columnCount = 12
+		#else
+		let columnCount = 6
+		#endif
+		return LazyVGrid( columns: Array( repeating: GridItem( .flexible(), spacing: 4 ), count: columnCount ), spacing: 4 ) {
 			ForEach( Self.symbols, id: \.self ) { symbol in
 				Button( symbol ) { document.text.append( symbol ) }
 					.buttonStyle( .bordered )
 					.font( .system( .body, design: .monospaced ) )
+					#if !os(macOS)
+					.frame( minHeight: 32 )
+					#endif
 			}
 		}
 		.padding( 6 )
@@ -97,7 +141,9 @@ ContentView: View {
 			.frame( maxWidth: .infinity, alignment: .leading )
 			.padding( 8 )
 		}
+		#if os(macOS)
 		.frame( minWidth: 280 )
+		#endif
 	}
 
 	@ViewBuilder private func

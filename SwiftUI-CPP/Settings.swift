@@ -28,7 +28,9 @@ SettingsView: View {
 
 	@AppStorage( Preference.roundPrecisionKey ) private var
 	roundPrecision = Preference.defaultRoundPrecision
+	#if os(macOS)
 	@Environment( \.openWindow ) private var openWindow
+	#endif
 
 	var
 	body: some View {
@@ -47,14 +49,18 @@ SettingsView: View {
 
 				Divider()
 
+				#if os(macOS)
 				HStack {
 					Button( "SliP Help" ) { openWindow( id: "help" ) }
 					Button( "Privacy Policy" ) { openWindow( id: "privacy" ) }
 				}
+				#endif
 			}
 		}
+		#if os(macOS)
 		.formStyle( .grouped )
 		.frame( width: 380 )
+		#endif
 		.padding()
 	}
 }
@@ -117,7 +123,7 @@ struct PrivacyPolicyView: View {
 					.foregroundStyle( .secondary )
 
 				Text( "SliP does not collect, transmit, sell, or share personal information or usage data.")
-				Text( "Programs and results are evaluated locally on your Mac. Documents are read or written only when you create, open, or save them using standard macOS document controls.")
+				Text( "Programs and results are evaluated locally on your device. Documents are read or written only when you create, open, or save them using standard system document controls.")
 				Text( "SliP contains no advertising, analytics, account system, or third-party tracking SDK. Opening the online language reference leaves the app and is subject to your browser and the website’s policies.")
 
 				Text( "Contact" ).font( .title2.bold() )

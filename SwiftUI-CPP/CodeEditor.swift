@@ -1,5 +1,9 @@
 import SwiftUI
+#if os(macOS)
 import AppKit
+#else
+import UIKit
+#endif
 
 //	SwiftUI's TextEditor cannot turn off macOS text substitution, and for this
 //	language that is fatal: ' is the quote operator, so smart quotes rewrite
@@ -8,8 +12,8 @@ import AppKit
 //
 //	So the editor is an NSTextView with every substitution off.
 
-struct
-CodeEditor: NSViewRepresentable {
+#if os(macOS)
+struct CodeEditor: NSViewRepresentable {
 
 	@Binding var
 	text: String
@@ -67,3 +71,41 @@ CodeEditor: NSViewRepresentable {
 		}
 	}
 }
+#else
+struct CodeEditor: UIViewRepresentable {
+
+	@Binding var text: String
+
+	func makeUIView(context: Context) -> UITextView {
+		let view = UITextView()
+		view.autocorrectionType = .no
+		view.autocapitalizationType = .none
+		view.smartQuotesType = .no
+		view.smartDashesType = .no
+		view.smartInsertDeleteType = .no
+		view.spellCheckingType = .no
+		view.keyboardType = .asciiCapable
+		view.font = .monospacedSystemFont(ofSize: 15, weight: .regular)
+		view.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
+		view.delegate = context.coordinator
+		view.text = text
+		return view
+	}
+
+	func updateUIView(_ view: UITextView, context: Context) {
+		if view.text != text { view.text = text }
+	}
+
+	func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+	final class Coordinator: NSObject, UITextViewDelegate {
+		private let parent: CodeEditor
+
+		init(_ parent: CodeEditor) { self.parent = parent }
+
+		func textViewDidChange(_ textView: UITextView) {
+			parent.text = textView.text
+		}
+	}
+}
+#endif
