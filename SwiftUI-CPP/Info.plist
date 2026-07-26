@@ -6,6 +6,8 @@
 	<string>public.app-category.developer-tools</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>UILaunchScreen</key>
+	<dict/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
