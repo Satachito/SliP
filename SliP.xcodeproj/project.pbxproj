@@ -7,75 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		12CAFE512E7A050100E28A33 /* Sample.slip in Resources */ = {isa = PBXBuildFile; fileRef = 12CAFE502E7A050100E28A33 /* Sample.slip */; };
-		12CAFE332E7A030100E28A33 /* BH.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE302E7A030100E28A33 /* BH.mm */; };
-		12CAFE342E7A030100E28A33 /* SliPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE472E7A040100E28A33 /* SliPEngine.swift */; };
-		12CAFE402E7A040100E28A33 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
-		12CAFE412E7A040100E28A33 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
-		12CAFE422E7A040100E28A33 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
-		12CAFE432E7A040100E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
-		12CAFE442E7A040100E28A33 /* Embed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE102E7A010100E28A33 /* Embed.cpp */; };
-		12CAFE452E7A040100E28A33 /* BH.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE302E7A030100E28A33 /* BH.mm */; };
-		12CAFE462E7A040100E28A33 /* SliPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE472E7A040100E28A33 /* SliPEngine.swift */; };
 		121371562E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
 		121371572E4E2FFF00E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
-		12CAFE112E7A010100E28A33 /* Embed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE102E7A010100E28A33 /* Embed.cpp */; };
+		1280CD352E3B93910024B733 /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD332E3B93910024B733 /* TEST.cpp */; };
+		1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2D2E3B93910024B733 /* EvalTest.cpp */; };
+		1280CD372E3B93910024B733 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2F2E3B93910024B733 /* ReadTest.cpp */; };
+		1280CD392E3CD2830024B733 /* MathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD382E3CD2770024B733 /* MathTest.cpp */; };
 		12CAFE012E7A000100E28A33 /* SliP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5462E2D071200B178F7 /* SliP.cpp */; };
 		12CAFE022E7A000100E28A33 /* Eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5432E2D033E00B178F7 /* Eval.cpp */; };
 		12CAFE032E7A000100E28A33 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
 		12CAFE042E7A000100E28A33 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 121371552E4E2FFF00E28A33 /* json.cpp */; };
 		12CAFE062E7A000100E28A33 /* RegressionTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE052E7A000100E28A33 /* RegressionTest.cpp */; };
-		1280CD352E3B93910024B733 /* TEST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD332E3B93910024B733 /* TEST.cpp */; };
-		1280CD362E3B93910024B733 /* EvalTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2D2E3B93910024B733 /* EvalTest.cpp */; };
-		1280CD372E3B93910024B733 /* ReadTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD2F2E3B93910024B733 /* ReadTest.cpp */; };
-		1280CD392E3CD2830024B733 /* MathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1280CD382E3CD2770024B733 /* MathTest.cpp */; };
-		12D9D7042E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
-		12D9D7052E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
-		12D9D7062E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
-		12D9D7072E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
-		12D9D7082E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
-		12D9D70A2E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
-		12D9D70B2E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
-		12D9D70C2E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
-		12D9D70D2E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
-		12D9D70E2E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
-		12D9D70F2E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
-		12D9D7102E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
-		12D9D7112E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
-		12D9D7122E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
-		12D9D7132E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
-		12D9D7142E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
-		12D9D7162E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
-		12D9D7172E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
-		12D9D7182E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
-		12D9D7192E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
-		12D9D71A2E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
-		12D9D71B2E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
-		12D9D71C2E00A1A4006EAD54 /* JPBigInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FA2E00A1A4006EAD54 /* JPBigInteger.swift */; };
-		12D9D71D2E00A1A4006EAD54 /* JPVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7012E00A1A4006EAD54 /* JPVector.swift */; };
-		12D9D71E2E00A1A4006EAD54 /* JP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F72E00A1A4006EAD54 /* JP.swift */; };
-		12D9D71F2E00A1A4006EAD54 /* JP_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F92E00A1A4006EAD54 /* JP_macOS.swift */; };
-		12D9D7202E00A1A4006EAD54 /* JPMetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FF2E00A1A4006EAD54 /* JPMetal.swift */; };
-		12D9D7222E00A1A4006EAD54 /* JPInspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FD2E00A1A4006EAD54 /* JPInspectable.swift */; };
-		12D9D7232E00A1A4006EAD54 /* JPGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FC2E00A1A4006EAD54 /* JPGraphics.swift */; };
-		12D9D7242E00A1A4006EAD54 /* JPMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FE2E00A1A4006EAD54 /* JPMatrix.swift */; };
-		12D9D7252E00A1A4006EAD54 /* JP_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6F82E00A1A4006EAD54 /* JP_iOS.swift */; };
-		12D9D7262E00A1A4006EAD54 /* JPCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D6FB2E00A1A4006EAD54 /* JPCrypto.swift */; };
-		12D9D7272E00A1A4006EAD54 /* JPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D9D7002E00A1A4006EAD54 /* JPSession.swift */; };
-		12EE63952DFE7DD4002EBE1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63822DFE7DD4002EBE1E /* Assets.xcassets */; };
-		12EE63992DFE7DD4002EBE1E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63872DFE7DD4002EBE1E /* Main.storyboard */; };
-		12EE639D2DFE7DD4002EBE1E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63832DFE7DD4002EBE1E /* Info.plist */; };
-		12EE63AB2DFE7DD4002EBE1E /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63902DFE7DD4002EBE1E /* SliP.swift */; };
-		12EE63AD2DFE7DD4002EBE1E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE634B2DFE7DD4002EBE1E /* main.swift */; };
-		12EE63B22DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
-		12EE63BB2DFE7DD4002EBE1E /* macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63852DFE7DD4002EBE1E /* macOS.swift */; };
-		12EE63C52DFE7DD4002EBE1E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12EE638C2DFE7DD4002EBE1E /* Main.storyboard */; };
-		12EE63CD2DFE7DD4002EBE1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12EE63892DFE7DD4002EBE1E /* Assets.xcassets */; };
-		12EE63D72DFE7DD4002EBE1E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 12EE638A2DFE7DD4002EBE1E /* Info.plist */; };
-		12EE63D82DFE7DD4002EBE1E /* SliP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63902DFE7DD4002EBE1E /* SliP.swift */; };
-		12EE63DA2DFE7DD4002EBE1E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE634B2DFE7DD4002EBE1E /* main.swift */; };
-		12EE63DF2DFE7DD4002EBE1E /* SliPBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */; };
-		12EE63E62DFE7DD4002EBE1E /* OSX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE638E2DFE7DD4002EBE1E /* OSX.swift */; };
+		12CAFE112E7A010100E28A33 /* Embed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE102E7A010100E28A33 /* Embed.cpp */; };
+		12CAFE332E7A030100E28A33 /* BH.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE302E7A030100E28A33 /* BH.mm */; };
+		12CAFE342E7A030100E28A33 /* SliPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE472E7A040100E28A33 /* SliPEngine.swift */; };
 		12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64372DFE7F99002EBE1E /* CLI.cpp */; };
 		12FBD5412E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
 		12FBD5422E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
@@ -130,8 +75,13 @@
 		1280CD2F2E3B93910024B733 /* ReadTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReadTest.cpp; sourceTree = "<group>"; };
 		1280CD332E3B93910024B733 /* TEST.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TEST.cpp; sourceTree = "<group>"; };
 		1280CD382E3CD2770024B733 /* MathTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MathTest.cpp; sourceTree = "<group>"; };
-		12CAFE052E7A000100E28A33 /* RegressionTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RegressionTest.cpp; sourceTree = "<group>"; };
 		1289353D2E19002C0036A00B /* SliPTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SliPTests; sourceTree = BUILT_PRODUCTS_DIR; };
+		12CAFE052E7A000100E28A33 /* RegressionTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RegressionTest.cpp; sourceTree = "<group>"; };
+		12CAFE102E7A010100E28A33 /* Embed.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Embed.cpp; sourceTree = "<group>"; };
+		12CAFE122E7A010100E28A33 /* Embed.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Embed.hpp; sourceTree = "<group>"; };
+		12CAFE302E7A030100E28A33 /* BH.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BH.mm; sourceTree = "<group>"; };
+		12CAFE312E7A030100E28A33 /* BH.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BH.h; sourceTree = "<group>"; };
+		12CAFE472E7A040100E28A33 /* SliPEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPEngine.swift; sourceTree = "<group>"; };
 		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
 		12D9D6E82E00A186006EAD54 /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
 		12D9D6E92E00A186006EAD54 /* JPBigInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPBigInt.h; sourceTree = "<group>"; };
@@ -155,17 +105,6 @@
 		12D9D7012E00A1A4006EAD54 /* JPVector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPVector.swift; sourceTree = "<group>"; };
 		12D9D7022E00A1A4006EAD54 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		12EE62B82DFE71BB002EBE1E /* CLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CLI; sourceTree = BUILT_PRODUCTS_DIR; };
-		12EE634B2DFE7DD4002EBE1E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		12EE63822DFE7DD4002EBE1E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		12EE63832DFE7DD4002EBE1E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		12EE63842DFE7DD4002EBE1E /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
-		12EE63852DFE7DD4002EBE1E /* macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOS.swift; sourceTree = "<group>"; };
-		12EE63862DFE7DD4002EBE1E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		12EE63892DFE7DD4002EBE1E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		12EE638A2DFE7DD4002EBE1E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		12EE638B2DFE7DD4002EBE1E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		12EE638D2DFE7DD4002EBE1E /* OSX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OSX.entitlements; sourceTree = "<group>"; };
-		12EE638E2DFE7DD4002EBE1E /* OSX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSX.swift; sourceTree = "<group>"; };
 		12EE63902DFE7DD4002EBE1E /* SliP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliP.swift; sourceTree = "<group>"; };
 		12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPBuiltins.swift; sourceTree = "<group>"; };
 		12EE64372DFE7F99002EBE1E /* CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CLI.cpp; sourceTree = "<group>"; };
@@ -173,12 +112,6 @@
 		12EE64782DFE85AF002EBE1E /* SwiftUI-CPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwiftUI-CPPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12FBD5402E2D028500B178F7 /* Read.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Read.cpp; sourceTree = "<group>"; };
-		12CAFE502E7A050100E28A33 /* Sample.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Sample.slip; sourceTree = "<group>"; };
-		12CAFE302E7A030100E28A33 /* BH.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BH.mm; sourceTree = "<group>"; };
-		12CAFE312E7A030100E28A33 /* BH.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BH.h; sourceTree = "<group>"; };
-		12CAFE472E7A040100E28A33 /* SliPEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPEngine.swift; sourceTree = "<group>"; };
-		12CAFE102E7A010100E28A33 /* Embed.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Embed.cpp; sourceTree = "<group>"; };
-		12CAFE122E7A010100E28A33 /* Embed.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Embed.hpp; sourceTree = "<group>"; };
 		12FBD5432E2D033E00B178F7 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
 		12FBD5462E2D071200B178F7 /* SliP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SliP.cpp; sourceTree = "<group>"; };
 		12FBD54B2E2DCAEC00B178F7 /* SliP.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SliP.hpp; sourceTree = "<group>"; };
@@ -255,16 +188,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		12CAFE322E7A030100E28A33 /* Bridge */ = {
-			isa = PBXGroup;
-			children = (
-				12CAFE312E7A030100E28A33 /* BH.h */,
-				12CAFE302E7A030100E28A33 /* BH.mm */,
-				12CAFE472E7A040100E28A33 /* SliPEngine.swift */,
-			);
-			path = Bridge;
-			sourceTree = "<group>";
-		};
 		1280CD342E3B93910024B733 /* C++Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -275,6 +198,16 @@
 				1280CD332E3B93910024B733 /* TEST.cpp */,
 			);
 			path = "C++Test";
+			sourceTree = "<group>";
+		};
+		12CAFE322E7A030100E28A33 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				12CAFE312E7A030100E28A33 /* BH.h */,
+				12CAFE302E7A030100E28A33 /* BH.mm */,
+				12CAFE472E7A040100E28A33 /* SliPEngine.swift */,
+			);
+			path = Bridge;
 			sourceTree = "<group>";
 		};
 		12D9D6F22E00A186006EAD54 /* JP_CPP */ = {
@@ -315,46 +248,10 @@
 			path = JP/JP_Swift;
 			sourceTree = SOURCE_ROOT;
 		};
-		12EE634C2DFE7DD4002EBE1E /* CUI */ = {
-			isa = PBXGroup;
-			children = (
-				12EE634B2DFE7DD4002EBE1E /* main.swift */,
-			);
-			path = CUI;
-			sourceTree = "<group>";
-		};
-		12EE63882DFE7DD4002EBE1E /* macOS */ = {
-			isa = PBXGroup;
-			children = (
-				12CAFE502E7A050100E28A33 /* Sample.slip */,
-				12EE63822DFE7DD4002EBE1E /* Assets.xcassets */,
-				12EE63832DFE7DD4002EBE1E /* Info.plist */,
-				12EE63842DFE7DD4002EBE1E /* macOS.entitlements */,
-				12EE63852DFE7DD4002EBE1E /* macOS.swift */,
-				12EE63872DFE7DD4002EBE1E /* Main.storyboard */,
-			);
-			path = macOS;
-			sourceTree = "<group>";
-		};
-		12EE638F2DFE7DD4002EBE1E /* OSX */ = {
-			isa = PBXGroup;
-			children = (
-				12EE63892DFE7DD4002EBE1E /* Assets.xcassets */,
-				12EE638A2DFE7DD4002EBE1E /* Info.plist */,
-				12EE638C2DFE7DD4002EBE1E /* Main.storyboard */,
-				12EE638D2DFE7DD4002EBE1E /* OSX.entitlements */,
-				12EE638E2DFE7DD4002EBE1E /* OSX.swift */,
-			);
-			path = OSX;
-			sourceTree = "<group>";
-		};
 		12EE63922DFE7DD4002EBE1E /* Swift */ = {
 			isa = PBXGroup;
 			children = (
 				12D9D7032E00A1A4006EAD54 /* JP_Swift */,
-				12EE634C2DFE7DD4002EBE1E /* CUI */,
-				12EE63882DFE7DD4002EBE1E /* macOS */,
-				12EE638F2DFE7DD4002EBE1E /* OSX */,
 				12EE63902DFE7DD4002EBE1E /* SliP.swift */,
 				12EE63912DFE7DD4002EBE1E /* SliPBuiltins.swift */,
 			);
@@ -428,7 +325,7 @@
 			productReference = 1289353D2E19002C0036A00B /* SliPTests */;
 			productType = "com.apple.product-type.tool";
 		};
-				12EE62B72DFE71BB002EBE1E /* CLI */ = {
+		12EE62B72DFE71BB002EBE1E /* CLI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 12EE62BC2DFE71BB002EBE1E /* Build configuration list for PBXNativeTarget "CLI" */;
 			buildPhases = (
@@ -515,7 +412,7 @@
 			productReference = 12EE64822DFE85AF002EBE1E /* SwiftUI-CPPUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-				/* End PBXNativeTarget section */
+/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5EF4D18920E005F600AD8172 /* Project object */ = {
@@ -527,9 +424,6 @@
 				ORGANIZATIONNAME = "Satoru Ogura";
 				TargetAttributes = {
 					1289353C2E19002C0036A00B = {
-						CreatedOnToolsVersion = 16.2;
-					};
-					12ABD0192DF8FAF800E20C13 = {
 						CreatedOnToolsVersion = 16.2;
 					};
 					12EE62B72DFE71BB002EBE1E = {
@@ -546,13 +440,6 @@
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = 12EE64642DFE85AE002EBE1E;
 					};
-					5EEE09402223C957001CFDEA = {
-						CreatedOnToolsVersion = 10.1;
-						LastSwiftMigration = 1620;
-					};
-					5EF4D1B420E0071400AD8172 = {
-						CreatedOnToolsVersion = 10.0;
-					};
 				};
 			};
 			buildConfigurationList = 5EF4D18C20E005F600AD8172 /* Build configuration list for PBXProject "SliP" */;
@@ -561,6 +448,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 5EF4D18820E005F600AD8172;
 			preferredProjectObjectVersion = 77;
@@ -673,25 +561,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		12EE63872DFE7DD4002EBE1E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				12EE63862DFE7DD4002EBE1E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		12EE638C2DFE7DD4002EBE1E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				12EE638B2DFE7DD4002EBE1E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		128935422E19002C0036A00B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -767,6 +636,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SwiftUI-CPP/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = SliP;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Satoru Ogura. All rights reserved.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -777,7 +647,6 @@
 				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
-				INFOPLIST_KEY_CFBundleDisplayName = SliP;
 				PRODUCT_NAME = SliP;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -802,6 +671,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SwiftUI-CPP/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = SliP;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Satoru Ogura. All rights reserved.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -812,7 +682,6 @@
 				MARKETING_VERSION = 2.1.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = tokyo.828.SliP;
-				INFOPLIST_KEY_CFBundleDisplayName = SliP;
 				PRODUCT_NAME = SliP;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = Bridge/BH.h;
