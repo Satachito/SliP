@@ -23,11 +23,14 @@ final class SwiftUI_CPPUITestsLaunchTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
+        app.typeKey("n", modifierFlags: .command)
+        let window = app.windows.firstMatch
+        XCTAssertTrue(window.waitForExistence(timeout: 5))
 
-        let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
+        app.typeKey(.return, modifierFlags: .command)
+
+        let attachment = XCTAttachment(screenshot: window.screenshot())
+        attachment.name = "SliP Calculator"
         attachment.lifetime = .keepAlways
         add(attachment)
     }
