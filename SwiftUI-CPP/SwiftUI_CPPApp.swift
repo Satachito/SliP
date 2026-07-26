@@ -13,7 +13,25 @@ struct SwiftUI_CPPApp: App {
 
 	init() { Preference.apply() }
 
+		@SceneBuilder
 	var body: some Scene {
+		#if os(iOS)
+		#if UI_TESTING
+		WindowGroup {
+			ScreenshotContentView()
+		}
+		.commands {
+			SliPCommands()
+		}
+		#else
+		DocumentGroup( newDocument: SwiftUI_CPPDocument() ) { file in
+			ContentView( document: file.$document )
+		}
+		.commands {
+			SliPCommands()
+		}
+		#endif
+		#else
 		DocumentGroup( newDocument: SwiftUI_CPPDocument() ) { file in
 			ContentView( document: file.$document )
 		}
@@ -21,7 +39,6 @@ struct SwiftUI_CPPApp: App {
 			SliPCommands()
 		}
 
-		#if os(macOS)
 		Settings { SettingsView() }
 
 		Window( "SliP Help", id: "help" ) { HelpView() }
@@ -32,6 +49,16 @@ struct SwiftUI_CPPApp: App {
 		#endif
 	}
 }
+
+#if os(iOS)
+private struct ScreenshotContentView: View {
+	@State private var document = SwiftUI_CPPDocument()
+
+	var body: some View {
+		ContentView( document: $document )
+	}
+}
+#endif
 
 private struct RunActionKey: FocusedValueKey {
 	typealias Value = () -> Void

@@ -21,8 +21,12 @@ final class SwiftUI_CPPUITestsLaunchTests: XCTestCase {
     @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
+        #if os(iOS)
+        app.launchArguments.append( "--ui-testing" )
+        #endif
         app.launch()
 
+        #if os(macOS)
         app.typeKey("n", modifierFlags: .command)
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 5))
@@ -30,6 +34,15 @@ final class SwiftUI_CPPUITestsLaunchTests: XCTestCase {
         app.typeKey(.return, modifierFlags: .command)
 
         let attachment = XCTAttachment(screenshot: window.screenshot())
+        #else
+        let run = app.buttons.matching(
+            NSPredicate(format: "label IN %@", [ "Run", "実行" ])
+        ).firstMatch
+        XCTAssertTrue(run.waitForExistence(timeout: 5))
+        run.tap()
+
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        #endif
         attachment.name = "SliP Calculator"
         attachment.lifetime = .keepAlways
         add(attachment)
