@@ -1,8 +1,26 @@
 #include "SliP.hpp"
 
+#ifndef	SLIP_NO_THREADS
 #include	<future>
+#endif
+
+#ifdef	ESP_PLATFORM
+#include	"esp_random.h"
+#endif
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
+
+//	std::random_device has no entropy source on a bare chip: libstdc++ reads
+//	/dev/urandom, which ESP-IDF does not provide, and throws when it cannot.
+//	The hardware RNG is the seed there.
+static uint64_t
+RandomSeed() {
+#ifdef	ESP_PLATFORM
+	return ( (uint64_t)esp_random() << 32 ) | esp_random();
+#else
+	return random_device{}();
+#endif
+}
 
 int
 RoundPrecision = 15;
@@ -182,7 +200,7 @@ Build() {
 	);
 	Register< Primitive >(
 		[]( SP< Context > C ) -> SP< SliP > {
-			static mt19937_64 RANGE{ random_device{}() };
+			static mt19937_64 RANGE{ RandomSeed() };
 			uniform_real_distribution<double> dist( 0, 1 );
 			double $ = dist( RANGE );
 			return MS< Float >( $ );
@@ -224,10 +242,9 @@ Build() {
 		[]( SP< Context > C, SP< SliP > _ ) -> SP< SliP > {
 			auto const&	Ss = Z( "Illegal operand type: " + _->REPR(), Cast< List >( _ ) )->$;
 			V< SP< SliP > >	$( Ss.size() );
-#if defined( __EMSCRIPTEN__ ) && !defined( __EMSCRIPTEN_PTHREADS__ )
-			//	The browser build has no threads: SharedArrayBuffer needs COOP /
-			//	COEP headers that the static Pages host cannot send, and the
-			//	graphics operators reach the DOM, which is main-thread only.
+#ifdef	SLIP_NO_THREADS
+			//	Sequential on hosts without usable threads — see SLIP_NO_THREADS
+			//	in SliP.hpp for which those are and why.
 			for( size_t I = 0; I < Ss.size(); I++ ) $[ I ] = Eval( MS< Context >( C ), Ss[ I ] );
 #else
 			auto	seed = StackCopy();
@@ -754,7 +771,7 @@ Build() {
 	RegisterFloatPairPrefix(
 		"random"
 	,	[]( double _0, double _1 ) {
-			static mt19937_64 RANGE{ random_device{}() };
+			static mt19937_64 RANGE{ RandomSeed() };
 			uniform_real_distribution<double> dist( _0, _1 );
 			return dist( RANGE );
 		}

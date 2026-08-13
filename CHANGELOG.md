@@ -9,6 +9,31 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
+## Unreleased
+
+### Fixed
+
+- **Integers above 2³¹-1 became floats on 32-bit targets.** The reader parsed
+  integer literals with `stol`, which returns a `long` — 64 bits on macOS and
+  Linux, but 32 bits wherever the target is ILP32. `stol` threw `out_of_range`
+  there, and the fallback that exists for genuine overflow turned the literal
+  into a `Float`: `9223372036854775807` read back as `9223372036854779904`.
+  `Bits` has always held an `int64_t`, so the reader now uses `stoll`. On LP64
+  the two are the same function and nothing changes.
+
+  **This affected the WASM build, and so [slip.828.tokyo](https://slip.828.tokyo)
+  — wasm32 is ILP32.** It was found by running the conformance suite on an
+  ESP32, which is the first host to run the suite on a 32-bit target; `run.sh`
+  only ever exercised the native CLI. The web build needs a redeploy to pick
+  this up.
+
+### Added
+
+- **[`ESP32/`](ESP32) — the interpreter as serial-REPL firmware for an ESP32
+  dev board.** `C++/` is compiled in unchanged; two places in it now name the
+  chip, at `SLIP_NO_THREADS` and `RandomSeed`. See
+  [ESP32/README.md](ESP32/README.md).
+
 ## 2.1.1 — 2026-07-25
 
 ### Fixed

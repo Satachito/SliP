@@ -222,7 +222,13 @@ Read( iReader& R, char32_t terminator ) {
 			}
 			if( dotRead ) return MS<Float >( stod( string_Us( $ ) ) );
 			try {
-				return MS<Bits	>( stol( string_Us( $ ) ) );
+				//	stoll, not stol: Bits holds an int64_t, and long is only
+				//	32 bits wherever the target is ILP32 — the ESP32, and wasm32
+				//	too.  There stol threw out_of_range for every integer above
+				//	2^31-1 and the catch below quietly turned it into a Float,
+				//	so 9223372036854775807 read back as 9223372036854779904.
+				//	On LP64 the two are the same function.
+				return MS<Bits	>( stoll( string_Us( $ ) ) );
 			} catch( out_of_range const& ) {
 				return MS<Float >( stod( string_Us( $ ) ) );
 			}

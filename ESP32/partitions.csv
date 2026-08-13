@@ -1,0 +1,11 @@
+# The image is 690 KB, so it would in fact fit the 1 MB the default single-factory
+# layout gives an app — with about a third to spare.  This is headroom, not need:
+# the board has 4 MB, this firmware will never do OTA, and a third of a megabyte
+# is not much to leave for a language that is still growing.  Drop back to the
+# default table by deleting the two PARTITION_TABLE_CUSTOM lines in
+# sdkconfig.defaults if you would rather have the flash.
+#
+# Name,     Type, SubType, Offset,   Size
+nvs,        data, nvs,     0x9000,   0x6000
+phy_init,   data, phy,     0xf000,   0x1000
+factory,    app,  factory, 0x10000,  0x300000

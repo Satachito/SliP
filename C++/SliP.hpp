@@ -2,6 +2,23 @@
 
 #include	<charconv>
 
+//	Hosts that cannot run ∥ on real threads, and must take the sequential path
+//	that produces the same value:
+//
+//	  the browser — SharedArrayBuffer needs COOP / COEP headers that the static
+//	  Pages host cannot send, and the graphics operators reach the DOM, which is
+//	  main-thread only;
+//
+//	  ESP32 — std::async threads get the FreeRTOS pthread default stack, far
+//	  too small for a recursive evaluator, and the chip has two cores anyway.
+//
+//	Define SLIP_NO_THREADS to force it on any other host.
+#if !defined( SLIP_NO_THREADS )
+	#if defined( ESP_PLATFORM ) || ( defined( __EMSCRIPTEN__ ) && !defined( __EMSCRIPTEN_PTHREADS__ ) )
+		#define	SLIP_NO_THREADS	1
+	#endif
+#endif
+
 //	Version of the language as implemented by C++/, reported by `slip -v` and by
 //	the WASM build.  See CHANGELOG.md.
 inline constexpr auto

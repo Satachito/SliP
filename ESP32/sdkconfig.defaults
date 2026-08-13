@@ -1,0 +1,28 @@
+#	Freenove ESP32-WROOM ( ESP32-WROOM-32E, 4 MB flash, no PSRAM ).
+CONFIG_IDF_TARGET="esp32"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+
+#	Not optional.  The interpreter reports every error by throwing, and dispatches
+#	on type through dynamic_pointer_cast; without these two the build does not
+#	compile, let alone run.
+CONFIG_COMPILER_CXX_EXCEPTIONS=y
+CONFIG_COMPILER_CXX_RTTI=y
+
+#	-Os.  Flash is the binding constraint here, not speed: a REPL waiting on a
+#	115200 baud line is not short of cycles.
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+#	3 MB app partition, for headroom rather than need — see partitions.csv.
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
+CONFIG_ESP_CONSOLE_UART_BAUDRATE=115200
+
+#	The REPL task owns core 1 for as long as an evaluation takes, so core 1's idle
+#	task cannot be a watchdog deadline.  Core 0 keeps both its idle task and its
+#	watchdog, so a hang in the system side is still caught.
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU1=n
+
+#	app_main only spawns the REPL task; the REPL's own stack is set in main.cpp.
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=4096
