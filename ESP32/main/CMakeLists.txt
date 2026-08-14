@@ -5,7 +5,8 @@
 #	browser and the Mac app cannot drift apart; a serial line wants text, so
 #	main.cpp calls Read / Eval the way CLI.cpp does.
 #
-#	"compat" comes first on the include path on purpose — see compat/stdckdint.h.
+#	"../../compat" and "compat" come first on the include path on purpose — see the
+#	headers in them.
 
 idf_component_register(
 	SRCS
@@ -15,6 +16,7 @@ idf_component_register(
 		"../../C++/Eval.cpp"
 		"../../C++/json.cpp"
 	INCLUDE_DIRS
+		"../../compat"		#	see compat/stdckdint.h — must come first
 		"compat"
 		"../../C++"
 	REQUIRES
