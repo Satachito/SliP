@@ -34,6 +34,17 @@ where they disagree, `C++/` is correct.
   chip, at `SLIP_NO_THREADS` and `RandomSeed`. See
   [ESP32/README.md](ESP32/README.md).
 
+- **[`Android/`](Android) — the app on Android.** `C++/` is compiled through the
+  NDK and reached over JNI; the screen follows `SwiftUI-CPP/ContentView.swift`.
+  Strings cross the JNI boundary as UTF-8 bytes rather than as `jstring`,
+  because JNI's modified UTF-8 would corrupt `𝑒` (U+1D452). See
+  [Android/README.md](Android/README.md).
+
+- **[`compat/stdckdint.h`](compat/stdckdint.h)** — shared by the ESP32 and
+  Android builds, which both compile `JP.h` with a toolchain whose
+  `<stdckdint.h>` is missing or hides its macros from C++. It used to live under
+  `ESP32/`.
+
 ## 2.1.1 — 2026-07-25
 
 ### Fixed

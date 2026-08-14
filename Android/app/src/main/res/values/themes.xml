@@ -1,0 +1,5 @@
+<resources>
+	<!-- Compose paints the UI; this only has to exist for the manifest, and
+	     must not draw an action bar over it. -->
+	<style name="Theme.SliP" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

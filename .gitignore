@@ -20,3 +20,11 @@ ESP32/sdkconfig
 ESP32/sdkconfig.old
 ESP32/dependencies.lock
 ESP32/managed_components/
+
+#	Android: Gradle output, and the file that points at whoever's SDK.
+Android/.gradle/
+Android/local.properties
+Android/app/.cxx/
+Android/keystore.properties
+*.jks
+*.keystore
