@@ -117,19 +117,21 @@ Also there, and worth knowing about:
 - **`CONFIG_COMPILER_OPTIMIZATION_SIZE=y`** — flash is the binding constraint,
   not speed. A REPL waiting on a 115200 baud line is not short of cycles.
 
-Two headers in `main/compat/` exist to get this codebase past picolibc, and each
-explains itself at the top:
+Two headers in [`compat/`](../compat), shared with the RP2350, Android and
+Windows builds, exist to get this codebase past a C library that gets in its
+way. Each explains itself at the top:
 
 - **`stdckdint.h`** shadows the toolchain's C23 header, whose `ckd_*` macros are
   guarded on `__STDC_VERSION__` and so declare nothing when included from C++.
   `JP.h` reaches for it on every host that is not Apple.
-- **`undef-picolibc-ctype.h`** is force-included ahead of every translation unit.
+- **`undef-libc-ctype.h`** is force-included ahead of every translation unit.
   picolibc's `<ctype.h>` defines eight single-letter macros — `_U _L _N _S _P _C
   _X _B` — and only in C++, "to build libstdc++". They collide with `JP.h`'s
   error helper `_X` and with the column index `_C` in `SliP.cpp`'s matrix
   comparison. They cannot simply be undefined: `bits/ctype_base.h` is a
   libstdc++ *header* that bakes them into the ctype masks, so `<locale>` has to
-  be parsed first. That ordering is the whole content of the file.
+  be parsed first. That ordering is the whole content of the file, and newlib on
+  the RP2350 needs exactly the same treatment.
 
 ## What it costs on the chip
 
@@ -157,13 +159,13 @@ the 248 KB has already paid for.
 
 ## Verified on hardware
 
-`conformance.py` drives the board over the serial line and runs the whole
-[`conformance/`](../conformance) suite on it — each case pasted in programming
-mode as one `:{ … :}` block, the printed values compared against the `.out` the
-desktop interpreter is held to:
+[`conformance/board.py`](../conformance/board.py) drives the board over the
+serial line and runs the whole [`conformance/`](../conformance) suite on it —
+each case pasted in programming mode as one `:{ … :}` block, the printed values
+compared against the `.out` the desktop interpreter is held to:
 
 ```sh
-python ESP32/conformance.py
+python3 conformance/board.py /dev/cu.usbserial-3110
 ```
 
 ```
@@ -179,7 +181,7 @@ python ESP32/conformance.py
   ok    undefined-name.slip  ('Undefined name: nosuchname')
   ok    unopened-paren.slip  ('Detect unopened close parenthesis: ]')
 
-board conformance: 11 passed, 0 failed
+/dev/cu.usbserial-3110: 11 passed, 0 failed
 ```
 
 Error messages are compared without the `file:line:` prefix, which a one-line
@@ -191,5 +193,5 @@ stripping described above, and `stol` in `Read.cpp`, which silently turned every
 integer over 2³¹-1 into a float on this 32-bit target. That second one was never
 an ESP32 bug — see the changelog.
 
-The port needs a board on `/dev/cu.usbserial-*`; edit `PORT` at the top of
-`conformance.py` if yours enumerates differently.
+The same script answers for the [RP2350 port](../RP2350/README.md); nothing in
+it knows which chip is on the other end.

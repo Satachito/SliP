@@ -1,27 +1,40 @@
-#	Run conformance/ on the board itself, over the serial line.
+#	Run this suite on a board, over its serial line.
+#
+#		python3 conformance/board.py /dev/cu.usbserial-3110    # ESP32
+#		python3 conformance/board.py /dev/cu.usbmodem31201     # RP2350
 #
 #	Each case is fed in programming mode as one :{ … :} block, exactly as a person
 #	would paste it, and the values the board prints are compared with the .out the
-#	desktop interpreter is held to.
-#	Needs pyserial and a board running this firmware.  ESP-IDF's own Python
-#	environment has pyserial already:
+#	desktop interpreter is held to.  Any host with the REPL in ESP32/ or RP2350/
+#	answers this; nothing in here knows which chip is on the other end.
+#	Needs pyserial.  ESP-IDF's own Python environment has it already:
 #
-#		~/.espressif/python_env/idf5.5_py3.9_env/bin/python ESP32/conformance.py
+#		~/.espressif/python_env/idf5.5_py3.9_env/bin/python conformance/board.py PORT
 import glob, os, re, sys, time, serial
+#
+#tNot named serial.py: that shadows pyserial itself, and `import serial` then
+#tfinds this file.
 
-PORT   = "/dev/cu.usbserial-3110"
-ROOT   = os.path.join( os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) ), "conformance" )
+if len( sys.argv ) < 2:
+	raise SystemExit( "usage: board.py /dev/cu.something" )
+PORT   = sys.argv[ 1 ]
+ROOT   = os.path.dirname( os.path.abspath( __file__ ) )
 #	Matched against bytes, and decoded only once at the end: a serial read can
 #	split a multi-byte character across two chunks, and decoding per chunk turned
 #	θ into two replacement characters.
 PROMPT = re.compile( rb"(?:^|\n)(?:> |>> |\.\. )$" )
 
-def reset( s ):
-	s.dtr = False; s.rts = True
-	time.sleep( 0.1 )
-	s.rts = False
-	time.sleep( 0.8 )
+#	No line-toggling reset here.  Pulsing DTR/RTS drives the ESP32's auto-reset
+#	circuit, but on a USB CDC device — the RP2350 — DTR is how the firmware knows
+#	a host is listening: drop it and pico-sdk throws the output away, no prompt
+#	comes back, and every line that follows waits out its timeout.  Each case
+#	sends :reset anyway, which is what actually has to be cleared.
+def wake( s ):
+	s.dtr = True
+	time.sleep( 0.4 )
 	s.reset_input_buffer()
+	s.write( b"\r" )
+	s.flush()
 
 def until_prompt( s, limit = 20.0 ):
 	out = b""
@@ -41,7 +54,7 @@ def send( s, line ):
 	return until_prompt( s )
 
 with serial.Serial( PORT, 115200, timeout = 0.1 ) as s:
-	reset( s )
+	wake( s )
 	until_prompt( s )
 
 	passed = failed = 0
@@ -92,5 +105,5 @@ with serial.Serial( PORT, 115200, timeout = 0.1 ) as s:
 			failed += 1
 			print( f"  FAIL  {name}: got {errors!r}  want [{want!r}]" )
 
-	print( f"\nboard conformance: {passed} passed, {failed} failed" )
+	print( f"\n{PORT}: {passed} passed, {failed} failed" )
 	sys.exit( 1 if failed else 0 )

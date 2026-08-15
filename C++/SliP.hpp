@@ -10,11 +10,15 @@
 //	  main-thread only;
 //
 //	  ESP32 — std::async threads get the FreeRTOS pthread default stack, far
-//	  too small for a recursive evaluator, and the chip has two cores anyway.
+//	  too small for a recursive evaluator, and the chip has two cores anyway;
+//
+//	  RP2350 — bare metal, with no scheduler to hand a thread to at all.
 //
 //	Define SLIP_NO_THREADS to force it on any other host.
 #if !defined( SLIP_NO_THREADS )
-	#if defined( ESP_PLATFORM ) || ( defined( __EMSCRIPTEN__ ) && !defined( __EMSCRIPTEN_PTHREADS__ ) )
+	#if defined( ESP_PLATFORM ) \
+	||	defined( PICO_ON_DEVICE ) \
+	||	( defined( __EMSCRIPTEN__ ) && !defined( __EMSCRIPTEN_PTHREADS__ ) )
 		#define	SLIP_NO_THREADS	1
 	#endif
 #endif

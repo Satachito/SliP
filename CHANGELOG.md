@@ -40,6 +40,22 @@ where they disagree, `C++/` is correct.
   because JNI's modified UTF-8 would corrupt `𝑒` (U+1D452). See
   [Android/README.md](Android/README.md).
 
+- **[`RP2350/`](RP2350) — firmware for a Waveshare RP2350-Touch-LCD-2.8:** a
+  calculator on the 2.8-inch panel with a touch keypad, and the same serial REPL
+  the ESP32 has, both feeding one session. The first host where SliP runs with
+  nothing attached to it.
+
+  `SLIP_NO_THREADS` and `RandomSeed` name the chip alongside the ESP32; beyond
+  that it needed one thing the ESP32 did not, which is that `theStack` cannot be
+  `thread_local` where there is no threading library — on ARM that is a call to
+  `__aeabi_read_tp`, and nothing defines it. The glyphs are generated into
+  `RP2350/font.h`, because no stock font has this alphabet and no single face on
+  a Mac has all of it. See [RP2350/README.md](RP2350/README.md).
+
+- **[`conformance/board.py`](conformance/board.py)** — the serial harness, which
+  used to live under `ESP32/`. It takes the port as an argument and knows
+  nothing about which chip answers.
+
 - **[`Windows/`](Windows) — the app on Windows**, cross-compiled from macOS with
   mingw-w64 into one statically linked `SliP.exe`. See
   [Windows/README.md](Windows/README.md).

@@ -31,3 +31,6 @@ Android/keystore.properties
 
 #	Windows: cross-compile output.
 Windows/build/
+
+#	RP2350: CMake output.
+RP2350/build/

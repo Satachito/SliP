@@ -4,19 +4,23 @@
 #include	<future>
 #endif
 
-#ifdef	ESP_PLATFORM
+#if defined( ESP_PLATFORM )
 #include	"esp_random.h"
+#elif defined( PICO_ON_DEVICE )
+#include	"pico/rand.h"
 #endif
 
 extern SP< SliP > Eval( SP< Context >, SP< SliP > );
 
 //	std::random_device has no entropy source on a bare chip: libstdc++ reads
-//	/dev/urandom, which ESP-IDF does not provide, and throws when it cannot.
-//	The hardware RNG is the seed there.
+//	/dev/urandom, which neither ESP-IDF nor a bare-metal RP2350 provides, and
+//	throws when it cannot.  Both chips have a hardware RNG; that is the seed.
 static uint64_t
 RandomSeed() {
-#ifdef	ESP_PLATFORM
+#if defined( ESP_PLATFORM )
 	return ( (uint64_t)esp_random() << 32 ) | esp_random();
+#elif defined( PICO_ON_DEVICE )
+	return get_rand_64();
 #else
 	return random_device{}();
 #endif
@@ -30,7 +34,17 @@ RoundPrecision = 15;
 //	container intact while destroying the invariant that Top() is *my*
 //	argument.  ∥ seeds a branch with a copy of the spawning thread's stack, so
 //	@ inside a branch still reads the argument of the enclosing function.
-thread_local V< SP< SliP > >
+//
+//	Where there are no threads there is one stack, and saying so is not an
+//	optimisation: thread_local on bare metal wants __aeabi_read_tp, which nothing
+//	provides when the target has no threading library to provide it.
+#ifdef	SLIP_NO_THREADS
+	#define	SLIP_PER_THREAD
+#else
+	#define	SLIP_PER_THREAD	thread_local
+#endif
+
+SLIP_PER_THREAD V< SP< SliP > >
 theStack;
 
 void

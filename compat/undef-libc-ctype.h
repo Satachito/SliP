@@ -2,12 +2,19 @@
 
 //	Force-included ahead of every translation unit in this component.
 //
-//	picolibc's <ctype.h> defines eight single-letter macros — _U _L _N _S _P _C
-//	_X _B — and only when compiling C++, with the comment "we need these legacy
-//	symbols to build libstdc++".  They collide with two ordinary names in this
-//	codebase: JP.h's error-checking helper _X, and the column index _C in
-//	SliP.cpp's matrix comparison.  Neither is a reserved identifier at namespace
-//	scope; the collision belongs to picolibc, not to them.
+//	Three C libraries so far define the same eight single-letter macros in
+//	<ctype.h> — _U _L _N _S _P _C _X _B — and every one of them collides with
+//	ordinary names in this codebase: JP.h's error-checking helpers _X and _N, and
+//	the column index _C in SliP.cpp's matrix comparison.  None of those is a
+//	reserved identifier at namespace scope; the collision belongs to the library.
+//
+//	  picolibc ( ESP32 ) defines them only when compiling C++, with the comment
+//	  "we need these legacy symbols to build libstdc++";
+//
+//	  newlib ( RP2350 ) defines them unconditionally, C and C++ alike;
+//
+//	  mingw needs no help here, but its <stdckdint.h> does — see the header
+//	  beside this one.
 //
 //	They cannot simply be undefined, and the order below is the whole point.
 //	picolibc says the macros exist "to build libstdc++", which reads as though
@@ -16,7 +23,8 @@
 //
 //	    static const mask alnum = _U | _L | _N;
 //
-//	and that header is reached from <iostream>, which JP.h includes.  So the
+//	and that header is reached from <iostream>, which JP.h includes.  Both the
+//	picolibc and the newlib flavours of it do this.  So the
 //	undefs have to come after it has been parsed, not before.  <locale> is what
 //	pulls it in ( through bits/locale_facets.h ), and it is named here for that
 //	reason alone.  Once parsed, the masks are constants and the macros are spent:

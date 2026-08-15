@@ -5,8 +5,8 @@
 #	browser and the Mac app cannot drift apart; a serial line wants text, so
 #	main.cpp calls Read / Eval the way CLI.cpp does.
 #
-#	"../../compat" and "compat" come first on the include path on purpose — see the
-#	headers in them.
+#	"../../compat" comes first on the include path on purpose — see the headers
+#	in it.
 
 idf_component_register(
 	SRCS
@@ -17,7 +17,6 @@ idf_component_register(
 		"../../C++/json.cpp"
 	INCLUDE_DIRS
 		"../../compat"		#	see compat/stdckdint.h — must come first
-		"compat"
 		"../../C++"
 	REQUIRES
 		driver			#	uart
@@ -33,5 +32,5 @@ target_compile_options( ${COMPONENT_LIB} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=
 #	names.  The header explains which, and why undefining them is safe.
 target_compile_options(
 	${COMPONENT_LIB} PRIVATE
-	$<$<COMPILE_LANGUAGE:CXX>:-include${CMAKE_CURRENT_SOURCE_DIR}/compat/undef-picolibc-ctype.h>
+	$<$<COMPILE_LANGUAGE:CXX>:-include${CMAKE_CURRENT_SOURCE_DIR}/../../compat/undef-libc-ctype.h>
 )
