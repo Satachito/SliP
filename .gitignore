@@ -28,3 +28,6 @@ Android/app/.cxx/
 Android/keystore.properties
 *.jks
 *.keystore
+
+#	Windows: cross-compile output.
+Windows/build/

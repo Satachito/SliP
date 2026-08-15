@@ -45,6 +45,7 @@ Errors are reported as `file:line: message`, with exit status 1.
 | [Web/](Web) | Calculator, tutorial, samples, and graphics demos |
 | [SwiftUI-CPP/](SwiftUI-CPP) | The macOS app, shipped as `SliP.app` — see [docs/MACOS_APP.md](docs/MACOS_APP.md) |
 | [Android/](Android) | The Android app — see [Android/README.md](Android/README.md) |
+| [Windows/](Windows) | The Windows app, cross-compiled with mingw — see [Windows/README.md](Windows/README.md) |
 | [ESP32/](ESP32) | Serial REPL firmware for an ESP32 dev board — see [ESP32/README.md](ESP32/README.md) |
 | [Bridge/](Bridge) | Objective-C++ and Swift sides of the embedding bridge |
 | [Swift/](Swift) | The original Swift interpreter. Nothing builds it; kept for history |
@@ -52,8 +53,9 @@ Errors are reported as `file:line: message`, with exit status 1.
 | [JP/](JP) | Shared utility submodule ([Satachito/JP](https://github.com/Satachito/JP)) used by the C++ core and other projects |
 
 `C++/` defines the language, and everything shipped runs it: the CLI, the web
-build, the npm package, the Mac and Android apps and the ESP32 firmware. `Swift/` and `JS/`
-are earlier interpreters of an older dialect, kept as history.
+build, the npm package, the Mac, Android and Windows apps and the ESP32
+firmware. `Swift/` and `JS/` are earlier interpreters of an older dialect, kept
+as history.
 
 ## Build & test
 

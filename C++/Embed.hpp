@@ -48,3 +48,22 @@ void			DeleteEmbedSession( EmbedSession* );
 string			SessionREPL( EmbedSession*, string const& );
 string			SessionSugared( EmbedSession*, string const& );
 void			ResetEmbedSession( EmbedSession* );
+
+//	The JSON above exists because the hosts that read it are on the other side of
+//	a language boundary — JavaScript, Swift, Kotlin.  A host written in C++ has no
+//	such boundary, and encoding a list only to parse it straight back is work for
+//	nobody.  SessionRun is that same list, before it is written out; REPL and
+//	Sugared are this with json_escape applied.
+struct
+EmbedEntry {
+	string	source;		//	the form as the reader understood it, when it got that far
+	string	value;		//	its printed value, when it evaluated
+	string	error;		//	why it did not, when it did not
+	bool	failed = false;
+};
+
+//	calculator: one entry per non-empty line, read as the contents of a sentence,
+//	and it does not stop — a typo on the first line must not hide the answer on
+//	the sixth.  Otherwise one entry per toplevel form, stopping at the first
+//	failure, because a later form usually depends on an earlier one.
+V< EmbedEntry >	SessionRun( EmbedSession*, string const& source, bool calculator );

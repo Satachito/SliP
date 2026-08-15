@@ -1,0 +1,11 @@
+/*	The console build needs the manifest too, and for one line of it:
+	activeCodePage = UTF-8.
+
+	Without it Windows hands main() its argv in the system ANSI code page, and
+	`slip -e '( 2 π )'` arrives as `( 2 p )` — best-fit conversion of a character
+	the code page has no room for.  The same setting makes the narrow file APIs
+	take UTF-8 paths, so a .slip file under a Japanese directory name opens.
+
+	Windows 10 1903 and later.  */
+
+1 24 "slip.manifest"

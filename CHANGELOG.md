@@ -40,9 +40,20 @@ where they disagree, `C++/` is correct.
   because JNI's modified UTF-8 would corrupt `𝑒` (U+1D452). See
   [Android/README.md](Android/README.md).
 
-- **[`compat/stdckdint.h`](compat/stdckdint.h)** — shared by the ESP32 and
-  Android builds, which both compile `JP.h` with a toolchain whose
-  `<stdckdint.h>` is missing or hides its macros from C++. It used to live under
+- **[`Windows/`](Windows) — the app on Windows**, cross-compiled from macOS with
+  mingw-w64 into one statically linked `SliP.exe`. See
+  [Windows/README.md](Windows/README.md).
+
+- **`SessionRun` in [`C++/Embed.hpp`](C++/Embed.hpp)** — the list of results
+  before it is written out as JSON. The JSON exists for hosts on the far side of
+  a language boundary; a host written in C++ was encoding a list only to parse it
+  straight back, or else writing the modes' semantics out again for itself.
+  `REPL` and `Sugared` are now this with `json_escape` applied, and their output
+  is unchanged byte for byte.
+
+- **[`compat/stdckdint.h`](compat/stdckdint.h)** — shared by the ESP32, Android
+  and Windows builds, whose toolchains all compile `JP.h` with a `<stdckdint.h>`
+  that is either missing or hides its macros from C++. It used to live under
   `ESP32/`.
 
 ## 2.1.1 — 2026-07-25
