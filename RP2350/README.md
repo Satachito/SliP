@@ -38,12 +38,25 @@ The panel is the calculator: tap keys to build a line, `⏎` to run it, `⌫` an
 green and errors in red, as the other hosts do.
 
 ```
-7  8  9  π  +
-4  5  6  𝑒  −
-1  2  3  ∞  ×
-0  .  (  )  ÷
-␣  ⌫  AC  ⏎
+7  8  9  π  +  ⌫
+4  5  6  𝑒  −  AC
+1  2  3  ∞  ×  M1
+0  .  (  )  ÷  M2
+'  =  @  :  ␣  ⏎
 ```
+
+A calculator on the left, the language along the bottom and down the right.
+`M1` and `M2` are not a memory register — they are two names, and the bottom row
+is what binds and uses one:
+
+```
+( ' M1 = ' ( @ × 2 ) )
+21 : M1                     → 42
+```
+
+Which is the whole of the language, on a keypad, with no keyboard anywhere near
+it. New names cannot be typed — there are no letters beyond `M1` and `M2` — and
+the operators that are not on the pad are still reachable over USB.
 
 Over USB it is the same REPL the [ESP32 port](../ESP32/README.md) has — same
 modes, same commands.
@@ -133,9 +146,9 @@ it knows which chip is on the other end.
 - **The frame goes out whole on every change**, over blocking SPI — about 20 ms
   a keystroke at 240×320. It is quick enough here and would not be on a bigger
   panel; DMA and partial updates are the answer when there is one.
-- **The operators particular to SliP are not on the pad.** It is a calculator
-  keypad, and 240 pixels has to choose between more keys and keys big enough to
-  hit. They are all still reachable over USB.
+- **Most of the operators are not on the pad**, nor are letters: 240 pixels has
+  to choose between more keys and keys big enough to hit, and 40 across is about
+  the floor. Everything is still reachable over USB.
 - No file system, no Wi-Fi, no GPIO operators.
 - Flashing this replaces whatever was on the board. Waveshare's factory demo was
   what it shipped with, and they publish it as a UF2 if you want it back.

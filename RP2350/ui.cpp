@@ -68,19 +68,33 @@ char const* const	KEY_AC	= "AC";
 //	"space" better than a glyph for it does.
 char const* const	KEY_SP	= "";
 
+//	@ is the argument, so it belongs with ' and = rather than with the digits.
+//	The grid is full at six columns, and a seventh would put the keys under 35
+//	pixels — so it goes in the bottom row, which is characters and actions
+//	already: ␣ inserts one too.
+char const* const	KEY_AT	= "@";
+char const* const	KEY_AP	= ":";		//	apply: `21 : M1` runs M1 with 21 on the stack
+
+constexpr auto	MAX_COLS = 6;
+
 struct Row {
 	int			n;
-	char const*	key[ 5 ];
+	char const*	key[ MAX_COLS ];
 };
 
-//	Five columns: digits, the constants, and the four operations down the right
-//	where a calculator keeps them.  The bottom row is four wider keys instead.
+//	Six by five.  A calculator on the left — digits where a calculator puts them,
+//	the four operations in a column — and the language along the bottom and down
+//	the right.
+//
+//	M1 and M2 are not a memory register: they are two names, and the bottom row
+//	is what binds and uses one.  `( 'M1 = 2π )` stores, `M1` recalls, `21 : M1`
+//	applies it.  A calculator's memory that happens to be the language's own.
 Row const PAD[ PAD_ROWS ] = {
-	{ 5, { "7", "8", "9", "π", "+" } },
-	{ 5, { "4", "5", "6", "𝑒", "-" } },
-	{ 5, { "1", "2", "3", "∞", "×" } },
-	{ 5, { "0", ".", "(", ")", "÷" } },
-	{ 4, { KEY_SP, KEY_DEL, KEY_AC, KEY_RUN } },
+	{ 6, { "7", "8", "9", "π", "+", KEY_DEL } },
+	{ 6, { "4", "5", "6", "𝑒", "-", KEY_AC  } },
+	{ 6, { "1", "2", "3", "∞", "×", "M1"    } },
+	{ 6, { "0", ".", "(", ")", "÷", "M2"    } },
+	{ 6, { "'", "=", KEY_AT, KEY_AP, KEY_SP, KEY_RUN } },
 };
 
 struct Entry {
@@ -164,7 +178,11 @@ DrawKey( int r, int c, bool down ) {
 	//	and that it worked was the compiler pooling two identical literals rather
 	//	than the test being right.
 	auto	edit	= label == KEY_DEL || label == KEY_AC || label == KEY_SP;
-	auto	blue	= c == 3 && r < 3;			//	π 𝑒 ∞
+	auto	blue	= !edit && !run && (
+						( c == 3 && r <  3 )	//	π 𝑒 ∞
+					||	( c == 5 && r >= 2 )	//	M1 M2
+					||	r == 4					//	' = @ :
+					);
 	auto	colour	= edit ? DIM : run ? FG : blue ? ACCENT : FG;
 
 	ScreenFill( x, y, w - 1, KEY_H - 1, back );
@@ -224,7 +242,7 @@ UIPoll( std::string& line ) {
 	int	x, y;
 	if( !TouchRead( x, y ) ) {
 		if( downKey >= 0 ) {
-			DrawKey( downKey / 5, downKey % 5, false );
+			DrawKey( downKey / MAX_COLS, downKey % MAX_COLS, false );
 			ScreenFlush();
 			downKey = -1;
 		}
@@ -238,7 +256,7 @@ UIPoll( std::string& line ) {
 	auto c = x / ( SCREEN_W / PAD[ r ].n );
 	if( c < 0 || c >= PAD[ r ].n ) return false;
 
-	auto key = r * 5 + c;
+	auto key = r * MAX_COLS + c;
 	if( key == downKey ) return false;			//	still held on the same key
 	downKey = key;
 	DrawKey( r, c, true );
