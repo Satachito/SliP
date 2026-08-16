@@ -106,42 +106,63 @@ std::vector< Entry >	log;
 std::string				editing;
 int						downKey = -1;
 
+//	How many display lines back from the newest the transcript is showing.  Zero
+//	is the bottom, which is where new output puts it.
+int						scroll = 0;
+
+//	Dragging the transcript scrolls it.  These hold where the finger went down.
+bool					dragging = false;
+int						dragY = 0, dragScroll = 0;
+
 void
 Append( std::string const& _, uint16_t colour ) {
 	log.push_back( { _, colour } );
 	if( log.size() > 64 ) log.erase( log.begin() );
 }
 
+//	The log is entries; the screen shows lines.  A long value wraps, so the two
+//	are not the same count — and scrolling by entries would jump a paragraph at a
+//	time.  Everything below counts lines.
+struct Line {
+	std::string	text;
+	uint16_t	colour;
+};
+
+std::vector< Line >
+Wrapped() {
+	std::vector< Line >	$;
+	for( auto const& e: log ) {
+		std::string	cur;
+		auto		n = 0;
+		auto		p = (unsigned char const*)e.text.c_str();
+		while( *p ) {
+			auto k = ( *p & 0xF8 ) == 0xF0 ? 4 : ( *p & 0xF0 ) == 0xE0 ? 3 : ( *p & 0xE0 ) == 0xC0 ? 2 : 1;
+			cur.append( (char const*)p, k );
+			p += k;
+			if( ++n == COLS ) { $.push_back( { cur, e.colour } ); cur.clear(); n = 0; }
+		}
+		if( cur.size() || !e.text.size() ) $.push_back( { cur, e.colour } );
+	}
+	return $;
+}
+
 void
 DrawLog() {
 	ScreenFill( 0, 0, SCREEN_W, LOG_ROWS * FONT_H, BG );
-	//	Newest at the bottom, so the answer just asked for is where the eye is.
-	auto row = LOG_ROWS - 1;
-	for( auto i = (int)log.size() - 1; i >= 0 && row >= 0; i-- ) {
-		auto const&	e		= log[ i ];
-		//	A long value wraps rather than being cut: on a 24-column screen the
-		//	interesting end of 9223372036854775807 is the end.
-		auto		chars	= 0;
-		for( auto p = e.text.c_str(); *p; p++ ) if( ( *p & 0xC0 ) != 0x80 ) chars++;
-		auto		lines	= ( chars + COLS - 1 ) / COLS;
-		if( lines < 1 ) lines = 1;
-		row -= lines - 1;
-		if( row < 0 ) break;
 
-		auto	col	= 0;
-		auto	r	= row;
-		auto	p	= (unsigned char const*)e.text.c_str();
-		std::string	one;
-		while( *p ) {
-			auto n = ( *p & 0xF8 ) == 0xF0 ? 4 : ( *p & 0xF0 ) == 0xE0 ? 3 : ( *p & 0xE0 ) == 0xC0 ? 2 : 1;
-			one.assign( (char const*)p, n );
-			p += n;
-			if( col >= COLS ) { col = 0; r++; }
-			if( r >= LOG_ROWS ) break;
-			ScreenText( col++, r, one.c_str(), e.colour, BG );
-		}
-		row--;
-	}
+	auto	lines	= Wrapped();
+	auto	total	= (int)lines.size();
+	auto	most	= total > LOG_ROWS ? total - LOG_ROWS : 0;
+	if( scroll > most ) scroll = most;
+	if( scroll < 0    ) scroll = 0;
+
+	auto	last	= total - scroll;			//	one past the last line shown
+	auto	first	= last > LOG_ROWS ? last - LOG_ROWS : 0;
+	//	Short transcripts sit on the bottom, as a terminal's do.
+	auto	top		= LOG_ROWS - ( last - first );
+
+	for( auto i = first; i < last; i++ )
+		ScreenText( 0, top + i - first, lines[ i ].text.c_str(), lines[ i ].colour, BG );
 }
 
 void
@@ -220,6 +241,7 @@ UIInit() {
 
 void
 UIPrint( std::string const& _ ) {
+	scroll = 0;			//	an answer is worth going back to the bottom for
 	Append(
 		_
 	,	_.rfind( "= ", 0 ) == 0 ? GOOD
@@ -241,6 +263,7 @@ bool
 UIPoll( std::string& line ) {
 	int	x, y;
 	if( !TouchRead( x, y ) ) {
+		dragging = false;
 		if( downKey >= 0 ) {
 			DrawKey( downKey / MAX_COLS, downKey % MAX_COLS, false );
 			ScreenFlush();
@@ -248,8 +271,24 @@ UIPoll( std::string& line ) {
 		}
 		return false;
 	}
-	//	Above the pad is the transcript, and a transcript is for reading.
-	if( y < PAD_TOP ) return false;
+	//	Above the pad is the transcript, and a drag there scrolls it.  Content
+	//	follows the finger: dragging down reveals what is older.
+	if( y < PAD_TOP ) {
+		if( !dragging ) {
+			dragging	= true;
+			dragY		= y;
+			dragScroll	= scroll;
+			return false;
+		}
+		auto want = dragScroll + ( y - dragY ) / FONT_H;
+		if( want < 0 ) want = 0;
+		if( want != scroll ) {
+			scroll = want;
+			DrawLog();
+			ScreenFlush();
+		}
+		return false;
+	}
 
 	auto r = ( y - PAD_TOP ) / KEY_H;
 	if( r < 0 || r >= PAD_ROWS ) return false;

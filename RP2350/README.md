@@ -45,6 +45,10 @@ green and errors in red, as the other hosts do.
 '  =  @  :  ␣  ⏎
 ```
 
+Dragging the transcript scrolls it, by display line rather than by entry — a
+long value wraps, and scrolling by entry would jump a paragraph at a time.
+Content follows the finger, and an answer puts it back at the bottom.
+
 A calculator on the left, the language along the bottom and down the right.
 `M1` and `M2` are not a memory register — they are two names, and the bottom row
 is what binds and uses one:
