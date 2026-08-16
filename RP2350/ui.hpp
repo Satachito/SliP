@@ -16,6 +16,10 @@ void	UIInit();
 void	UIPrint( std::string const& );
 void	UIRedraw();
 
+//	Back to the frame UIInit drew.  What the transcript shows is the session, so
+//	forgetting the session empties it.
+void	UIClearLog();
+
 //	True when the transcript was tapped with something typed: the line is yours
 //	to run.  False otherwise, having already drawn whatever the tap did.
 bool	UIPoll( std::string& line );

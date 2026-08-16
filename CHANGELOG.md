@@ -52,6 +52,28 @@ where they disagree, `C++/` is correct.
   `RP2350/font.h`, because no stock font has this alphabet and no single face on
   a Mac has all of it. See [RP2350/README.md](RP2350/README.md).
 
+- **The session survives a power cut, on both boards.** Switch an
+  [ESP32](ESP32/README.md) or an [RP2350](RP2350/README.md) off and on and the
+  bindings are still there; the RP2350's panel comes up showing the transcript
+  as it was.
+
+  What is saved is the source — the lines that were run, in the order they were
+  run — and booting replays them. Nothing shorter would do: a binding's value is
+  an expression that may close over the context it was made in, so writing the
+  values out would rebuild a different session that answers the same for a
+  while. It also means nothing in `C++/` had to change. A line is kept once it
+  has run; a line that failed built nothing. `:calc` and `:prog` are kept too,
+  because they decide what the lines after them mean.
+
+  `:reset` erases the saved copy as well as the live one — it is the log that
+  built the bindings, so leaving it would put them all back at the next
+  power-up. `:forget` is the same command under the name that says it, and `AC`
+  on the RP2350's keypad sends it: all clear now means all of it. On the RP2350
+  the log lives above the program in flash, so **it survives `picotool load`**
+  too. `RP2350/store.cpp` is sixteen sector-sized slots written round-robin,
+  each checksummed; `ESP32/main/store.cpp` is one NVS blob, since NVS already
+  does the levelling and the power-cut safety.
+
 - **[`conformance/board.py`](conformance/board.py)** — the serial harness, which
   used to live under `ESP32/`. It takes the port as an argument and knows
   nothing about which chip answers.

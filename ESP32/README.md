@@ -46,11 +46,13 @@ SliP 2.1.1  —  :help
 | `:calc` | a line is one sentence — `2πr` is `( 2πr )` — **default** |
 | `:prog` | a line is toplevel forms, stopping at the first error |
 | `:{` … `:}` | collect lines, then run them as one |
-| `:reset` | forget every binding |
+| `:reset` | forget every binding, the saved session with it |
+| `:forget` | the same thing, said the other way |
 | `:free` | free heap |
 | `:version` | the language version this build implements |
 
-Bindings persist until `:reset` or a reboot.
+Bindings persist until `:reset` — a reboot does not clear them either, see
+below.
 
 The two modes are the same two the other hosts have: `:calc` is what the web
 calculator does to a line, `:prog` is what `slip -p` does to a file.
@@ -70,6 +72,42 @@ this used at first and which cannot carry SliP's input:
 Backspace erases a character rather than a byte: it pops UTF-8 continuation
 bytes (`10xxxxxx`) until it reaches the lead byte, and emits one erase, because
 the terminal drew one glyph.
+
+## The session is still there after a power cut
+
+Switch the board off and on and last session comes back:
+
+```
+SliP 2.1.1  —  :help
+4 lines restored
+
+> 21 : M1
+= 42
+```
+
+What is saved is the source, not the state — the lines that were run, in the
+order they were run — and booting replays them. Nothing shorter would do: a
+binding's value is an expression that may close over the context it was made in,
+so writing out the values alone would rebuild a different session that answers
+the same for a while. Replaying the source rebuilds *that* session, by
+definition, and the interpreter does not have to know any of this is happening.
+
+A line joins the log once it has run. A line that failed built nothing and is
+not kept; `:calc` and `:prog` are, because they decide what the lines after them
+mean. Replay is silent — a terminal attached afterwards would otherwise scroll
+the whole of last time past before saying anything about now — and reports only
+the count.
+
+`store.cpp` keeps it as one blob in NVS, in the 24 KB `nvs` partition that
+`partitions.csv` already had. NVS does its own wear levelling and its own
+power-cut safety, so this file is four calls and no machinery. The log is capped
+at 4080 bytes — about 130 lines, the same ceiling the RP2350 port has so that a
+session which fits on one board fits on the other — and when it is full the
+oldest lines go, whole lines at a time.
+
+`:reset` erases it. It has to: the log is what built the bindings, so leaving it
+would put every one of them back at the next power-up, and `:reset` would be a
+lie with a delay on it.
 
 ## What is different from the desktop build
 

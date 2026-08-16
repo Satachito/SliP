@@ -30,6 +30,7 @@ add_executable(
 	main.cpp
 	screen.cpp
 	ui.cpp
+	store.cpp
 	../C++/SliP.cpp
 	../C++/Read.cpp
 	../C++/Eval.cpp
@@ -62,6 +63,7 @@ target_link_libraries(
 	pico_rand		#	the hardware RNG, which RandomSeed in SliP.cpp asks for
 	hardware_spi	#	the panel
 	hardware_i2c	#	the touch controller
+	hardware_flash	#	store.cpp keeps the session in it
 )
 
 #	USB only.  The board reaches the Mac over its USB-C socket, and the UART pins

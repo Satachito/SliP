@@ -33,8 +33,8 @@ picotool load -f -x build/slip.uf2
 
 ## Using it
 
-The panel is the calculator: tap keys to build a line, `⏎` to run it, `⌫` and
-`AC` to correct it. The transcript above shows the source in grey, values in
+The panel is the calculator: tap keys to build a line, `⏎` to run it, `⌫` to
+correct it. The transcript above shows the source in grey, values in
 green and errors in red, as the other hosts do.
 
 ```
@@ -44,6 +44,12 @@ green and errors in red, as the other hosts do.
 0  .  (  )  ÷  M2
 '  =  @  :  ␣  ⏎
 ```
+
+`AC` is all clear, and on this board all reaches further than the line being
+typed: the session is saved, so it clears the line, the transcript, every
+binding, and the copy in flash. It is `:forget` — the panel sends the command
+rather than deciding for itself what forgetting means. `⌫` is still there for a
+wrong digit.
 
 Dragging the transcript scrolls it, by display line rather than by entry — a
 long value wraps, and scrolling by entry would jump a paragraph at a time.
@@ -75,6 +81,54 @@ SliP 2.1.1  —  :help
 > :free
 heap 286720 free
 ```
+
+## The session is still there after a power cut
+
+Pull the power out and put it back, and the panel comes up showing last session,
+with every binding in it:
+
+```
+SliP 2.1.1  —  :help
+4 lines restored
+
+> 21 : M1
+= 42
+```
+
+What is saved is the source, not the state — the lines that were run, in the
+order they were run — and booting replays them. Nothing shorter would do: a
+binding's value is an expression that may close over the context it was made in,
+so writing out the values alone would rebuild a different session that answers
+the same for a while. Replaying the source rebuilds *that* session, by
+definition, and the interpreter does not have to know any of this is happening.
+
+A line joins the log once it has run, whether it was typed or tapped. A line
+that failed built nothing and is not kept; `:calc` and `:prog` are, because they
+decide what the lines after them mean. The replay is silent on the wire — a
+terminal attached afterwards would otherwise scroll the whole of last time past
+before saying anything about now — but not on the panel, where the restored
+transcript *is* what "the session is still here" looks like.
+
+[`store.cpp`](store.cpp) puts it in the last 64 KB of flash, as sixteen slots of
+one sector. A slot holds the whole log, and every write goes to the next slot:
+sixteen times the erase budget, and — because the slot being written is not the
+slot being read — a power cut in the middle of a write costs the last line rather
+than the session. The newest slot is the one with the highest sequence number
+whose checksum still agrees; erased flash is `0xFF` everywhere, which is a
+valid-looking header for nothing at all, so a slot is only believed if the magic,
+the length and the checksum all do. A slot is 4080 bytes of source, about 130
+lines; when it is full the oldest go, whole lines at a time.
+
+Writing means erasing, and the code is in the flash being erased, so the
+interrupts go off for the tens of milliseconds it takes. One core is running and
+nothing else touches it, so that is the whole of the exclusion. USB goes quiet
+for that long and the host waits.
+
+`picotool` writes the program, and the program does not reach this far up the
+flash — so **a session survives being reflashed**. That is a nice property and a
+surprising one, which is the other reason `:reset` erases it. It has to anyway:
+the log is what built the bindings, so leaving it would put every one of them
+back at the next power-up, and `:reset` would be a lie with a delay on it.
 
 ## What the chip needed
 
@@ -143,6 +197,7 @@ it knows which chip is on the other end.
 | Flash | 706 KB of 16 MB |
 | RAM at link | 165 KB, of which 150 KB is the frame |
 | Heap free after `Build()` | 280 KB |
+| Session log | 64 KB of flash, 4080 bytes used at most |
 | conformance | 11 / 11 |
 
 ## Not done here

@@ -11,6 +11,7 @@
 idf_component_register(
 	SRCS
 		"main.cpp"
+		"store.cpp"
 		"../../C++/SliP.cpp"
 		"../../C++/Read.cpp"
 		"../../C++/Eval.cpp"
@@ -22,6 +23,7 @@ idf_component_register(
 		driver			#	uart
 		esp_hw_support	#	esp_random
 		vfs
+		nvs_flash		#	store.cpp keeps the session in it
 )
 
 #	C++23, as C++/CLI.sh and WASM/build.sh use.  Spelled 2b so that the GCC 12

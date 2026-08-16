@@ -44,6 +44,13 @@ extern V< SP< SliP > >	ReadList( iReader&, char32_t );
 extern SP< SliP >		Eval( SP< Context >, SP< SliP > );
 extern void				ClearStack();
 
+//	store.cpp.  Declared rather than included, as the interpreter's own entry
+//	points above are.
+extern void				StoreInit();
+extern string const&	StoreLog();
+extern void				StoreAppend( string const& );
+extern void				StoreForget();
+
 //	Eval recurses once per level of nesting, and the FreeRTOS default of a few
 //	kilobytes is nowhere near enough.  Deep enough for the conformance suite with
 //	room to spare; a runaway recursion still overflows, and the stack canary
@@ -58,8 +65,14 @@ static constexpr auto	CORE		= 1;
 static SP< Context >	theContext		= MS< Context >();
 static auto				calculatorMode	= true;
 
+//	Set while the saved session is being replayed at boot.  A terminal opened
+//	afterwards would otherwise scroll the whole of last time past before saying
+//	anything about now.
+static auto				replaying		= false;
+
 static void
 Print( string const& _ ) {
+	if( replaying ) return;
 	fputs( _.c_str(), stdout );
 	fputc( '\n', stdout );
 	fflush( stdout );
@@ -89,11 +102,11 @@ Guarded( F _ ) {
 //
 //	One guard per line, because the lines are largely independent: a typo on the
 //	first line must not hide the answer on the sixth.
-static void
+static bool
 RunLine( string const& _ ) {
 	auto	expression = _.substr( 0, _.find( "//" ) );
-	if( expression.find_first_not_of( " \t\r" ) == string::npos ) return;
-	Guarded(
+	if( expression.find_first_not_of( " \t\r" ) == string::npos ) return true;
+	return Guarded(
 		[ & ] {
 			StringReader	R( expression + ')' );
 			auto			form = MS< Sentence >( ReadList( R, U')' ) );
@@ -106,9 +119,9 @@ RunLine( string const& _ ) {
 //	stopping rule: a later form usually depends on an earlier one, so the first
 //	failure ends the run rather than reporting its own consequences.  The reader
 //	is constructed inside the guard because decoding the source can throw too.
-static void
+static bool
 RunProgram( string const& _ ) {
-	Guarded(
+	return Guarded(
 		[ & ] {
 			StringReader	R( _ );
 			while( true ) {
@@ -120,10 +133,23 @@ RunProgram( string const& _ ) {
 	);
 }
 
-static void
+//	Whether every part of it ran.  Only what ran is worth keeping: a line that
+//	failed built nothing, and replaying it at the next power-up would report the
+//	same failure again for no reason.
+static bool
 Run( string const& _ ) {
-	if( calculatorMode ) for( auto const& line: Split( _ ) ) RunLine( line );
-	else RunProgram( _ );
+	if( !calculatorMode ) return RunProgram( _ );
+	auto	ok = true;
+	for( auto const& line: Split( _ ) ) ok = RunLine( line ) && ok;
+	return ok;
+}
+
+//	A line joins the saved session once it has run.  Nothing is recorded while
+//	the saved session is being replayed, or the log would append a copy of itself
+//	every time the board was switched on.
+static void
+Record( string const& _ ) {
+	if( !replaying ) StoreAppend( _ );
 }
 
 static void
@@ -132,7 +158,8 @@ Help() {
 	Print( "  :calc      a line is one sentence — 2πr is ( 2πr )   [default]" );
 	Print( "  :prog      a line is toplevel forms, stopping at the first error" );
 	Print( "  :{  :}     collect lines, then run them as one" );
-	Print( "  :reset     forget every binding" );
+	Print( "  :reset     forget every binding, the saved session with it" );
+	Print( "  :forget    the same thing, said the other way" );
 	Print( "  :free      free heap" );
 	Print( "  :version   the language version this build implements" );
 	Print( "  :help      this" );
@@ -145,12 +172,18 @@ Command( string const& _ ) {
 
 	if( _ == ":help"    ) { Help(); return true; }
 	if( _ == ":version" ) { Print( SLIP_VERSION ); return true; }
-	if( _ == ":calc"    ) { calculatorMode = true ; Print( "calculator mode"  ); return true; }
-	if( _ == ":prog"    ) { calculatorMode = false; Print( "programming mode" ); return true; }
-	if( _ == ":reset"   ) {
+	//	The mode is part of the session, not of the terminal: it decides what the
+	//	lines after it mean, so it is saved with them.
+	if( _ == ":calc"    ) { calculatorMode = true ; Print( "calculator mode"  ); Record( _ ); return true; }
+	if( _ == ":prog"    ) { calculatorMode = false; Print( "programming mode" ); Record( _ ); return true; }
+	//	The saved session goes too. It has to: it is the log of what built the
+	//	bindings, so leaving it would put every one of them back at the next
+	//	power-up, and ":reset" would be a lie with a delay on it.
+	if( _ == ":reset" || _ == ":forget" ) {
 		theContext = MS< Context >();
 		ClearStack();
-		Print( "reset" );
+		StoreForget();
+		Print( "forgotten" );
 		return true;
 	}
 	if( _ == ":free" ) {
@@ -191,6 +224,54 @@ StartConsole() {
 	ESP_ERROR_CHECK( uart_driver_install( (uart_port_t)CONFIG_ESP_CONSOLE_UART_NUM, 1024, 0, 0, nullptr, 0 ) );
 	ESP_ERROR_CHECK( uart_param_config(   (uart_port_t)CONFIG_ESP_CONSOLE_UART_NUM, &config ) );
 	SLIP_UART_USE_DRIVER( CONFIG_ESP_CONSOLE_UART_NUM );
+}
+
+//	One line of the session, wherever it came from: the wire, or the log at boot.
+//	Having one of these rather than the same decisions written out in the main
+//	loop is what lets a replay be a replay — the stored lines go through exactly
+//	what the typed ones went through, block collection included.
+static string	block;
+static auto		collecting = false;
+
+static void
+Consume( string const& _ ) {
+	if( collecting ) {
+		if( _ == ":}" ) {
+			collecting = false;
+			if( Run( block ) ) Record( _ );
+			block.clear();
+		} else {
+			block += _ + '\n';
+			Record( _ );
+		}
+		return;
+	}
+	if( _ == ":{" ) { collecting = true; Record( _ ); return; }
+	if( Command( _ ) ) return;			//	commands that belong in the log record themselves
+	if( Run( _ ) ) Record( _ );
+}
+
+//	Put back whatever was here when the power went off, and say how much that
+//	was.  The lines are replayed through Consume, so a session that was in
+//	programming mode comes back in programming mode, and a block as a block.
+static int
+Replay() {
+	auto const&	log = StoreLog();
+	if( log.empty() ) return 0;
+
+	replaying = true;
+	auto	n = 0;
+	for( auto const& line: Split( log ) ) {
+		if( line.empty() ) continue;
+		Consume( line );
+		n++;
+	}
+	//	A block left open by a power cut ends here rather than swallowing the
+	//	first thing typed after it.
+	collecting = false;
+	block.clear();
+	replaying = false;
+	return n;
 }
 
 //	Not linenoise, which ESP-IDF has right here and which this used at first.
@@ -239,14 +320,17 @@ REPL( void* ) {
 	StartConsole();
 	Build();
 
+	StoreInit();
+	auto	restored = Replay();
+
 	Print( "" );
 	Print( string( "SliP " ) + SLIP_VERSION + "  —  :help" );
+	if( restored ) {
+		Print( to_string( restored ) + ( restored == 1 ? " line" : " lines" ) + " restored" );
+	}
 	Print( "" );
 
-	string	block;
 	string	line;
-	auto	collecting = false;
-
 	while( true ) {
 		fputs( collecting ? ".. " : calculatorMode ? "> " : ">> ", stdout );
 		fflush( stdout );
@@ -254,20 +338,7 @@ REPL( void* ) {
 			vTaskDelay( pdMS_TO_TICKS( 20 ) );
 			continue;
 		}
-
-		if( collecting ) {
-			if( line == ":}" ) {
-				collecting = false;
-				Run( block );
-				block.clear();
-			} else {
-				block += line + '\n';
-			}
-			continue;
-		}
-		if( line == ":{" ) { collecting = true; continue; }
-		if( Command( line ) ) continue;
-		Run( line );
+		Consume( line );
 	}
 }
 

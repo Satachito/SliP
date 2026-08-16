@@ -309,9 +309,18 @@ UIPoll( std::string& line ) {
 		ScreenFlush();
 		return true;
 	}
+	//	AC is all clear, and on this board "all" reaches further than the line
+	//	being typed: the session is saved, so clearing the screen while leaving
+	//	the bindings — and the flash — behind would not be clearing anything. It
+	//	goes out as the command, so that one place decides what forgetting means.
 	if( label == KEY_AC ) {
 		editing.clear();
-	} else if( label == KEY_SP ) {
+		DrawEditing();
+		ScreenFlush();
+		line = ":forget";
+		return true;
+	}
+	if( label == KEY_SP ) {
 		editing += ' ';
 	} else if( label == KEY_DEL ) {
 		//	One character, not one byte: the UTF-8 continuation bytes go with it.
@@ -326,6 +335,14 @@ UIPoll( std::string& line ) {
 	DrawEditing();
 	ScreenFlush();
 	return false;
+}
+
+void
+UIClearLog() {
+	log.clear();
+	scroll = 0;
+	Append( "SliP " SLIP_UI_VERSION, ACCENT );
+	Append( "tap keys, then ⏎", DIM );
 }
 
 void
