@@ -149,7 +149,7 @@ char const* const	KEY_RUN	= "⏎";
 char const* const	KEY_SP	= "␣";
 char const* const	BLANK	= "";
 
-constexpr auto	MAX_COLS = 12;
+constexpr auto	MAX_COLS = 13;
 
 struct Row {
 	int			n;
@@ -200,6 +200,20 @@ static Row const	GREEK[] = {
 	SLIP_GREEK
 };
 
+//	The Latin alphabet, both cases.  Thirteen across, which is the width that
+//	makes fifty-two letters four exact rows.
+//
+//	It is here for the same reason the Greek is: the reader takes these as names,
+//	and until this panel there was nowhere to put them.  It is also how `2πr`
+//	gets written on the panel at all — π is a constant and r is a name, and
+//	before this the name had to come over the wire.
+static Row const	LATIN[] = {
+	{ 13, { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m" } },
+	{ 13, { "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" } },
+	{ 13, { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M" } },
+	{ 13, { "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" } },
+};
+
 //	The transcendental functions the interpreter already has.  Six across,
 //	because `atanh` is five characters and a key has to hold its own name.
 static Row const	FUNCTIONS[] = {
@@ -245,11 +259,12 @@ static constexpr int	LOG_FACE = 1;
 static Section const	SECTION[] = {
 	{ "SliP",	OPERATORS,	4, 2, 48 }
 ,	{ "func",	FUNCTIONS,	4, 1, 64 }
+,	{ "abc",	LATIN,		4, 1, 64 }
 ,	{ "αβγ",	GREEK,		4, 1, 64 }
 };
 static constexpr int	SECTIONS = (int)( sizeof( SECTION ) / sizeof( *SECTION ) );
 
-static int	theSection = 2;
+static int	theSection = 2;		//	abc
 
 //	Calculator or programming — the same two the wire has as :calc and :prog, and
 //	the same two the web calculator has.  Unticked is the calculator, where a line

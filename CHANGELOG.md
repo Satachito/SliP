@@ -9,9 +9,32 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
-## Unreleased
+## 2.2.0 — 2026-08-17
+
+The language is unchanged.  This release is four more hosts, a session that
+survives a power cut, and one arithmetic bug that had been wrong on every host
+since the constants were added.
 
 ### Fixed
+
+- **A negated numeric constant was not negative.** `NumericConstant` carries a
+  `negative` flag; `Negate()` flipped it and `REPR()` printed it, so `-π` read
+  back as `(-π)` and looked right. Every operator takes its operands' values
+  through `Double()`, and `Double()` ignored the flag — so **`-π × 2` computed
+  `+π × 2`**, and `-π + 1` computed `π + 1`. Silently, with no error, on every
+  host.
+
+  `-3` was never affected: the reader builds a negative integer there, not a
+  negated constant. It is the named constants — `π`, `𝑒`, `∞`, `γ`, `φ`, `log2e`,
+  `log10e`, `ln2`, `ln10` — that lost their sign.
+
+  Found by putting `Web/Koch.html`'s commented-out SliP into `Web/Koch.slip` and
+  finding that it drew a four-pixel smudge. The instruction trace was right —
+  1024 `lineTo`, 1023 `rotate`, the correct lengths — and every rotation was
+  positive: the `-π × 2 ÷ 3` that should turn back was turning further forward,
+  so the four sub-curves of every generation landed on top of each other.
+  `conformance/cases/values.slip` now checks the sign of a constant in
+  arithmetic.
 
 - **Integers above 2³¹-1 became floats on 32-bit targets.** The reader parsed
   integer literals with `stol`, which returns a `long` — 64 bits on macOS and
@@ -73,6 +96,40 @@ where they disagree, `C++/` is correct.
   too. `RP2350/store.cpp` is sixteen sector-sized slots written round-robin,
   each checksummed; `ESP32/main/store.cpp` is one NVS blob, since NVS already
   does the levelling and the power-cut safety.
+
+- **[`Tab5/`](Tab5) — firmware for an M5Stack Tab5:** a calculator on the
+  5-inch 720x1280 panel and the same serial REPL, both feeding one session. An
+  ESP32-P4, so RISC-V — a third instruction set after Xtensa and ARM, and
+  nothing in `C++/` names it.
+
+  The panel is Espressif's board support package rather than a driver written
+  here, because M5 changed the display partway through production and the two
+  are not interchangeable; `:i2c` prints the bus and settles which is fitted.
+  Nothing is pushed to this panel — the display scans the frame buffer out of
+  PSRAM itself — so the DMA and partial updates `RP2350/README.md` left as the
+  next board's homework are not needed. A cache is: the processor writes that
+  memory through one and the display reads it without one.
+
+  The panel carries one fixed block of digits and one of four tabbed
+  alphabets — the operators, the transcendental functions, the Latin letters and
+  the Greek. **The first host where a name can be invented on the panel**: the
+  reader has always taken those letters as names, and 240 pixels had nowhere to
+  put them. See [Tab5/README.md](Tab5/README.md).
+
+- **The web keypad follows the Tab5's panel.** The block of digits is six across
+  and four down at the top of the sidebar, the same wherever else you are, and
+  the operators, the transcendental functions and the Greek are laid out below
+  it rather than hidden behind tabs.
+
+  The keypad and the evaluation mode are now separate things. Choosing the
+  "Code" keypad used to change how every line would be read — hence the
+  confirmation it had to ask — and the two are one control no longer: the
+  keypads are keypads, and `prog` alone decides what a line means. `RUN` appears
+  only in programming mode, where `⏎` starts another line; in the calculator `⏎`
+  is what runs, as it is on the panel.
+
+  `Web/Koch.slip` is a sample rather than a page of JavaScript, which is what
+  turned up the constant-sign bug above.
 
 - **[`conformance/board.py`](conformance/board.py)** — the serial harness, which
   used to live under `ESP32/`. It takes the port as an argument and knows

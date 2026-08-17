@@ -6,7 +6,7 @@
 #include <string>
 #include <cstdint>
 
-#define	SLIP_UI_VERSION	"2.1.1"
+#define	SLIP_UI_VERSION	"2.2.0"
 
 void	UIInit();
 
