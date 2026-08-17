@@ -44,9 +44,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      #	latest on purpose.  The deploy is how a version of Emscripten that
+      #	breaks the build gets found, and a build nobody can reproduce with a
+      #	current toolchain is not one worth deploying.  If this step fails, the
+      #	site keeps whatever was published last.
       - uses: mymindstorm/setup-emsdk@v14
         with:
-          version: 4.0.16
+          version: latest
       - run: sh WASM/build.sh
       - uses: actions/setup-node@v4
         with:
