@@ -135,7 +135,12 @@ body.aside-collapsed	> aside	{ display: none }
 ;	gap				: 4px
 ;	height			: 100%
 }
-.sample-list button {
+.sample-list a.sample-link {
+;	display					: inline-flex
+;	align-items				: center
+;	text-decoration			: none
+}
+.sample-list button, .sample-list a.sample-link {
 ;	min-width		: 0
 ;	min-height		: 28px
 ;	margin			: 0
@@ -271,25 +276,6 @@ textarea {
 ;	font-size				: 85%
 ;	color					: var( --muted )
 }
-.mode-tabs {
-;	display					: grid
-;	grid-template-columns	: repeat( 3, minmax( 0, 1fr ) )
-;	gap						: 4px
-;	margin					: 0 0 8px 0
-}
-.mode-tab {
-;	min-height				: 32px
-;	padding					: 0 6px
-;	border					: 1px solid var( --soft-border )
-;	background				: var( --control-bg )
-;	color					: var( --control-fg )
-;	cursor					: pointer
-}
-.mode-tab.active {
-;	border-color			: var( --border )
-;	background				: var( --subtle-bg )
-;	font-weight				: bold
-}
 .key-section {
 ;	display					: grid
 ;	gap						: 4px
@@ -313,11 +299,58 @@ textarea {
 .key-row.seven {
 ;	grid-template-columns	: repeat( 7, 1fr )
 }
+.key-row.eight {
+;	grid-template-columns	: repeat( 8, 1fr )
+;	gap						: 3px
+}
+.key-row.twelve {
+;	grid-template-columns	: repeat( 12, 1fr )
+;	gap						: 2px
+}
+.key-row.thirteen {
+;	grid-template-columns	: repeat( 13, 1fr )
+;	gap						: 2px
+}
+
+/*	The bar, and the block that does not move — the Tab5's arrangement.	*/
+.act-row {
+;	display					: grid
+;	grid-template-columns	: repeat( 4, 1fr )
+;	gap						: 4px
+;	margin					: 0 0 8px 0
+}
+.act-key {
+;	height					: 32px
+;	padding					: 0
+;	display					: flex
+;	align-items				: center
+;	justify-content			: center
+;	gap						: 4px
+;	font-size				: 12px
+;	white-space				: nowrap
+}
+.act-check {
+;	cursor					: pointer
+}
+/*	.act-key sets display, which beats the browser's own [hidden] rule.	*/
+.act-key[hidden] {
+;	display					: none
+}
+.act-check input {
+;	margin					: 0
+}
+.act-run {
+;	font-weight				: bold
+}
+.fixed-block {
+;	margin-bottom			: 10px
+;	padding-bottom			: 10px
+;	border-bottom			: 1px solid var( --gutter-bg )
+}
 .section-title {
 ;	margin					: 10px 0 4px 0
 ;	font-size				: 11px
 ;	color					: var( --muted )
-;	text-transform			: uppercase
 }
 .gutter {
 ;	background				: var( --gutter-bg )
@@ -353,8 +386,8 @@ textarea {
 .wide-key {
 ;	grid-column				: span 2
 }
-.mode-panel[hidden] {
-;	display					: none
+.act-row.no-run {
+;	grid-template-columns	: repeat( 3, 1fr )
 }
 
 </style>
@@ -372,7 +405,9 @@ textarea {
 		<button type=button data-sample=Samples.sugared.slip title="Calculator — general">Calculator</button>
 		<button type=button data-sample=Samples.slip title="Programming — general">Code</button>
 		<button type=button data-sample=Mandelbrot.slip title="Mandelbrot — WebGL">Mandelbrot</button>
-		<button type=button data-sample=Graphics.slip title="Graphics — Canvas 2D">Graphics</button>
+		<button type=button data-sample=Koch.slip title="Koch curve and snowflake — Canvas 2D">Koch</button>
+		<!--	A page of its own: the drawing there is JavaScript, and it animates.	-->
+		<a class=sample-link href=MovingComplex.html target=_blank rel=noopener title="Moving complex — Canvas 2D">Complex</a>
 	</div>
 </header>
 <header class=links>
@@ -383,229 +418,227 @@ textarea {
 </div>
 
 <nav>
-	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALCULATE><br>
-	<div class=mode-tabs id=MODE_TABS>
-		<button type=button class=mode-tab data-mode=CALCULATOR>Calculator</button>
-		<button type=button class=mode-tab data-mode=SCIENCE>Science</button>
-		<button type=button class=mode-tab data-mode=CODE>Code</button>
+	<!--	The bar: the three things that are not keys, and RUN.  One throws the
+		work away, one changes what a line means, one takes a character back.
+		The Tab5's panel puts them here for the same reason: none of them
+		belongs where a finger goes for a digit.	-->
+	<div class=act-row>
+		<button type=button id=RESET class=act-key>Reset</button>
+		<label class="act-key act-check" for=PROG_KEY><input type=checkbox id=PROG_KEY> prog</label>
+		<button type=button id=CALCULATE class="act-key act-run">RUN</button>
+		<button type=button id=DELETE class=act-key>Delete</button>
 	</div>
 
-	<div class="key-section">
-		<div class=key-row>
+	<!--	The block that does not move.  Six across and four down, the same
+		wherever else you are, because the digits are the digits.  Its last
+		column is the line: 𝑒 because it is a number, then open it, close it,
+		run it.	-->
+	<div class="key-section fixed-block">
+		<div class="key-row six">
 			<input type=button class="di big-key" value=7>
 			<input type=button class="di big-key" value=8>
 			<input type=button class="di big-key" value=9>
-			<input type=button class="di big-key" value=÷>
+			<input type=button class="di big-key" value=+>
+			<input type=button class="di big-key" value="'">
+			<input type=button class="di big-key" value=𝑒>
 		</div>
-		<div class=key-row>
+		<div class="key-row six">
 			<input type=button class="di big-key" value=4>
 			<input type=button class="di big-key" value=5>
 			<input type=button class="di big-key" value=6>
-			<input type=button class="di big-key" value=×>
+			<input type=button class="di big-key" value="-">
+			<input type=button class="di big-key" value="=">
+			<input type=button class="di big-key" value="(">
 		</div>
-		<div class=key-row>
+		<div class="key-row six">
 			<input type=button class="di big-key" value=1>
 			<input type=button class="di big-key" value=2>
 			<input type=button class="di big-key" value=3>
-			<input type=button class="di big-key" value=->
+			<input type=button class="di big-key" value=×>
+			<input type=button class="di big-key" value=@>
+			<input type=button class="di big-key" value=")">
 		</div>
-		<div class=key-row>
+		<div class="key-row six">
 			<input type=button class="di big-key" value=0>
 			<input type=button class="di big-key" value=.>
-			<input type=button class="big-key" value=⏎ id=KEY_RET>
-			<input type=button class="di big-key" value=+>
-		</div>
-		<div class=key-row>
-			<input type=button class="di big-key" value=%>
-			<input type=button class="big-key" value=SPACE id=KEY_SPACE>
-			<input type=button class="big-key wide-key" value=← id=DELETE>
+			<input type=button class="big-key" value=␣ id=KEY_SPACE>
+			<input type=button class="di big-key" value=÷>
+			<input type=button class="di big-key" value=":">
+			<input type=button class="big-key act-run" value=⏎ id=KEY_RET>
 		</div>
 	</div>
 
-	<div class="mode-panel" data-mode-panel=CALCULATOR>
-		<div class=section-title>Brackets</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di big-key bracket-key" value=(>
-				<input type=button class="di big-key bracket-key" value=)>
-				<input type=button class="di big-key bracket-key" value=[>
-				<input type=button class="di big-key bracket-key" value=]>
-			</div>
-			<div class=key-row>
-				<input type=button class="di big-key bracket-key" value={>
-				<input type=button class="di big-key bracket-key" value=}>
-				<input type=button class="di big-key bracket-key" value="()">
-				<input type=button class="di big-key bracket-key" value="[]">
-			</div>
-			<div class=key-row>
-				<input type=button class="di big-key bracket-key" value="{}">
-				<input type=button class="di big-key" value=π>
-				<input type=button class="di big-key" value=𝑒>
-				<input type=button class="di big-key" value=∞>
-			</div>
+	<div class=section-title>SliP</div>
+	<div class="key-section">
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="!">
+			<input type=button class="di mid-key" value="#">
+			<input type=button class="di mid-key" value="$">
+			<input type=button class="di mid-key" value="%">
+			<input type=button class="di mid-key" value="*">
+			<input type=button class="di mid-key" value="/">
+			<input type=button class="di mid-key" value=";">
+			<input type=button class="di mid-key" value="?">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="`">
+			<input type=button class="di mid-key" value="~">
+			<input type=button class="di mid-key" value="&lt;">
+			<input type=button class="di mid-key" value="&gt;">
+			<input type=button class="di mid-key" value="¦">
+			<input type=button class="di mid-key" value="§">
+			<input type=button class="di mid-key" value="¬">
+			<input type=button class="di mid-key" value="¶">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="‹">
+			<input type=button class="di mid-key" value="¿">
+			<input type=button class="di mid-key" value="∈">
+			<input type=button class="di mid-key" value="∋">
+			<input type=button class="di mid-key" value="∥">
+			<input type=button class="di mid-key" value="£">
+			<input type=button class="di mid-key" value="¤">
+			<input type=button class="di mid-key" value="¡">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="⊂">
+			<input type=button class="di mid-key" value="⊃">
+			<input type=button class="di mid-key" value="∩">
+			<input type=button class="di mid-key" value="∪">
+			<input type=button class="di mid-key" value="⊤">
+			<input type=button class="di mid-key" value="⊥">
+			<input type=button class="di mid-key" value="∅">
+			<input type=button class="di mid-key" value="«">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="»">
+			<input type=button class="di mid-key" value="⟨">
+			<input type=button class="di mid-key" value="⟩">
+			<input type=button class="di mid-key" value="±">
+			<input type=button class="di mid-key" value="&amp;">
+			<input type=button class="di mid-key" value="|">
+			<input type=button class="di mid-key" value="^">
+			<input type=button class="di mid-key" value="[">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mid-key" value="]">
+			<input type=button class="di mid-key" value="{">
+			<input type=button class="di mid-key" value="}">
+			<input type=button class="di mid-key" value=",">
+			<input type=button class="di mid-key" value="&quot;">
+			<input type=button class="di mid-key" value="\">
+			<input type=button class="di mid-key" value="∞">
+			<input type=button class="di mid-key" value="·">
+		</div>
+	</div>
+	<div class=section-title>func</div>
+	<div class="key-section">
+		<div class="key-row three">
+			<input type=button class="di label" value="sin ">
+			<input type=button class="di label" value="cos ">
+			<input type=button class="di label" value="tan ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="asin ">
+			<input type=button class="di label" value="acos ">
+			<input type=button class="di label" value="atan ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="sinh ">
+			<input type=button class="di label" value="cosh ">
+			<input type=button class="di label" value="tanh ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="asinh ">
+			<input type=button class="di label" value="acosh ">
+			<input type=button class="di label" value="atanh ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="exp ">
+			<input type=button class="di label" value="log ">
+			<input type=button class="di label" value="log2 ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="log10 ">
+			<input type=button class="di label" value="sqrt ">
+			<input type=button class="di label" value="cbrt ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="pow ">
+			<input type=button class="di label" value="hypot ">
+			<input type=button class="di label" value="atan2 ">
+		</div>
+		<div class="key-row three">
+			<input type=button class="di label" value="abs ">
+			<input type=button class="di label" value="round ">
+			<input type=button class="di label" value="trunc ">
+		</div>
+	</div>
+	</div>
+	<div class=section-title>αβγ</div>
+	<div class="key-section">
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="α">
+			<input type=button class="di mini-key" value="β">
+			<input type=button class="di mini-key" value="γ">
+			<input type=button class="di mini-key" value="δ">
+			<input type=button class="di mini-key" value="ε">
+			<input type=button class="di mini-key" value="ζ">
+			<input type=button class="di mini-key" value="η">
+			<input type=button class="di mini-key" value="θ">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="ι">
+			<input type=button class="di mini-key" value="κ">
+			<input type=button class="di mini-key" value="λ">
+			<input type=button class="di mini-key" value="μ">
+			<input type=button class="di mini-key" value="ν">
+			<input type=button class="di mini-key" value="ξ">
+			<input type=button class="di mini-key" value="ο">
+			<input type=button class="di mini-key" value="π">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="ρ">
+			<input type=button class="di mini-key" value="σ">
+			<input type=button class="di mini-key" value="τ">
+			<input type=button class="di mini-key" value="υ">
+			<input type=button class="di mini-key" value="φ">
+			<input type=button class="di mini-key" value="χ">
+			<input type=button class="di mini-key" value="ψ">
+			<input type=button class="di mini-key" value="ω">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="Α">
+			<input type=button class="di mini-key" value="Β">
+			<input type=button class="di mini-key" value="Γ">
+			<input type=button class="di mini-key" value="Δ">
+			<input type=button class="di mini-key" value="Ε">
+			<input type=button class="di mini-key" value="Ζ">
+			<input type=button class="di mini-key" value="Η">
+			<input type=button class="di mini-key" value="Θ">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="Ι">
+			<input type=button class="di mini-key" value="Κ">
+			<input type=button class="di mini-key" value="Λ">
+			<input type=button class="di mini-key" value="Μ">
+			<input type=button class="di mini-key" value="Ν">
+			<input type=button class="di mini-key" value="Ξ">
+			<input type=button class="di mini-key" value="Ο">
+			<input type=button class="di mini-key" value="Π">
+		</div>
+		<div class="key-row eight">
+			<input type=button class="di mini-key" value="Ρ">
+			<input type=button class="di mini-key" value="Σ">
+			<input type=button class="di mini-key" value="Τ">
+			<input type=button class="di mini-key" value="Υ">
+			<input type=button class="di mini-key" value="Φ">
+			<input type=button class="di mini-key" value="Χ">
+			<input type=button class="di mini-key" value="Ψ">
+			<input type=button class="di mini-key" value="Ω">
 		</div>
 	</div>
 
-	<div class="mode-panel" data-mode-panel=SCIENCE hidden>
-		<div class=section-title>Constants</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di big-key" value=π>
-				<input type=button class="di big-key" value=𝑒>
-				<input type=button class="di big-key" value=∞>
-				<input type=button class="di big-key" value=γ>
-			</div>
-		</div>
-		<div class=section-title>Functions</div>
-		<div class="key-section">
-			<div class="key-row three">
-				<input type=button class="di label" value=sin()>
-				<input type=button class="di label" value=cos()>
-				<input type=button class="di label" value=tan()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=log()>
-				<input type=button class="di label" value=exp()>
-				<input type=button class="di label" value=sqrt()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=atan2[]>
-				<input type=button class="di label" value=pow[]>
-				<input type=button class="di label" value=random[]>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=asin()>
-				<input type=button class="di label" value=acos()>
-				<input type=button class="di label" value=atan()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=sinh()>
-				<input type=button class="di label" value=cosh()>
-				<input type=button class="di label" value=tanh()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=asinh()>
-				<input type=button class="di label" value=acosh()>
-				<input type=button class="di label" value=atanh()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=round()>
-				<input type=button class="di label" value=ceil()>
-				<input type=button class="di label" value=floor()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=abs()>
-				<input type=button class="di label" value=trunc()>
-				<input type=button class="di label" value=sign()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=cbrt()>
-				<input type=button class="di label" value=log2()>
-				<input type=button class="di label" value=log10()>
-			</div>
-			<div class="key-row three">
-				<input type=button class="di label" value=hypot[]>
-				<input type=button class="di label" value=max[]>
-				<input type=button class="di label" value=min[]>
-			</div>
-		</div>
-		<div class=section-title>Greek</div>
-		<div class="key-section">
-			<div class="key-row seven">
-				<input type=button class="di mini-key" value=α>
-				<input type=button class="di mini-key" value=β>
-				<input type=button class="di mini-key" value=γ>
-				<input type=button class="di mini-key" value=δ>
-				<input type=button class="di mini-key" value=θ>
-				<input type=button class="di mini-key" value=λ>
-				<input type=button class="di mini-key" value=μ>
-			</div>
-			<div class="key-row seven">
-				<input type=button class="di mini-key" value=σ>
-				<input type=button class="di mini-key" value=φ>
-				<input type=button class="di mini-key" value=ω>
-				<input type=button class="di mini-key" value=Δ>
-				<input type=button class="di mini-key" value=Σ>
-				<input type=button class="di mini-key" value=Π>
-				<input type=button class="di mini-key" value=Ω>
-			</div>
-		</div>
-	</div>
-
-	<div class="mode-panel" data-mode-panel=CODE hidden>
-		<div class=section-title>Program</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di mid-key" value="'">
-				<input type=button class="di mid-key" value=!>
-				<input type=button class="di mid-key" value=@>
-				<input type=button class="di mid-key" value=:>
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value="=">
-				<input type=button class="di mid-key" value=¿>
-				<input type=button class="di mid-key" value=?>
-				<input type=button class="di mid-key" value=¶>
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value=[]>	
-				<input type=button class="di mid-key" value={}>	
-				<input type=button class="di mid-key" value=«»>	
-				<input type=button class="di mid-key" value='""'>
-			</div>
-		</div>
-		<div class=section-title>Lists and output</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di mid-key" value=#>
-				<input type=button class="di mid-key" value=$>
-				<input type=button class="di mid-key" value=*>
-				<input type=button class="di mid-key" value=,>
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value=.>
-				<input type=button class="di mid-key" value=;>
-				<input type=button class="di mid-key" value=¦>
-				<input type=button class="di mid-key" value=¡>
-			</div>
-		</div>
-		<div class=section-title>Logic and compare</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di mid-key" value=&&>
-				<input type=button class="di mid-key" value=||>
-				<input type=button class="di mid-key" value=^^>
-				<input type=button class="di mid-key" value=¬>
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value="==">
-				<input type=button class="di mid-key" value="<>">
-				<input type=button class="di mid-key" value="<">
-				<input type=button class="di mid-key" value="<=">
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value=">">
-				<input type=button class="di mid-key" value=">=">
-				<input type=button class="di mid-key" value=∈>
-				<input type=button class="di mid-key" value=∋>
-			</div>
-		</div>
-		<div class=section-title>Bit and vector</div>
-		<div class="key-section">
-			<div class=key-row>
-				<input type=button class="di mid-key" value=&>
-				<input type=button class="di mid-key" value=|>
-				<input type=button class="di mid-key" value=^>
-				<input type=button class="di mid-key" value=~>
-			</div>
-			<div class=key-row>
-				<input type=button class="di mid-key" value=·>
-				<input type=button class="di mid-key" value=§>
-				<input type=button class="di mid-key" value=¤>
-				<input type=button class="di mid-key" value=``>
-			</div>
-		</div>
-	</div>
 </nav>
 
 <jp-split-h grid-template="1fr 6px 1fr">
@@ -618,15 +651,15 @@ textarea {
 </jp-split-h>
 
 <aside>
-	<input type=button style="height:32px; width:100%" value=CALCULATE id=CALSUB><br>
+	<input type=button style="height:32px; width:100%" value=RUN id=CALSUB><br>
 	<br>
-	<p class=hint-kbd>⌘↩ or Ctrl↩ to calculate</p>
+	<p class=hint-kbd>⌘↩ or Ctrl↩ to run</p>
 	When INPUT<br>
 	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * → ×				</label><br>
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷				</label><br>
 	<br>
-	When CALCULATE<br>
-	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Code evaluation	</label><br>
+	When RUN<br>
+	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Code evaluation ( prog )	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×			</label><br>
 	<label for=CONV_NUM			><input type=checkbox id=CONV_NUM		checked	> Convert numeric	</label><br>
 	<label for=CONV_PAREN		><input type=checkbox id=CONV_PAREN		checked	> Convert ([{}])	</label><br>
@@ -636,7 +669,7 @@ textarea {
 	<label>Round precision:</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
 	<br>
 	<label for=KEEP_SESSION	><input type=checkbox id=KEEP_SESSION	> Keep session between runs	</label><br>
-	<p class=hint-kbd>Bindings in the source always share within one CALCULATE. When unchecked, each CALCULATE also starts with a fresh context.</p>
+	<p class=hint-kbd>Bindings in the source always share within one RUN. When unchecked, each RUN also starts with a fresh context.</p>
 </aside>
 
 <footer>
@@ -682,7 +715,6 @@ const
 SOURCE = document.getElementById( 'SOURCE' )
 ,	LINE_NUMS = document.getElementById( 'line-nums' )
 ,	RESULT = document.getElementById( 'RESULT' )
-,	MODE_TABS = document.getElementById( 'MODE_TABS' )
 ,	NAV_TOGGLE = document.getElementById( 'NAV_TOGGLE' )
 ,	ASIDE_TOGGLE = document.getElementById( 'ASIDE_TOGGLE' )
 
@@ -701,16 +733,15 @@ NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.bo
 ASIDE_TOGGLE.onclick = () => SetAsideCollapsed( !document.body.classList.contains( 'aside-collapsed' ) )
 
 let
-currentMode = 'CALCULATOR'
-,	loadingSample = false
+loadingSample = false
 
 const
-PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Graphics.slip' ] )
+PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Koch.slip' ] )
 ,	SAMPLE_MODES = new Map( [
 		[ 'Samples.sugared.slip', 'CALCULATOR' ]
 	,	[ 'Samples.slip', 'CODE' ]
 	,	[ 'Mandelbrot.slip', 'CODE' ]
-	,	[ 'Graphics.slip', 'CODE' ]
+	,	[ 'Koch.slip', 'CODE' ]
 	] )
 
 const
@@ -828,6 +859,7 @@ InsertToSOURCE = _ => {
 	const $ = SOURCE.selectionStart
 	SOURCE.value = SOURCE.value.substring( 0, $ ) + _ + SOURCE.value.substring( SOURCE.selectionEnd )
 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + _.length )
+	SyncLineNums()
 	SOURCE.focus()
 }
 const
@@ -838,7 +870,7 @@ InsertPairToSOURCE = _ => {
 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + 1 )
 	SOURCE.focus()
 }
-KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
+KEY_RET		.onclick = () => PROGRAM_MODE.checked ? InsertToSOURCE( '\n' ) : Calculate()
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 document.querySelectorAll( 'input.di' ).forEach(
 	_ => _.onclick = () => /^[([{].?[)\]}]$/.test( _.value )
@@ -874,45 +906,48 @@ SOURCE.onkeydown = ev => {
 		break
 	}
 }
+//	Two windows onto one setting: the box on the keypad and the one in the
+//	settings pane.  PROGRAM_MODE stays the one the evaluator reads.
+//
+//	RUN goes with it.  In the calculator a line is the whole of what is being
+//	said and ⏎ finishes it, so a second key that also runs would be a question to
+//	answer every time rather than a key — which is how the Tab5's panel puts it.
+//	In programming mode ⏎ starts another line instead, and RUN is what finishes
+//	the lot.
 const
-ModeUsesProgramEvaluation = mode => mode === 'CODE'
-
-const
-SyncMode = () => (
-	PROGRAM_MODE.checked = ModeUsesProgramEvaluation( currentMode )
-,	document.querySelectorAll( '[data-mode-panel]' ).forEach(
-		_ => _.hidden = _.dataset.modePanel !== currentMode
-	)
-,	MODE_TABS.querySelectorAll( '.mode-tab' ).forEach(
-		_ => _.classList.toggle( 'active', _.dataset.mode === currentMode )
-	)
+SyncProgram = from => (
+	from === PROG_KEY
+	?	PROGRAM_MODE.checked = PROG_KEY.checked
+	:	PROG_KEY.checked = PROGRAM_MODE.checked
+,	CALCULATE.hidden = !PROGRAM_MODE.checked
+,	CALCULATE.parentNode.classList.toggle( 'no-run', !PROGRAM_MODE.checked )
+,	KEY_RET.value = PROGRAM_MODE.checked ? '⏎' : 'RUN'
+,	KEY_RET.title = PROGRAM_MODE.checked ? 'newline' : 'run'
 )
-const
-SetMode = mode => {
-	const wasProgram = ModeUsesProgramEvaluation( currentMode )
-	,	willProgram = ModeUsesProgramEvaluation( mode )
-	if (
-		!loadingSample
-		&& SOURCE.value.trim()
-		&& wasProgram !== willProgram
-		&& !confirm( 'Switch mode? The source is kept but line semantics change (see SPEC).' )
-	) {
-		return
-	}
-	currentMode = mode
-	SyncMode()
+PROG_KEY.onchange = () => SyncProgram( PROG_KEY )
+PROGRAM_MODE.onchange = () => SyncProgram( PROGRAM_MODE )
+
+//	Reset: the source, what it printed, and any canvas it drew.  The Tab5's
+//	Reset throws the saved session away too; here there is nothing saved but the
+//	text, and this is it.
+RESET.onclick = () => {
+	if( SOURCE.value.trim() && !confirm( 'Clear the source and the results?' ) ) return
+	RemoveCanvas()
+	SOURCE.value = ''
+	RESULT.textContent = ''
+	SyncLineNums()
+	SOURCE.focus()
 }
-MODE_TABS.querySelectorAll( '.mode-tab' ).forEach( _ => _.onclick = () => SetMode( _.dataset.mode ) )
-PROGRAM_MODE.onchange = () => SetMode( PROGRAM_MODE.checked ? 'CODE' : 'CALCULATOR' )
 const
 LoadSample = path => fetch( './' + path ).then(
 	_ => _.text()
 ).then(
 	text => {
-		const needsProgram = PROGRAM_SAMPLES.has( path )
+		//	A sample knows whether it is a program; the keypad it wants is the
+		//	reader's business, not the sample's.
 		loadingSample = true
-		currentMode = SAMPLE_MODES.get( path ) ?? ( needsProgram ? 'CODE' : 'CALCULATOR' )
-		SyncMode()
+		PROGRAM_MODE.checked = ( SAMPLE_MODES.get( path ) ?? ( PROGRAM_SAMPLES.has( path ) ? 'CODE' : 'CALCULATOR' ) ) === 'CODE'
+		SyncProgram( PROGRAM_MODE )
 		loadingSample = false
 		SOURCE.value = text
 		SyncLineNums()
@@ -925,19 +960,18 @@ document.querySelectorAll( '[data-sample]' ).forEach(
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
-,	localStorage.setItem( 'MODE', currentMode )
+,	localStorage.setItem( 'PROGRAM_MODE', PROGRAM_MODE.checked ? '1' : '' )
 ,	localStorage.setItem( 'KEEP_SESSION', KEEP_SESSION.checked ? '1' : '' )
 )
 
 const
 InitUI = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
-,	currentMode = localStorage.getItem( 'MODE' ) ?? 'CALCULATOR'
-,	currentMode === 'PROGRAMMING' && ( currentMode = 'CODE' )
+,	PROGRAM_MODE.checked = localStorage.getItem( 'PROGRAM_MODE' ) === '1'
+,	SyncProgram( PROGRAM_MODE )
 ,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '‹', '›' )
 ,	SetAsideCollapsed( localStorage.getItem( 'aside-collapsed' ) !== '0' )
 ,	KEEP_SESSION.checked = localStorage.getItem( 'KEEP_SESSION' ) === '1'
-,	SyncMode()
 ,	SyncLineNums()
 )
 InitUI()

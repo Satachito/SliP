@@ -1,0 +1,40 @@
+//	Koch curve and Koch snowflake, drawn on a canvas.
+//
+//	This was a page of its own with the drawing written in JavaScript and the SliP
+//	for it sitting in a comment underneath.  It is the SliP that runs now.
+//
+//	`Koch` is recursive: below three pixels it draws the segment and moves along
+//	it, and above three it draws four of itself with a turn between each — out
+//	sixty degrees, back a hundred and twenty, out sixty again.  That is the whole
+//	of the curve.  Each call binds its own length in the { } around the four, so
+//	the frames do not read each other's.
+
+( 'WH = 300 )
+
+(	'Koch = '(
+		(	@ < 3 ?
+			[	( c2d:lineTo{ @ 0 }:translate{ @ 0 } )
+				(	{	( 'n = ( @ ÷ 3 ) )
+						( n:Koch:rotate( π ÷ 3 ) )
+						( n:Koch:rotate( -π × 2 ÷ 3 ) )
+						( n:Koch:rotate( π ÷ 3 ) )
+						( n:Koch )
+					}:$
+				)
+			]
+		)
+	)
+)
+
+//	The curve: one side, across the middle of the canvas.
+( 'c2d = { WH WH }:canvas:beginPath:translate{ 0 ( WH ÷ 2 ) }:moveTo[ 0 0 ] )
+( WH:Koch:stroke )
+
+//	The snowflake: three of them, turned into a triangle.  The side of an
+//	equilateral triangle inscribed in a circle is √3 times the radius.
+( 'L = WH ÷ 2 × sqrt( 3 ) )
+( 'c2d = { WH WH }:canvas:beginPath:translate{ ( WH ÷ 2 ) 0 }:moveTo[ 0 0 ]:rotate( π × 2 ÷ 3 ) )
+{	( L:Koch:rotate( -π × 2 ÷ 3 ) )
+	( L:Koch:rotate( -π × 2 ÷ 3 ) )
+	( L:Koch:stroke )
+}
