@@ -26,7 +26,13 @@ fail=0
 #	name — the shell overwrites $_ with the previous command's last argument.
 for src in conformance/cases/*.slip; do
 	want="${src%.slip}.out"
-	if got="$( "$SLIP" -p "$src" 2>&1 )" && [ "$got" = "$( cat "$want" )" ]; then
+	#	CR is stripped before comparing.  A console program on Windows writes
+	#	CRLF, which is that host's business and not the language's — the suite is
+	#	here to describe SliP, not to insist every implementation agree with Unix
+	#	about how a line ends.  The stripping is not in the pipeline that runs the
+	#	implementation, because then the exit status would be tr's.
+	if got="$( "$SLIP" -p "$src" 2>&1 )" && got="$( printf '%s\n' "$got" | tr -d '\r' )" \
+	&& [ "$got" = "$( cat "$want" )" ]; then
 		pass=$(( pass + 1 ))
 	else
 		printf '  FAIL %s\n' "$src"
@@ -42,6 +48,7 @@ for src in conformance/errors/*.slip; do
 		fail=$(( fail + 1 ))
 		continue
 	fi
+	got="$( printf '%s\n' "$got" | tr -d '\r' )"
 	case "$got" in
 	*"$want"* )
 		pass=$(( pass + 1 ))
