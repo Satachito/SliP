@@ -104,6 +104,18 @@ struct CodeEditor: UIViewRepresentable {
 		view.delegate = context.coordinator
 		view.text = text
 
+		//	No system keyboard on the phone.  Everything the language is written in
+		//	is on the keypad below — digits, operators, both alphabets, the function
+		//	names — and the keyboard's only contribution was to cover it.
+		//
+		//	An empty inputView is a keyboard of no height rather than no keyboard:
+		//	the caret still blinks, the selection still works, long-press still
+		//	offers Paste, and a hardware keyboard still types.  The iPad keeps its
+		//	own, where there is room for both.
+		if UIDevice.current.userInterfaceIdiom == .phone {
+			view.inputView = UIView( frame: .zero )
+		}
+
 		//	At the end, so that the first key pressed lands after the text rather
 		//	than in front of it.
 		view.selectedRange = NSRange( location: ( text as NSString ).length, length: 0 )

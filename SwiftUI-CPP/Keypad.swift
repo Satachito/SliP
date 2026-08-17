@@ -190,12 +190,20 @@ Keypad: View {
 	@State private var
 	section		= KeypadSection.latin
 
+	#if !os(macOS)
+	@Environment( \.horizontalSizeClass ) private var
+	sizeClass
+	#endif
+
 	var
 	body: some View {
 		#if os(macOS)
 		Sidebar
 		#else
-		Tabbed
+		//	Regular width is an iPad, or a large phone turned sideways.  Either way
+		//	there is room to put the block beside the alphabets rather than under
+		//	them, and then neither has to give up any height.
+		if sizeClass == .regular { Beside } else { Tabbed }
 		#endif
 	}
 
@@ -227,24 +235,64 @@ Keypad: View {
 	private var
 	Tabbed: some View {
 		VStack( spacing: 4 ) {
-			Picker( "", selection: $section ) {
-				ForEach( KeypadSection.allCases ) { Text( $0.rawValue ).tag( $0 ) }
-			}
-			.pickerStyle( .segmented )
-			.labelsHidden()
-
-			switch section {
-			case .operators:	Grid( SliPKeys.rows( SliPKeys.operators, 12 ), height: 32, size: 13 )
-			case .functions:	Grid( SliPKeys.rows( SliPKeys.functions, 6 ), height: 32, size: 12 )
-			case .latin:		Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: 32, size: 14 )
-			case .greek:		Grid( SliPKeys.rows( SliPKeys.greek, 12 ), height: 32, size: 14 )
-			}
-
+			Tabs
+			Chosen
 			Divider()
-
-			Grid( SliPKeys.fixed, height: 42, size: 19 )
+			Block
 		}
 		.padding( 6 )
+	}
+
+	//	The same two halves, side by side.  The block keeps the width it would have
+	//	had on a phone rather than growing with the screen: it is the part that does
+	//	not move, and a digit that changes size when the iPad is turned is a digit
+	//	you have to look at before pressing.  The alphabets take the rest, which is
+	//	where the room was wanted — thirteen letters across at last have space.
+	private var
+	Beside: some View {
+		HStack( alignment: .top, spacing: 12 ) {
+			Block
+				.frame( width: 340 )
+			VStack( spacing: 4 ) {
+				Tabs
+				Chosen
+			}
+			//	Drawn as an overlay rather than as a Divider between the two.  A
+			//	Divider in an HStack asks for all the height there is, and the
+			//	keypad would take half the iPad to show two hundred points of keys.
+			.overlay( alignment: .leading ) {
+				Rectangle()
+					.frame( width: 0.5 )
+					.offset( x: -6 )
+					.foregroundStyle( .separator )
+			}
+		}
+		.padding( 6 )
+	}
+
+	private var
+	Tabs: some View {
+		Picker( "", selection: $section ) {
+			ForEach( KeypadSection.allCases ) { Text( $0.rawValue ).tag( $0 ) }
+		}
+		.pickerStyle( .segmented )
+		.labelsHidden()
+	}
+
+	//	Named for what it is rather than Section, which SwiftUI has taken.
+	@ViewBuilder private var
+	Chosen: some View {
+		switch section {
+		case .operators:	Grid( SliPKeys.rows( SliPKeys.operators, 12 ), height: 32, size: 13 )
+		case .functions:	Grid( SliPKeys.rows( SliPKeys.functions, 6 ), height: 32, size: 12 )
+		case .latin:		Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: 32, size: 14 )
+		case .greek:		Grid( SliPKeys.rows( SliPKeys.greek, 12 ), height: 32, size: 14 )
+		}
+	}
+
+	private var
+	Block: some View {
+		Grid( SliPKeys.fixed, height: 42, size: 19 )
 	}
 
 	private func

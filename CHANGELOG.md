@@ -11,7 +11,23 @@ where they disagree, `C++/` is correct.
 
 ## Unreleased
 
+### Added
+
+- **The iPad splits the keypad in two.** The digits sit on the left at the width
+  they have on a phone, and the alphabets take the rest of the room to the right
+  of them. The block does not grow with the screen: it is the part that does not
+  move, and a digit that changes size when the iPad is turned is a digit you have
+  to look at before pressing. A large phone in landscape gets the same, where
+  height is the scarce thing.
+
 ### Changed
+
+- **The iPhone no longer raises the system keyboard.** Everything the language is
+  written in is on the keypad — digits, operators, both alphabets, the function
+  names — and the keyboard's only contribution was to cover it. The caret,
+  selection, long-press Paste and any hardware keyboard all still work; it is a
+  keyboard of no height rather than no keyboard. The iPad keeps its own, where
+  there is room for both.
 
 - **The macOS and iOS keypads follow the panels.** Both had shown the same flat
   two dozen symbols since the Xcode targets were written. iOS now has the Tab5's
