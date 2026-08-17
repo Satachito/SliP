@@ -38,3 +38,14 @@
 
 //	JSON round trip, keys sorted
 ( `{ "a": 3.14, "b": "x" }` : byJSON : toJSON )
+
+//	A negated numeric constant is negative when it is used, not only when it is
+//	printed.  Negate() flipped a flag and REPR() showed it, so `-π` read back as
+//	`(-π)` and looked right, while every operator asked for the value through
+//	Double() — which ignored the flag.  `-π × 2` was `+π × 2`, silently, on every
+//	host.  Compared rather than printed, because the printed form is fixed-point.
+( ( -π ) == ( 0 - π ) )
+( ( -π × 2 ) == ( 0 - π × 2 ) )
+( ( -𝑒 + 1 ) == ( 1 - 𝑒 ) )
+( ( -π ÷ π ) == ( 0 - 1 ) )
+( -∞ < 0 )

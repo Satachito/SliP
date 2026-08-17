@@ -26,7 +26,7 @@
 //	Version of the language as implemented by C++/, reported by `slip -v` and by
 //	the WASM build.  See CHANGELOG.md.
 inline constexpr auto
-SLIP_VERSION = "2.1.1";
+SLIP_VERSION = "2.2.0";
 
 #define	Cast	dynamic_pointer_cast
 #define	SP		shared_ptr
@@ -178,7 +178,10 @@ NumericConstant : Numeric {
 		,	{ "φ"		, numbers::phi							}
 		};
 		if( !numericConstants.count( $ ) ) _Z( "eh?" );
-		return numericConstants[ $ ];
+		//	Negate() flips this flag and REPR() prints it, so `-π` read back as
+		//	`(-π)` and looked right; every operator asks for the value through
+		//	here, and here it was dropped. `-π × 2` was `+π × 2`.
+		return negative ? -numericConstants[ $ ] : numericConstants[ $ ];
 	}
 };
 
