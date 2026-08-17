@@ -9,6 +9,27 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
+## Unreleased
+
+### Changed
+
+- **The macOS and iOS keypads follow the panels.** Both had shown the same flat
+  two dozen symbols since the Xcode targets were written. iOS now has the Tab5's
+  arrangement — four alphabets tabbed over one unchanging block of digits, one
+  showing — and macOS has the web calculator's, which is the block and then
+  everything else under a heading, in a column beside the source. The keys land
+  where the caret is rather than at the end of the document, and ⏎ runs the line
+  in the calculator and starts another in programming, the way it does on the
+  other two hosts.
+
+### Fixed
+
+- **Two keys that put in characters the reader has never heard of.** The Tab5's
+  operator panel offered `√` and the web page's offered `‹`, both of them there
+  to round a grid out to forty-eight. There are forty-seven single-character
+  operators; the forty-eighth slot is now empty, and pressing it no longer
+  answers `Undefined name`.
+
 ## 2.2.0 — 2026-08-17
 
 The language is unchanged.  This release is four more hosts, a session that

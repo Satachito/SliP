@@ -18,6 +18,10 @@ struct CodeEditor: NSViewRepresentable {
 	@Binding var
 	text: String
 
+	//	The keypad's way in — see EditorProxy.
+	var
+	proxy: EditorProxy?
+
 	func
 	makeNSView( context: Context ) -> NSScrollView {
 
@@ -42,12 +46,19 @@ struct CodeEditor: NSViewRepresentable {
 		view.delegate			= context.coordinator
 		view.string				= text
 
+		//	At the end, so that the first key pressed lands after the text rather
+		//	than in front of it.
+		view.setSelectedRange( NSRange( location: ( text as NSString ).length, length: 0 ) )
+
+		proxy?.view = view
+
 		return scroll
 	}
 
 	func
 	updateNSView( _ scroll: NSScrollView, context: Context ) {
 		guard let view = scroll.documentView as? NSTextView else { return }
+		proxy?.view = view
 		//	Only when the model moved out from under the view — assigning while
 		//	the user types would reset the insertion point on every keystroke.
 		if view.string != text { view.string = text }
@@ -76,6 +87,9 @@ struct CodeEditor: UIViewRepresentable {
 
 	@Binding var text: String
 
+	//	The keypad's way in — see EditorProxy.
+	var proxy: EditorProxy?
+
 	func makeUIView(context: Context) -> UITextView {
 		let view = UITextView()
 		view.autocorrectionType = .no
@@ -89,10 +103,17 @@ struct CodeEditor: UIViewRepresentable {
 		view.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
 		view.delegate = context.coordinator
 		view.text = text
+
+		//	At the end, so that the first key pressed lands after the text rather
+		//	than in front of it.
+		view.selectedRange = NSRange( location: ( text as NSString ).length, length: 0 )
+
+		proxy?.view = view
 		return view
 	}
 
 	func updateUIView(_ view: UITextView, context: Context) {
+		proxy?.view = view
 		if view.text != text { view.text = text }
 	}
 

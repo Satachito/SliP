@@ -228,7 +228,10 @@ static Row const	OPERATORS[] = {
 	{ 12, { "!", "#", "$", "%", "*", "/", ";", "?", "`", "~", "<", ">" } },
 	{ 12, { "¦", "§", "¬", "¶", "·", "¿", "∈", "∋", "∥", "£", "¤", "¡" } },
 	{ 12, { "⊂", "⊃", "∩", "∪", "⊤", "⊥", "∅", "«", "»", "⟨", "⟩", "±" } },
-	{ 12, { "&", "|", "^", "[", "]", "{", "}", ",", "\"", "\\", "∞", "√" } },
+	//	Forty-seven of them and the grid holds forty-eight, so the last one is
+	//	blank.  It used to be √, which the reader has never heard of — a key that
+	//	puts in a character nobody knows is a key that answers "Undefined name".
+	{ 12, { "&", "|", "^", "[", "]", "{", "}", ",", "\"", "\\", "∞", BLANK } },
 };
 
 //	Three panels over one block, one of them showing.  There is no arrangement

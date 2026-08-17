@@ -18,15 +18,13 @@ ContentView: View {
 	@AppStorage( Preference.keepSessionKey ) private var
 	keepSession	= false
 
-	//	The operators are most of the language and none of them are on a keyboard.
-	private static let
-	symbols = [
-		"'", "@", "£", "¶", "¤", "∅",
-		"×", "÷", "±", "·", "∈", "∋",
-		"¿", "¬", "¡", "¦", "§", "∥",
-		"⟨", "⟩", "«", "»", "𝑒", "π",
-	]
+	//	The keypad's way into the editor's caret — see EditorProxy.
+	@StateObject private var
+	editor		= EditorProxy()
 
+	//	The keypad is where the panels are followed: macOS keeps it beside the
+	//	source the way the web page does, iOS keeps it under the source the way the
+	//	Tab5 does.  See Keypad.swift.
 	var
 	body: some View {
 		VStack( spacing: 0 ) {
@@ -34,6 +32,8 @@ ContentView: View {
 			Divider()
 			#if os(macOS)
 			HSplitView {
+				Keys
+					.frame( minWidth: 210, idealWidth: 242, maxWidth: 380 )
 				Editor
 				Results
 			}
@@ -55,12 +55,19 @@ ContentView: View {
 					}
 				}
 			}
+			Divider()
+			Keys
 			#endif
 		}
 		#if os(macOS)
 		.frame( minWidth: 720, minHeight: 420 )
 		#endif
 		.focusedSceneValue( \.slipRunAction, Run )
+	}
+
+	private var
+	Keys: some View {
+		Keypad( proxy: editor, program: mode == .programming, run: Run )
 	}
 
 	private var
@@ -92,6 +99,13 @@ ContentView: View {
 			Text( "SliP \( SliPEngine.version )" )
 				.foregroundStyle( .secondary )
 				.font( .caption )
+			#else
+			//	The Tab5 keeps Delete up here with Reset, away from the digits, and
+			//	for the same reason: it is not a character.  It is on this host at
+			//	all because the system keyboard — which has one — covers the keypad
+			//	whenever it is up.
+			Button { editor.backspace() } label: { Image( systemName: "delete.left" ) }
+				.accessibilityLabel( "Delete" )
 			#endif
 
 			Button( "Run" ) { Run() }
@@ -102,34 +116,10 @@ ContentView: View {
 
 	private var
 	Editor: some View {
-		VStack( spacing: 0 ) {
-			CodeEditor( text: $document.text )
-			Divider()
-			Keypad
-		}
+		CodeEditor( text: $document.text, proxy: editor )
 		#if os(macOS)
-		.frame( minWidth: 280 )
+			.frame( minWidth: 280 )
 		#endif
-	}
-
-	private var
-	Keypad: some View {
-		#if os(macOS)
-		let columnCount = 12
-		#else
-		let columnCount = 6
-		#endif
-		return LazyVGrid( columns: Array( repeating: GridItem( .flexible(), spacing: 4 ), count: columnCount ), spacing: 4 ) {
-			ForEach( Self.symbols, id: \.self ) { symbol in
-				Button( symbol ) { document.text.append( symbol ) }
-					.buttonStyle( .bordered )
-					.font( .system( .body, design: .monospaced ) )
-					#if !os(macOS)
-					.frame( minHeight: 32 )
-					#endif
-			}
-		}
-		.padding( 6 )
 	}
 
 	private var
