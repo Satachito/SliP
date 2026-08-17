@@ -22,6 +22,15 @@ where they disagree, `C++/` is correct.
 
 ### Changed
 
+- **The iPhone stopped dividing its screen in two.** It had given the source most
+  of the height whether there was anything in it or not, and the answers the rest
+  whether they fitted or not. Now it does what the Tab5 does: bottom up, the
+  keypad, the line being written at whatever height its text needs, and the
+  transcript in everything that is left. The transcript already carried both
+  halves — every answer is printed under the form it came from — which is what
+  makes one region enough. It stays anchored to the bottom, so an answer appears
+  next to what was written rather than somewhere above it.
+
 - **The iPhone no longer raises the system keyboard.** Everything the language is
   written in is on the keypad — digits, operators, both alphabets, the function
   names — and the keyboard's only contribution was to cover it. The caret,

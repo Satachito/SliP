@@ -90,6 +90,13 @@ struct CodeEditor: UIViewRepresentable {
 	//	The keypad's way in — see EditorProxy.
 	var proxy: EditorProxy?
 
+	//	When bound, the editor reports the height its text would like and the
+	//	caller decides how much of it to grant.  The phone gives the line being
+	//	written what it needs and the transcript everything else, which is the
+	//	Tab5's arrangement; scrolling stays on, so a program longer than the cap
+	//	still scrolls inside what it was given.
+	var height: Binding< CGFloat >?
+
 	func makeUIView(context: Context) -> UITextView {
 		let view = UITextView()
 		view.autocorrectionType = .no
@@ -127,6 +134,19 @@ struct CodeEditor: UIViewRepresentable {
 	func updateUIView(_ view: UITextView, context: Context) {
 		proxy?.view = view
 		if view.text != text { view.text = text }
+		Report( view )
+	}
+
+	//	Asynchronously, because this is called during a layout pass and the height
+	//	is somebody's @State: writing it here is a change to the view tree while
+	//	the view tree is being read.
+	func Report( _ view: UITextView ) {
+		guard let height, view.bounds.width > 0 else { return }
+		let	fitted = view.sizeThatFits(
+			CGSize( width: view.bounds.width, height: .greatestFiniteMagnitude )
+		).height
+		guard abs( height.wrappedValue - fitted ) > 0.5 else { return }
+		DispatchQueue.main.async { height.wrappedValue = fitted }
 	}
 
 	func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -138,6 +158,7 @@ struct CodeEditor: UIViewRepresentable {
 
 		func textViewDidChange(_ textView: UITextView) {
 			parent.text = textView.text
+			parent.Report( textView )
 		}
 	}
 }

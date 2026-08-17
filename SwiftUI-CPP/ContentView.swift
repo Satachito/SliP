@@ -22,6 +22,13 @@ ContentView: View {
 	@StateObject private var
 	editor		= EditorProxy()
 
+	#if !os(macOS)
+	//	What the source would like to be tall, which the phone grants up to a point
+	//	— see Shared.
+	@State private var
+	editorHeight	= CGFloat( 0 )
+	#endif
+
 	//	The keypad is where the panels are followed: macOS keeps it beside the
 	//	source the way the web page does, iOS keeps it under the source the way the
 	//	Tab5 does.  See Keypad.swift.
@@ -47,12 +54,7 @@ ContentView: View {
 						Results
 					}
 				} else {
-					VStack( spacing: 0 ) {
-						Editor
-							.frame( height: geometry.size.height * 0.58 )
-						Divider()
-						Results
-					}
+					Shared
 				}
 			}
 			Divider()
@@ -69,6 +71,29 @@ ContentView: View {
 	Keys: some View {
 		Keypad( proxy: editor, program: mode == .programming, run: Run )
 	}
+
+	#if !os(macOS)
+	//	The phone does not have the width for two panes and did not have the height
+	//	for two either: it gave the source most of the screen whether there was
+	//	anything in it or not, and the answers the rest whether they fitted or not.
+	//
+	//	So it does what the Tab5 does.  Bottom up: the keypad, the line being
+	//	written, and the transcript in whatever is left.  The transcript already
+	//	carries both halves — every answer is printed under the form it came from —
+	//	which is what makes one region enough.
+	private var
+	Shared: some View {
+		VStack( spacing: 0 ) {
+			Results
+				//	An answer is worth going back to the bottom for; UIPrint on the
+				//	board says the same thing by resetting its scroll.
+				.defaultScrollAnchor( .bottom )
+			Divider()
+			CodeEditor( text: $document.text, proxy: editor, height: $editorHeight )
+				.frame( height: min( max( editorHeight, 52 ), 260 ) )
+		}
+	}
+	#endif
 
 	private var
 	Toolbar: some View {
