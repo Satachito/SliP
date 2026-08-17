@@ -1,0 +1,7 @@
+# The image is about 0.8 MB, and there is 16 MB on the board.  4 MB for the app
+# is headroom rather than need — the panel will bring fonts and buffers with it.
+#
+# Name,     Type, SubType, Offset,   Size
+nvs,        data, nvs,     0x9000,   0x6000
+phy_init,   data, phy,     0xf000,   0x1000
+factory,    app,  factory, 0x10000,  0x400000

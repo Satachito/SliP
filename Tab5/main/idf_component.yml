@@ -1,0 +1,17 @@
+#	The panel is Espressif's board support package for this exact board, not a
+#	panel driver wired up here.  M5 changed the display partway through
+#	production — an ILI9881C with a separate GT911 up to October 2025, an ST7123
+#	that is both at once after it — and the two take different timings, different
+#	initialisation and different touch drivers.  The BSP knows which is fitted
+#	because it asks the I2C bus, exactly as `:i2c` does.
+#
+#	Doing it by hand here worked as far as lighting up the DSI and no further.
+#	The numbers involved belong to the board, and the people who make the board
+#	publish them; SliP's business is the language.
+#
+#	`_noglib` is the same package without LVGL, which this does not use: the
+#	drawing here is a frame buffer and a font, as it is on the RP2350.
+
+dependencies:
+  idf: ">=5.4"
+  espressif/m5stack_tab5_noglib: "^1.2.0"
