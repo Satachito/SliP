@@ -54,4 +54,8 @@ runs:
 
         #	Proof, in this step, that the install is usable — rather than a
         #	confusing "emcc: not found" in somebody else's step.
-        emcc -v 2>&1 | head -1
+        #
+        #	sed rather than head, which closes the pipe after the line it wanted
+        #	and leaves emcc to die of SIGPIPE.  This shell runs with pipefail, so
+        #	that came back as a failed step under a correct version number.
+        emcc -v 2>&1 | sed -n 1p
