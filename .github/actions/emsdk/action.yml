@@ -1,0 +1,57 @@
+name: Emscripten
+description: Installs the current Emscripten SDK and puts emcc on PATH.
+
+#	This does by hand what mymindstorm/setup-emsdk did, and it exists because of
+#	how that failed.  Twice in one afternoon a run died on HTTP 429 from
+#	codeload — once fetching the emsdk archive, and once fetching the action
+#	itself, before any step of the job had run.  The second kind cannot be
+#	retried from inside the job: there is no job yet.  A local action is read
+#	out of the checkout, so nothing is fetched to start it, and the download
+#	that is left is a shell command that can be told to try again.
+#
+#	`latest` is deliberate and unchanged.  The point of building here is to find
+#	out that a current Emscripten breaks the build; a version pinned to keep CI
+#	quiet would be a version nobody was checking.  What is not deliberate is a
+#	red run because GitHub was busy, and that is all this separates.
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        #	set -e only.  emsdk_env.sh is somebody else's script and is sourced
+        #	into this shell below; under set -u an unset variable inside it would
+        #	fail the step for no reason of ours.
+        set -e
+
+        Retry() {
+          for I in 1 2 3 4 5; do
+            "$@" && return 0
+            echo "::warning::$* failed on attempt $I"
+            sleep $(( I * 20 ))
+          done
+          echo "::error::$* failed five times"
+          return 1
+        }
+
+        Retry git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+        cd "$RUNNER_TEMP/emsdk"
+        Retry ./emsdk install latest
+        ./emsdk activate latest
+        . ./emsdk_env.sh
+
+        #	emsdk_env.sh has just put its directories on this shell's PATH; which
+        #	ones they are is the SDK's business and has changed between releases,
+        #	so hand the later steps whatever it chose rather than a guess.
+        if ! echo "$PATH" | tr ':' '\n' | grep emsdk >> "$GITHUB_PATH"; then
+          echo "::error::emsdk_env.sh put nothing on PATH"
+          exit 1
+        fi
+        for V in EMSDK EM_CONFIG EMSDK_NODE EMSDK_PYTHON; do
+          eval "W=\${$V-}"
+          if [ -n "$W" ]; then echo "$V=$W" >> "$GITHUB_ENV"; fi
+        done
+
+        #	Proof, in this step, that the install is usable — rather than a
+        #	confusing "emcc: not found" in somebody else's step.
+        emcc -v 2>&1 | head -1
