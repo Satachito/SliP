@@ -90,6 +90,14 @@ struct CodeEditor: UIViewRepresentable {
 	//	The keypad's way in — see EditorProxy.
 	var proxy: EditorProxy?
 
+	//	One line, which is what the calculator's input is: Return finishes it
+	//	rather than lengthening it, and there is nothing to scroll.
+	var singleLine = false
+
+	//	What Return does when there is only one line — the keypad's ⏎ calls the
+	//	same thing, and a hardware keyboard should not be a different calculator.
+	var onReturn: ( () -> Void )?
+
 	//	When bound, the editor reports the height its text would like and the
 	//	caller decides how much of it to grant.  The phone gives the line being
 	//	written what it needs and the transcript everything else, which is the
@@ -110,6 +118,8 @@ struct CodeEditor: UIViewRepresentable {
 		view.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
 		view.delegate = context.coordinator
 		view.text = text
+		view.isScrollEnabled = !singleLine
+		if singleLine { view.textContainer.maximumNumberOfLines = 1 }
 
 		//	No system keyboard on the phone.  Everything the language is written in
 		//	is on the keypad below — digits, operators, both alphabets, the function
@@ -132,33 +142,51 @@ struct CodeEditor: UIViewRepresentable {
 	}
 
 	func updateUIView(_ view: UITextView, context: Context) {
+		context.coordinator.parent = self
 		proxy?.view = view
 		if view.text != text { view.text = text }
 		Report( view )
 	}
 
-	//	Asynchronously, because this is called during a layout pass and the height
-	//	is somebody's @State: writing it here is a change to the view tree while
-	//	the view tree is being read.
+	//	Asynchronously, and the measuring happens there too.  Two reasons, and the
+	//	second one is why the width is read late: this is called during a layout
+	//	pass, so writing somebody's @State here would be changing the view tree
+	//	while it is being read — and on the pass that follows a mode change the
+	//	view is brand new and has no width yet, so measuring it now measures
+	//	nothing and the editor keeps whatever height it had.
 	func Report( _ view: UITextView ) {
-		guard let height, view.bounds.width > 0 else { return }
-		let	fitted = view.sizeThatFits(
-			CGSize( width: view.bounds.width, height: .greatestFiniteMagnitude )
-		).height
-		guard abs( height.wrappedValue - fitted ) > 0.5 else { return }
-		DispatchQueue.main.async { height.wrappedValue = fitted }
+		guard let height else { return }
+		DispatchQueue.main.async {
+			guard view.bounds.width > 0 else { return }
+			let	fitted = view.sizeThatFits(
+				CGSize( width: view.bounds.width, height: .greatestFiniteMagnitude )
+			).height
+			if abs( height.wrappedValue - fitted ) > 0.5 { height.wrappedValue = fitted }
+		}
 	}
 
 	func makeCoordinator() -> Coordinator { Coordinator(self) }
 
 	final class Coordinator: NSObject, UITextViewDelegate {
-		private let parent: CodeEditor
+		var parent: CodeEditor
 
 		init(_ parent: CodeEditor) { self.parent = parent }
 
 		func textViewDidChange(_ textView: UITextView) {
 			parent.text = textView.text
 			parent.Report( textView )
+		}
+
+		//	Return is not a character in a one-line field; it is the end of the
+		//	line, which is somebody else's business.
+		func textView(
+			_ view: UITextView
+		,	shouldChangeTextIn range: NSRange
+		,	replacementText text: String
+		) -> Bool {
+			guard parent.singleLine, text == "\n" else { return true }
+			parent.onReturn?()
+			return false
 		}
 	}
 }

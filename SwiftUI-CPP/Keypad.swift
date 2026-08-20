@@ -352,12 +352,15 @@ Keypad: View {
 	//	Drawn rather than left to .bordered, which keeps a fixed inset on both
 	//	sides of its label.  Thirteen letters across a phone is a key thirty points
 	//	wide, and that inset ate most of it — `m` and `w` came out clipped.
-	private func
+	@ViewBuilder private func
 	Key( _ key: String, height: CGFloat, size: CGFloat ) -> some View {
+		if Blank( key ) {
+			Color.clear.frame( maxWidth: .infinity, minHeight: height, maxHeight: height )
+		} else {
 		Button {
 			Press( key )
 		} label: {
-			Text( Face( key ) )
+			Text( key )
 				.font( .system( size: size, design: .monospaced ) )
 				.fontWeight( key == KEY_RETURN ? .bold : .regular )
 				.lineLimit( 1 )
@@ -370,20 +373,17 @@ Keypad: View {
 				.contentShape( Rectangle() )
 		}
 		.buttonStyle( .plain )
-		.accessibilityLabel( Face( key ) )
+		.accessibilityLabel( key )
+		}
 	}
 
-	//	Whether this host's block carries a RUN of its own, which is what decides
-	//	how much work ⏎ has to do.
-	private static let
-	hasRun = SliPKeys.fixed.contains { $0.contains( KEY_RUN ) }
-
-	//	⏎ says what it will do.  Where it is the only way to finish a line it reads
-	//	RUN in the calculator, because there a line is the whole of what is being
-	//	said; where RUN is a key beside it, ⏎ is a newline and says so.
+	//	RUN belongs to programming mode.  In the calculator ⏎ is what finishes a
+	//	line — that is the whole of what is being said — and a key beside it doing
+	//	the same thing is one more thing to read.  Its place is kept empty rather
+	//	than closed up, because the block does not move.
 	private func
-	Face( _ key: String ) -> String {
-		key == KEY_RETURN && !program && !Self.hasRun ? KEY_RUN : key
+	Blank( _ key: String ) -> Bool {
+		key == KEY_RUN && !program
 	}
 
 	private func
@@ -396,7 +396,7 @@ Keypad: View {
 		case KEY_RUN:
 			run()
 		case KEY_RETURN:
-			Self.hasRun || program ? proxy.insert( "\n" ) : run()
+			program ? proxy.insert( "\n" ) : run()
 		default:
 			//	A function is a name, and a name wants air around it: `sin π`
 			//	reads, `sinπ` is one name that does not exist.

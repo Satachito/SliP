@@ -13,6 +13,29 @@ where they disagree, `C++/` is correct.
 
 ### Added
 
+- **The calculator on iOS is a REPL.** A line at the bottom, the answers above it,
+  and ⏎ finishes the line: it joins the history — which is the document, and so
+  the file — is answered under itself in the transcript, and the line clears. The
+  session carries on between lines, because `'r = 2` and then `2πr` is the whole
+  point of a calculator that has names in it. RUN is not there; ⏎ is what
+  finishes a line, and a key beside it doing the same thing is one more thing to
+  read. Programming mode is unchanged: the input is the document, ⏎ starts
+  another line, and RUN runs the lot.
+
+- **A file says which mode it is in.** A first line of `//SLIP` opens it in
+  programming mode, and programming mode writes that line. Without it a file is a
+  calculator's history — one expression a line, which is what the calculator
+  writes. The marker is a comment in the language's own syntax, so it costs the
+  interpreter nothing.
+
+- **Changing mode rewrites the text into what the other mode would have written.**
+  Calculator to programming parenthesises each line; programming to calculator
+  puts each toplevel form on one line and takes those parentheses back off.
+  Comments keep their own line either way — folded into a form, a comment takes
+  the rest of it with them — and a parenthesis inside a string is a character
+  rather than a depth. Leaving the text alone was the alternative, and it would
+  have made every line a syntax error in the mode it arrived in.
+
 - **The ESP-IDF host runs on the ESP32-C3 as well.** `set-target esp32c3` is the
   whole of it — no second project, no `#ifdef` in the interpreter — plus a
   `sdkconfig.defaults.esp32c3` for what the part itself needs. The one thing that
