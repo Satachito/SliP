@@ -1,342 +1,153 @@
-
+<!DOCTYPE html>
+<html lang=en>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
 <title>SliP Tutorial</title>
 
 <style>
-pre {
-;	background-color	: #f7f7f7
-;	padding				: 8px
-;	border				: 1px solid black
-}
+:root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.55 }
+body { max-width: 760px; margin: 0 auto; padding: 24px }
+h1, h2, h3 { line-height: 1.2 }
+h2 { margin-top: 2.2em; padding-bottom: .25em; border-bottom: 1px solid #8888 }
+pre { overflow-x: auto; padding: 12px; border: 1px solid #8888; border-radius: 6px; background: #8881; font-family: ui-monospace, Menlo, Consolas, monospace }
+code { font-family: ui-monospace, Menlo, Consolas, monospace }
+table { border-collapse: collapse; width: 100% }
+th, td { border: 1px solid #8888; padding: 6px 8px; text-align: left }
+.note { padding: 10px 12px; border-left: 4px solid #5787d8; background: #5787d814 }
 </style>
 
-<body style="width: 640px; overflow: scroll">
+<body>
 <h1>SliP Tutorial</h1>
-<p>SliP is a programmable symbolic calculator. You can use it as a normal calculator, then define variables and small functions in the same source when you need more.</p>
-<p>Language reference: <a href=SPEC.html>SPEC</a> (operators, tokens, modes).</p>
-<hr>
 
-<h2>Screen shot and area names</h2>
+<p>SliP is a programmable symbolic calculator. Start with ordinary calculations, then add names, functions, lists, matrices, JSON, and browser graphics without changing languages.</p>
+<p><a href=index.html>Open the calculator</a> · <a href=SPEC.html>Language reference</a></p>
 
-<img src=SS.Tutorial.png></img>
+<h2>Meet the screen</h2>
 
-<h2>Normal mode</h2>
-
-Make sure 'Programming mode' checkbox in the Option Area is unchecked.
-
-<h3>Five-minute tour</h3>
-
-Try these lines first. Press CALCULATE after entering them.
-
-<pre>
-2π
-'r = 2
-2πr
-cosπ
-</pre>
-
-The second line binds <code>r</code> for this run. Later lines in the same source can use it (all evaluated in one CALCULATE).
-
-If typing the symbols is awkward, these ASCII aliases are also available:
-
-<pre>
-pi       // same as π
-euler    // same as 𝑒
-inf      // same as ∞
-</pre>
-
-<h3>Basic usage</h3>
-
-Enter an expression in the Source Area and press the CALCULATE button in the Keypad Area to display the value of the entered expression in the Result Area.
-If Include Source is checked in the Option Area, the evaluated expression will also be displayed in the Result Area.
-<br>
-<br>
-Let's type<pre>2+3</pre>in the Source Area. You can do this either from the keyboard or from the keypad.
-Press the CALCULATE button and you will see the value 5 in the Result Area.
-<br>
-<br>
-Next, type<pre>2-3</pre>under the formula above.
-Then press the CALCULATE button and you will see a value of -1 in the Result Area.
-<br>
-<br>
-Next, let's type<pre>2×3</pre>under the above formula.
-You can also enter the multiplication symbol × from the keypad by pressing * on the keyboard if the '* → ×' checkbox in the Option Area is checked.
-If you press the CALCULATE button, you will see the value 6 in the Result Area.
-<br>
-<br>
-The same goes for division. Let's type<pre>2÷3</pre>under the formula above.
-The division symbol ÷ can be easily entered from the keypad, or by pressing / on the keyboard if the '/ → ÷' checkbox in the Option Area is checked.
-If you press the CALCULATE button, you will see the value 0.6666... in the Result Area.
-<br>
-<br>
-The order of the operators in the four arithmetic operations is calculated from left to right,
-but multiplication and division are calculated before addition and subtraction.
-<br>
-<br>
-The order of computation can also be specified using parentheses.
-The operators in parentheses are calculated before the other operators.
-Let's enter the following formula
-<pre>
-2 × 3 ÷ (4+5-6)
-</pre>
-Pressing the CALCULATE button will calculate (4+5-6) first and this expression will be equal to 2×3÷3 and the value 2 will be displayed.
-<br>
-<br>
-The multiplication operator can be omitted.
-Let's enter the following equation
-<pre>
-2 3 4
-</pre>
-Pressing the CALCULATE button will make this expression equal 2 × 3 × 4 and display the value 24.
-<br>
-<br>
-
-<h3>Prefix operators</h3>
-Several prefix operators are available. The main ones are as follows.
-<pre>
-+ means the next number as it is
-- means negative of the next number
-
-3-+2 is evaluated as 1
-3--2 is evaluated as 5
-3-(-2) is also evaluated as 5
-</pre>
-
-<h3>Constants</h3>
-The following three symbols have pre-set values.
-<pre>
-π	//  PI; ASCII alias: pi
-𝑒	//  Napier number; ASCII alias: euler
-∞	//  Infinity; ASCII alias: inf
-</pre>
-ASCII <code>e</code> is a normal name, not Napier's number.
-
-<h3>Variables</h3>
-A variable is a named memory.
-For example, to make a variable named r remember the value 2, you would do the following
-<pre>
-'r = 2
-</pre>
-Now let's enter the following equation
-<pre>
-2 × π × r
-</pre>
-Pressing the CALCULATE button displays the value 12.566370614359172, which is the circumference of a circle of radius 2.
-This equation can also be made to look like the following using the abbreviation of the multiplication operator above.
-<pre>
-2πr
-</pre>
-
-The names of the variables are actually a bit complicated, but they generally look like the following.
-Basically, it starts with a letter, followed by repeating letters or numbers, and ends with a space.
-For example
-<pre>
-abc
-na12me
-</pre>
-These names have not yet been defined and will result in 'undefined' error.
-
-Greek letters and ∞ are used with only one letter. For example, abπcd∞ef is five names: ab, π, cd, ∞, and ef.
-
-<h3>Arithmetic Functions</h3>
-Trigonometric, exponential, logarithmic, and other arithmetic functions are available. They can also be entered from the Keypad Area.
-Let's enter the following equation
-<pre>
-cosπ
-</pre>
-Pressing the CALCULATE button displays the value -1.
-
-The arithmetic functions atan2, pow, hypot, max, and min require two or more parameters. You can pass parameters to them in an array.
-<pre>
-atan2[ 1 1 ]	// → 0.7853981633974483
-pow[ 2 3 ]	// → 8
-hypot[ 3 4 ]	// → 5
-max[ 3 2 1 ]	// → 3
-min[ 3 2 1 ]	// → 1
-</pre>
-
-<h3>Primitives</h3>
-¤ returns a random float in [0, 1). For a bounded range use random with two arguments, e.g. random[ 1 2 ].
-Neither is secure enough for cryptography.
-<pre>
-¤
-random[ 1 2 ]
-</pre>
-<br>
-<br>
-<h2>Programming mode</h2>
-
-SliP is also a programming language; it is a functional language influenced by Lisp.
-You can use this feature by checking the 'Programming mode' checkbox in the Option Area. If checked, the Keypad Area will look like the screenshot below and you can easily enter various arithmetic symbols.
-
-<img src=SS.Programming.png></img>
-
-<h3>Spanning lines</h3>
-Expressions that had to be written to fit on a single line in NORMAL mode can be written in PROGRAMMING mode by enclosing the entire expression in parentheses and spanning lines.
-
-<h3>Basics</h3>
-
-Programming SliP is done by evaluating what is called an SliP object.
-The main SliP objects are
+<p>The center of the calculator is stacked vertically:</p>
 <ul>
-<li> Numbers</li>
-<li> Strings</li>
-<li> Operators</li>
-<li> Names</li>
-<li> Sentences</li>
-<li> and etc.</li>
+	<li><strong>Result</strong> is on top.</li>
+	<li><strong>Source</strong>, with line numbers, is underneath.</li>
+	<li>Drag the bar between them to change their heights.</li>
 </ul>
 
-The numbers, strings, and operators return themselves when evaluated.
+<p>The keypad is on the right. Its <strong>RUN</strong> key evaluates the whole source. The <strong>prog</strong> checkbox switches between Calculator and Programming modes. Settings are in the drawer on the left. Use the chevrons in the top bar to open or close either side panel.</p>
+<p>You can also run with <kbd>⌘↩</kbd> on macOS or <kbd>Ctrl↩</kbd> on Windows and Linux.</p>
 
-<pre>
-3	// → 3
-"abc"	// → "abc"
-×	// → ×
-</pre>
+<h2>Calculator mode</h2>
 
-A list of SliP objects enclosed in parentheses is a sentence, and when evaluated, various calculations are performed according to the operators in the sentence.
+<p>Leave <strong>prog</strong> unchecked. Each non-empty line is one calculator expression. Press <strong>RUN</strong> after entering:</p>
+<pre>1 + 2 × 3
+cosπ
+[1 2 3] + 10</pre>
 
-First, let's look at a function that returns the value of its argument multiplied by two as an example.
+<p>The result area shows each expression followed by its value:</p>
+<pre>7
+-1
+[ [ 1 2 3 ] 10 ]</pre>
 
-<pre>
-( 'mul2 = '( @ × 2 ) )
-</pre>
+<p>A bad line reports an error, but the remaining lines still run. Names created by an earlier line are available to later lines during the same run:</p>
+<pre>'r = 2
+2πr</pre>
+<p>This produces <code>2</code> and <code>12.5663706143592</code>.</p>
 
-The meaning of this sentence is to assign the expression '( @ × 2 )' to the name 'mul2'.
-' is called 'quote' and when evaluated returns the next SliP object without evaluation.
-'@' denotes an argument.
+<div class=note>Every RUN starts with a fresh context and reads the complete source from the beginning. Put definitions in the source if later expressions need them.</div>
 
-Let's use the function we just defined named mul2.
+<h3>Entering operators</h3>
 
-<pre>
-( 3 : mul2 ) // → 6
-</pre>
+<p>Use the keypad for symbols that are awkward to type. With the default input settings, typing <code>*</code> inserts <code>×</code>, and <code>/</code> inserts <code>÷</code>.</p>
+<pre>2 × 3 ÷ ( 4 + 5 - 6 )  // → 2
+2 3 4                  // → 24</pre>
+<p>Adjacent numeric values multiply implicitly, which is why <code>2πr</code> works.</p>
 
-Name returns the assigned SliP object when evaluated. In this case, the expression is ( @ × 2 ).
-: is an infix operator. It evaluates the right side (R) with the left side (L) as the stack-top argument <code>@</code>.
+<h3>Constants and functions</h3>
 
-<h3>NIL</h3>
-SliP does not have a boolean type. Instead, empty lists such as [] are called NIL and treated like false in other computer languages.
-Non-NIL results of comparisons are truthy and print as <strong>T</strong>.
-Therefore, all boolean operators such as == return NIL or non-NIL.
+<table>
+	<tr><th>Symbol</th><th>Meaning</th><th>ASCII alias</th></tr>
+	<tr><td><code>π</code></td><td>Pi</td><td><code>pi</code></td></tr>
+	<tr><td><code>𝑒</code></td><td>Euler's number</td><td><code>euler</code></td></tr>
+	<tr><td><code>∞</code></td><td>Infinity</td><td><code>inf</code></td></tr>
+</table>
 
-<h3>Recursive</h3>
-Let's try to calculate the factorial of N by programming.
-The factorial of N is the factorial of (N-1) multiplied by N. This can be expressed in SliP as follows.
-<pre>
-( 'factorial = '(
-    @ == 0 ?
-    [   1
+<p>ASCII <code>e</code> remains an ordinary name. Common functions use prefix syntax:</p>
+<pre>cosπ                 // → -1
+sqrt 9               // → 3
+atan2[ 1 1 ]         // → 0.785398163397448
+pow[ 2 3 ]           // → 8
+hypot[ 3 4 ]         // → 5
+max[ 3 2 1 ]         // → 3</pre>
+
+<p><code>¤</code> returns a random number in <code>[0, 1)</code>. Use <code>random[ low high ]</code> for another range. These random values are not suitable for cryptography.</p>
+
+<h2>Programming mode</h2>
+
+<p>Check <strong>prog</strong> when the source contains complete SliP forms that span lines. Programming mode parses the source as a sequence of top-level forms and stops at the first error, because later forms commonly depend on earlier ones.</p>
+<p>Calculator mode adds parentheses around each line for you. Programming mode does not, so complete expressions are written explicitly:</p>
+<pre>( 'r = 2 )
+( 2 π r )</pre>
+
+<h3>Functions and application</h3>
+
+<p>A quoted expression can be bound to a name. <code>@</code> reads the current argument, and <code>:</code> applies its left side to its right side:</p>
+<pre>( 'double = '( @ × 2 ) )
+( 3 : double )                 // → 6</pre>
+<p>Here, quote (<code>'</code>) returns the following object without evaluating it immediately.</p>
+
+<h3>Conditions and recursion</h3>
+
+<p>The empty list <code>[]</code> is false; other values are truthy. Comparisons return <code>T</code> or <code>[]</code>. The <code>?</code> operator selects one of two deferred branches:</p>
+<pre>( 'factorial = '(
+    @ == 0 ? [
+        1
         ( @ × ( @ - 1 ):factorial )
     ]
 ) )
-( 4 : factorial ) // → 24
-</pre>
+( 4 : factorial )             // → 24</pre>
 
-<h5>==</h5>
-This operator returns non-NIL if the left and right arguments are equal, NIL otherwise.
+<h3>Lists and blocks</h3>
 
-<h5>?</h5>
-This operator evaluates the first element of the right argument if the left argument is non-null, otherwise it evaluates the second element of the right argument.
-
-<h3>String</h3>
-SliP strings are available in two notations. One is to use " and the other is to use `.
-
-<pre>
-"This is `STRING` enclosed in \""	// → "This is `STRING` enclosed in ""
-`This is "STRING" enclosed in \``	// → `This is "STRING" enclosed in ``
-</pre>
-
-<h3>Dictionary</h3>
-
-SliP also has a dictionary type.
-There is no native notation for describing dictionaries, but they can be created from JSON using 'byJSON' operator.
-When pulling dictionary values, you can use strings and names as keys.
-
-<pre>
-(   'json = `{
-        "a" : 1
-    ,   "b" : "The String"
-    ,   "c" : [ 2, "Another string" ]
-    ,   "d" : {
-            "A" : 3
-        ,   "B" : [ 4, "Yet another string" ]
-        }
-    }`:byJSON
-)
-//	→ { a : 1 , b : "The String" ...
-
-( json:"d" )
-//	→ { A : 3 , B : [ 4 "Yet another string" ] }
-
-( json:'d )
-//	→ { A : 3 , B : [ 4 "Yet another string" ] }
-</pre>
-
-<h3>Context</h3>
-Contexts are the environment in which variables are evaluated.
-Each context has its own dictionary and is a chained structure.
-When looking for a value for a variable, if it is not found in the variable's own dictionary, it will go to a higher-level dictionary.
-
-<h3>Procedure evaluation</h3>
-If you list sentences in {}, they are evaluated in order.
-A new context is created at this time.
-A list of values for the statement being evaluated is returned.
-
-<pre>
-{   ( 'a = 2 )
+<p>Square brackets make a literal list. Braces evaluate sentences in a new child context and return their values:</p>
+<pre>{   ( 'a = 2 )
     ( 'b = 3 )
     ( a + b )
 }
-//	→ [ 2 3 5 ]
-</pre>
+// → [ 2 3 5 ]</pre>
 
-
-<h3>Shared-context block</h3>
-If you list sentences in «», they are evaluated in order in the <em>current</em> context (assignments persist).
-No new context is created.
-<pre>
-«   ( 'a = 2 )
+<p>Bindings made inside <code>{ }</code> do not escape it. Guillemets evaluate in the current context, so their bindings remain:</p>
+<pre>«   ( 'a = 2 )
     ( 'b = 3 )
     ( a + b )
 »
-//	→ [ 2 3 5 ]
-</pre>
+// → [ 2 3 5 ]</pre>
+<p><code>¶</code> returns a dictionary snapshot of the current context.</p>
 
-<h3>Difference between Procedure and Shared-context block</h3>
+<h3>Strings and JSON</h3>
 
-Operator ¶ snapshots the current context as a Dictionary.
+<p>Strings can use double quotes or backticks. Backticks are convenient when the text contains double quotes:</p>
+<pre>"hello"
+`a string with "quotes"`</pre>
 
-<pre>
-¶
-//  → {}
+<p><code>byJSON</code> converts JSON text to SliP values. A dictionary accepts either a string or a quoted name as its key:</p>
+<pre>( 'data = `{"radius":2,"name":"circle"}`:byJSON )
+( data:'radius )               // → 2
+( data:"name" )               // → "circle"</pre>
 
-{   ( 'a = 2 )
-    ( 'b = 3 )
-    ( a + b )
-}
-//  → [ 2 3 5 ]
+<h2>Graphics samples</h2>
 
-¶
-//  → {}
+<p>The buttons in the top bar load ready-to-run examples. Calculator and Code demonstrate the two evaluation modes. The graphics examples automatically enable <strong>prog</strong>:</p>
+<ul>
+	<li><strong>Mandelbrot</strong> — a WebGL fractal.</li>
+	<li><strong>Koch</strong> — recursive Canvas 2D curves.</li>
+	<li><strong>Complex</strong> — the orbit <code>zₙ₊₁ = zₙ² + c</code>; edit <code>R</code> and <code>I</code>.</li>
+	<li><strong>Fern</strong> — a Barnsley fern; edit <code>DEPTH</code>.</li>
+	<li><strong>Lorenz</strong> — a Lorenz attractor; edit <code>SIGMA</code>, <code>RHO</code>, <code>BETA</code>, or <code>DT</code>.</li>
+</ul>
 
-«   ( 'a = 2 )
-    ( 'b = 3 )
-    ( a + b )
-»
-//  → [ 2 3 5 ]
+<p>Press <strong>RUN</strong> after changing a sample. Drag a canvas to move it, or double-click it to close it. Graphics operators are available in the Web version; native apps currently focus on calculation and programming.</p>
 
-¶
-//  → { a : 2 , b : 3 }
-</pre>
+<h2>Where to go next</h2>
 
-After a «» block, new bindings remain in the current context. After { }, bindings made inside the block are not visible outside (unless captured otherwise).
-
-<h2>Finally</h2>
-Full operator and token rules: <a href=SPEC.html>Language reference (SPEC)</a>.
-We hope you enjoy SliP.
-
-<br>
-<br>
-<br>
+<p>Open the <a href=SPEC.html>Language reference</a> for the complete token, operator, precedence, mode, and implementation rules. The examples in the top bar are also ordinary editable SliP source—changing them is often the quickest way to learn.</p>
+<p>Have fun exploring.</p>
 </body>
+</html>

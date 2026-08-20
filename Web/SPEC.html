@@ -1,11 +1,25 @@
 
+<!DOCTYPE html>
+<html lang=en>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
 <title>SliP Language Reference</title>
 
 <style>
 pre {
-;	background-color	: #f7f7f7
+;	background-color	: #8881
 ;	padding				: 8px
 ;	border				: 1px solid black
+}
+:root {
+;	color-scheme		: light dark
+;	font-family		: system-ui, sans-serif
+;	line-height		: 1.5
+}
+body {
+;	max-width			: 760px
+;	margin				: 0 auto
+;	padding				: 24px
 }
 table {
 ;	border-collapse		: collapse
@@ -20,18 +34,18 @@ th, td {
 }
 </style>
 
-<body style="width: 720px; overflow: scroll; font-family: sans-serif">
+<body>
 <h1>SliP Language Reference</h1>
-<p>Version 2.0.0, 2026-07-25. SliP is a programmable symbolic calculator. Implementation in <code>C++/</code> is authoritative. See also <a href=Tutorial.html>Tutorial</a>.</p>
+<p>Version 2.3.0, 2026-08-21. SliP is a programmable symbolic calculator. Implementation in <code>C++/</code> is authoritative. See also the <a href=Tutorial.html>Tutorial</a> and <a href=../CHANGELOG.md>changelog</a>.</p>
 <hr>
 
 <h2>1. Two modes</h2>
 <table>
 <tr><th>Mode</th><th>Checkbox</th><th>Input</th></tr>
-<tr><td><strong>Calculator</strong></td><td>Programming mode off</td><td>One expression per line (§2)</td></tr>
-<tr><td><strong>Programming</strong></td><td>Programming mode on</td><td>Full SliP; <code>//</code> comments stripped</td></tr>
+<tr><td><strong>Calculator</strong></td><td><code>prog</code> off</td><td>One expression per line (§2)</td></tr>
+<tr><td><strong>Programming</strong></td><td><code>prog</code> on</td><td>Full SliP top-level forms; <code>//</code> comments stripped</td></tr>
 </table>
-<p>Both modes use a fresh context on each <strong>CALCULATE</strong> by default. Bindings from earlier lines in the source are visible to later lines in the same run. Check <strong>Keep session between runs</strong> in the settings panel to retain bindings across runs.</p>
+<p>Both modes use a fresh context on every <strong>RUN</strong>. Bindings from earlier forms or lines in the source are visible to later ones during that run. The source is the complete, reproducible program; bindings are not carried from one RUN to the next.</p>
 
 <h2>2. Calculator (sugared) mode</h2>
 <h3>Line wrapping</h3>
@@ -54,7 +68,7 @@ max[ 3 2 1 ]  list argument
 
 <h3>Assignment</h3>
 <pre>'r = 2</pre>
-<p>becomes <code>( 'r = 2 )</code> and binds <code>r</code> for the rest of that CALCULATE run.</p>
+<p>becomes <code>( 'r = 2 )</code> and binds <code>r</code> for the rest of that RUN.</p>
 
 <h2>3. Names and tokens</h2>
 <ul>
@@ -170,7 +184,8 @@ random[ 1 2 ]     →  uniform [1, 2)
 <p><code>operand:toJSON</code> · `` literal`:byJSON ``</p>
 
 <h2>7. Web graphics</h2>
-<p>WASM build adds Canvas/WebGL operators (<code>canvas</code>, <code>fill</code>, <code>stroke</code>, …). Not in CLI. Canvases are removed on each CALCULATE. The graphics surface is currently sample-driven rather than specified operator by operator.</p>
+<p>The WASM build adds Canvas/WebGL operators (<code>canvas</code>, <code>fill</code>, <code>stroke</code>, <code>path2D</code>, shader helpers, …). They are not available in the CLI or native apps. Existing canvases are removed at the start of each RUN.</p>
+<p>The top bar includes editable SliP graphics programs: Mandelbrot (WebGL), Koch, Complex orbit, Barnsley fern, and Lorenz attractor (Canvas 2D). The graphics surface is currently sample-driven rather than specified operator by operator.</p>
 
 <h2>8. Constants</h2>
 <pre>∞  𝑒  π  γ  φ  log2e  log10e  ln2  ln10</pre>
@@ -185,3 +200,4 @@ random[ 1 2 ]     →  uniform [1, 2)
 <br>
 <br>
 </body>
+</html>

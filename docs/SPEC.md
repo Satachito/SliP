@@ -1,7 +1,7 @@
 # SliP Language Reference
 
-**Version:** 2.0.0 (2026-07-25) — see [CHANGELOG](../CHANGELOG.md)  
-**Source of truth:** `C++/Read.cpp`, `C++/Eval.cpp`, `C++/SliP.cpp`  
+**Version:** 2.3.0 (2026-08-21) — see [CHANGELOG](../CHANGELOG.md)
+**Source of truth:** `C++/Read.cpp`, `C++/Eval.cpp`, `C++/SliP.cpp`, and `WASM/BuildJS.cpp` for Web graphics
 **Site:** https://slip.828.tokyo
 
 This document supersedes informal notes in the Tutorial where they conflict.
@@ -14,10 +14,10 @@ SliP has one evaluator and two ways to feed it source text.
 
 | Mode | UI checkbox | Input handling | Typical use |
 |------|-------------|----------------|-------------|
-| **Calculator (sugared)** | Programming mode **off** | One expression per line; see §2 | `2πr`, `sin(0)`, `'r = 2` |
-| **Programming** | Programming mode **on** | Toplevel SliP forms; `//` comments stripped | `( 'fact = '… )`, `{ … }`, `« … »` |
+| **Calculator (sugared)** | `prog` **off** | One expression per line; see §2 | `2πr`, `sin(0)`, `'r = 2` |
+| **Programming** | `prog` **on** | Toplevel SliP forms; `//` comments stripped | `( 'fact = '… )`, `{ … }`, `« … »` |
 
-Both modes share the same **context within one CALCULATE**: bindings from earlier lines in the source are visible to later lines. By default each **CALCULATE** starts from a fresh context; enable **Keep session between runs** in the settings panel to retain bindings across runs (§5.3).
+Both modes share the same **context within one RUN**: bindings from earlier forms or lines in the source are visible to later ones. Every **RUN** starts from a fresh context. The source is the complete, reproducible program; bindings are not carried from one RUN to the next (§5.3).
 
 ---
 
@@ -66,9 +66,9 @@ A line may use programming operators, including quote-assign:
 'r = 2
 ```
 
-Because the line becomes `( 'r = 2 )`, the binding is stored for the rest of that CALCULATE run (§5).
+Because the line becomes `( 'r = 2 )`, the binding is stored for the rest of that RUN (§5).
 
-### 2.5 Pre-CALCULATE transforms (web UI)
+### 2.5 Pre-RUN transforms (Web UI)
 
 Optional normalizations applied before evaluation:
 
@@ -195,9 +195,9 @@ Neither `{ }` nor `« »` uses threads: their sentences share one context and so
 may depend on each other's bindings in order. They differ only in *which*
 context that is — `« »` writes through to the caller, `{ }` does not.
 
-For concurrency, see `∥` (§4.6), which isolates each branch instead of sharing.
+For concurrency, see `∥` (§4.5), which isolates each branch instead of sharing.
 
-### 4.6 Parallel evaluation `∥`
+### 4.5 Parallel evaluation `∥`
 
 `∥ '[ s₁ s₂ … ]` evaluates the elements **concurrently**, each in its own child
 context, and collects the results **in source order**:
@@ -236,7 +236,7 @@ real threads. The browser (WASM) build evaluates them sequentially — see
 [Known Issues](KNOWN_ISSUES.md). Both produce the same value; only elapsed time
 differs.
 
-### 4.5 Truth values
+### 4.6 Truth values
 
 | Value | Meaning | Printed |
 |-------|---------|---------|
@@ -256,9 +256,11 @@ A **Context** is a name → value map plus an optional parent. Lookup walks upwa
 
 `¶` evaluates to a **Dict** copy of the current context's bindings.
 
-### 5.3 Web session
+### 5.3 RUN and session
 
-By default the WASM embed resets context at the start of each **CALCULATE** (bindings and argument stack cleared; the source editor is the program). With **Keep session between runs** checked in the web UI, context persists across CALCULATE until reload or until the option is turned off.
+Every host treats **RUN** as one reading of the complete source from the beginning. The context and argument stack are reset first. Bindings remain visible between forms or calculator lines within that RUN, but do not persist into the next RUN.
+
+The calculator interfaces may also accept one line at a time with **⏎**. That live calculator session carries bindings between accepted lines and appends them to the editable history. RUN is still deterministic: it replays the complete history from a fresh context.
 
 ### 5.4 Mode comparison
 
@@ -268,7 +270,8 @@ By default the WASM embed resets context at the start of each **CALCULATE** (bin
 | Line wrapping | `( line )` | None — full parser |
 | Multiline sentence | One line only (unless user types `(` … `)`) | `( …` spanning lines `… )` |
 | Toplevel | One result per line | REPL: many forms, JSON array of results |
-| Session | Fresh each CALCULATE by default; optional persist (web UI) | Fresh each CALCULATE by default; optional persist (web UI) |
+| RUN | Fresh context; reads every line from the start | Fresh context; reads every top-level form from the start |
+| Error handling | Report the bad line and continue | Stop at the first error |
 
 ---
 
@@ -294,7 +297,7 @@ Priority: **lower number binds looser** (split first). Omitted infix between num
 | `¡` | Throw error with operand REPR |
 | `~` | Bitwise NOT (`Bits`) |
 | `¬` | Logical NOT (Nil ↔ truthy) |
-| `∥` | Evaluate a list's elements concurrently, isolated, in source order (§4.6) |
+| `∥` | Evaluate a list's elements concurrently, isolated, in source order (§4.5) |
 
 ### 6.3 Unary
 
@@ -393,7 +396,16 @@ Not cryptographically secure.
 
 When built for WASM (`WASM/BuildJS.cpp`), additional operators bind to browser Canvas / WebGL (e.g. `canvas`, `fill`, `stroke`, `path2D`, shader helpers). These are **not** available in the CLI binary.
 
-Graphics canvases are created on `document.body` and removed on each CALCULATE in the main UI.
+Graphics canvases are created on `document.body` and removed at the start of each RUN in the main Web UI. Drag a canvas to move it; double-click it to close it.
+
+The top bar includes editable SliP graphics programs:
+
+- **Mandelbrot** — WebGL.
+- **Koch** — recursive Canvas 2D curves.
+- **Complex** — the orbit `zₙ₊₁ = zₙ² + c`.
+- **Fern** — a Barnsley fern.
+- **Lorenz** — a Lorenz attractor.
+
 The graphics surface is sample-driven for now; see [Known Issues](KNOWN_ISSUES.md).
 
 ---
@@ -405,8 +417,13 @@ The graphics surface is sample-driven for now; see [Known Issues](KNOWN_ISSUES.m
 | `C++/` | **Canonical** interpreter |
 | `WASM/` | Web build (`SliP.js`) |
 | `Web/` | Calculator UI |
-| `SwiftUI-CPP/` | The macOS app, shipped as `SliP.app` |
+| `SwiftUI-CPP/` | The shared iOS/iPadOS/macOS app |
 | `Bridge/` | Objective-C++ and Swift sides of the embedding bridge |
+| `Android/` | Android app embedding the canonical engine through JNI |
+| `Windows/` | Native Windows app |
+| `ESP32/` | Serial REPL firmware for ESP32 targets |
+| `RP2350/` | Touch calculator and serial REPL firmware |
+| `Tab5/` | Touch calculator host |
 | `Swift/` | The original Swift interpreter; not spec-compliant, and no longer built |
 | `JS/` | Original JavaScript engine, published as npm `@satachito/slip`; not spec-compliant |
 | `JP/` | Utility submodule (`JP.h`) for the C++ core; shared with other projects |
