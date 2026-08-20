@@ -13,6 +13,16 @@ where they disagree, `C++/` is correct.
 
 ### Added
 
+- **The ESP-IDF host runs on the ESP32-C3 as well.** `set-target esp32c3` is the
+  whole of it — no second project, no `#ifdef` in the interpreter — plus a
+  `sdkconfig.defaults.esp32c3` for what the part itself needs. The one thing that
+  was not a preference: the REPL is pinned to core 1 so that a long evaluation
+  starves only the idle task the watchdog has been told to ignore, and a
+  single-core part has no core 1 to pin it to. `CONFIG_FREERTOS_UNICORE` decides
+  that now, and there the watchdog gives up on core 0's idle task instead.
+  Verified on the chip: 11 of 11 conformance cases over the wire, and a session
+  that survives a power cut.
+
 - **The iPad splits the keypad in two.** The digits sit on the left at the width
   they have on a phone, and the alphabets take the rest of the room to the right
   of them. The block does not grow with the screen: it is the part that does not

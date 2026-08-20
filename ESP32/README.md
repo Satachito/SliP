@@ -5,7 +5,9 @@ is the language and nothing else: a line in on the console UART, a value or an
 error out.
 
 Built and tested against a Freenove ESP32-WROOM dev board (ESP32-WROOM-32E,
-dual-core 240 MHz, 520 KB SRAM, 4 MB flash, no PSRAM) with ESP-IDF v5.x.
+dual-core Xtensa 240 MHz, 520 KB SRAM, 4 MB flash, no PSRAM) with ESP-IDF v5.x,
+and against an ESP32-C3 (single-core RISC-V 160 MHz, 400 KB SRAM, 4 MB flash) —
+see "Other targets" below.
 
 ## Build and flash
 
@@ -195,6 +197,24 @@ the 248 KB has already paid for.
 - **No file system, no Wi-Fi, no GPIO operators.** The language cannot reach the
   pins from here; this build is the interpreter and a console.
 
+## Other targets
+
+`set-target esp32c3` is the whole of it; there is no second project and no
+`#ifdef` in the interpreter. What the C3 needs beyond the shared defaults is in
+[`sdkconfig.defaults.esp32c3`](sdkconfig.defaults.esp32c3), which ESP-IDF reads
+after `sdkconfig.defaults` when that is the target.
+
+```sh
+idf.py set-target esp32c3 && idf.py -p /dev/cu.usbserial-210 flash monitor
+```
+
+One thing in `main.cpp` is not a preference. The REPL is pinned to core 1 so
+that a long evaluation starves only the idle task that `sdkconfig.defaults`
+excuses from the watchdog — and the C3 has no core 1. `CONFIG_FREERTOS_UNICORE`
+decides that now, and on a single-core part the watchdog gives up on core 0's
+idle task instead. Everything else about the port is shared: 776 KB of image
+against the ESP32's 720 KB, and the same 11 of 11 below.
+
 ## Verified on hardware
 
 [`conformance/board.py`](../conformance/board.py) drives the board over the
@@ -205,6 +225,9 @@ compared against the `.out` the desktop interpreter is held to:
 ```sh
 python3 conformance/board.py /dev/cu.usbserial-3110
 ```
+
+Both parts pass it. The listing below is the ESP32's; the C3 answers the same
+eleven.
 
 ```
   ok    apply.slip  (18 values)

@@ -60,7 +60,17 @@ static constexpr auto	STACK_BYTES	= 32 * 1024;
 //	The REPL runs on the APP CPU so that a long evaluation starves only the idle
 //	task of core 1, which sdkconfig.defaults takes off the task watchdog.  Core 0
 //	keeps its idle task, and its watchdog.
+//
+//	Unless there is no core 1.  The C3 is a single-core part, and asking for one
+//	is not a preference it can decline — xTaskCreatePinnedToCore asserts.  There
+//	the REPL runs on the only core there is, and the idle task it starves while
+//	evaluating is the one the watchdog is watching, so sdkconfig.defaults.esp32c3
+//	takes that one off it instead.
+#if CONFIG_FREERTOS_UNICORE
+static constexpr auto	CORE		= 0;
+#else
 static constexpr auto	CORE		= 1;
+#endif
 
 static SP< Context >	theContext		= MS< Context >();
 static auto				calculatorMode	= true;

@@ -1,0 +1,9 @@
+#	ESP32-C3 ( RISC-V, single core, 4 MB flash, no PSRAM ).  Read after
+#	sdkconfig.defaults, which carries everything that is not about the part.
+CONFIG_IDF_TARGET="esp32c3"
+
+#	There is one core, so the REPL runs on the same one as the idle task the
+#	watchdog watches — see CORE in main.cpp.  A long evaluation is the interpreter
+#	doing what it was asked, not a hang, and on the ESP32 it is core 1's idle task
+#	that is excused for exactly this reason.  Here it has to be core 0's.
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=n
