@@ -68,17 +68,14 @@ ContentView: View {
 					HStack( spacing: 0 ) {
 						Shared
 						Divider()
-						Keys( wide: false, fit: geometry.size.height )
+						Keys( shape: Shape( geometry ), fit: geometry.size.height )
 							.frame( width: KeysWidth( geometry.size.width ) )
 					}
 				} else {
 					VStack( spacing: 0 ) {
 						Shared
 						Divider()
-						//	A strip along the bottom of an iPad is wide and shallow,
-						//	which is the one shape that suits the two halves side by
-						//	side.
-						Keys( wide: geometry.size.width >= 700 )
+						Keys( shape: Shape( geometry ) )
 					}
 				}
 			}
@@ -119,15 +116,25 @@ ContentView: View {
 		min( max( width * 0.46, KEYS_W ), 560 )
 	}
 
+	//	Which shape of space the keypad is being given.  Roomy is measured on the
+	//	short side, which is the one that runs out: an iPad has six hundred points
+	//	of it whichever way up it is, and a phone never does.
 	private func
-	Keys( wide: Bool = false, fit: CGFloat? = nil ) -> some View {
+	Shape( _ geometry: GeometryProxy ) -> KeypadShape {
+		let	roomy = min( geometry.size.width, geometry.size.height ) >= 600
+		guard roomy else { return .tabbed }
+		return geometry.size.width > geometry.size.height ? .sidebar : .beside
+	}
+
+	private func
+	Keys( shape: KeypadShape = .sidebar, fit: CGFloat? = nil ) -> some View {
 		Keypad(
 			proxy:		editor
 		,	program:	mode == .programming
 		,	run:		Run
 		,	enter:		Accept
-		,	fit:		fit
-		,	wide:		wide
+		,	fit:		shape == .tabbed ? fit : nil
+		,	shape:		shape
 		)
 	}
 

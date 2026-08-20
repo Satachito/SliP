@@ -175,6 +175,18 @@ enum SliPKeys {
 	}
 }
 
+//	The three shapes the panel comes in, which are three shapes of space rather
+//	than three kinds of device.
+//
+//	  sidebar  a tall column with room across it — the block, then everything
+//	           else under a heading, scrolling.  A Mac window, an iPad on its side.
+//	  beside   a wide, shallow strip — the two halves side by side.  An iPad
+//	           standing up, with the keypad along the bottom.
+//	  tabbed   a small space of either shape — one alphabet of four over the
+//	           block.  A phone, whichever way it is held.
+enum
+KeypadShape { case tabbed, beside, sidebar }
+
 enum
 KeypadSection: String, CaseIterable, Identifiable {
 	case	operators	= "SliP"
@@ -224,25 +236,24 @@ Keypad: View {
 	var
 	fit			: CGFloat?
 
-	//	Whether there is width to spare.  The caller knows, because it knows the
-	//	shape of the space it is handing over: a strip along the bottom of an iPad
-	//	has width and nothing else, a column beside the display has height and
-	//	nothing else, and a size class cannot tell those two apart.
+	//	Which shape of space this has been given.  The caller knows, because it is
+	//	the one dividing the screen up; a size class cannot tell a column from a
+	//	strip, and both of those can be roomy or not.
 	var
-	wide		= false
+	shape		= KeypadShape.tabbed
 
 	//	iOS only, and it starts on the letters for the same reason the Tab5 does:
 	//	a name is the thing you cannot get at any other way.
 	@State private var
 	section		= KeypadSection.latin
 
-	var
+	@ViewBuilder var
 	body: some View {
-		#if os(macOS)
-		Sidebar
-		#else
-		if wide { Beside } else { Tabbed }
-		#endif
+		switch shape {
+		case .sidebar:	Sidebar
+		case .beside:	Beside
+		case .tabbed:	Tabbed
+		}
 	}
 
 	//	The web page's arrangement: the block, then everything else under a
@@ -250,17 +261,25 @@ Keypad: View {
 	//	is a keyboard right there for those.
 	private var
 	Sidebar: some View {
-		ScrollView {
+		//	A Mac is pointed at and an iPad is pressed, and twenty-two points is not
+		//	a fingertip.  The arrangement is the same either way; only the size of
+		//	what you are aiming at changes.
+		#if os(macOS)
+		let	block = CGFloat( 26 ), key = CGFloat( 22 ), name = CGFloat( 24 )
+		#else
+		let	block = CGFloat( 44 ), key = CGFloat( 36 ), name = CGFloat( 38 )
+		#endif
+		return ScrollView {
 			VStack( alignment: .leading, spacing: 0 ) {
-				Grid( SliPKeys.fixed, height: 26, size: 13 )
+				Grid( SliPKeys.fixed, height: block, size: block * 0.5 )
 				Divider()
 					.padding( .vertical, 8 )
 				Title( KeypadSection.operators.rawValue )
-				Grid( SliPKeys.rows( Self.operators, 8 ), height: 22, size: 11 )
+				Grid( SliPKeys.rows( Self.operators, 8 ), height: key, size: key * 0.5 )
 				Title( KeypadSection.functions.rawValue )
-				Grid( SliPKeys.rows( SliPKeys.functions, 3 ), height: 24, size: 11 )
+				Grid( SliPKeys.rows( SliPKeys.functions, 3 ), height: name, size: name * 0.46 )
 				Title( KeypadSection.greek.rawValue )
-				Grid( SliPKeys.rows( SliPKeys.greek, 8 ), height: 22, size: 12 )
+				Grid( SliPKeys.rows( SliPKeys.greek, 8 ), height: key, size: key * 0.55 )
 			}
 			.padding( 8 )
 		}
