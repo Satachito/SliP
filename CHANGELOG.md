@@ -9,7 +9,10 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
-## Unreleased
+## 2.3.0 — 2026-08-21
+
+The language is unchanged.  This release is the calculator learning to behave
+like one, and every host agreeing on where the keys go.
 
 ### Added
 

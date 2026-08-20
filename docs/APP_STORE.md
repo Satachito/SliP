@@ -5,8 +5,8 @@ iphonesimulator macosx`.  So there is one version to keep and two archives to
 make.
 
 - bundle ID: `tokyo.828.SliP`
-- version: `2.2.0`  ( `MARKETING_VERSION` )
-- build: `14`  ( `CURRENT_PROJECT_VERSION` )
+- version: `2.3.0`  ( `MARKETING_VERSION` )
+- build: `15`  ( `CURRENT_PROJECT_VERSION` )
 - minimum system: macOS 13.3, iOS 17.0
 - architectures: Apple silicon and Intel
 - App Sandbox: enabled
@@ -136,8 +136,10 @@ and at `https://slip.828.tokyo/Privacy.html`.
 `AppStore/Screenshots` has the six that 2.1.1 shipped with — Mac 1440x900,
 iPhone 6.5 1242x2688 and iPad 2048x2732, each in Japanese and English.  The
 version is in the file name, so a set taken for a new version is renamed to
-match.  2.2.0 did not change the Mac or iOS interface, so the existing ones are
-still accurate.
+match.  **2.3.0 rebuilt both interfaces, so those six no longer show the app** —
+they have a Run button in the toolbar, a Keep session switch, a keypad on the
+left and two panes where there are now three.  New ones are needed before this
+version is submitted.
 
 ## Screenshot plan
 

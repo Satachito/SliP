@@ -5,7 +5,7 @@
 
 #include <string>
 
-#define	SLIP_UI_VERSION	"2.2.0"
+#define	SLIP_UI_VERSION	"2.3.0"
 
 void	UIInit();
 
