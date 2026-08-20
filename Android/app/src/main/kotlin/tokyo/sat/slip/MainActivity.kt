@@ -32,11 +32,6 @@ private val SYMBOLS = listOf(
 	"⟨", "⟩", "«", "»", "𝑒", "π",
 )
 
-private const val SAMPLE = """// Select Calculator, then press Run.
-1 + 2 × 3
-cosπ
-[1 2 3] + 10"""
-
 class MainActivity : ComponentActivity() {
 	override fun onCreate( savedInstanceState: Bundle? ) {
 		super.onCreate( savedInstanceState )
@@ -54,7 +49,9 @@ private fun Screen() {
 	//	TextFieldValue is not saveable on its own — it carries a selection and a
 	//	composition — so it needs its own Saver to survive a rotation.
 	var text        by rememberSaveable( stateSaver = TextFieldValue.Saver ) {
-		mutableStateOf( TextFieldValue( SAMPLE ) )
+		//	Empty.  A blank sheet is what somebody asking for a new document asked
+		//	for, rather than three examples of somebody else's work.
+		mutableStateOf( TextFieldValue( "" ) )
 	}
 	var mode        by rememberSaveable { mutableStateOf( SliPMode.Calculator ) }
 	var keepSession by rememberSaveable { mutableStateOf( false ) }
