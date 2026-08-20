@@ -1,0 +1,27 @@
+// Barnsley fern, drawn entirely by SliP on Canvas 2D.
+// DEPTH controls detail. Each recursive level applies the four affine maps.
+
+( 'W = 520 )
+( 'H = 700 )
+( 'DEPTH = 7 )
+( 'c2d = { W H }:canvas:fillStyle `#16833b` )
+
+( 'PX = '( ( @ + 3 ) × 82 ) )
+( 'PY = '( H - @ × 67 ) )
+
+( 'Fern = '(
+	{	( 'n = @.0 )
+		( 'x = @.1 )
+		( 'y = @.2 )
+		( c2d:fillRect{ ( x:PX ) ( y:PY ) 1.4 1.4 } )
+		( n > 0 ¿ '{
+			( { ( n - 1 ) 0 ( 0.16 × y ) }:Fern )
+			( { ( n - 1 ) ( 0.85 × x + 0.04 × y ) ( -0.04 × x + 0.85 × y + 1.6 ) }:Fern )
+			( { ( n - 1 ) ( 0.2 × x - 0.26 × y ) ( 0.23 × x + 0.22 × y + 1.6 ) }:Fern )
+			( { ( n - 1 ) ( -0.15 × x + 0.28 × y ) ( 0.26 × x + 0.24 × y + 0.44 ) }:Fern )
+		} )
+	}:$
+) )
+
+( { DEPTH 0 0 }:Fern )
+

@@ -1,0 +1,61 @@
+// Lorenz attractor, integrated and drawn entirely by SliP on Canvas 2D.
+// Change SIGMA, RHO, BETA, or DT and RUN again to explore the system.
+
+( 'W = 700 )
+( 'H = 620 )
+( 'SIGMA = 10 )
+( 'RHO = 28 )
+( 'BETA = 8 ÷ 3 )
+( 'DT = 0.01 )
+
+( 'c2d = { W H }:canvas:strokeStyle `#7a35c8`:lineWidth 0.8:beginPath )
+( 'SX = '( W ÷ 2 + @ × 8.5 ) )
+( 'SY = '( H - 42 - @ × 10.5 ) )
+( c2d:moveTo{ ( 0.1:SX ) ( 0:SY ) } )
+
+// A short recursive integrator. Nesting it three times gives 8³ = 512
+// Euler steps without requiring one very deep call stack.
+( 'Trace = '(
+	{	( 'n = @.0 )
+		( 'x = @.1 )
+		( 'y = @.2 )
+		( 'z = @.3 )
+		( n > 0 ? [
+			(	{	( 'nx = x + SIGMA × ( y - x ) × DT )
+				( 'ny = y + ( x × ( RHO - z ) - y ) × DT )
+				( 'nz = z + ( x × y - BETA × z ) × DT )
+				( c2d:lineTo{ ( nx:SX ) ( nz:SY ) } )
+				( { ( n - 1 ) nx ny nz }:Trace )
+			}:$ )
+			( { x y z } )
+		] )
+	}:$
+) )
+
+( 'Middle = '(
+	{	( 'n = @.0 )
+		( 'x = @.1 )
+		( 'y = @.2 )
+		( 'z = @.3 )
+		( 'state = { 8 x y z }:Trace )
+		( n > 1 ? [
+			( { ( n - 1 ) ( state.0 ) ( state.1 ) ( state.2 ) }:Middle )
+			( state )
+		] )
+	}:$
+) )
+( 'Outer = '(
+	{	( 'n = @.0 )
+		( 'x = @.1 )
+		( 'y = @.2 )
+		( 'z = @.3 )
+		( 'state = { 8 x y z }:Middle )
+		( n > 1 ? [
+			( { ( n - 1 ) ( state.0 ) ( state.1 ) ( state.2 ) }:Outer )
+			( state )
+		] )
+	}:$
+) )
+
+( { 8 0.1 0 0 }:Outer )
+( c2d:stroke )

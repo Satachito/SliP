@@ -1,0 +1,40 @@
+// Moving complex orbit: zₙ₊₁ = zₙ² + c, drawn by SliP on Canvas 2D.
+//
+// R and I are the real and imaginary parts of c. Change either value and RUN
+// again to explore another orbit. The faint cross marks the origin; the blue
+// path and red landing squares show successive values of z.
+
+( 'N = 24 )
+( 'DENSE = 220 )
+( 'R = -0.74543 )
+( 'I = 0.11301 )
+
+( 'X = '( ( @ + 2 ) × DENSE ) )
+( 'Y = '( ( @ + 1 ) × DENSE ) )
+
+( 'Orbit = '(
+	{	( 'n = @.0 )
+		( 'r = @.1 )
+		( 'i = @.2 )
+		( c2d:lineTo{ ( r:X ) ( i:Y ) } )
+		( c2d:fillRect{ ( r:X - 2 ) ( i:Y - 2 ) 5 5 } )
+		( n < N && r × r + i × i < 8 ¿ '(
+			{ ( n + 1 ) ( r × r - i × i + R ) ( 2 × r × i + I ) }:Orbit
+		) )
+	}.2
+) )
+
+( 'W = DENSE × 3 + 1 )
+( 'H = DENSE × 2 + 1 )
+( 'c2d = { W H }:canvas )
+
+// Complex-plane axes.
+( c2d:strokeStyle `#d9d9d9`:lineWidth 1:beginPath
+	:moveTo{ 0 DENSE }:lineTo{ W DENSE }
+	:moveTo{ ( 2 × DENSE ) 0 }:lineTo{ ( 2 × DENSE ) H }:stroke )
+
+// Start at z₀ = c, as the original Moving Complex page did.
+( c2d:strokeStyle `#1677c8`:fillStyle `#d43b3b`:lineWidth 1.5:beginPath
+	:moveTo{ ( R:X ) ( I:Y ) } )
+( { 0 R I }:Orbit )
+( c2d:stroke )

@@ -52,7 +52,11 @@ struct SwiftUI_CPPApp: App {
 
 #if os(iOS)
 private struct ScreenshotContentView: View {
-	@State private var document = SwiftUI_CPPDocument()
+	// A representative calculator tape for deterministic App Store captures.
+	// This view is compiled only when UI_TESTING is explicitly enabled.
+	@State private var document = SwiftUI_CPPDocument(
+		text: "1 + 2 × 3\ncosπ\n[1 2 3] + 10\n'r = 2\n2πr\n"
+	)
 
 	var body: some View {
 		ContentView( document: $document )

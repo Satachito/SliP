@@ -214,7 +214,7 @@ aside {
 ;	min-height				: 0
 ;	min-width				: 0
 }
-jp-split-h {
+jp-split-v {
 ;	grid-row				: 2
 ;	grid-column				: 2
 ;	font-family				: monospace
@@ -224,7 +224,7 @@ jp-split-h {
 ;	min-width				: 0
 ;	height					: 100%
 }
-jp-split-h > * {
+jp-split-v > * {
 ;	background-color		: var( --panel-bg )
 }
 textarea {
@@ -357,7 +357,7 @@ textarea {
 }
 .gutter {
 ;	background				: var( --gutter-bg )
-;	cursor					: col-resize
+;	cursor					: row-resize
 }
 #RESULT {
 ;	padding					: 6px
@@ -394,7 +394,7 @@ textarea {
 </style>
 
 <div class=topbar>
-<button id=ASIDE_TOGGLE class=panel-toggle title="Toggle settings">‹</button>
+<button id=ASIDE_TOGGLE class=panel-toggle title="Close settings" aria-label="Close settings">‹</button>
 <header class=brand style="font-size: 20px; line-height: 1.1">
 	SliP
 	<div style="font-family: monospace; font-size: 10px; font-weight: normal; margin-top: 2px; opacity: .75">
@@ -407,15 +407,16 @@ textarea {
 		<button type=button data-sample=Samples.slip title="Programming — general">Code</button>
 		<button type=button data-sample=Mandelbrot.slip title="Mandelbrot — WebGL">Mandelbrot</button>
 		<button type=button data-sample=Koch.slip title="Koch curve and snowflake — Canvas 2D">Koch</button>
-		<!--	A page of its own: the drawing there is JavaScript, and it animates.	-->
-		<a class=sample-link href=MovingComplex.html target=_blank rel=noopener title="Moving complex — Canvas 2D">Complex</a>
+		<button type=button data-sample=MovingComplex.slip title="Complex orbit — Canvas 2D">Complex</button>
+		<button type=button data-sample=BarnsleyFern.slip title="Barnsley fern — Canvas 2D">Fern</button>
+		<button type=button data-sample=LorenzAttractor.slip title="Lorenz attractor — Canvas 2D">Lorenz</button>
 	</div>
 </header>
 <header class=links>
 	<a href=Tutorial.html target=_blank>Tutorial</a>
 	<a href=SPEC.html target=_blank>Reference</a>
 </header>
-<button id=NAV_TOGGLE class=panel-toggle title="Toggle keypad">›</button>
+<button id=NAV_TOGGLE class=panel-toggle title="Close keypad" aria-label="Close keypad">›</button>
 </div>
 
 <nav>
@@ -646,25 +647,22 @@ textarea {
 
 </nav>
 
-<jp-split-h grid-template="1fr 6px 1fr">
+<jp-split-v grid-template="1fr 6px 1fr">
+	<div id=RESULT style="overflow: scroll"></div>
+	<div class=gutter></div>
 	<div class=editor-pane>
 		<div id=line-nums aria-hidden=true>1</div>
 		<textarea id=SOURCE spellcheck=false autocapitalize=off autocomplete=off></textarea>
 	</div>
-	<div class=gutter></div>
-	<div id=RESULT style="overflow: scroll"></div>
-</jp-split-h>
+</jp-split-v>
 
 <aside>
-	<input type=button style="height:32px; width:100%" value=RUN id=CALSUB><br>
-	<br>
 	<p class=hint-kbd>⌘↩ or Ctrl↩ to run</p>
 	When INPUT<br>
 	<label for=CONV_ASTERISK	><input type=checkbox id=CONV_ASTERISK	checked	> * → ×				</label><br>
 	<label for=CONV_SLASH		><input type=checkbox id=CONV_SLASH		checked	> / → ÷				</label><br>
 	<br>
 	When RUN<br>
-	<label for=PROGRAM_MODE		><input type=checkbox id=PROGRAM_MODE			> Code evaluation ( prog )	</label><br>
 	<label for=CONV_X			><input type=checkbox id=CONV_X					> x,X → ×			</label><br>
 	<label for=CONV_NUM			><input type=checkbox id=CONV_NUM		checked	> Convert numeric	</label><br>
 	<label for=CONV_PAREN		><input type=checkbox id=CONV_PAREN		checked	> Convert ([{}])	</label><br>
@@ -722,29 +720,36 @@ SOURCE = document.getElementById( 'SOURCE' )
 ,	ASIDE_TOGGLE = document.getElementById( 'ASIDE_TOGGLE' )
 
 const
-ApplyPanel = ( cls, btn, collapsed, glyphOpen, glyphClosed ) => (
+ApplyPanel = ( cls, btn, collapsed, glyphOpen, glyphClosed, name ) => (
 	document.body.classList.toggle( cls, collapsed )
 ,	btn.textContent = collapsed ? glyphClosed : glyphOpen
+,	btn.title = `${ collapsed ? 'Open' : 'Close' } ${ name }`
+,	btn.setAttribute( 'aria-label', btn.title )
 ,	localStorage.setItem( cls, collapsed ? '1' : '' )
 )
 ,	SetAsideCollapsed = collapsed => (
 	document.body.classList.toggle( 'aside-collapsed', collapsed )
 ,	ASIDE_TOGGLE.textContent = collapsed ? '›' : '‹'
+,	ASIDE_TOGGLE.title = `${ collapsed ? 'Open' : 'Close' } settings`
+,	ASIDE_TOGGLE.setAttribute( 'aria-label', ASIDE_TOGGLE.title )
 ,	localStorage.setItem( 'aside-collapsed', collapsed ? '1' : '0' )
 )
-NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.body.classList.contains( 'nav-collapsed' ), '›', '‹' )
+NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.body.classList.contains( 'nav-collapsed' ), '›', '‹', 'keypad' )
 ASIDE_TOGGLE.onclick = () => SetAsideCollapsed( !document.body.classList.contains( 'aside-collapsed' ) )
 
 let
 loadingSample = false
 
 const
-PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Koch.slip' ] )
+PROGRAM_SAMPLES = new Set( [ 'Samples.slip', 'Mandelbrot.slip', 'Koch.slip', 'MovingComplex.slip', 'BarnsleyFern.slip', 'LorenzAttractor.slip' ] )
 ,	SAMPLE_MODES = new Map( [
 		[ 'Samples.sugared.slip', 'CALCULATOR' ]
 	,	[ 'Samples.slip', 'CODE' ]
 	,	[ 'Mandelbrot.slip', 'CODE' ]
 	,	[ 'Koch.slip', 'CODE' ]
+	,	[ 'MovingComplex.slip', 'CODE' ]
+	,	[ 'BarnsleyFern.slip', 'CODE' ]
+	,	[ 'LorenzAttractor.slip', 'CODE' ]
 	] )
 
 const
@@ -786,7 +791,7 @@ SyncLineNums = () => {
 }
 
 const
-Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
+Calculate = CALCULATE.onclick = () => {
 
 	RemoveCanvas()
 
@@ -803,7 +808,7 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 	CONV_NUM.checked && ( source = ReplaceNumeral( source ) )
 	CONV_PAREN.checked && ( source = ReplaceAllParenthesis( source ) )
 
-	if ( PROGRAM_MODE.checked ) {
+	if ( PROG_KEY.checked ) {
 		const pped = source.split( '\n' ).map(
 			_ => {
 				const index = _.indexOf( '//' )
@@ -891,7 +896,7 @@ SOURCE.onkeydown = ev => {
 		return
 	}
 	if ( ev.metaKey ) return
-	if ( ev.key === 'Tab' && PROGRAM_MODE.checked ) {
+	if ( ev.key === 'Tab' && PROG_KEY.checked ) {
 		ev.preventDefault()
 		InsertToSOURCE( '    ' )
 		return
@@ -911,23 +916,11 @@ SOURCE.onkeydown = ev => {
 		break
 	}
 }
-//	Two windows onto one setting: the box on the keypad and the one in the
-//	settings pane.  PROGRAM_MODE stays the one the evaluator reads.
-//
-//	RUN goes with it.  In the calculator a line is the whole of what is being
+//	In the calculator a line is the whole of what is being
 //	said and ⏎ finishes it, so a second key that also runs would be a question to
 //	answer every time rather than a key — which is how the Tab5's panel puts it.
-//	The two boxes say the same thing; ticking either ticks the other.  ⏎ and RUN
-//	no longer depend on it — they are separate keys on the block, one starting
+//	⏎ and RUN are separate keys on the block, one starting
 //	another line and one finishing the lot, in both modes.
-const
-SyncProgram = from => (
-	from === PROG_KEY
-	?	PROGRAM_MODE.checked = PROG_KEY.checked
-	:	PROG_KEY.checked = PROGRAM_MODE.checked
-)
-PROG_KEY.onchange = () => SyncProgram( PROG_KEY )
-PROGRAM_MODE.onchange = () => SyncProgram( PROGRAM_MODE )
 
 //	Reset: the source, what it printed, and any canvas it drew.  The Tab5's
 //	Reset throws the saved session away too; here there is nothing saved but the
@@ -948,8 +941,7 @@ LoadSample = path => fetch( './' + path ).then(
 		//	A sample knows whether it is a program; the keypad it wants is the
 		//	reader's business, not the sample's.
 		loadingSample = true
-		PROGRAM_MODE.checked = ( SAMPLE_MODES.get( path ) ?? ( PROGRAM_SAMPLES.has( path ) ? 'CODE' : 'CALCULATOR' ) ) === 'CODE'
-		SyncProgram( PROGRAM_MODE )
+		PROG_KEY.checked = ( SAMPLE_MODES.get( path ) ?? ( PROGRAM_SAMPLES.has( path ) ? 'CODE' : 'CALCULATOR' ) ) === 'CODE'
 		loadingSample = false
 		SOURCE.value = text
 		SyncLineNums()
@@ -962,15 +954,14 @@ document.querySelectorAll( '[data-sample]' ).forEach(
 
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
-,	localStorage.setItem( 'PROGRAM_MODE', PROGRAM_MODE.checked ? '1' : '' )
+,	localStorage.setItem( 'PROGRAM_MODE', PROG_KEY.checked ? '1' : '' )
 )
 
 const
 InitUI = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
-,	PROGRAM_MODE.checked = localStorage.getItem( 'PROGRAM_MODE' ) === '1'
-,	SyncProgram( PROGRAM_MODE )
-,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '›', '‹' )
+,	PROG_KEY.checked = localStorage.getItem( 'PROGRAM_MODE' ) === '1'
+,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '›', '‹', 'keypad' )
 ,	SetAsideCollapsed( localStorage.getItem( 'aside-collapsed' ) !== '0' )
 ,	SyncLineNums()
 )
