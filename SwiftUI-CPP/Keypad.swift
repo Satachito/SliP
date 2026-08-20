@@ -215,6 +215,15 @@ Keypad: View {
 		!Set( SliPKeys.fixed.flatMap { $0 } ).contains( $0 )
 	}
 
+	//	The height this has been given, when it has been given one.  Beside the
+	//	display the keypad is a column and has to fit what it was handed — an
+	//	iPhone 14 turned sideways is 390 points tall, and four rows of block under
+	//	four rows of alphabet under a tab strip wants nearer 370 of them once the
+	//	toolbar has taken its share, so the last two rows were simply cut off.
+	//	Under the display it is a strip and takes the height it needs.
+	var
+	fit			: CGFloat?
+
 	//	Whether there is width to spare.  The caller knows, because it knows the
 	//	shape of the space it is handing over: a strip along the bottom of an iPad
 	//	has width and nothing else, a column beside the display has height and
@@ -264,12 +273,35 @@ Keypad: View {
 	private var
 	Tabbed: some View {
 		VStack( spacing: 4 ) {
+			//	Pushed to the bottom of the column, where the hand is.  Nothing to
+			//	push against in a strip, so this costs nothing there.
+			if fit != nil { Spacer( minLength: 0 ) }
 			Tabs
 			Chosen
 			Divider()
 			Block
 		}
 		.padding( 6 )
+	}
+
+	//	How tall a key can be.  Given a height to fit, the eight rows and the tab
+	//	strip divide it; given none, these are the sizes the panels were drawn at.
+	//	The block's keys stay the taller of the two either way — they are the ones
+	//	reached for without looking.
+	private static let	TABS_H	= CGFloat( 34 )
+	private static let	RATIO	= CGFloat( 42 ) / 32
+
+	private var
+	sectionH: CGFloat {
+		guard let fit else { return 32 }
+		let	rest = fit - 12 - 12 - 1 - Self.TABS_H
+		guard rest > 0 else { return 22 }
+		return min( max( rest / ( 4 + 4 * Self.RATIO ), 20 ), 44 )
+	}
+
+	private var
+	blockH: CGFloat {
+		fit == nil ? 42 : min( max( sectionH * Self.RATIO, 26 ), 56 )
 	}
 
 	//	The same two halves, side by side.  The block is on the right, which is the
@@ -313,17 +345,18 @@ Keypad: View {
 	//	Named for what it is rather than Section, which SwiftUI has taken.
 	@ViewBuilder private var
 	Chosen: some View {
+		let	h = sectionH
 		switch section {
-		case .operators:	Grid( SliPKeys.rows( Self.operators, 12 ), height: 32, size: 13 )
-		case .functions:	Grid( SliPKeys.rows( SliPKeys.functions, 6 ), height: 32, size: 12 )
-		case .latin:		Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: 32, size: 14 )
-		case .greek:		Grid( SliPKeys.rows( SliPKeys.greek, 12 ), height: 32, size: 14 )
+		case .operators:	Grid( SliPKeys.rows( Self.operators, 12 ), height: h, size: h * 0.41 )
+		case .functions:	Grid( SliPKeys.rows( SliPKeys.functions, 6 ), height: h, size: h * 0.38 )
+		case .latin:		Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: h, size: h * 0.44 )
+		case .greek:		Grid( SliPKeys.rows( SliPKeys.greek, 12 ), height: h, size: h * 0.44 )
 		}
 	}
 
 	private var
 	Block: some View {
-		Grid( SliPKeys.fixed, height: 42, size: 19 )
+		Grid( SliPKeys.fixed, height: blockH, size: blockH * 0.45 )
 	}
 
 	private func

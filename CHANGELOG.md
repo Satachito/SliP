@@ -63,6 +63,19 @@ where they disagree, `C++/` is correct.
 
 ### Changed
 
+- **The display stacks on macOS too.** The answers, the history, the line being
+  written — the same three regions the phone has, and the same REPL behind them.
+  macOS had two panes side by side and a Run button in the toolbar; it has the
+  keypad's RUN now, which is always on screen, and ⌘↩ in the menu as it always
+  had.
+
+- **The keypad in a column sizes its keys to the column.** An iPhone 14 turned
+  sideways is 390 points tall and the panel wanted nearer 370 of them once the
+  toolbar had taken its share, so the block's bottom two rows were simply cut
+  off. The rows now divide the height they are given, the block's keys staying
+  the taller of the two, and the whole sits at the bottom of the column where the
+  hand is.
+
 - **One rule for where the keypad goes: beside the display where there is width,
   under it where there is not.** Turning a phone over is the same question as
   picking up an iPad, and it now has the same answer. macOS and the web page put

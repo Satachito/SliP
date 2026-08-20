@@ -22,6 +22,20 @@ struct CodeEditor: NSViewRepresentable {
 	var
 	proxy: EditorProxy?
 
+	//	The same four the iOS editor has, and for the same reasons: there are three
+	//	regions on screen now and two of them are editors, on this host as well.
+	var
+	claims: Bool = false
+
+	var
+	singleLine: Bool = false
+
+	var
+	onReturn: ( () -> Void )?
+
+	var
+	height: Binding< CGFloat >?
+
 	func
 	makeNSView( context: Context ) -> NSScrollView {
 
@@ -41,6 +55,13 @@ struct CodeEditor: NSViewRepresentable {
 
 		view.isRichText			= false
 		view.allowsUndo			= true
+		view.isVerticallyResizable	= true
+
+		if singleLine {
+			scroll.hasVerticalScroller	= false
+			view.textContainer?.widthTracksTextView	= true
+			view.textContainer?.maximumNumberOfLines	= 1
+		}
 		view.font				= .monospacedSystemFont( ofSize: 13, weight: .regular )
 		view.textContainerInset	= NSSize( width: 6, height: 8 )
 		view.delegate			= context.coordinator
@@ -50,7 +71,7 @@ struct CodeEditor: NSViewRepresentable {
 		//	than in front of it.
 		view.setSelectedRange( NSRange( location: ( text as NSString ).length, length: 0 ) )
 
-		proxy?.view = view
+		if claims { proxy?.view = view }
 
 		return scroll
 	}
@@ -58,10 +79,30 @@ struct CodeEditor: NSViewRepresentable {
 	func
 	updateNSView( _ scroll: NSScrollView, context: Context ) {
 		guard let view = scroll.documentView as? NSTextView else { return }
-		proxy?.view = view
+		context.coordinator.parent = self
 		//	Only when the model moved out from under the view — assigning while
 		//	the user types would reset the insertion point on every keystroke.
 		if view.string != text { view.string = text }
+		Report( view )
+	}
+
+	//	What the text would like to be tall.  Asked of the layout manager rather
+	//	than counted, because a line that wraps is two.  Asynchronously, for the
+	//	same two reasons as on iOS — this runs inside a layout pass, and on the
+	//	pass after a mode change the view has not been laid out yet.
+	func
+	Report( _ view: NSTextView ) {
+		guard let height else { return }
+		DispatchQueue.main.async {
+			guard
+				let manager = view.layoutManager
+			,	let container = view.textContainer
+			,	view.bounds.width > 0
+			else { return }
+			manager.ensureLayout( for: container )
+			let	fitted = manager.usedRect( for: container ).height + view.textContainerInset.height * 2
+			if abs( height.wrappedValue - fitted ) > 0.5 { height.wrappedValue = fitted }
+		}
 	}
 
 	func
@@ -70,7 +111,7 @@ struct CodeEditor: NSViewRepresentable {
 	final class
 	Coordinator: NSObject, NSTextViewDelegate {
 
-		private let
+		var
 		parent: CodeEditor
 
 		init( _ parent: CodeEditor ) { self.parent = parent }
@@ -79,6 +120,24 @@ struct CodeEditor: NSViewRepresentable {
 		textDidChange( _ notification: Notification ) {
 			guard let view = notification.object as? NSTextView else { return }
 			parent.text = view.string
+			parent.Report( view )
+		}
+
+		//	The keys follow the caret.
+		func
+		textDidBeginEditing( _ notification: Notification ) {
+			guard let view = notification.object as? NSTextView else { return }
+			parent.proxy?.view = view
+		}
+
+		//	Return is not a character in a one-line field; it is the end of the
+		//	line, which is somebody else's business.
+		func
+		textView( _ view: NSTextView, doCommandBy selector: Selector ) -> Bool {
+			guard parent.singleLine, selector == #selector( NSResponder.insertNewline(_:) )
+			else { return false }
+			parent.onReturn?()
+			return true
 		}
 	}
 }

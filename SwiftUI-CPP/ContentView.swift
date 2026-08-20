@@ -20,9 +20,8 @@ ContentView: View {
 	@StateObject private var
 	editor		= EditorProxy()
 
-	#if !os(macOS)
-	//	What the source would like to be tall, which the phone grants up to a point
-	//	— see Shared.
+	//	What the source would like to be tall, which the display grants up to a
+	//	point — see Shared.
 	@State private var
 	editorHeight	= CGFloat( 0 )
 
@@ -41,7 +40,6 @@ ContentView: View {
 	//	not the same editor under another name.
 	@State private var
 	historyHeight	= CGFloat( 0 )
-	#endif
 
 	//	The keypad is where the panels are followed: macOS keeps it beside the
 	//	source the way the web page does, iOS keeps it under the source the way the
@@ -53,7 +51,7 @@ ContentView: View {
 			Divider()
 			#if os(macOS)
 			HStack( spacing: 0 ) {
-				HSplitView { Editor; Results }
+				Shared
 				Divider()
 				//	Fixed.  The keypad is not a pane to be traded against the work;
 				//	it is as wide as seven columns of keys need and no wider, and
@@ -70,7 +68,7 @@ ContentView: View {
 					HStack( spacing: 0 ) {
 						Shared
 						Divider()
-						Keys( wide: false )
+						Keys( wide: false, fit: geometry.size.height )
 							.frame( width: KeysWidth( geometry.size.width ) )
 					}
 				} else {
@@ -90,32 +88,17 @@ ContentView: View {
 		.frame( minWidth: 720, minHeight: 420 )
 		#endif
 		.focusedSceneValue( \.slipRunAction, Run )
-		#if !os(macOS)
 		.onAppear { Open() }
-		#endif
 	}
 
 	//	Changing mode converts the text; adopting the mode a file was saved in does
 	//	not, because the text is already in that shape.  Writing that through the
 	//	binding rather than through onChange is what keeps the two apart — nothing
 	//	has to guess which kind of assignment it is watching.
-	//	⏎ on a host with a history to put the line into accepts it; everywhere else
-	//	finishing a line in the calculator is still what runs the lot.
-	private func
-	Enter() {
-		#if os(macOS)
-		Run()
-		#else
-		Accept()
-		#endif
-	}
 
 	private var
 	Mode: Binding< SliPMode > {
-		#if os(macOS)
-		return $mode
-		#else
-		return Binding(
+		Binding(
 			get: { mode }
 		,	set: {
 				guard $0 != mode else { return }
@@ -123,7 +106,6 @@ ContentView: View {
 				mode = $0
 			}
 		)
-		#endif
 	}
 
 	//	Seven columns of keys, and DEL and RUN are three letters each while a digit
@@ -138,18 +120,18 @@ ContentView: View {
 	}
 
 	private func
-	Keys( wide: Bool = false ) -> some View {
+	Keys( wide: Bool = false, fit: CGFloat? = nil ) -> some View {
 		Keypad(
 			proxy:		editor
 		,	program:	mode == .programming
 		,	run:		Run
-		,	enter:		Enter
+		,	enter:		Accept
+		,	fit:		fit
 		,	wide:		wide
 		)
 	}
 
-	#if !os(macOS)
-	//	The phone does not have the width for two panes and did not have the height
+	//	The display, on every host.  It does not have the width for two panes and did not have the height
 	//	for two either: it gave the source most of the screen whether there was
 	//	anything in it or not, and the answers the rest whether they fitted or not.
 	//
@@ -160,10 +142,14 @@ ContentView: View {
 	private var
 	Shared: some View {
 		VStack( spacing: 0 ) {
-			Results
-				//	An answer is worth going back to the bottom for; UIPrint on the
-				//	board says the same thing by resetting its scroll.
-				.defaultScrollAnchor( .bottom )
+			//	An answer is worth going back to the bottom for; UIPrint on the board
+			//	says the same thing by resetting its scroll.  The modifier arrived
+			//	after this app's oldest macOS, which is what the check is for.
+			if #available( macOS 14.0, iOS 17.0, * ) {
+				Results.defaultScrollAnchor( .bottom )
+			} else {
+				Results
+			}
 			Divider()
 			if mode == .calculator {
 				//	The history, which is the document and therefore the file.  It is
@@ -188,7 +174,6 @@ ContentView: View {
 			}
 		}
 	}
-	#endif
 
 	private var
 	Toolbar: some View {
@@ -210,26 +195,14 @@ ContentView: View {
 			Text( "SliP \( SliPEngine.version )" )
 				.foregroundStyle( .secondary )
 				.font( .caption )
-
-			Button( "Run" ) { Run() }
-				.keyboardShortcut( .return, modifiers: .command )
-			#else
-			//	No Run and no Delete up here.  Both are keys on the block now, where
-			//	the thumb already is; a second one on the far side of the screen is
-			//	one more thing to look at and the same thing to press.  ⌘↩ still runs
-			//	it — see slipRunAction, which is what the menu bar and any hardware
-			//	keyboard reach.
 			#endif
+			//	No Run and no Delete up here on any host.  Both are keys on the
+			//	block, which is always on screen; a second one on the far side of
+			//	the window is one more thing to look at and the same thing to press.
+			//	⌘↩ still runs it — see slipRunAction, which is what the menu bar and
+			//	any hardware keyboard reach.
 		}
 		.padding( 8 )
-	}
-
-	private var
-	Editor: some View {
-		CodeEditor( text: $document.text, proxy: editor )
-		#if os(macOS)
-			.frame( minWidth: 280 )
-		#endif
 	}
 
 	private var
@@ -241,9 +214,6 @@ ContentView: View {
 			.frame( maxWidth: .infinity, alignment: .leading )
 			.padding( 8 )
 		}
-		#if os(macOS)
-		.frame( minWidth: 280 )
-		#endif
 	}
 
 	@ViewBuilder private func
@@ -279,7 +249,6 @@ ContentView: View {
 	private func
 	Source() -> String { document.text }
 
-	#if !os(macOS)
 	//	A line at a time.  It joins the history — which is the document, and so the
 	//	file — and is answered under itself in the transcript.  The session is not
 	//	reset between lines: `'r = 2` and then `2πr` is the whole point of a
@@ -320,7 +289,6 @@ ContentView: View {
 		:	SliPText.flattened( bare )
 		entry = ""
 	}
-	#endif
 }
 
 #Preview {
