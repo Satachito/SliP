@@ -26,6 +26,8 @@ void		BH_SessionDestroy( BH_Session );
 char*		BH_SessionREPL( BH_Session, const char* source );
 char*		BH_SessionSugared( BH_Session, const char* source );
 void		BH_SessionReset( BH_Session );
+//	Canvas 2D display list produced by the most recent session run.
+char*		BH_SessionCanvases( BH_Session );
 
 void	BH_Free( char* _ );
 

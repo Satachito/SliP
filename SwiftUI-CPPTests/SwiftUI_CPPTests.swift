@@ -8,13 +8,13 @@ struct SwiftUI_CPPTests {
 		let second = SliPSession()
 
 		let definition = first.run( "( 'storeTestValue = 41 )", mode: .programming )
-		#expect( definition.first?.failed == false )
+		#expect( definition.results.first?.failed == false )
 
 		let firstResult = first.run( "( storeTestValue + 1 )", mode: .programming )
-		#expect( firstResult.first?.value == "42" )
+		#expect( firstResult.results.first?.value == "42" )
 
 		let secondResult = second.run( "( storeTestValue + 1 )", mode: .programming )
-		#expect( secondResult.first?.failed == true )
+		#expect( secondResult.results.first?.failed == true )
 	}
 
 	@Test @MainActor func resetClearsOnlyItsSession() {
@@ -23,7 +23,22 @@ struct SwiftUI_CPPTests {
 		session.reset()
 
 		let result = session.run( "( storeResetValue )", mode: .programming )
-		#expect( result.first?.failed == true )
+		#expect( result.results.first?.failed == true )
+	}
+
+	@Test @MainActor func canvasCommandsAreReturnedWithTheRun() {
+		let session = SliPSession()
+		let run = session.run(
+			"( 'c = { 80 60 }:canvas:fillStyle `red`:fillRect{ 10 20 30 40 } )",
+			mode: .programming
+		)
+
+		#expect( run.results.first?.failed == false )
+		#expect( run.canvases.count == 1 )
+		#expect( run.canvases.first?.width == 80 )
+		#expect( run.canvases.first?.height == 60 )
+		#expect( run.canvases.first?.commands.first?.kind == "fill" )
+		#expect( run.canvases.first?.commands.first?.color == "red" )
 	}
 
 }

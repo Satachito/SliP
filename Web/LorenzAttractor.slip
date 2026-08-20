@@ -1,3 +1,4 @@
+//SLIP
 // Lorenz attractor, integrated and drawn entirely by SliP on Canvas 2D.
 // Change SIGMA, RHO, BETA, or DT and RUN again to explore the system.
 

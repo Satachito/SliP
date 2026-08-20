@@ -12,6 +12,9 @@ ContentView: View {
 	@State		private var
 	results		: [ SliPResult ] = []
 
+	@State		private var
+	canvases	: [ SliPCanvas ] = []
+
 	@StateObject	private var
 	session		= SliPSession()
 
@@ -46,6 +49,7 @@ ContentView: View {
 	//	Tab5 does.  See Keypad.swift.
 	var
 	body: some View {
+		ZStack( alignment: .topLeading ) {
 		//	Beside the display, the keypad runs the whole height — the toolbar goes
 		//	inside the display's column rather than across the top of both.  The bar
 		//	only ever held a mode picker and a version number, so spanning the window
@@ -96,6 +100,16 @@ ContentView: View {
 		.focusedSceneValue( \.slipRunAction, Run )
 		.onAppear { Open() }
 		#endif
+
+		#if os(macOS)
+		ForEach( Array( canvases.enumerated() ), id: \.element.id ) { index, canvas in
+			FloatingSliPCanvas( canvas: canvas ) {
+				canvases.removeAll { $0.id == canvas.id }
+			}
+			.offset( x: CGFloat( 32 + index * 20 ), y: CGFloat( 56 + index * 20 ) )
+		}
+		#endif
+		}
 	}
 
 	//	Changing mode converts the text; adopting the mode a file was saved in does
@@ -205,6 +219,19 @@ ContentView: View {
 			#endif
 			.help( mode.help )
 
+			#if os(macOS)
+			Menu {
+				ForEach( SliPSample.allCases ) { sample in
+					Button( sample.title ) { Load( sample ) }
+				}
+			} label: {
+				Label( "Samples", systemImage: "books.vertical" )
+			}
+			.menuStyle( .borderlessButton )
+			.fixedSize()
+			.help( "Load a sample program" )
+			#endif
+
 			Spacer()
 
 			#if os(macOS)
@@ -258,7 +285,9 @@ ContentView: View {
 	private func
 	Run() {
 		session.reset()
-		results = session.run( Source(), mode: mode )
+		let run = session.run( Source(), mode: mode )
+		results = run.results
+		canvases = run.canvases
 	}
 
 	//	The marker is a comment, so it costs the interpreter nothing to read it.
@@ -276,7 +305,9 @@ ContentView: View {
 		guard !line.isEmpty else { return }
 		if !document.text.isEmpty, !document.text.hasSuffix( "\n" ) { document.text += "\n" }
 		document.text += line + "\n"
-		results += session.run( line, mode: .calculator )
+		let run = session.run( line, mode: .calculator )
+		results += run.results
+		if !run.canvases.isEmpty { canvases = run.canvases }
 		entry = ""
 	}
 
@@ -290,8 +321,26 @@ ContentView: View {
 		mode = SliPText.isProgram( document.text ) ? .programming : .calculator
 		guard !document.text.trimmingCharacters( in: .whitespacesAndNewlines ).isEmpty
 		else { return }
-		results = session.run( Source(), mode: mode )
+		let run = session.run( Source(), mode: mode )
+		results = run.results
+		canvases = run.canvases
 	}
+
+	#if os(macOS)
+	private func
+	Load( _ sample: SliPSample ) {
+		guard let url = Bundle.main.url( forResource: sample.rawValue, withExtension: "slip" ),
+			  let source = try? String( contentsOf: url, encoding: .utf8 )
+		else { return }
+		document.text = source
+		mode = .programming
+		entry = ""
+		session.reset()
+		let run = session.run( source, mode: .programming )
+		results = run.results
+		canvases = run.canvases
+	}
+	#endif
 
 	//	Changing mode rewrites what is there into what the other mode would have
 	//	written — see SliPText.  Neither direction is lossless, and leaving the
@@ -306,6 +355,103 @@ ContentView: View {
 		entry = ""
 	}
 }
+
+#if os(macOS)
+private enum SliPSample: String, CaseIterable, Identifiable {
+	case Koch, MovingComplex, BarnsleyFern, LorenzAttractor
+	var id: Self { self }
+	var title: String {
+		switch self {
+		case .Koch: return String( localized: "Koch Curve & Snowflake" )
+		case .MovingComplex: return String( localized: "Moving Complex Orbit" )
+		case .BarnsleyFern: return String( localized: "Barnsley Fern" )
+		case .LorenzAttractor: return String( localized: "Lorenz Attractor" )
+		}
+	}
+}
+#endif
+
+#if os(macOS)
+private struct FloatingSliPCanvas: View {
+	let canvas: SliPCanvas
+	let close: () -> Void
+	@State private var drag = CGSize.zero
+	@State private var resting = CGSize.zero
+
+	var body: some View {
+		VStack( spacing: 0 ) {
+			HStack {
+				Text( "SliP Canvas" ).font( .caption ).foregroundStyle( .secondary )
+				Spacer()
+				Button( action: close ) { Image( systemName: "xmark" ) }
+					.buttonStyle( .plain )
+			}
+			.padding( .horizontal, 8 )
+			.frame( height: 28 )
+			.background( .bar )
+			.contentShape( Rectangle() )
+			.gesture(
+				DragGesture()
+					.onChanged { drag = $0.translation }
+					.onEnded { resting.width += $0.translation.width; resting.height += $0.translation.height; drag = .zero }
+			)
+
+			Canvas { context, _ in
+				for command in canvas.commands {
+					for points in command.paths {
+						guard let first = points.first, first.count >= 2 else { continue }
+						var path = Path()
+						path.move( to: CGPoint( x: first[ 0 ], y: first[ 1 ] ) )
+						for point in points.dropFirst() where point.count >= 2 {
+							path.addLine( to: CGPoint( x: point[ 0 ], y: point[ 1 ] ) )
+						}
+						let color = SliPColor( command.kind == "clear" ? "white" : command.color )
+						if command.kind == "stroke" {
+							context.stroke( path, with: .color( color ), lineWidth: command.width )
+						} else {
+							context.fill( path, with: .color( color ) )
+						}
+					}
+				}
+			}
+			.frame( width: canvas.width, height: canvas.height )
+			.background( Color.white )
+		}
+		.fixedSize()
+		.background( .regularMaterial )
+		.clipShape( RoundedRectangle( cornerRadius: 8 ) )
+		.overlay( RoundedRectangle( cornerRadius: 8 ).stroke( .secondary.opacity( 0.45 ) ) )
+		.shadow( radius: 12 )
+		.offset( x: resting.width + drag.width, y: resting.height + drag.height )
+	}
+
+	private func SliPColor( _ value: String ) -> Color {
+		let name = value.lowercased()
+		switch name {
+		case "black": return .black
+		case "white": return .white
+		case "red": return .red
+		case "green": return .green
+		case "blue": return .blue
+		case "orange": return .orange
+		case "yellow": return .yellow
+		case "purple": return .purple
+		case "gray", "grey": return .gray
+		default: break
+		}
+		guard name.hasPrefix( "#" ) else { return .black }
+		let hex = String( name.dropFirst() )
+		guard ( hex.count == 6 || hex.count == 8 ), let bits = UInt64( hex, radix: 16 ) else { return .black }
+		let hasAlpha = hex.count == 8
+		return Color(
+			red: Double( ( bits >> ( hasAlpha ? 24 : 16 ) ) & 255 ) / 255,
+			green: Double( ( bits >> ( hasAlpha ? 16 : 8 ) ) & 255 ) / 255,
+			blue: Double( ( bits >> ( hasAlpha ? 8 : 0 ) ) & 255 ) / 255,
+			opacity: hasAlpha ? Double( bits & 255 ) / 255 : 1
+		)
+	}
+}
+#endif
 
 #Preview {
 	ContentView( document: .constant( SwiftUI_CPPDocument() ) )

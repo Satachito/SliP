@@ -21,6 +21,10 @@
 		12CAFE112E7A010100E28A33 /* Embed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE102E7A010100E28A33 /* Embed.cpp */; };
 		12CAFE332E7A030100E28A33 /* BH.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE302E7A030100E28A33 /* BH.mm */; };
 		12CAFE342E7A030100E28A33 /* SliPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CAFE472E7A040100E28A33 /* SliPEngine.swift */; };
+		12C2D0122F90000100E28A33 /* Koch.slip in Resources */ = {isa = PBXBuildFile; fileRef = 12C2D0022F90000100E28A33 /* Koch.slip */; };
+		12C2D0132F90000100E28A33 /* MovingComplex.slip in Resources */ = {isa = PBXBuildFile; fileRef = 12C2D0032F90000100E28A33 /* MovingComplex.slip */; };
+		12C2D0142F90000100E28A33 /* BarnsleyFern.slip in Resources */ = {isa = PBXBuildFile; fileRef = 12C2D0042F90000100E28A33 /* BarnsleyFern.slip */; };
+		12C2D0152F90000100E28A33 /* LorenzAttractor.slip in Resources */ = {isa = PBXBuildFile; fileRef = 12C2D0052F90000100E28A33 /* LorenzAttractor.slip */; };
 		12EE64502DFE7F99002EBE1E /* CLI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12EE64372DFE7F99002EBE1E /* CLI.cpp */; };
 		12FBD5412E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
 		12FBD5422E2D028500B178F7 /* Read.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 12FBD5402E2D028500B178F7 /* Read.cpp */; };
@@ -82,6 +86,10 @@
 		12CAFE302E7A030100E28A33 /* BH.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BH.mm; sourceTree = "<group>"; };
 		12CAFE312E7A030100E28A33 /* BH.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BH.h; sourceTree = "<group>"; };
 		12CAFE472E7A040100E28A33 /* SliPEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliPEngine.swift; sourceTree = "<group>"; };
+		12C2D0022F90000100E28A33 /* Koch.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = Koch.slip; sourceTree = "<group>"; };
+		12C2D0032F90000100E28A33 /* MovingComplex.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = MovingComplex.slip; sourceTree = "<group>"; };
+		12C2D0042F90000100E28A33 /* BarnsleyFern.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = BarnsleyFern.slip; sourceTree = "<group>"; };
+		12C2D0052F90000100E28A33 /* LorenzAttractor.slip */ = {isa = PBXFileReference; lastKnownFileType = text; path = LorenzAttractor.slip; sourceTree = "<group>"; };
 		12D9D6E72E00A186006EAD54 /* JP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JP.h; sourceTree = "<group>"; };
 		12D9D6E82E00A186006EAD54 /* JPAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPAAC.h; sourceTree = "<group>"; };
 		12D9D6E92E00A186006EAD54 /* JPBigInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPBigInt.h; sourceTree = "<group>"; };
@@ -210,6 +218,18 @@
 			path = Bridge;
 			sourceTree = "<group>";
 		};
+		12C2D0012F90000100E28A33 /* Samples */ = {
+			isa = PBXGroup;
+			children = (
+				12C2D0022F90000100E28A33 /* Koch.slip */,
+				12C2D0032F90000100E28A33 /* MovingComplex.slip */,
+				12C2D0042F90000100E28A33 /* BarnsleyFern.slip */,
+				12C2D0052F90000100E28A33 /* LorenzAttractor.slip */,
+			);
+			name = Samples;
+			path = Web;
+			sourceTree = SOURCE_ROOT;
+		};
 		12D9D6F22E00A186006EAD54 /* JP_CPP */ = {
 			isa = PBXGroup;
 			children = (
@@ -278,6 +298,7 @@
 			isa = PBXGroup;
 			children = (
 				1233447F2E0CC5BB001764D8 /* CLI.xctestplan */,
+				12C2D0012F90000100E28A33 /* Samples */,
 				12EE63922DFE7DD4002EBE1E /* Swift */,
 				12EE643C2DFE7F99002EBE1E /* C++ */,
 				12CAFE322E7A030100E28A33 /* Bridge */,
@@ -470,6 +491,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12C2D0122F90000100E28A33 /* Koch.slip in Resources */,
+				12C2D0132F90000100E28A33 /* MovingComplex.slip in Resources */,
+				12C2D0142F90000100E28A33 /* BarnsleyFern.slip in Resources */,
+				12C2D0152F90000100E28A33 /* LorenzAttractor.slip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

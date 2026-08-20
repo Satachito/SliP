@@ -1,3 +1,4 @@
+//SLIP
 // Moving complex orbit: zₙ₊₁ = zₙ² + c, drawn by SliP on Canvas 2D.
 //
 // R and I are the real and imaginary parts of c. Change either value and RUN

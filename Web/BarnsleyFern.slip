@@ -1,3 +1,4 @@
+//SLIP
 // Barnsley fern, drawn entirely by SliP on Canvas 2D.
 // DEPTH controls detail. Each recursive level applies the four affine maps.
 
@@ -24,4 +25,3 @@
 ) )
 
 ( { DEPTH 0 0 }:Fern )
-

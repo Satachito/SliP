@@ -4,6 +4,12 @@
 "Toplevel SliP forms: ( 'fact = '… ), { … }, « … »" = "トップレベルのSliPフォーム：( 'fact = '… )、{ … }、« … »";
 "Carry bindings over from the previous run" = "前回の実行で定義した値を引き継ぎます";
 "Run" = "実行";
+"Samples" = "サンプル";
+"Load a sample program" = "サンプルプログラムを読み込みます";
+"Koch Curve & Snowflake" = "コッホ曲線と雪片";
+"Moving Complex Orbit" = "動く複素数軌道";
+"Barnsley Fern" = "バーンズリーのシダ";
+"Lorenz Attractor" = "ローレンツ・アトラクター";
 "SliP Help" = "SliPヘルプ";
 "Privacy Policy" = "プライバシーポリシー";
 "Significant digits used when printing a float. 15 matches the web calculator; 17 is the most a double can round-trip." = "小数の表示に使う有効桁数です。15はWeb版と同じ設定で、17はdouble値を完全に往復変換できる最大値です。";

@@ -19,6 +19,27 @@ SliPResult: Identifiable, Equatable {
 	var	failed	: Bool { error != nil }
 }
 
+struct SliPCanvasCommand: Decodable {
+	let kind: String
+	let color: String
+	let width: Double
+	let paths: [[[ Double ]]]
+}
+
+struct SliPCanvas: Identifiable, Decodable {
+	let id = UUID()
+	let width: Double
+	let height: Double
+	let commands: [ SliPCanvasCommand ]
+
+	private enum CodingKeys: String, CodingKey { case width, height, commands }
+}
+
+struct SliPRun {
+	let results: [ SliPResult ]
+	let canvases: [ SliPCanvas ]
+}
+
 enum
 SliPMode: String, CaseIterable, Identifiable {
 	case	calculator
@@ -82,6 +103,12 @@ enum SliPEngine {
 		}
 		return results
 	}
+
+	fileprivate static func
+	decodeCanvases( _ json: String ) -> [ SliPCanvas ] {
+		guard let data = json.data( using: .utf8 ) else { return [] }
+		return ( try? JSONDecoder().decode( [ SliPCanvas ].self, from: data ) ) ?? []
+	}
 }
 
 @MainActor final class
@@ -98,14 +125,16 @@ SliPSession: ObservableObject {
 	deinit { BH_SessionDestroy( handle ) }
 
 	func
-	run( _ source: String, mode: SliPMode ) -> [ SliPResult ] {
-		SliPEngine.decode(
+	run( _ source: String, mode: SliPMode ) -> SliPRun {
+		let results = SliPEngine.decode(
 			SliPEngine.take(
 				mode == .calculator
 					? BH_SessionSugared( handle, source )
 					: BH_SessionREPL( handle, source )
 			)
 		)
+		let canvases = SliPEngine.decodeCanvases( SliPEngine.take( BH_SessionCanvases( handle ) ) )
+		return SliPRun( results: results, canvases: canvases )
 	}
 
 	func
