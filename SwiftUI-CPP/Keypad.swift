@@ -90,12 +90,27 @@ EditorProxy: ObservableObject {
 let	KEY_SPACE	= "␣"
 let	KEY_RETURN	= "⏎"
 
+//	And the two that are not characters at all, which only the touch block
+//	carries: on a Mac the keyboard in front of you already has both.
+let	KEY_DELETE	= "DEL"
+let	KEY_RUN		= "RUN"
+
 enum SliPKeys {
 
-	//	The block that does not move.  Six across and four down, the same in both
-	//	modes and on all four hosts, because the digits are the digits.  Its last
-	//	column is the line: 𝑒 at the top because it is a number and belongs with
-	//	them, then open it, close it, finish it.
+	//	The block that does not move: the digits, the four operators anybody would
+	//	expect beside them, and the punctuation a line is actually built out of.
+	//	The same in both modes, because the digits are the digits.
+	//
+	//	Seven across where the whole block is reached with a thumb and there is no
+	//	keyboard behind it — the seventh column is the three things that are not
+	//	characters, so DEL and RUN do not have to live on a bar somewhere else, and
+	//	⏎ is only ever a newline once RUN is a key of its own.
+	//
+	//	Six across on the Mac, which is what the web page has, and where Delete and
+	//	Run are on the keyboard in front of you and in the toolbar above.  There the
+	//	last column is the line: 𝑒 because it is a number, then open it, close it,
+	//	finish it.
+	#if os(macOS)
 	static let
 	fixed = [
 		[ "7", "8", "9", "+", "'", "𝑒" ]
@@ -103,6 +118,15 @@ enum SliPKeys {
 	,	[ "1", "2", "3", "×", "@", ")" ]
 	,	[ "0", ".", KEY_SPACE, "÷", ":", KEY_RETURN ]
 	]
+	#else
+	static let
+	fixed = [
+		[ "7", "8", "9", "+", "%", "𝑒", KEY_DELETE ]
+	,	[ "4", "5", "6", "-", "/", "="             ]
+	,	[ "1", "2", "3", "×", "(", "@", KEY_RUN    ]
+	,	[ "0", ".", KEY_SPACE, "÷", ")", ":", KEY_RETURN ]
+	]
+	#endif
 
 	//	Every operator the reader takes as a single character and that is not on
 	//	the block above — the whole of SoloChars, OperatorChars and BreakingChars
@@ -185,6 +209,16 @@ Keypad: View {
 	let
 	run			: () -> Void
 
+	//	The operators the block did not take.  It is written as a subtraction rather
+	//	than as a second list because the two lists together are a promise — every
+	//	readable character exactly once — and two hand-written lists are how that
+	//	promise was broken before, with √ and ‹ on one side and nothing on the
+	//	other.  A host that moves % onto its block drops it from here by saying so.
+	private static let
+	operators = SliPKeys.operators.filter {
+		!Set( SliPKeys.fixed.flatMap { $0 } ).contains( $0 )
+	}
+
 	//	iOS only, and it starts on the letters for the same reason the Tab5 does:
 	//	a name is the thing you cannot get at any other way.
 	@State private var
@@ -218,7 +252,7 @@ Keypad: View {
 				Divider()
 					.padding( .vertical, 8 )
 				Title( KeypadSection.operators.rawValue )
-				Grid( SliPKeys.rows( SliPKeys.operators, 8 ), height: 22, size: 11 )
+				Grid( SliPKeys.rows( Self.operators, 8 ), height: 22, size: 11 )
 				Title( KeypadSection.functions.rawValue )
 				Grid( SliPKeys.rows( SliPKeys.functions, 3 ), height: 24, size: 11 )
 				Title( KeypadSection.greek.rawValue )
@@ -252,7 +286,7 @@ Keypad: View {
 	Beside: some View {
 		HStack( alignment: .top, spacing: 12 ) {
 			Block
-				.frame( width: 340 )
+				.frame( width: 380 )
 			VStack( spacing: 4 ) {
 				Tabs
 				Chosen
@@ -283,7 +317,7 @@ Keypad: View {
 	@ViewBuilder private var
 	Chosen: some View {
 		switch section {
-		case .operators:	Grid( SliPKeys.rows( SliPKeys.operators, 12 ), height: 32, size: 13 )
+		case .operators:	Grid( SliPKeys.rows( Self.operators, 12 ), height: 32, size: 13 )
 		case .functions:	Grid( SliPKeys.rows( SliPKeys.functions, 6 ), height: 32, size: 12 )
 		case .latin:		Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: 32, size: 14 )
 		case .greek:		Grid( SliPKeys.rows( SliPKeys.greek, 12 ), height: 32, size: 14 )
@@ -344,12 +378,17 @@ Keypad: View {
 		.accessibilityLabel( Face( key ) )
 	}
 
-	//	⏎ says what it will do.  In the calculator a line is the whole of what is
-	//	being said, so finishing it runs it; in programming it starts another and
-	//	Run in the toolbar finishes the lot.
+	//	Whether this host's block carries a RUN of its own, which is what decides
+	//	how much work ⏎ has to do.
+	private static let
+	hasRun = SliPKeys.fixed.contains { $0.contains( KEY_RUN ) }
+
+	//	⏎ says what it will do.  Where it is the only way to finish a line it reads
+	//	RUN in the calculator, because there a line is the whole of what is being
+	//	said; where RUN is a key beside it, ⏎ is a newline and says so.
 	private func
 	Face( _ key: String ) -> String {
-		key == KEY_RETURN && !program ? "RUN" : key
+		key == KEY_RETURN && !program && !Self.hasRun ? KEY_RUN : key
 	}
 
 	private func
@@ -357,8 +396,12 @@ Keypad: View {
 		switch key {
 		case KEY_SPACE:
 			proxy.insert( " " )
+		case KEY_DELETE:
+			proxy.backspace()
+		case KEY_RUN:
+			run()
 		case KEY_RETURN:
-			program ? proxy.insert( "\n" ) : run()
+			Self.hasRun || program ? proxy.insert( "\n" ) : run()
 		default:
 			//	A function is a name, and a name wants air around it: `sin π`
 			//	reads, `sinπ` is one name that does not exist.

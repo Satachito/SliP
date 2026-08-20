@@ -124,17 +124,16 @@ ContentView: View {
 			Text( "SliP \( SliPEngine.version )" )
 				.foregroundStyle( .secondary )
 				.font( .caption )
-			#else
-			//	The Tab5 keeps Delete up here with Reset, away from the digits, and
-			//	for the same reason: it is not a character.  It is on this host at
-			//	all because the system keyboard — which has one — covers the keypad
-			//	whenever it is up.
-			Button { editor.backspace() } label: { Image( systemName: "delete.left" ) }
-				.accessibilityLabel( "Delete" )
-			#endif
 
 			Button( "Run" ) { Run() }
 				.keyboardShortcut( .return, modifiers: .command )
+			#else
+			//	No Run and no Delete up here.  Both are keys on the block now, where
+			//	the thumb already is; a second one on the far side of the screen is
+			//	one more thing to look at and the same thing to press.  ⌘↩ still runs
+			//	it — see slipRunAction, which is what the menu bar and any hardware
+			//	keyboard reach.
+			#endif
 		}
 		.padding( 8 )
 	}
