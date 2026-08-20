@@ -2,7 +2,6 @@
 "Programming" = "プログラミング";
 "One expression per line: 2πr, cosπ, 'r = 2" = "1行に1つの式を入力します：2πr、cosπ、'r = 2";
 "Toplevel SliP forms: ( 'fact = '… ), { … }, « … »" = "トップレベルのSliPフォーム：( 'fact = '… )、{ … }、« … »";
-"Keep session" = "セッションを保持";
 "Carry bindings over from the previous run" = "前回の実行で定義した値を引き継ぎます";
 "Run" = "実行";
 "SliP Help" = "SliPヘルプ";
@@ -15,7 +14,7 @@
 "Programming mode" = "プログラミングモード";
 "Reads top-level language forms and stops at the first error, so definitions can depend on earlier forms." = "トップレベルの言語フォームを読み、最初のエラーで停止します。前に書いた定義を後のフォームから利用できます。";
 "Sessions and documents" = "セッションと文書";
-"Keep session preserves bindings between runs in the current document window. Each window has its own independent session." = "「セッションを保持」をオンにすると、現在の文書ウインドウで定義を次回の実行へ引き継ぎます。各ウインドウのセッションは独立しています。";
+"Every run starts with a fresh context: RUN is one reading of the whole source from the start. Each window has its own independent session." = "実行のたびに文脈は空から始まります。RUN はソース全体を頭から一度読むことだからです。各ウインドウのセッションは独立しています。";
 "Keyboard and symbols" = "キーボードと記号";
 "Run with ⌘↩. The keypad inserts operators that are difficult to type on a standard keyboard." = "⌘↩で実行します。記号パッドから、通常のキーボードでは入力しにくい演算子を挿入できます。";
 "Open the complete language reference" = "完全な言語リファレンスを開く";

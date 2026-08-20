@@ -5,7 +5,6 @@ import SwiftUI
 enum
 Preference {
 	static let	roundPrecisionKey	= "roundPrecision"
-	static let	keepSessionKey		= "keepSession"
 
 	static let	defaultRoundPrecision = 15		//	Matches RoundPrecision in SliP.hpp
 
@@ -14,10 +13,7 @@ Preference {
 	static func
 	apply() {
 		UserDefaults.standard.register(
-			defaults: [
-				roundPrecisionKey	: defaultRoundPrecision
-			,	keepSessionKey		: false
-			]
+			defaults: [ roundPrecisionKey : defaultRoundPrecision ]
 		)
 		SliPEngine.setRoundPrecision( UserDefaults.standard.integer( forKey: roundPrecisionKey ) )
 	}
@@ -84,7 +80,7 @@ struct HelpView: View {
 					CodeSample( "( 'r = 2 )\n( 2 π r )" )
 
 					Text( "Sessions and documents" ).font( .title2.bold() )
-					Text( "Keep session preserves bindings between runs in the current document window. Each window has its own independent session.")
+					Text( "Every run starts with a fresh context: RUN is one reading of the whole source from the start. Each window has its own independent session.")
 
 					Text( "Keyboard and symbols" ).font( .title2.bold() )
 					Text( "Run with ⌘↩. The keypad inserts operators that are difficult to type on a standard keyboard.")

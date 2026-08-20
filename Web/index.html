@@ -669,9 +669,7 @@ textarea {
 	When OUTPUT<br>
 	<label for=INCLUDE_SOURCE	><input type=checkbox id=INCLUDE_SOURCE	checked> Include source	</label><br>
 	<label>Round precision:</label><input id=ROUND_PRECISION value=15 style="width: 32px"><br>
-	<br>
-	<label for=KEEP_SESSION	><input type=checkbox id=KEEP_SESSION	> Keep session between runs	</label><br>
-	<p class=hint-kbd>Bindings in the source always share within one RUN. When unchecked, each RUN also starts with a fresh context.</p>
+	<p class=hint-kbd>Bindings share within one RUN, and every RUN starts with a fresh context: RUN is one reading of the whole source from the start.</p>
 </aside>
 
 <footer>
@@ -791,7 +789,9 @@ Calculate = CALSUB.onclick = CALCULATE.onclick = () => {
 
 	RESULT.textContent = ''
 
-	KEEP_SESSION.checked || SliP.ResetContext()
+	//	Always.  RUN is one reading of the whole source from the start, and a
+	//	switch suspending that was one rule too many to hold in mind.
+	SliP.ResetContext()
 	SliP.SetRoundPrecision( Number( ROUND_PRECISION.value ) || 15 )
 
 	let source = SOURCE.value
@@ -960,7 +960,6 @@ document.querySelectorAll( '[data-sample]' ).forEach(
 window.onbeforeunload = () => (
 	localStorage.setItem( 'SOURCE', SOURCE.value )
 ,	localStorage.setItem( 'PROGRAM_MODE', PROGRAM_MODE.checked ? '1' : '' )
-,	localStorage.setItem( 'KEEP_SESSION', KEEP_SESSION.checked ? '1' : '' )
 )
 
 const
@@ -970,7 +969,6 @@ InitUI = () => (
 ,	SyncProgram( PROGRAM_MODE )
 ,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '‹', '›' )
 ,	SetAsideCollapsed( localStorage.getItem( 'aside-collapsed' ) !== '0' )
-,	KEEP_SESSION.checked = localStorage.getItem( 'KEEP_SESSION' ) === '1'
 ,	SyncLineNums()
 )
 InitUI()

@@ -15,8 +15,6 @@ ContentView: View {
 	@StateObject	private var
 	session		= SliPSession()
 
-	@AppStorage( Preference.keepSessionKey ) private var
-	keepSession	= false
 
 	//	The keypad's way into the editor's caret — see EditorProxy.
 	@StateObject private var
@@ -185,15 +183,6 @@ ContentView: View {
 			#endif
 			.help( mode.help )
 
-			#if os(macOS)
-			Toggle( "Keep session", isOn: $keepSession )
-				.help( "Carry bindings over from the previous run" )
-			#else
-			Toggle( "Keep", isOn: $keepSession )
-				.labelsHidden()
-				.accessibilityLabel( "Keep session" )
-			#endif
-
 			Spacer()
 
 			#if os(macOS)
@@ -254,11 +243,14 @@ ContentView: View {
 
 	//	RUN runs the whole of what is written — the program in one mode, the history
 	//	in the other — and replaces the answers, because it is one reading of one
-	//	thing from the start.  The session goes back with it unless Keep session
-	//	says otherwise, or every name would be defined twice.
+	//	thing from the start.
+	//	The session goes back to nothing first, always.  RUN is one reading of the
+	//	whole of what is written, from the start; a switch that suspended that was
+	//	a second rule to hold in mind, and with the history editable there is
+	//	nothing left for it to preserve that is not already written down.
 	private func
 	Run() {
-		if !keepSession { session.reset() }
+		session.reset()
 		results = session.run( Source(), mode: mode )
 	}
 
@@ -270,7 +262,8 @@ ContentView: View {
 	//	A line at a time.  It joins the history — which is the document, and so the
 	//	file — and is answered under itself in the transcript.  The session is not
 	//	reset between lines: `'r = 2` and then `2πr` is the whole point of a
-	//	calculator that has names in it, and Keep session governs the other mode.
+	//	calculator that has names in it.  RUN is the other half of that rule: it
+	//	reads the history again from nothing.
 	private func
 	Accept() {
 		let	line = entry.trimmingCharacters( in: .whitespaces )
