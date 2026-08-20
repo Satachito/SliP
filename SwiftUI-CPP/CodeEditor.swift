@@ -71,7 +71,15 @@ struct CodeEditor: NSViewRepresentable {
 		//	than in front of it.
 		view.setSelectedRange( NSRange( location: ( text as NSString ).length, length: 0 ) )
 
-		if claims { proxy?.view = view }
+		if claims {
+			proxy?.view = view
+			//	And the caret starts here.  Two editors are on screen and the first
+			//	one built takes first responder otherwise, which is the history —
+			//	so the app opened with the cursor in what has already been said
+			//	rather than in the line being written.  Asynchronously, because
+			//	there is no window to be first responder in yet.
+			DispatchQueue.main.async { view.window?.makeFirstResponder( view ) }
+		}
 
 		return scroll
 	}

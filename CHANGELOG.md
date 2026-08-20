@@ -74,12 +74,16 @@ where they disagree, `C++/` is correct.
   held a mode picker and a version number, and spanning the window with it left a
   band of nothing directly above the keys.
 
-- **The keypad in a column sizes its keys to the column.** An iPhone 14 turned
-  sideways is 390 points tall and the panel wanted nearer 370 of them once the
-  toolbar had taken its share, so the block's bottom two rows were simply cut
-  off. The rows now divide the height they are given, the block's keys staying
-  the taller of the two, and the whole sits at the bottom of the column where the
-  hand is.
+- **A column of keys is a column of keys.** A phone on its side gets what a Mac
+  window and an iPad on its side get: the block, then everything else under a
+  heading, scrolling. It had been the phone's tabbed panel squeezed into a
+  390-point column, where the block's bottom two rows were simply cut off. On iOS
+  that column carries the Latin letters as well — the Mac leaves them to the
+  keyboard in front of you, and a phone has none.
+
+- **The caret starts in the line being written.** Two editors are on screen and
+  the first one built took first responder, which is the history: the app opened
+  with the cursor in what had already been said.
 
 - **One rule for where the keypad goes: beside the display where there is width,
   under it where there is not.** Turning a phone over is the same question as

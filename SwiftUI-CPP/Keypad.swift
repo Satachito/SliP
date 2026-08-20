@@ -227,15 +227,6 @@ Keypad: View {
 		!Set( SliPKeys.fixed.flatMap { $0 } ).contains( $0 )
 	}
 
-	//	The height this has been given, when it has been given one.  Beside the
-	//	display the keypad is a column and has to fit what it was handed — an
-	//	iPhone 14 turned sideways is 390 points tall, and four rows of block under
-	//	four rows of alphabet under a tab strip wants nearer 370 of them once the
-	//	toolbar has taken its share, so the last two rows were simply cut off.
-	//	Under the display it is a strip and takes the height it needs.
-	var
-	fit			: CGFloat?
-
 	//	Which shape of space this has been given.  The caller knows, because it is
 	//	the one dividing the screen up; a size class cannot tell a column from a
 	//	strip, and both of those can be roomy or not.
@@ -278,6 +269,15 @@ Keypad: View {
 				Grid( SliPKeys.rows( Self.operators, 8 ), height: key, size: key * 0.5 )
 				Title( KeypadSection.functions.rawValue )
 				Grid( SliPKeys.rows( SliPKeys.functions, 3 ), height: name, size: name * 0.46 )
+				#if !os(macOS)
+				//	The Mac leaves the Latin letters to the keyboard in front of you.
+				//	A phone has no keyboard — this app turned it off, because it
+				//	covered the keys — so here the letters have to be on the panel or
+				//	they are nowhere, and a name is the thing you cannot get at any
+				//	other way.
+				Title( KeypadSection.latin.rawValue )
+				Grid( SliPKeys.rows( SliPKeys.latin, 13 ), height: key, size: key * 0.5 )
+				#endif
 				Title( KeypadSection.greek.rawValue )
 				Grid( SliPKeys.rows( SliPKeys.greek, 8 ), height: key, size: key * 0.55 )
 			}
@@ -296,32 +296,15 @@ Keypad: View {
 			Chosen
 			Divider()
 			Block
-			//	Any slack goes below the keys rather than above them: the panel
-			//	starts where the column starts.
-			if fit != nil { Spacer( minLength: 0 ) }
 		}
 		.padding( 6 )
 	}
 
-	//	How tall a key can be.  Given a height to fit, the eight rows and the tab
-	//	strip divide it; given none, these are the sizes the panels were drawn at.
-	//	The block's keys stay the taller of the two either way — they are the ones
-	//	reached for without looking.
-	private static let	TABS_H	= CGFloat( 34 )
-	private static let	RATIO	= CGFloat( 42 ) / 32
-
-	private var
-	sectionH: CGFloat {
-		guard let fit else { return 32 }
-		let	rest = fit - 12 - 12 - 1 - Self.TABS_H
-		guard rest > 0 else { return 22 }
-		return min( max( rest / ( 4 + 4 * Self.RATIO ), 20 ), 44 )
-	}
-
-	private var
-	blockH: CGFloat {
-		fit == nil ? 42 : min( max( sectionH * Self.RATIO, 26 ), 56 )
-	}
+	//	The block's keys are the taller of the two — they are the ones reached for
+	//	without looking.  These are strip sizes: a strip is as tall as it needs to
+	//	be, and a column scrolls, so neither has to be squeezed to fit.
+	private let	sectionH = CGFloat( 32 )
+	private let	blockH   = CGFloat( 42 )
 
 	//	The same two halves, side by side.  The block is on the right, which is the
 	//	side the keypad is on everywhere it is a column — so the digits are under
