@@ -32,19 +32,21 @@ where they disagree, `C++/` is correct.
 
 ### Changed
 
-- **The touch block is seven across, and carries DEL and RUN.** `%` and `/` join
-  the operators beside the digits, and the seventh column is the three keys that
-  are not characters — delete, run, and a newline. They were on the bar at the
-  top before, which is the far side of the screen from where the thumb already
-  is; now the bar has only the mode and Keep session on it. ⌘↩ still runs it.
+- **The block is seven across on every host, and carries DEL and RUN.** `%` and
+  `/` join the operators beside the digits, and the seventh column is the three
+  keys that are not characters — delete, run, and a newline. Two of those were on
+  a bar before: on the phone that is the far side of the screen from where the
+  thumb already is, and on the web page it was the same panel twice. ⏎ is only
+  ever a newline now, since RUN is a key beside it. ⌘↩ still runs it, and the
+  Mac keeps Run in its toolbar, which is outside the keypad it can collapse.
 
-  ⏎ is only ever a newline now, on the hosts where RUN is a key of its own. Where
-  it is still the only way to finish a line — the Mac, and the web page it
-  follows — it goes on reading RUN in the calculator and running the line.
+  `𝑒` moves off the block to sit beside `∞`, which is the other constant among
+  the operators.
 
-  The section below the block drops whatever the block took, so `%` and `/` are
-  not offered twice. That subtraction is written down rather than kept in two
-  lists by hand, which is how `√` and `‹` got onto the panels in the first place.
+  The section below the block drops whatever the block took, so nothing is
+  offered twice. That subtraction is written down once rather than kept in two
+  lists by hand — which is how `√` and `‹` came to be on the panels, and how `'`
+  briefly came to be on neither.
 
 - **The iPhone stopped dividing its screen in two.** It had given the source most
   of the height whether there was anything in it or not, and the answers the rest

@@ -97,52 +97,42 @@ let	KEY_RUN		= "RUN"
 
 enum SliPKeys {
 
-	//	The block that does not move: the digits, the four operators anybody would
-	//	expect beside them, and the punctuation a line is actually built out of.
-	//	The same in both modes, because the digits are the digits.
+	//	The block that does not move.  Seven across and four down: the digits, the
+	//	operators anybody would expect beside them, the punctuation a line is built
+	//	out of — quote among it, because `'r = 2` is how anything gets a name — and
+	//	then a seventh column of the three things that are not characters at all,
+	//	delete and run and a newline.
 	//
-	//	Seven across where the whole block is reached with a thumb and there is no
-	//	keyboard behind it — the seventh column is the three things that are not
-	//	characters, so DEL and RUN do not have to live on a bar somewhere else, and
-	//	⏎ is only ever a newline once RUN is a key of its own.
+	//	The same on every host, which is the whole point of it.  A key that moves
+	//	or resizes between one screen and the next is a key you have to look at
+	//	before pressing, and that is as true of moving between a phone and a Mac as
+	//	it is of moving between two modes.
 	//
-	//	Six across on the Mac, which is what the web page has, and where Delete and
-	//	Run are on the keyboard in front of you and in the toolbar above.  There the
-	//	last column is the line: 𝑒 because it is a number, then open it, close it,
-	//	finish it.
-	#if os(macOS)
+	//	⏎ is only ever a newline now, because RUN is a key of its own beside it.
 	static let
 	fixed = [
-		[ "7", "8", "9", "+", "'", "𝑒" ]
-	,	[ "4", "5", "6", "-", "=", "(" ]
-	,	[ "1", "2", "3", "×", "@", ")" ]
-	,	[ "0", ".", KEY_SPACE, "÷", ":", KEY_RETURN ]
-	]
-	#else
-	static let
-	fixed = [
-		[ "7", "8", "9", "+", "%", "𝑒", KEY_DELETE ]
+		[ "7", "8", "9", "+", "%", "'", KEY_DELETE ]
 	,	[ "4", "5", "6", "-", "/", "="             ]
 	,	[ "1", "2", "3", "×", "(", "@", KEY_RUN    ]
 	,	[ "0", ".", KEY_SPACE, "÷", ")", ":", KEY_RETURN ]
 	]
-	#endif
 
 	//	Every operator the reader takes as a single character and that is not on
 	//	the block above — the whole of SoloChars, OperatorChars and BreakingChars
 	//	less the dozen the block already has, plus £, which is a name rather than
 	//	a solo character but is one glyph and belongs with these.
 	//
-	//	Forty-seven of them.  The count is the point: a key that puts in a
-	//	character the reader does not know is a key that answers
-	//	"Undefined name", and both panels had one until this list replaced the
-	//	two hand-written ones.
+	//	Forty-nine of them, and the block takes three.  The count is the point in
+	//	both directions: a key that puts in a character the reader does not know
+	//	answers "Undefined name", and a character with no key cannot be written at
+	//	all — which is what happened to `'` for one commit, when the block stopped
+	//	carrying it and nothing here had picked it up.
 	static let
 	operators = [
-		"!", "#", "$", "%", "*", "/", ";", "?", "`", "~", "<", ">"
+		"!", "#", "$", "'", "%", "*", "/", ";", "?", "`", "~", "<", ">"
 	,	"¦", "§", "¬", "¶", "·", "¿", "∈", "∋", "∥", "£", "¤", "¡"
 	,	"⊂", "⊃", "∩", "∪", "⊤", "⊥", "∅", "«", "»", "⟨", "⟩", "±"
-	,	"&", "|", "^", "[", "]", "{", "}", ",", "\"", "\\", "∞"
+	,	"&", "|", "^", "[", "]", "{", "}", ",", "\"", "\\", "∞", "𝑒"
 	]
 
 	//	The transcendental functions the interpreter already has.
@@ -339,6 +329,11 @@ Keypad: View {
 
 	//	A row carries its own width, and a short last row keeps the others' — one
 	//	grid over all of them would either cramp the letters or clip `atanh`.
+	//
+	//	The height is exact rather than a minimum.  A minimum made every key
+	//	willing to grow, so the keypad was a second greedy view under a greedy
+	//	transcript and the two split the screen between them: on the iPad the block
+	//	took half of it and spread four rows down the whole of that.
 	private func
 	Grid( _ rows: [ [ String ] ], height: CGFloat, size: CGFloat ) -> some View {
 		let	columns = rows.map( \.count ).max() ?? 1
@@ -347,7 +342,7 @@ Keypad: View {
 				HStack( spacing: 3 ) {
 					ForEach( row, id: \.self ) { Key( $0, height: height, size: size ) }
 					ForEach( row.count ..< columns, id: \.self ) { _ in
-						Color.clear.frame( maxWidth: .infinity, minHeight: height )
+						Color.clear.frame( maxWidth: .infinity, minHeight: height, maxHeight: height )
 					}
 				}
 			}
@@ -367,7 +362,7 @@ Keypad: View {
 				.fontWeight( key == KEY_RETURN ? .bold : .regular )
 				.lineLimit( 1 )
 				.minimumScaleFactor( 0.5 )
-				.frame( maxWidth: .infinity, minHeight: height )
+				.frame( maxWidth: .infinity, minHeight: height, maxHeight: height )
 				.background(
 					RoundedRectangle( cornerRadius: 5, style: .continuous )
 						.fill( Color.gray.opacity( 0.18 ) )

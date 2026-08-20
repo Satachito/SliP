@@ -40,7 +40,9 @@ ContentView: View {
 			#if os(macOS)
 			HSplitView {
 				Keys
-					.frame( minWidth: 210, idealWidth: 242, maxWidth: 380 )
+					//	Seven columns now, so a little wider than the web page's nav
+					//	was; DEL and RUN are three letters each and the digits are one.
+					.frame( minWidth: 244, idealWidth: 276, maxWidth: 400 )
 				Editor
 				Results
 			}

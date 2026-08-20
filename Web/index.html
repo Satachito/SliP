@@ -57,7 +57,7 @@ body {
 ;	height					: 100vh
 ;	display					: grid
 ;	grid-template-rows		: auto 1fr auto
-;	grid-template-columns	: var( --nav-w, 242px ) 1fr var( --aside-w, 220px )
+;	grid-template-columns	: var( --nav-w, 280px ) 1fr var( --aside-w, 220px )
 ;	position				: relative
 ;	overflow				: hidden
 ;	color					: var( --page-fg )
@@ -315,7 +315,7 @@ textarea {
 /*	The bar, and the block that does not move — the Tab5's arrangement.	*/
 .act-row {
 ;	display					: grid
-;	grid-template-columns	: repeat( 4, 1fr )
+;	grid-template-columns	: repeat( 2, 1fr )
 ;	gap						: 4px
 ;	margin					: 0 0 8px 0
 }
@@ -361,7 +361,8 @@ textarea {
 }
 .big-key {
 ;	height					: 32px
-;	min-width				: 42px
+;	min-width				: 34px
+;	padding					: 0
 }
 .bracket-key {
 ;	height					: 44px
@@ -385,9 +386,6 @@ textarea {
 }
 .wide-key {
 ;	grid-column				: span 2
-}
-.act-row.no-run {
-;	grid-template-columns	: repeat( 3, 1fr )
 }
 
 </style>
@@ -425,113 +423,114 @@ textarea {
 	<div class=act-row>
 		<button type=button id=RESET class=act-key>Reset</button>
 		<label class="act-key act-check" for=PROG_KEY><input type=checkbox id=PROG_KEY> prog</label>
-		<button type=button id=CALCULATE class="act-key act-run">RUN</button>
-		<button type=button id=DELETE class=act-key>Delete</button>
 	</div>
 
-	<!--	The block that does not move.  Six across and four down, the same
-		wherever else you are, because the digits are the digits.  Its last
-		column is the line: 𝑒 because it is a number, then open it, close it,
-		run it.	-->
+	<!--	The block that does not move.  Seven across and four down, the same
+		wherever else you are, because the digits are the digits.  The seventh
+		column is the three things that are not characters — delete it, run it,
+		start another line — so that none of them has to sit on a bar somewhere
+		else.  The Tab5 and the app have the same block, key for key.	-->
 	<div class="key-section fixed-block">
-		<div class="key-row six">
+		<div class="key-row seven">
 			<input type=button class="di big-key" value=7>
 			<input type=button class="di big-key" value=8>
 			<input type=button class="di big-key" value=9>
 			<input type=button class="di big-key" value=+>
+			<input type=button class="di big-key" value="%">
 			<input type=button class="di big-key" value="'">
-			<input type=button class="di big-key" value=𝑒>
+			<button type=button class=big-key id=DELETE>DEL</button>
 		</div>
-		<div class="key-row six">
+		<div class="key-row seven">
 			<input type=button class="di big-key" value=4>
 			<input type=button class="di big-key" value=5>
 			<input type=button class="di big-key" value=6>
 			<input type=button class="di big-key" value="-">
+			<input type=button class="di big-key" value="/">
 			<input type=button class="di big-key" value="=">
-			<input type=button class="di big-key" value="(">
 		</div>
-		<div class="key-row six">
+		<div class="key-row seven">
 			<input type=button class="di big-key" value=1>
 			<input type=button class="di big-key" value=2>
 			<input type=button class="di big-key" value=3>
 			<input type=button class="di big-key" value=×>
+			<input type=button class="di big-key" value="(">
 			<input type=button class="di big-key" value=@>
-			<input type=button class="di big-key" value=")">
+			<button type=button class="big-key act-run" id=CALCULATE>RUN</button>
 		</div>
-		<div class="key-row six">
+		<div class="key-row seven">
 			<input type=button class="di big-key" value=0>
 			<input type=button class="di big-key" value=.>
 			<input type=button class="big-key" value=␣ id=KEY_SPACE>
 			<input type=button class="di big-key" value=÷>
+			<input type=button class="di big-key" value=")">
 			<input type=button class="di big-key" value=":">
-			<input type=button class="big-key act-run" value=⏎ id=KEY_RET>
+			<input type=button class="big-key" value=⏎ id=KEY_RET>
 		</div>
 	</div>
 
 	<div class=section-title>SliP</div>
+	<!--	Everything the reader takes as one character that the block did not
+		take — forty-six of them.  Generated from the same list as the app's, so
+		that moving a key onto the block cannot leave it here as well, and taking
+		one off the block cannot leave it nowhere.	-->
 	<div class="key-section">
 		<div class="key-row eight">
 			<input type=button class="di mid-key" value="!">
 			<input type=button class="di mid-key" value="#">
 			<input type=button class="di mid-key" value="$">
-			<input type=button class="di mid-key" value="%">
 			<input type=button class="di mid-key" value="*">
-			<input type=button class="di mid-key" value="/">
 			<input type=button class="di mid-key" value=";">
 			<input type=button class="di mid-key" value="?">
-		</div>
-		<div class="key-row eight">
 			<input type=button class="di mid-key" value="`">
 			<input type=button class="di mid-key" value="~">
+		</div>
+		<div class="key-row eight">
 			<input type=button class="di mid-key" value="&lt;">
 			<input type=button class="di mid-key" value="&gt;">
 			<input type=button class="di mid-key" value="¦">
 			<input type=button class="di mid-key" value="§">
 			<input type=button class="di mid-key" value="¬">
 			<input type=button class="di mid-key" value="¶">
-		</div>
-		<div class="key-row eight">
 			<input type=button class="di mid-key" value="·">
 			<input type=button class="di mid-key" value="¿">
+		</div>
+		<div class="key-row eight">
 			<input type=button class="di mid-key" value="∈">
 			<input type=button class="di mid-key" value="∋">
 			<input type=button class="di mid-key" value="∥">
 			<input type=button class="di mid-key" value="£">
 			<input type=button class="di mid-key" value="¤">
 			<input type=button class="di mid-key" value="¡">
-		</div>
-		<div class="key-row eight">
 			<input type=button class="di mid-key" value="⊂">
 			<input type=button class="di mid-key" value="⊃">
+		</div>
+		<div class="key-row eight">
 			<input type=button class="di mid-key" value="∩">
 			<input type=button class="di mid-key" value="∪">
 			<input type=button class="di mid-key" value="⊤">
 			<input type=button class="di mid-key" value="⊥">
 			<input type=button class="di mid-key" value="∅">
 			<input type=button class="di mid-key" value="«">
-		</div>
-		<div class="key-row eight">
 			<input type=button class="di mid-key" value="»">
 			<input type=button class="di mid-key" value="⟨">
+		</div>
+		<div class="key-row eight">
 			<input type=button class="di mid-key" value="⟩">
 			<input type=button class="di mid-key" value="±">
 			<input type=button class="di mid-key" value="&amp;">
 			<input type=button class="di mid-key" value="|">
 			<input type=button class="di mid-key" value="^">
 			<input type=button class="di mid-key" value="[">
-		</div>
-		<div class="key-row eight">
 			<input type=button class="di mid-key" value="]">
 			<input type=button class="di mid-key" value="{">
+		</div>
+		<div class="key-row eight">
 			<input type=button class="di mid-key" value="}">
 			<input type=button class="di mid-key" value=",">
 			<input type=button class="di mid-key" value="&quot;">
 			<input type=button class="di mid-key" value="\">
-			<!--	Forty-seven of them and the grid holds forty-eight, so the last
-				slot is empty.  It used to be ‹, which the reader has never heard
-				of — a key that puts in a character nobody knows is a key that
-				answers "Undefined name".	-->
 			<input type=button class="di mid-key" value="∞">
+			<input type=button class="di mid-key" value="𝑒">
 		</div>
 	</div>
 	<div class=section-title>func</div>
@@ -873,7 +872,7 @@ InsertPairToSOURCE = _ => {
 	setTimeout( () => SOURCE.selectionStart = SOURCE.selectionEnd = $ + 1 )
 	SOURCE.focus()
 }
-KEY_RET		.onclick = () => PROGRAM_MODE.checked ? InsertToSOURCE( '\n' ) : Calculate()
+KEY_RET		.onclick = () => InsertToSOURCE( '\n' )
 KEY_SPACE	.onclick = () => InsertToSOURCE( ' ' )
 document.querySelectorAll( 'input.di' ).forEach(
 	_ => _.onclick = () => /^[([{].?[)\]}]$/.test( _.value )
@@ -915,17 +914,14 @@ SOURCE.onkeydown = ev => {
 //	RUN goes with it.  In the calculator a line is the whole of what is being
 //	said and ⏎ finishes it, so a second key that also runs would be a question to
 //	answer every time rather than a key — which is how the Tab5's panel puts it.
-//	In programming mode ⏎ starts another line instead, and RUN is what finishes
-//	the lot.
+//	The two boxes say the same thing; ticking either ticks the other.  ⏎ and RUN
+//	no longer depend on it — they are separate keys on the block, one starting
+//	another line and one finishing the lot, in both modes.
 const
 SyncProgram = from => (
 	from === PROG_KEY
 	?	PROGRAM_MODE.checked = PROG_KEY.checked
 	:	PROG_KEY.checked = PROGRAM_MODE.checked
-,	CALCULATE.hidden = !PROGRAM_MODE.checked
-,	CALCULATE.parentNode.classList.toggle( 'no-run', !PROGRAM_MODE.checked )
-,	KEY_RET.value = PROGRAM_MODE.checked ? '⏎' : 'RUN'
-,	KEY_RET.title = PROGRAM_MODE.checked ? 'newline' : 'run'
 )
 PROG_KEY.onchange = () => SyncProgram( PROG_KEY )
 PROGRAM_MODE.onchange = () => SyncProgram( PROGRAM_MODE )
