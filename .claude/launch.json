@@ -4,8 +4,9 @@
 		{
 			"name": "web",
 			"runtimeExecutable": "npx",
-			"runtimeArgs": ["--yes", "http-server", "Web", "-p", "8828", "-c-1"],
-			"port": 8828
+			"runtimeArgs": ["--yes", "http-server", "Web", "-c-1"],
+			"port": 8828,
+			"autoPort": true
 		}
 	]
 }
