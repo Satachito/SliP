@@ -69,6 +69,12 @@ where they disagree, `C++/` is correct.
   keypad's RUN now, which is always on screen, and ⌘↩ in the menu as it always
   had.
 
+- **The web page's settings drawer moved to the left.** The work is in the
+  middle, the keys are on the right where they are on every host, and the panel
+  you open twice a year is out of the way of both rather than between them. Each
+  toggle sits on its own panel's side of the bar, and its chevron points the way
+  that panel will move.
+
 - **Beside the display, the keypad runs the whole height.** The toolbar goes
   inside the display's column rather than across the top of both — it only ever
   held a mode picker and a version number, and spanning the window with it left a
