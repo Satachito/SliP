@@ -215,25 +215,24 @@ Keypad: View {
 		!Set( SliPKeys.fixed.flatMap { $0 } ).contains( $0 )
 	}
 
+	//	Whether there is width to spare.  The caller knows, because it knows the
+	//	shape of the space it is handing over: a strip along the bottom of an iPad
+	//	has width and nothing else, a column beside the display has height and
+	//	nothing else, and a size class cannot tell those two apart.
+	var
+	wide		= false
+
 	//	iOS only, and it starts on the letters for the same reason the Tab5 does:
 	//	a name is the thing you cannot get at any other way.
 	@State private var
 	section		= KeypadSection.latin
-
-	#if !os(macOS)
-	@Environment( \.horizontalSizeClass ) private var
-	sizeClass
-	#endif
 
 	var
 	body: some View {
 		#if os(macOS)
 		Sidebar
 		#else
-		//	Regular width is an iPad, or a large phone turned sideways.  Either way
-		//	there is room to put the block beside the alphabets rather than under
-		//	them, and then neither has to give up any height.
-		if sizeClass == .regular { Beside } else { Tabbed }
+		if wide { Beside } else { Tabbed }
 		#endif
 	}
 
@@ -273,16 +272,16 @@ Keypad: View {
 		.padding( 6 )
 	}
 
-	//	The same two halves, side by side.  The block keeps the width it would have
-	//	had on a phone rather than growing with the screen: it is the part that does
-	//	not move, and a digit that changes size when the iPad is turned is a digit
-	//	you have to look at before pressing.  The alphabets take the rest, which is
-	//	where the room was wanted — thirteen letters across at last have space.
+	//	The same two halves, side by side.  The block is on the right, which is the
+	//	side the keypad is on everywhere it is a column — so the digits are under
+	//	the same hand whichever way the iPad is held.  It keeps the width it would
+	//	have had on a phone rather than growing with the screen: it is the part
+	//	that does not move, and a digit that changes size when the iPad is turned
+	//	is a digit you have to look at before pressing.  The alphabets take the
+	//	rest, which is where the room was wanted.
 	private var
 	Beside: some View {
 		HStack( alignment: .top, spacing: 12 ) {
-			Block
-				.frame( width: 380 )
 			VStack( spacing: 4 ) {
 				Tabs
 				Chosen
@@ -290,12 +289,14 @@ Keypad: View {
 			//	Drawn as an overlay rather than as a Divider between the two.  A
 			//	Divider in an HStack asks for all the height there is, and the
 			//	keypad would take half the iPad to show two hundred points of keys.
-			.overlay( alignment: .leading ) {
+			.overlay( alignment: .trailing ) {
 				Rectangle()
 					.frame( width: 0.5 )
-					.offset( x: -6 )
+					.offset( x: 6 )
 					.foregroundStyle( .separator )
 			}
+			Block
+				.frame( width: 380 )
 		}
 		.padding( 6 )
 	}

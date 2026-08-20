@@ -52,29 +52,38 @@ ContentView: View {
 			Toolbar
 			Divider()
 			#if os(macOS)
-			HSplitView {
-				Keys
-					//	Seven columns now, so a little wider than the web page's nav
-					//	was; DEL and RUN are three letters each and the digits are one.
-					.frame( minWidth: 244, idealWidth: 276, maxWidth: 400 )
-				Editor
-				Results
+			HStack( spacing: 0 ) {
+				HSplitView { Editor; Results }
+				Divider()
+				//	Fixed.  The keypad is not a pane to be traded against the work;
+				//	it is as wide as seven columns of keys need and no wider, and
+				//	dragging it would only ever make the keys wrong.
+				Keys()
+					.frame( width: KEYS_W )
 			}
 			#else
+			//	One rule: the keypad goes beside the display where there is width
+			//	for it, and under the display where there is not.  Turning the
+			//	phone over is the same question as picking up the iPad.
 			GeometryReader { geometry in
-				if geometry.size.width >= 700 {
+				if geometry.size.width > geometry.size.height {
 					HStack( spacing: 0 ) {
-						Editor
-							.frame( width: geometry.size.width * 0.52 )
+						Shared
 						Divider()
-						Results
+						Keys( wide: false )
+							.frame( width: KeysWidth( geometry.size.width ) )
 					}
 				} else {
-					Shared
+					VStack( spacing: 0 ) {
+						Shared
+						Divider()
+						//	A strip along the bottom of an iPad is wide and shallow,
+						//	which is the one shape that suits the two halves side by
+						//	side.
+						Keys( wide: geometry.size.width >= 700 )
+					}
 				}
 			}
-			Divider()
-			Keys
 			#endif
 		}
 		#if os(macOS)
@@ -117,13 +126,25 @@ ContentView: View {
 		#endif
 	}
 
-	private var
-	Keys: some View {
+	//	Seven columns of keys, and DEL and RUN are three letters each while a digit
+	//	is one.  Everything narrower than this clips something.
+	private let	KEYS_W = CGFloat( 276 )
+
+	//	Beside the display, the keypad takes a little under half of it — enough for
+	//	thirteen letters across without leaving the transcript a gutter.
+	private func
+	KeysWidth( _ width: CGFloat ) -> CGFloat {
+		min( max( width * 0.46, KEYS_W ), 560 )
+	}
+
+	private func
+	Keys( wide: Bool = false ) -> some View {
 		Keypad(
 			proxy:		editor
 		,	program:	mode == .programming
 		,	run:		Run
 		,	enter:		Enter
+		,	wide:		wide
 		)
 	}
 

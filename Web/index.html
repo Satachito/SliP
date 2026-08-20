@@ -57,7 +57,7 @@ body {
 ;	height					: 100vh
 ;	display					: grid
 ;	grid-template-rows		: auto 1fr auto
-;	grid-template-columns	: var( --nav-w, 280px ) 1fr var( --aside-w, 220px )
+;	grid-template-columns	: 1fr var( --nav-w, 280px ) var( --aside-w, 220px )
 ;	position				: relative
 ;	overflow				: hidden
 ;	color					: var( --page-fg )
@@ -85,7 +85,7 @@ body.aside-collapsed	> aside	{ display: none }
 ;	opacity			: .85
 }
 .panel-toggle:hover		{ opacity: 1; background: var( --subtle-bg ) }
-#NAV_TOGGLE				{ border-right	: 1px solid var( --border ) }
+#NAV_TOGGLE				{ border-left	: 1px solid var( --border ) }
 #ASIDE_TOGGLE			{ border-left	: 1px solid var( --border ) }
 
 .topbar {
@@ -196,8 +196,8 @@ footer {
 }
 nav {
 ;	grid-row				: 2
-;	grid-column				: 1
-;	border-right			: 1px solid var( --border )
+;	grid-column				: 2
+;	border-left				: 1px solid var( --border )
 ;	padding					: 6px
 ;	font-family				: monospace
 ;	overflow				: auto
@@ -216,7 +216,7 @@ aside {
 }
 jp-split-h {
 ;	grid-row				: 2
-;	grid-column				: 2
+;	grid-column				: 1
 ;	font-family				: monospace
 ;	font-size				: 12px
 ;	overflow				: hidden
@@ -312,7 +312,9 @@ textarea {
 ;	gap						: 2px
 }
 
-/*	The bar, and the block that does not move — the Tab5's arrangement.	*/
+/*	The keypad is on the right, which is where it is on every host now: the work
+	on the left, the keys beside it, and the settings drawer outside them both.
+	The bar, and the block that does not move — the Tab5's arrangement.	*/
 .act-row {
 ;	display					: grid
 ;	grid-template-columns	: repeat( 2, 1fr )
@@ -391,7 +393,6 @@ textarea {
 </style>
 
 <div class=topbar>
-<button id=NAV_TOGGLE class=panel-toggle title="Toggle keypad">‹</button>
 <header class=brand style="font-size: 20px; line-height: 1.1">
 	SliP
 	<div style="font-family: monospace; font-size: 10px; font-weight: normal; margin-top: 2px; opacity: .75">
@@ -412,6 +413,7 @@ textarea {
 	<a href=Tutorial.html target=_blank>Tutorial</a>
 	<a href=SPEC.html target=_blank>Reference</a>
 </header>
+<button id=NAV_TOGGLE class=panel-toggle title="Toggle keypad">›</button>
 <button id=ASIDE_TOGGLE class=panel-toggle title="Toggle settings">›</button>
 </div>
 
@@ -729,7 +731,7 @@ ApplyPanel = ( cls, btn, collapsed, glyphOpen, glyphClosed ) => (
 ,	ASIDE_TOGGLE.textContent = collapsed ? '‹' : '›'
 ,	localStorage.setItem( 'aside-collapsed', collapsed ? '1' : '0' )
 )
-NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.body.classList.contains( 'nav-collapsed' ), '‹', '›' )
+NAV_TOGGLE.onclick = () => ApplyPanel( 'nav-collapsed', NAV_TOGGLE, !document.body.classList.contains( 'nav-collapsed' ), '›', '‹' )
 ASIDE_TOGGLE.onclick = () => SetAsideCollapsed( !document.body.classList.contains( 'aside-collapsed' ) )
 
 let
@@ -967,7 +969,7 @@ InitUI = () => (
 	SOURCE.value = localStorage.getItem( 'SOURCE' ) ?? ''
 ,	PROGRAM_MODE.checked = localStorage.getItem( 'PROGRAM_MODE' ) === '1'
 ,	SyncProgram( PROGRAM_MODE )
-,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '‹', '›' )
+,	ApplyPanel( 'nav-collapsed', NAV_TOGGLE, localStorage.getItem( 'nav-collapsed' ) === '1', '›', '‹' )
 ,	SetAsideCollapsed( localStorage.getItem( 'aside-collapsed' ) !== '0' )
 ,	SyncLineNums()
 )

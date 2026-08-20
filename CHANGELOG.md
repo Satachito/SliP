@@ -63,6 +63,17 @@ where they disagree, `C++/` is correct.
 
 ### Changed
 
+- **One rule for where the keypad goes: beside the display where there is width,
+  under it where there is not.** Turning a phone over is the same question as
+  picking up an iPad, and it now has the same answer. macOS and the web page put
+  it beside the source too — on the right, at a fixed width, because a keypad is
+  not a pane to be traded against the work and dragging it would only ever make
+  the keys the wrong size.
+
+  Under an iPad in portrait, where the strip is wide and shallow, the two halves
+  sit side by side with the digits on the right — the side the keypad is on
+  everywhere else, so they are under the same hand whichever way it is held.
+
 - **The block is seven across on every host, and carries DEL and RUN.** `%` and
   `/` join the operators beside the digits, and the seventh column is the three
   keys that are not characters — delete, run, and a newline. Two of those were on
