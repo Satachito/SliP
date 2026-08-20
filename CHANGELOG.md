@@ -69,6 +69,11 @@ where they disagree, `C++/` is correct.
   keypad's RUN now, which is always on screen, and ⌘↩ in the menu as it always
   had.
 
+- **Beside the display, the keypad runs the whole height.** The toolbar goes
+  inside the display's column rather than across the top of both — it only ever
+  held a mode picker and a version number, and spanning the window with it left a
+  band of nothing directly above the keys.
+
 - **The keypad in a column sizes its keys to the column.** An iPhone 14 turned
   sideways is 390 points tall and the panel wanted nearer 370 of them once the
   toolbar had taken its share, so the block's bottom two rows were simply cut

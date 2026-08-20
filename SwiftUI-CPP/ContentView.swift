@@ -46,46 +46,56 @@ ContentView: View {
 	//	Tab5 does.  See Keypad.swift.
 	var
 	body: some View {
-		VStack( spacing: 0 ) {
-			Toolbar
-			Divider()
-			#if os(macOS)
-			HStack( spacing: 0 ) {
-				Shared
-				Divider()
-				//	Fixed.  The keypad is not a pane to be traded against the work;
-				//	it is as wide as seven columns of keys need and no wider, and
-				//	dragging it would only ever make the keys wrong.
-				Keys()
-					.frame( width: KEYS_W )
-			}
-			#else
-			//	One rule: the keypad goes beside the display where there is width
-			//	for it, and under the display where there is not.  Turning the
-			//	phone over is the same question as picking up the iPad.
-			GeometryReader { geometry in
-				if geometry.size.width > geometry.size.height {
-					HStack( spacing: 0 ) {
-						Shared
-						Divider()
-						Keys( shape: Shape( geometry ), fit: geometry.size.height )
-							.frame( width: KeysWidth( geometry.size.width ) )
-					}
-				} else {
-					VStack( spacing: 0 ) {
-						Shared
-						Divider()
-						Keys( shape: Shape( geometry ) )
-					}
-				}
-			}
-			#endif
-		}
+		//	Beside the display, the keypad runs the whole height — the toolbar goes
+		//	inside the display's column rather than across the top of both.  The bar
+		//	only ever held a mode picker and a version number, so spanning the window
+		//	with it left a band of nothing directly above the keys.
 		#if os(macOS)
+		HStack( spacing: 0 ) {
+			VStack( spacing: 0 ) {
+				Toolbar
+				Divider()
+				Shared
+			}
+			Divider()
+			//	Fixed.  The keypad is not a pane to be traded against the work;
+			//	it is as wide as seven columns of keys need and no wider, and
+			//	dragging it would only ever make the keys wrong.
+			Keys()
+				.frame( width: KEYS_W )
+		}
 		.frame( minWidth: 720, minHeight: 420 )
-		#endif
 		.focusedSceneValue( \.slipRunAction, Run )
 		.onAppear { Open() }
+		#else
+		//	One rule: the keypad goes beside the display where there is width for
+		//	it, and under the display where there is not.  Turning the phone over is
+		//	the same question as picking up the iPad.
+		GeometryReader { geometry in
+			if geometry.size.width > geometry.size.height {
+				HStack( spacing: 0 ) {
+					VStack( spacing: 0 ) {
+						Toolbar
+						Divider()
+						Shared
+					}
+					Divider()
+					Keys( shape: Shape( geometry ), fit: geometry.size.height )
+						.frame( width: KeysWidth( geometry.size.width ) )
+				}
+			} else {
+				VStack( spacing: 0 ) {
+					Toolbar
+					Divider()
+					Shared
+					Divider()
+					Keys( shape: Shape( geometry ) )
+				}
+			}
+		}
+		.focusedSceneValue( \.slipRunAction, Run )
+		.onAppear { Open() }
+		#endif
 	}
 
 	//	Changing mode converts the text; adopting the mode a file was saved in does

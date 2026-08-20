@@ -292,13 +292,13 @@ Keypad: View {
 	private var
 	Tabbed: some View {
 		VStack( spacing: 4 ) {
-			//	Pushed to the bottom of the column, where the hand is.  Nothing to
-			//	push against in a strip, so this costs nothing there.
-			if fit != nil { Spacer( minLength: 0 ) }
 			Tabs
 			Chosen
 			Divider()
 			Block
+			//	Any slack goes below the keys rather than above them: the panel
+			//	starts where the column starts.
+			if fit != nil { Spacer( minLength: 0 ) }
 		}
 		.padding( 6 )
 	}
