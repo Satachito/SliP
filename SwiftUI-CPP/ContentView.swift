@@ -34,10 +34,15 @@ ContentView: View {
 	@State private var
 	entry			= ""
 
-	//	The file has been read and its mode taken from it; doing that twice would
-	//	undo whatever the reader has since chosen.
+	//	The file has been read, its mode taken from it and its history replayed;
+	//	doing that twice would undo whatever the reader has since chosen.
 	@State private var
 	opened			= false
+
+	//	The calculator's history wants a height of its own — it is a third region,
+	//	not the same editor under another name.
+	@State private var
+	historyHeight	= CGFloat( 0 )
 	#endif
 
 	//	The keypad is where the panels are followed: macOS keeps it beside the
@@ -79,11 +84,7 @@ ContentView: View {
 		#endif
 		.focusedSceneValue( \.slipRunAction, Run )
 		#if !os(macOS)
-		.onAppear {
-			guard !opened else { return }
-			opened = true
-			mode = SliPText.isProgram( document.text ) ? .programming : .calculator
-		}
+		.onAppear { Open() }
 		#endif
 	}
 
@@ -91,6 +92,17 @@ ContentView: View {
 	//	not, because the text is already in that shape.  Writing that through the
 	//	binding rather than through onChange is what keeps the two apart — nothing
 	//	has to guess which kind of assignment it is watching.
+	//	⏎ on a host with a history to put the line into accepts it; everywhere else
+	//	finishing a line in the calculator is still what runs the lot.
+	private func
+	Enter() {
+		#if os(macOS)
+		Run()
+		#else
+		Accept()
+		#endif
+	}
+
 	private var
 	Mode: Binding< SliPMode > {
 		#if os(macOS)
@@ -109,7 +121,12 @@ ContentView: View {
 
 	private var
 	Keys: some View {
-		Keypad( proxy: editor, program: mode == .programming, run: Run )
+		Keypad(
+			proxy:		editor
+		,	program:	mode == .programming
+		,	run:		Run
+		,	enter:		Enter
+		)
 	}
 
 	#if !os(macOS)
@@ -130,18 +147,24 @@ ContentView: View {
 				.defaultScrollAnchor( .bottom )
 			Divider()
 			if mode == .calculator {
-				//	One line, and it is all there is to say: ⏎ answers it and takes
-				//	it away.  What has been said is in the transcript above and in
-				//	the file, not in front of the caret.
+				//	The history, which is the document and therefore the file.  It is
+				//	editable: a calculator whose tape can be corrected and run again
+				//	is worth more than one that can only be typed at.
+				CodeEditor( text: $document.text, proxy: editor, height: $historyHeight )
+					.frame( height: min( max( historyHeight, 44 ), 140 ) )
+				Divider()
+				//	And the line being written, which is not in the file until ⏎ puts
+				//	it there.
 				CodeEditor(
 					text:		$entry
 				,	proxy:		editor
+				,	claims:		true
 				,	singleLine:	true
-				,	onReturn:	Run
+				,	onReturn:	Accept
 				)
 				.frame( height: 48 )
 			} else {
-				CodeEditor( text: $document.text, proxy: editor, height: $editorHeight )
+				CodeEditor( text: $document.text, proxy: editor, claims: true, height: $editorHeight )
 					.frame( height: min( max( editorHeight, 52 ), 260 ) )
 			}
 		}
@@ -229,17 +252,19 @@ ContentView: View {
 		}
 	}
 
-	//	Programming mode runs the whole of what is written and replaces the answers,
-	//	because a program is one thing.  The calculator answers a line and keeps
-	//	the ones before it, because a calculator is a conversation.
+	//	RUN runs the whole of what is written — the program in one mode, the history
+	//	in the other — and replaces the answers, because it is one reading of one
+	//	thing from the start.  The session goes back with it unless Keep session
+	//	says otherwise, or every name would be defined twice.
 	private func
 	Run() {
-		#if !os(macOS)
-		if mode == .calculator { Accept(); return }
-		#endif
 		if !keepSession { session.reset() }
-		results = session.run( document.text, mode: mode )
+		results = session.run( Source(), mode: mode )
 	}
+
+	//	The marker is a comment, so it costs the interpreter nothing to read it.
+	private func
+	Source() -> String { document.text }
 
 	#if !os(macOS)
 	//	A line at a time.  It joins the history — which is the document, and so the
@@ -251,10 +276,22 @@ ContentView: View {
 		let	line = entry.trimmingCharacters( in: .whitespaces )
 		guard !line.isEmpty else { return }
 		if !document.text.isEmpty, !document.text.hasSuffix( "\n" ) { document.text += "\n" }
-
 		document.text += line + "\n"
 		results += session.run( line, mode: .calculator )
 		entry = ""
+	}
+
+	//	Opening a file replays it.  What is on the screen when a document opens
+	//	should be what that document says, and in the calculator that is a
+	//	transcript — the boards do the same thing with the session they saved.
+	private func
+	Open() {
+		guard !opened else { return }
+		opened = true
+		mode = SliPText.isProgram( document.text ) ? .programming : .calculator
+		guard !document.text.trimmingCharacters( in: .whitespacesAndNewlines ).isEmpty
+		else { return }
+		results = session.run( Source(), mode: mode )
 	}
 
 	//	Changing mode rewrites what is there into what the other mode would have

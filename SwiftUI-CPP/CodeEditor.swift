@@ -90,6 +90,12 @@ struct CodeEditor: UIViewRepresentable {
 	//	The keypad's way in — see EditorProxy.
 	var proxy: EditorProxy?
 
+	//	Which of the editors on screen the keypad types into to begin with.  The
+	//	calculator has two — the line being written and the history above it — and
+	//	the keys go to the line until the reader taps into the history, at which
+	//	point they follow, because that is where the caret went.
+	var claims = false
+
 	//	One line, which is what the calculator's input is: Return finishes it
 	//	rather than lengthening it, and there is nothing to scroll.
 	var singleLine = false
@@ -137,13 +143,12 @@ struct CodeEditor: UIViewRepresentable {
 		//	than in front of it.
 		view.selectedRange = NSRange( location: ( text as NSString ).length, length: 0 )
 
-		proxy?.view = view
+		if claims { proxy?.view = view }
 		return view
 	}
 
 	func updateUIView(_ view: UITextView, context: Context) {
 		context.coordinator.parent = self
-		proxy?.view = view
 		if view.text != text { view.text = text }
 		Report( view )
 	}
@@ -171,6 +176,11 @@ struct CodeEditor: UIViewRepresentable {
 		var parent: CodeEditor
 
 		init(_ parent: CodeEditor) { self.parent = parent }
+
+		//	The keys follow the caret.
+		func textViewDidBeginEditing(_ textView: UITextView) {
+			parent.proxy?.view = textView
+		}
 
 		func textViewDidChange(_ textView: UITextView) {
 			parent.text = textView.text

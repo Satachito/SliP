@@ -196,8 +196,14 @@ Keypad: View {
 	let
 	program		: Bool
 
+	//	RUN runs the whole of what is written — the program, or the history.
 	let
 	run			: () -> Void
+
+	//	⏎ finishes a line, which in the calculator means accepting it and in
+	//	programming means starting another.
+	let
+	enter		: () -> Void
 
 	//	The operators the block did not take.  It is written as a subtraction rather
 	//	than as a second list because the two lists together are a promise — every
@@ -352,11 +358,8 @@ Keypad: View {
 	//	Drawn rather than left to .bordered, which keeps a fixed inset on both
 	//	sides of its label.  Thirteen letters across a phone is a key thirty points
 	//	wide, and that inset ate most of it — `m` and `w` came out clipped.
-	@ViewBuilder private func
+	private func
 	Key( _ key: String, height: CGFloat, size: CGFloat ) -> some View {
-		if Blank( key ) {
-			Color.clear.frame( maxWidth: .infinity, minHeight: height, maxHeight: height )
-		} else {
 		Button {
 			Press( key )
 		} label: {
@@ -374,17 +377,8 @@ Keypad: View {
 		}
 		.buttonStyle( .plain )
 		.accessibilityLabel( key )
-		}
 	}
 
-	//	RUN belongs to programming mode.  In the calculator ⏎ is what finishes a
-	//	line — that is the whole of what is being said — and a key beside it doing
-	//	the same thing is one more thing to read.  Its place is kept empty rather
-	//	than closed up, because the block does not move.
-	private func
-	Blank( _ key: String ) -> Bool {
-		key == KEY_RUN && !program
-	}
 
 	private func
 	Press( _ key: String ) {
@@ -396,7 +390,7 @@ Keypad: View {
 		case KEY_RUN:
 			run()
 		case KEY_RETURN:
-			program ? proxy.insert( "\n" ) : run()
+			program ? proxy.insert( "\n" ) : enter()
 		default:
 			//	A function is a name, and a name wants air around it: `sin π`
 			//	reads, `sinπ` is one name that does not exist.

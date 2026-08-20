@@ -18,12 +18,10 @@ extension UTType {
 struct SwiftUI_CPPDocument: FileDocument {
     var text: String
 
-    init(text: String = """
-    // Select Calculator, then press ⌘↩ to run these examples.
-    1 + 2 × 3
-    cosπ
-    [1 2 3] + 10
-    """) {
+    //  Empty.  A new document is a blank sheet: the calculator writes its own
+    //  history a line at a time, and a program nobody has written yet is not
+    //  three examples of somebody else's.
+    init(text: String = "") {
         self.text = text
     }
 

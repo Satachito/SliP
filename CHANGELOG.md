@@ -13,14 +13,22 @@ where they disagree, `C++/` is correct.
 
 ### Added
 
-- **The calculator on iOS is a REPL.** A line at the bottom, the answers above it,
-  and ⏎ finishes the line: it joins the history — which is the document, and so
-  the file — is answered under itself in the transcript, and the line clears. The
-  session carries on between lines, because `'r = 2` and then `2πr` is the whole
-  point of a calculator that has names in it. RUN is not there; ⏎ is what
-  finishes a line, and a key beside it doing the same thing is one more thing to
-  read. Programming mode is unchanged: the input is the document, ⏎ starts
-  another line, and RUN runs the lot.
+- **The calculator on iOS is a REPL, in three parts.** The answers at the top,
+  the history under them, the line being written at the bottom. ⏎ finishes the
+  line: it joins the history — which is the document, and so the file — is
+  answered under itself in the transcript, and the line clears. The session
+  carries on between lines, because `'r = 2` and then `2πr` is the whole point of
+  a calculator that has names in it.
+
+  The history is editable, and RUN reads the whole of it again from a fresh
+  session. A tape you can correct and re-run is worth more than one you can only
+  type at. Programming mode is the same two keys against the document: ⏎ starts
+  another line, RUN runs the lot.
+
+- **Opening a document replays it.** In either mode, what is on the screen when a
+  file opens is what that file says — the boards do the same with the session
+  they saved. A new document is empty; it was three examples of somebody else's
+  work before.
 
 - **A file says which mode it is in.** A first line of `//SLIP` opens it in
   programming mode, and programming mode writes that line. Without it a file is a
