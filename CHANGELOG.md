@@ -9,6 +9,18 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
+## Unreleased
+
+### Added
+
+- **[`P4EV/`](P4EV) — the ESP32-P4-Function-EV-Board.** The same chip as the
+  Tab5 and almost the same port; what differed is in
+  [P4EV/README.md](P4EV/README.md), and each of the three things failed in a way
+  that did not name itself. The panel is landscape where the Tab5's is portrait,
+  so the keypad is a column on the right and the transcript takes the rest —
+  which is where the Mac, the iPad and the web page all ended up this week from
+  the other direction.
+
 ## 2.3.0 — 2026-08-21
 
 The language is unchanged.  This release is the calculator learning to behave
