@@ -1,0 +1,12 @@
+#	Espressif's board support package for this board.  Everything about the panel
+#	— the timings, the lane rate, the EK79007's initialisation table, which GPIO
+#	is the backlight — belongs to the board rather than to SliP, and the people
+#	who make the board publish it.
+#
+#	esp_lcd_touch is named explicitly because the BSP's touch.h uses
+#	esp_lcd_touch_handle_t without pulling the header in.
+
+dependencies:
+  idf: ">=5.4"
+  espressif/esp32_p4_function_ev_board: "*"
+  espressif/esp_lcd_touch: "*"
