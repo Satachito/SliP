@@ -29,8 +29,8 @@ android {
 		applicationId = "tokyo.sat.slip"
 		minSdk        = 26
 		targetSdk     = 36
-		versionCode   = 3
-		versionName   = "2.3.0"		//	tracks SLIP_VERSION in C++/SliP.hpp
+		versionCode   = 4
+		versionName   = "2.4.0"		//	tracks SLIP_VERSION in C++/SliP.hpp
 
 		externalNativeBuild {
 			cmake {

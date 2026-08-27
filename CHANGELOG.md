@@ -9,9 +9,19 @@ the CLI, the Xcode targets and the WASM build behind
 [slip.828.tokyo](https://slip.828.tokyo). The two are not the same language;
 where they disagree, `C++/` is correct.
 
-## Unreleased
+## 2.4.0 — 2026-08-23
+
+The Mac draws now, and there is a fifth board.
 
 ### Added
+
+- **The Mac draws.** A program that makes a canvas gets one: the run returns a
+  display list alongside its values, and the app puts it on screen in a floating
+  window you can drag and close. The same programs that draw in a browser —
+  [Koch](Web/Koch.slip), [the Barnsley fern](Web/BarnsleyFern.slip),
+  [the Lorenz attractor](Web/LorenzAttractor.slip),
+  [MovingComplex](Web/MovingComplex.slip) — draw here, through SwiftUI's own
+  Canvas rather than a web view.
 
 - **[`P4EV/`](P4EV) — the ESP32-P4-Function-EV-Board.** The same chip as the
   Tab5 and almost the same port; what differed is in
@@ -20,6 +30,14 @@ where they disagree, `C++/` is correct.
   so the keypad is a column on the right and the transcript takes the rest —
   which is where the Mac, the iPad and the web page all ended up this week from
   the other direction.
+
+- **Four more programs that draw**, in [`Web/`](Web) and runnable on the Mac as
+  well: the Barnsley fern, the Lorenz attractor, MovingComplex and Koch.
+
+### Changed
+
+- **The tutorial and the language reference were rewritten.** See
+  [docs/SPEC.md](docs/SPEC.md) and [Web/Tutorial.html](Web/Tutorial.html).
 
 ## 2.3.0 — 2026-08-21
 

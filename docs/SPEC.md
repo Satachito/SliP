@@ -1,6 +1,6 @@
 # SliP Language Reference
 
-**Version:** 2.3.0 (2026-08-21) — see [CHANGELOG](../CHANGELOG.md)
+**Version:** 2.4.0 (2026-08-23) — see [CHANGELOG](../CHANGELOG.md)
 **Source of truth:** `C++/Read.cpp`, `C++/Eval.cpp`, `C++/SliP.cpp`, and `WASM/BuildJS.cpp` for Web graphics
 **Site:** https://slip.828.tokyo
 

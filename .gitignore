@@ -20,12 +20,18 @@ ESP32/sdkconfig
 ESP32/sdkconfig.old
 Tab5/sdkconfig
 Tab5/sdkconfig.old
+P4EV/sdkconfig
+P4EV/sdkconfig.old
 
 #	The component manager downloads these from the registry; dependencies.lock
 #	pins which versions, and that is committed.
+#
+#	Named per port rather than as a pattern, which is how P4EV came to commit
+#	five thousand files of somebody else's LVGL: the list did not have it yet.
 Tab5/managed_components/
 ESP32/dependencies.lock
 ESP32/managed_components/
+P4EV/managed_components/
 
 #	Android: Gradle output, and the file that points at whoever's SDK.
 Android/.gradle/
